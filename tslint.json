@@ -72,8 +72,6 @@
     "no-sparse-arrays": true,
     "no-string-literal": false,
     "no-string-throw": true,
-    // TODO: allow devDependencies only in **/*.spec.ts files:
-    // waiting on https://github.com/palantir/tslint/pull/3708
     "no-switch-case-fall-through": true,
     "no-tautology-expression": true,
     "no-this-assignment": true,
@@ -122,7 +120,6 @@
     "comment-type": [true, "doc", "singleline"],
     "completed-docs": [true, "enums", "functions", "methods", "classes", "namespaces"],
     "encoding": true,
-    // TODO
     "file-header": false,
     "file-name-casing": [true, "kebab-case"],
     "increment-decrement": true,
