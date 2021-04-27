@@ -160,9 +160,9 @@ ensure_jq_installed () {
 
 # Ensures Node.js is installed by using nvm
 ensure_node_installed () {
-    if ! command_exists node; then
-        echo "Node.js is not currently installed."
-        echo "Installing nvm and Node.js"
+    if ! command_exists npx; then
+        echo "NOTICE: A recent version of Node.js is not installed."
+        echo "NOTICE: Installing nvm and Node.js.."
         wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
         export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
