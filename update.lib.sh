@@ -79,7 +79,7 @@ ensure_dockerslim_installed () {
             export PATH="$USER_BIN_FOLDER:$PATH"
             # Check to see if the "export PATH" command is already present in ~/.bash_profile
             if [[ $(grep -L 'export PATH=$HOME/.bin:$PATH' "$BASH_PROFILE") ]]; then
-                echo 'export PATH=$HOME/.bin:$PATH' >> $BASH_PROFILE
+                echo -e '\nexport PATH=$HOME/.bin:$PATH' >> $BASH_PROFILE
             fi
         fi
     elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
@@ -100,7 +100,7 @@ ensure_dockerslim_installed () {
             export PATH="$USER_BIN_FOLDER:$PATH"
             # Check to see if the "export PATH" command is already present in ~/.bashrc
             if [[ $(grep -L 'export PATH=$HOME/.bin:$PATH' "$BASH_PROFILE") ]]; then
-                echo 'export PATH=$HOME/.bin:$PATH' >> $BASH_PROFILE
+                echo -e '\nexport PATH=$HOME/.bin:$PATH' >> $BASH_PROFILE
             fi
         fi
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
@@ -128,7 +128,7 @@ ensure_jq_installed () {
             export PATH="$USER_BIN_FOLDER:$PATH"
             # Check to see if the "export PATH" command is already present in ~/.bash_profile
             if [[ $(grep -L 'export PATH=$HOME/.bin:$PATH' "$BASH_PROFILE") ]]; then
-                echo 'export PATH=$HOME/.bin:$PATH' >> $BASH_PROFILE
+                echo -e '\nexport PATH=$HOME/.bin:$PATH' >> $BASH_PROFILE
             fi
         fi
     elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
@@ -144,7 +144,7 @@ ensure_jq_installed () {
             export PATH="$USER_BIN_FOLDER:$PATH"
             # Check to see if the "export PATH" command is already present in ~/.bashrc
             if [[ $(grep -L 'export PATH=$HOME/.bin:$PATH' "$BASH_PROFILE") ]]; then
-                echo 'export PATH=$HOME/.bin:$PATH' >> $BASH_PROFILE
+                echo -e '\nexport PATH=$HOME/.bin:$PATH' >> $BASH_PROFILE
             fi
         fi
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
