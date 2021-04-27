@@ -36,8 +36,8 @@ ensure_docker_pushrm_installed () {
         if [ ! -f "$DESTINATION" ]; then
             mkdir -p $HOME/.docker/cli-plugins
             wget $DOWNLOAD_URL -O $DESTINATION
+            chmod +x $DESTINATION
         fi
-        chmod +x $DESTINATION
     elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
         # System is Linux
         local DOWNLOAD_URL=https://github.com/christian-korneck/docker-pushrm/releases/download/v1.7.0/docker-pushrm_linux_amd64
@@ -45,8 +45,8 @@ ensure_docker_pushrm_installed () {
         if [ ! -f "$DESTINATION" ]; then
             mkdir -p $HOME/.docker/cli-plugins
             wget $DOWNLOAD_URL -O $DESTINATION
+            chmod +x $DESTINATION
         fi
-        chmod +x $DESTINATION
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
         # System is Windows 32-bit
         local DOWNLOAD_URL=https://github.com/christian-korneck/docker-pushrm/releases/download/v1.7.0/docker-pushrm_windows_386.exe
@@ -74,14 +74,14 @@ ensure_dockerslim_installed () {
             cp ./dist_mac/* $USER_BIN_FOLDER
             rm dist_mac.zip
             rm -rf dist_mac
+            chmod +x $USER_BIN_FOLDER/docker-slim
+            chmod +x $USER_BIN_FOLDER/docker-slim-sensor
             export PATH="$USER_BIN_FOLDER:$PATH"
             # Check to see if the "export PATH" command is already present in ~/.bash_profile
             if [[ $(grep -L 'export PATH=$HOME/.bin:$PATH' "$BASH_PROFILE") ]]; then
                 echo 'export PATH=$HOME/.bin:$PATH' >> $BASH_PROFILE
             fi
         fi
-        chmod +x $USER_BIN_FOLDER/docker-slim
-        chmod +x $USER_BIN_FOLDER/docker-slim-sensor
     elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
         # System is Linux
         local DOWNLOAD_URL=https://downloads.dockerslim.com/releases/1.35.1/dist_linux.tar.gz
@@ -95,14 +95,14 @@ ensure_dockerslim_installed () {
             cp ./dist_linux/* $USER_BIN_FOLDER
             rm dist_linux.tar.gz
             rm -rf dist_linux
+            chmod +x $USER_BIN_FOLDER/docker-slim
+            chmod +x $USER_BIN_FOLDER/docker-slim-sensor
             export PATH="$USER_BIN_FOLDER:$PATH"
             # Check to see if the "export PATH" command is already present in ~/.bashrc
             if [[ $(grep -L 'export PATH=$HOME/.bin:$PATH' "$BASH_PROFILE") ]]; then
                 echo 'export PATH=$HOME/.bin:$PATH' >> $BASH_PROFILE
             fi
         fi
-        chmod +x $USER_BIN_FOLDER/docker-slim
-        chmod +x $USER_BIN_FOLDER/docker-slim-sensor
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
         # System is Windows 32-bit
         echo "Unable to install DockerSlim because DockerSlim does not support Windows"
@@ -124,13 +124,13 @@ ensure_jq_installed () {
         if [ ! -f "$DESTINATION" ] && ! command_exists jq; then
             mkdir -p $USER_BIN_FOLDER
             wget $DOWNLOAD_URL -O $DESTINATION
+            chmod +x $DESTINATION
             export PATH="$USER_BIN_FOLDER:$PATH"
             # Check to see if the "export PATH" command is already present in ~/.bash_profile
             if [[ $(grep -L 'export PATH=$HOME/.bin:$PATH' "$BASH_PROFILE") ]]; then
                 echo 'export PATH=$HOME/.bin:$PATH' >> $BASH_PROFILE
             fi
         fi
-        chmod +x $DESTINATION
     elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
         # System is Linux
         local DOWNLOAD_URL=https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
@@ -140,13 +140,13 @@ ensure_jq_installed () {
         if [ ! -f "$DESTINATION" ] && [ ! command_exists jq ]; then
             mkdir -p $USER_BIN_FOLDER
             wget $DOWNLOAD_URL -O $DESTINATION
+            chmod +x $DESTINATION
             export PATH="$USER_BIN_FOLDER:$PATH"
             # Check to see if the "export PATH" command is already present in ~/.bashrc
             if [[ $(grep -L 'export PATH=$HOME/.bin:$PATH' "$BASH_PROFILE") ]]; then
                 echo 'export PATH=$HOME/.bin:$PATH' >> $BASH_PROFILE
             fi
         fi
-        chmod +x $DESTINATION
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
         # System is Windows 32-bit
         local DOWNLOAD_URL=https://github.com/stedolan/jq/releases/download/jq-1.6/jq-win32.exe
