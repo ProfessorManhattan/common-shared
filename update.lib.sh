@@ -221,7 +221,7 @@ generate_documentation () {
 }
 
 # Updates package.json
-generate_package_json () {
+copy_project_files_and_generate_package_json () {
     # Copy files over from the Dockerfile shared submodule
     if [ -f ./package.json ]; then
         # Retain information from package.json
