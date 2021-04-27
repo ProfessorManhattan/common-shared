@@ -121,7 +121,7 @@ ensure_jq_installed () {
         local DESTINATION="$HOME/.bin/jq"
         local USER_BIN_FOLDER="$HOME/.bin"
         local BASH_PROFILE="$HOME/.bash_profile"
-        if [ ! -f "$DESTINATION" ] && [ ! command_exists jq ]; then
+        if [ ! -f "$DESTINATION" ] && ! command_exists jq; then
             mkdir -p $USER_BIN_FOLDER
             wget $DOWNLOAD_URL -O $DESTINATION
             export PATH="$USER_BIN_FOLDER:$PATH"
