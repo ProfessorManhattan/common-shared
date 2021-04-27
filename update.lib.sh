@@ -33,7 +33,7 @@ ensure_docker_pushrm_installed () {
         # System is Mac OS X
         local DOWNLOAD_URL=https://github.com/christian-korneck/docker-pushrm/releases/download/v1.7.0/docker-pushrm_darwin_amd64
         local DESTINATION="$HOME/.docker/cli-plugins/docker-pushrm"
-        if [ ! -f $DESTINATION ]; then
+        if [ ! -f "$DESTINATION" ]; then
             mkdir -p $HOME/.docker/cli-plugins
             wget $DOWNLOAD_URL -O $DESTINATION
         fi
@@ -42,7 +42,7 @@ ensure_docker_pushrm_installed () {
         # System is Linux
         local DOWNLOAD_URL=https://github.com/christian-korneck/docker-pushrm/releases/download/v1.7.0/docker-pushrm_linux_amd64
         local DESTINATION="$HOME/.docker/cli-plugins/docker-pushrm"
-        if [ ! -f $DESTINATION ]; then
+        if [ ! -f "$DESTINATION" ]; then
             mkdir -p $HOME/.docker/cli-plugins
             wget $DOWNLOAD_URL -O $DESTINATION
         fi
@@ -67,7 +67,7 @@ ensure_dockerslim_installed () {
         local DESTINATION="$HOME/.bin/docker-slim"
         local USER_BIN_FOLDER="$HOME/.bin"
         local BASH_PROFILE="$HOME/.bash_profile"
-        if [ ! -f $DESTINATION ] && ! command_exists docker-slim; then
+        if [ ! -f "$DESTINATION" ] && ! command_exists docker-slim; then
             wget $DOCKER_SLIM_DOWNLOAD_LINK # TODO: A temporary directory should be used instead
             unzip dist_mac.zip
             mkdir -p $USER_BIN_FOLDER
@@ -88,7 +88,7 @@ ensure_dockerslim_installed () {
         local DESTINATION="$HOME/.bin/docker-slim"
         local USER_BIN_FOLDER="$HOME/.bin"
         local BASH_PROFILE="$HOME/.bashrc"
-        if [ ! -f $DESTINATION ] && ! command_exists docker-slim; then
+        if [ ! -f "$DESTINATION" ] && ! command_exists docker-slim; then
             wget $DOCKER_SLIM_DOWNLOAD_LINK # TODO: A temporary directory should be used instead - same applies for all downloads to working directory
             tar -zxvf dist_linux.tar.gz
             mkdir -p $USER_BIN_FOLDER
@@ -121,7 +121,7 @@ ensure_jq_installed () {
         local DESTINATION="$HOME/.bin/jq"
         local USER_BIN_FOLDER="$HOME/.bin"
         local BASH_PROFILE="$HOME/.bash_profile"
-        if [ ! -f $DESTINATION ] && [ ! command_exists jq ]; then
+        if [ ! -f "$DESTINATION" ] && [ ! command_exists jq ]; then
             mkdir -p $USER_BIN_FOLDER
             wget $DOWNLOAD_URL -O $DESTINATION
             export PATH="$USER_BIN_FOLDER:$PATH"
@@ -137,7 +137,7 @@ ensure_jq_installed () {
         local DESTINATION="$HOME/.bin/jq"
         local USER_BIN_FOLDER="$HOME/.bin"
         local BASH_PROFILE="$HOME/.bashrc"
-        if [ ! -f $DESTINATION ] && [ ! command_exists jq ]; then
+        if [ ! -f "$DESTINATION" ] && [ ! command_exists jq ]; then
             mkdir -p $USER_BIN_FOLDER
             wget $DOWNLOAD_URL -O $DESTINATION
             export PATH="$USER_BIN_FOLDER:$PATH"
