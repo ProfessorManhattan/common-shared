@@ -38,23 +38,23 @@ command_exists () {
 
 # Logger functions
 log () {
-  npx --yes run-func ./.modules/shared/log.js debug "$1"
+  run-func ./.modules/shared/log.js debug "$1"
 }
 
 info () {
-  npx --yes run-func ./.modules/shared/log.js info "$1"
+  run-func ./.modules/shared/log.js info "$1"
 }
 
 success () {
-  npx --yes run-func ./.modules/shared/log.js success "$1"
+  run-func ./.modules/shared/log.js success "$1"
 }
 
 error () {
-  npx --yes run-func ./.modules/shared/log.js error "$1"
+  run-func ./.modules/shared/log.js error "$1"
 }
 
 warn () {
-  npx --yes run-func ./.modules/shared/log.js warn "$1"
+  run-func ./.modules/shared/log.js warn "$1"
 }
 
 # Ensures the docker pushrm plugin is installed. This is used to automatically
