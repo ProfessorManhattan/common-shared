@@ -15,6 +15,7 @@
     "codecov",
     "commitlint",
     "cpus",
+    "dockerhub",
     "editorconfig",
     "enablerepo",
     "epel",
