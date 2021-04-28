@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Source: https://github.com/kahkhang/Inquirer.sh/blob/master/dist/list_input.sh
 
 # store the current set options
 OLD_SET=$-
