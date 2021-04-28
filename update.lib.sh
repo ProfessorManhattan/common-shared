@@ -38,7 +38,7 @@ command_exists () {
 
 # Logger functions
 log () {
-  npx --yes run-func ./.modules/shared/log.js trace "$1"
+  npx --yes run-func ./.modules/shared/log.js debug "$1"
 }
 
 info () {
