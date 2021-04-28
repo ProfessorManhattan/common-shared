@@ -16,7 +16,7 @@ add_initctl () {
             # Copy initctl file if the Dockerfile is based on Ubuntu or Debian
             DOCKERFILE_FIRSTLINE=$(head -n 1 ./Dockerfile)
             if [[ "$DOCKERFILE_FIRSTLINE" == *"debian"* ]] || [[ "$DOCKERFILE_FIRSTLINE" == *"ubuntu"* ]]; then
-                log "Debian-flavor OS specified in Dockerfile"
+                info "Debian-flavor OS specified in Dockerfile"
                 log "Copying initctl to the project's root"
                 cp ./.modules/dockerfile/initctl initctl
                 success "Copied initctl file to the repository's root"
