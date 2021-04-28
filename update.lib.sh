@@ -327,50 +327,75 @@ copy_project_files_and_generate_package_json () {
     # Copy files over from the Dockerfile shared submodule
     if [ -f ./package.json ]; then
         # Retain information from package.json
+        log "Backing up the package.json name and version"
         local PACKAGE_NAME=$(cat package.json | jq '.name' | cut -d '"' -f 2)
         local PACKAGE_VERSION=$(cat package.json | jq '.version' | cut -d '"' -f 2)
         if [ "$REPO_TYPE" == 'dockerfile' ]; then
             local SUBGROUP=$(cat .blueprint.json | jq '.subgroup' | cut -d '"' -f 2)
             # The ansible-molecule subgroup does not store its template in .blueprint.json so it is retained
             if [ "$SUBGROUP" == "ansible-molecule" ]; then
+                log "Backing up the package.json description"
                 local PACKAGE_DESCRIPTION=$(cat package.json | jq '.description' | cut -d '"' -f 2)
             fi
         fi
+        warn "Copying the $REPO_TYPE common files into the repository - this may overwrite changes to files managed by the common repository. For more information please see the CONTRIBUTING.md document."
         cp -Rf ./.modules/$REPO_TYPE/files/ .
+        log "Injecting package.json with the saved name and version"
         jq --arg a "${PACKAGE_NAME}" '.name = $a' package.json > __jq.json && mv __jq.json package.json
         jq --arg a "${PACKAGE_VERSION//\/}" '.version = $a' package.json > __jq.json && mv __jq.json package.json
         if [ "$REPO_TYPE" == 'dockerfile' ] && [ "$SUBGROUP" == 'ansible-molecule' ]; then
+            log "Injecting package.json with the saved name and version"
             jq --arg a "${PACKAGE_DESCRIPTION//\/}" '.description = $a' package.json > __jq.json && mv __jq.json package.json
         fi
+        success "Successfully updated the package.json file and copied the shared $REPO_TYPE files into this repository"
     else
+        info "Repository appears to be a new project - it does not have a package.json file"
+        log "Copying base files from the common $REPO_TYPE repository"
         cp -Rf ./.modules/$REPO_TYPE/files/ .
+        log "Injecting the package.json name variable with the slug variable from .blueprint.json"
         local PACKAGE_NAME=$(cat .blueprint.json | jq '.slug' | cut -d '"' -f 2)
         jq --arg a "${PACKAGE_NAME}" '.name = $a' package.json > __jq.json && mv __jq.json package.json
+        success "Successfully initialized the project with the shared $REPO_TYPE files and updated the name in package.json"
     fi
 
     # Run dockerfile-subgroup specific tasks
     if [ "$REPO_TYPE" == 'dockerfile' ]; then
         # Copies name value from package.json to other locations that should match the string
+        log "Performing tasks specific to Dockerfile projects"
+        log "Replacing all instances of the string 'dockerfile-project' in package.json with the package.json name"
         sed -i .bak "s^dockerfile-project^${PACKAGE_NAME}^g" package.json && rm package.json.bak
+        success "Successfully updated the 'dockerfile-project' string to the package.json name"
 
         # Ensures the scripts.build:slim value matches the value in .blueprint.json
+        log "Ensuring the 'build:slim' variable in package.json is updated"
         local DOCKERSLIM_COMMAND=$(cat .blueprint.json | jq '.dockerslim_command' | cut -d '"' -f 2)
         sed -i .bak "s^DOCKER_SLIM_COMMAND_HERE^${DOCKERSLIM_COMMAND}^g" package.json && rm package.json.bak
+        success "Successfully ensured that the right 'build:slim' value is included in package.json"
 
         # Updates the description from .blueprint.json
         local SUBGROUP=$(cat .blueprint.json | jq '.subgroup' | cut -d '"' -f 2)
         if [ "$SUBGROUP" == 'ci-pipeline' ]; then
+            log "Ensuring the package.json description is updated, using a value specified in .blueprint.json"
             local DESCRIPTION_TEMPLATE=$(cat .blueprint.json | jq '.description_template' | cut -d '"' -f 2)
             jq --arg a "${DESCRIPTION_TEMPLATE}" '.description = $a' package.json > __jq.json && mv __jq.json package.json
+            success "Successfully copied the .blueprint.json description to the package.json description"
             if [ -f slim.report.json ]; then
+                info "A DockerSlim report is present in this repository"
+                log "Injecting the package.json description with the container file size detailed in slim.report.json"
                 local SLIM_IMAGE_SIZE=$(cat slim.report.json | jq '.minified_image_size_human' | cut -d '"' -f 2)
                 sed -i .bak "s^SLIM_IMAGE_SIZE^${SLIM_IMAGE_SIZE}^g" package.json && rm package.json.bak
+                success "Successfully added the container file size to the package.json description"
             else
+                info "The slim.report.json file appears to be missing from this repository"
+                log "Removing the container file size placeholder from the description in package.json"
                 sed -i .bak "s^\w\(only\wSLIM_IMAGE_SIZE!)^^g" package.json && rm package.json.bak
+                success "Successfully removed the container file size placeholder from the description in package.json"
             fi
         fi
     fi
+    log "Ensuring the package.json file is Prettier-compliant"
     npx prettier-package-json --write
+    success "Successfully ensured that the package.json file is Prettier-compliant"
 }
 
 # Miscellaneous fixes
