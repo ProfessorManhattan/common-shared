@@ -249,8 +249,15 @@ ensure_node_installed () {
         export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         nvm install node
+        local NODE_INSTALLED=true
+    fi
+    if ! command_exists run-func; then
+      npm install -g run-func
+      if [ "$NODE_INSTALLED" == true ]; then
         success "The latest version of Node.js has been successfully installed"
         info "The script will continue to use the latest version of Node.js but in order to use it yourself you will have to close/open the terminal"
+        success "Successfully installed npm global dependency (run-func)"
+      fi
     fi
 }
 
