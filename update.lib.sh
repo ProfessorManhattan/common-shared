@@ -5,38 +5,10 @@
 # across many different projects. It also includes various
 # functions that perform maintenance tasks.
 
-# Copies a file into the working directory for Dockerfiles that rely on
-# the initctl polyfill
-add_initctl () {
-    log "Checking whether initctl needs to be copied to the project's root"
-    if [ "$REPO_TYPE" == 'dockerfile' ]; then
-        # Determine type of Dockerfile project
-        local SUBGROUP=$(cat .blueprint.json | jq '.subgroup' | cut -d '"' -f 2)
-        if [ "$SUBGROUP" == 'ansible-molecule' ]; then
-            # Copy initctl file if the Dockerfile is based on Ubuntu or Debian
-            DOCKERFILE_FIRSTLINE=$(head -n 1 ./Dockerfile)
-            if [[ "$DOCKERFILE_FIRSTLINE" == *"debian"* ]] || [[ "$DOCKERFILE_FIRSTLINE" == *"ubuntu"* ]]; then
-                info "Debian-flavor OS specified in Dockerfile"
-                log "Copying initctl to the project's root"
-                cp ./.modules/dockerfile/initctl initctl
-                success "Copied initctl file to the repository's root"
-            else
-              log "Project does not appear to be Debian-flavored so the initctl file is unnecessary"
-            fi
-        else
-          log "Project is a Dockerfile project but does not need the initctl file"
-        fi
-    else
-      log "Project is not a Dockerfile project so initctl is unnecessary"
-    fi
-}
+##############################################
+############## COMMON FUNCTIONS ##############
+##############################################
 
-# Determines whether or not an executable is accessible
-command_exists () {
-    type "$1" &> /dev/null ;
-}
-
-# Logger functions
 log () {
   run-func ./.modules/shared/log.js debug "$1"
 }
@@ -56,6 +28,15 @@ error () {
 warn () {
   run-func ./.modules/shared/log.js warn "$1"
 }
+
+# Determines whether or not an executable is accessible
+command_exists () {
+    type "$1" &> /dev/null ;
+}
+
+##############################################
+########### DEPENDENCY INSTALLERS ############
+##############################################
 
 # Ensures the docker pushrm plugin is installed. This is used to automatically
 # update the README.md embedded on the DockerHub website.
@@ -258,6 +239,36 @@ ensure_node_installed () {
         info "The script will continue to use the latest version of Node.js but in order to use it yourself you will have to close/open the terminal"
         success "Successfully installed npm global dependencies (prettier, prettier-package-json, run-func)"
       fi
+    fi
+}
+
+##############################################
+############### BUSINESS LOGIC ###############
+##############################################
+
+# Copies a file into the working directory for Dockerfiles that rely on
+# the initctl polyfill
+add_initctl () {
+    log "Checking whether initctl needs to be copied to the project's root"
+    if [ "$REPO_TYPE" == 'dockerfile' ]; then
+        # Determine type of Dockerfile project
+        local SUBGROUP=$(cat .blueprint.json | jq '.subgroup' | cut -d '"' -f 2)
+        if [ "$SUBGROUP" == 'ansible-molecule' ]; then
+            # Copy initctl file if the Dockerfile is based on Ubuntu or Debian
+            DOCKERFILE_FIRSTLINE=$(head -n 1 ./Dockerfile)
+            if [[ "$DOCKERFILE_FIRSTLINE" == *"debian"* ]] || [[ "$DOCKERFILE_FIRSTLINE" == *"ubuntu"* ]]; then
+                info "Debian-flavor OS specified in Dockerfile"
+                log "Copying initctl to the project's root"
+                cp ./.modules/dockerfile/initctl initctl
+                success "Copied initctl file to the repository's root"
+            else
+              log "Project does not appear to be Debian-flavored so the initctl file is unnecessary"
+            fi
+        else
+          log "Project is a Dockerfile project but does not need the initctl file"
+        fi
+    else
+      log "Project is not a Dockerfile project so initctl is unnecessary"
     fi
 }
 
