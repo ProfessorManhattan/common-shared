@@ -252,11 +252,11 @@ ensure_node_installed () {
         local NODE_INSTALLED=true
     fi
     if ! command_exists run-func; then
-      npm install -g run-func
+      npm install -g @appnest/readme, prettier prettier-package-json run-func
       if [ "$NODE_INSTALLED" == true ]; then
         success "The latest version of Node.js has been successfully installed"
         info "The script will continue to use the latest version of Node.js but in order to use it yourself you will have to close/open the terminal"
-        success "Successfully installed npm global dependency (run-func)"
+        success "Successfully installed npm global dependencies (@appnest/readme, prettier, prettier-package-json, run-func)"
       fi
     fi
 }
@@ -299,10 +299,10 @@ generate_documentation () {
     fi
     jq -s '.[0] * .[1]' .blueprint.json ./.modules/docs/common.json > __bp.json
     log "Generating the CONTRIBUTING.md file"
-    npx -y @appnest/readme generate --config __bp.json --input ./.modules/docs/blueprint-contributing.md --output CONTRIBUTING.md
+    @appnest/readme generate --config __bp.json --input ./.modules/docs/blueprint-contributing.md --output CONTRIBUTING.md
     success "Successfully generated the CONTRIBUTING.md file"
     log "Generating the README.md file"
-    npx -y @appnest/readme generate --config __bp.json --input ./.modules/docs/$README_FILE
+    @appnest/readme generate --config __bp.json --input ./.modules/docs/$README_FILE
     success "Successfully generated the README.md file"
     rm __bp.json
 
@@ -401,7 +401,7 @@ copy_project_files_and_generate_package_json () {
         fi
     fi
     log "Ensuring the package.json file is Prettier-compliant"
-    npx prettier-package-json --write
+    prettier-package-json --write
     success "Successfully ensured that the package.json file is Prettier-compliant"
 }
 
@@ -410,13 +410,13 @@ misc_fixes () {
     # Ensure .blueprint.json is using Prettier formatting
     if [ -f .blueprint.json ]; then
         log "Ensuring .blueprint.json is properly formatted"
-        npx prettier --write .blueprint.json
+        prettier --write .blueprint.json
         success ".blueprint.json is Prettier-compliant"
     fi
     # Ensure slim.report.json is using Prettier formatting
     if [ -f slim.report.json ]; then
         log "Ensuring the slim.report.json is properly formatted"
-        npx prettier --write slim.report.json
+        prettier --write slim.report.json
         success "slim.report.json is Prettier-compliant"
     fi
     # Ensure pre-commit hook is executable
