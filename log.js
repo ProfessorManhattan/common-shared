@@ -6,4 +6,4 @@ const error = (message) => consola.error(message);
 const warn = (message) => consola.warn(message);
 const log = (message) => consola.log(message);
 
-export { success, info, error, warn, log };
+module.exports = { success, info, error, warn, log };
