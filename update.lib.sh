@@ -8,6 +8,11 @@
 # Copies a file into the working directory for Dockerfiles that rely on
 # the initctl polyfill
 add_initctl () {
+    npx run-func ./.modules/shared/log.js info "Determining whether or not to copy initctl file"
+    npx run-func ./.modules/shared/log.js log "Copying initctl file"
+    npx run-func ./.modules/shared/log.js success "Copying initctl file"
+    npx run-func ./.modules/shared/log.js error "Copying initctl file"
+    npx run-func ./.modules/shared/log.js warn "Copying initctl file"
     if [ "$REPO_TYPE" == 'dockerfile' ]; then
         # Determine type of Dockerfile project
         local SUBGROUP=$(cat .blueprint.json | jq '.subgroup' | cut -d '"' -f 2)
