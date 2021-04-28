@@ -282,7 +282,7 @@ generate_documentation () {
         local SUBGROUP=$(cat .blueprint.json | jq '.subgroup' | cut -d '"' -f 2)
         if [ "$SUBGROUP" == 'ansible-molecule' ]; then
             local README_FILE='blueprint-readme-ansible-molecule.md'
-        elif [ "$SUBGROUP" == 'apps']; then
+        elif [ "$SUBGROUP" == 'apps' ]; then
             local README_FILE='blueprint-readme-apps.md'
         elif [ "$SUBGROUP" == 'ci-pipeline' ]; then
             local README_FILE='blueprint-readme-ci.md'
