@@ -173,6 +173,9 @@ ensure_node_installed () {
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         nvm install node
     fi
+
+    # Install global dependencies
+    npm install -g consola
 }
 
 # Ensures the project's documentation partials submodule is added to the project
