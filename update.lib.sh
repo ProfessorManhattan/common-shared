@@ -277,11 +277,11 @@ ensure_node_installed () {
         local NODE_INSTALLED=true
     fi
     if ! command_exists run-func; then
-      npm install -g prettier prettier-package-json run-func
+      npm install -g run-func
       if [ "$NODE_INSTALLED" == true ]; then
         success "The latest version of Node.js has been successfully installed"
         info "The script will continue to use the latest version of Node.js but in order to use it yourself you will have to close/open the terminal"
-        success "Successfully installed npm global dependencies (prettier, prettier-package-json, run-func)"
+        success "Successfully installed npm global dependency (run-func)"
       fi
     fi
 }
@@ -679,7 +679,7 @@ copy_project_files_and_generate_package_json () {
         fi
     fi
     log "Ensuring the package.json file is Prettier-compliant"
-    prettier-package-json --write
+    npx prettier-package-json --write
     success "Successfully ensured that the package.json file is Prettier-compliant"
 }
 
@@ -688,13 +688,13 @@ misc_fixes () {
     # Ensure .blueprint.json is using Prettier formatting
     if [ -f .blueprint.json ]; then
         log "Ensuring .blueprint.json is properly formatted"
-        prettier --write .blueprint.json
+        npx prettier --write .blueprint.json
         success ".blueprint.json is Prettier-compliant"
     fi
     # Ensure slim.report.json is using Prettier formatting
     if [ -f slim.report.json ]; then
         log "Ensuring the slim.report.json is properly formatted"
-        prettier --write slim.report.json
+        npx prettier --write slim.report.json
         success "slim.report.json is Prettier-compliant"
     fi
     # Ensure pre-commit hook is executable
