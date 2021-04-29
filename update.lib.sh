@@ -477,12 +477,13 @@ copy_project_files_and_generate_package_json () {
     # Prepare common Ansible files for copying over
     if [ "$REPO_TYPE" == 'ansible' ] && [ ! -f ./main.yml ]; then
       # Replace the role_name placeholder with the repository folder name
+      log "Injecting the Ansible submodule with the appropriate role folder name variable"
       local ROLE_FOLDER=$(basename "$PWD")
       if [[ "$OSTYPE" == "darwin"* ]]; then
-        grep -rl 'MEGABYTE_ROLE_PLACEHOLDER' ./.modules/ansible/files | xargs sed -i .bak "s/MEGABYTE_ROLE_PLACEHOLDER/${ROLE_FOLDER}/g"
-        find ./.modules/ansible/files -name "*.bak" -type f -delete
+        grep -rl 'MEGABYTE_ROLE_PLACEHOLDER' ./.modules/$REPO_TYPE/files | xargs sed -i .bak "s/MEGABYTE_ROLE_PLACEHOLDER/${ROLE_FOLDER}/g"
+        find ./.modules/$REPO_TYPE/files -name "*.bak" -type f -delete
       else
-        grep -rl 'MEGABYTE_ROLE_PLACEHOLDER' ./.modules/ansible/files | xargs sed -i "s/MEGABYTE_ROLE_PLACEHOLDER/${ROLE_FOLDER}/g"
+        grep -rl 'MEGABYTE_ROLE_PLACEHOLDER' ./.modules/$REPO_TYPE/files | xargs sed -i "s/MEGABYTE_ROLE_PLACEHOLDER/${ROLE_FOLDER}/g"
       fi
     fi
 
@@ -499,7 +500,7 @@ copy_project_files_and_generate_package_json () {
                 log "Backing up the package.json description"
                 local PACKAGE_DESCRIPTION=$(cat package.json | jq '.description' | cut -d '"' -f 2)
             fi
-        elif [ "$REPO_TYPE" == 'ansible' ]; then
+        elif [ "$REPO_TYPE" == 'ansible' ] || [ "$REPO_TYPE" == 'packer' ]; then
           log "Backing up the package.json description"
           local PACKAGE_DESCRIPTION=$(cat package.json | jq '.version' | cut -d '"' -f 2)
         fi
@@ -519,6 +520,7 @@ copy_project_files_and_generate_package_json () {
 
           # Reset ./.modules/ansible if appropriate
           if [ "$REPO_TYPE" == 'ansible' ] && [ ! -f ./main.yml ]; then
+            log "Resetting Ansible submodule to HEAD"
             cd ./.modules/ansible
             git reset --hard HEAD
             cd ../..
@@ -530,7 +532,7 @@ copy_project_files_and_generate_package_json () {
         if [ "$REPO_TYPE" == 'dockerfile' ] && [ "$SUBGROUP" == 'ansible-molecule' ]; then
             log "Injecting package.json with the saved description"
             jq --arg a "${PACKAGE_DESCRIPTION//\/}" '.description = $a' package.json > __jq.json && mv __jq.json package.json
-        elif [ "$REPO_TYPE" == 'ansible' ]; then
+        elif [ "$REPO_TYPE" == 'ansible' ] || [ "$REPO_TYPE" == 'packer' ]; then
             log "Injecting package.json with the saved description"
             jq --arg a "${PACKAGE_DESCRIPTION//\/}" '.description = $a' package.json > __jq.json && mv __jq.json package.json
         fi
@@ -539,6 +541,7 @@ copy_project_files_and_generate_package_json () {
         info "Repository appears to be a new project - it does not have a package.json file"
         if [ "$REPO_TYPE" == 'ansible' ] && [ -f main.yml ]; then
           # The project type is an Ansible playbook
+          log "Copying Ansible Playbook files since the main.yml file is present in the root directory"
           cp -Rf ./.modules/$REPO_TYPE/files/.gitlab . # TODO: Figure out how to combine these copy statements
           cp -Rf ./.modules/$REPO_TYPE/files/.husky .
           cp -Rf ./.modules/$REPO_TYPE/files/.vscode .
