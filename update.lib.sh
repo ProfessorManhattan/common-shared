@@ -710,7 +710,7 @@ update_docker_labels () {
   local PACKAGE_DESCRIPTION=$(cat package.json | jq '.description')
   local SLUG=$(cat .blueprint.json | jq '.slug' | cut -d '"' -f 2)
   local SUBGROUP=$(cat .blueprint.json | jq '.subgroup' | cut -d '"' -f 2)
-  sed -i .bak "s^.*org.opencontainers.image.description.*^      org.opencontainers.image.description=${PACKAGE_DESCRIPTION}^g" Dockerfile && rm Dockerfile.bak
-  sed -i .bak "s^.*org.opencontainers.image.description.*^      org.opencontainers.image.documentation=${DOCKERFILE_GROUP}/${SUBGROUP}/${SLUG}/-/blob/master/README.md^g" Dockerfile && rm Dockerfile.bak
-  sed -i .bak "s^.*org.opencontainers.image.description.*^      org.opencontainers.image.source=${DOCKERFILE_GROUP}/${SUBGROUP}/${SLUG}.git^g" Dockerfile && rm Dockerfile.bak
+  sed -i .bak "s^.*org.opencontainers.image.description.*^LABEL org.opencontainers.image.description=${PACKAGE_DESCRIPTION}^g" Dockerfile && rm Dockerfile.bak
+  sed -i .bak "s^.*org.opencontainers.image.description.*^LABEL org.opencontainers.image.documentation=${DOCKERFILE_GROUP}/${SUBGROUP}/${SLUG}/-/blob/master/README.md^g" Dockerfile && rm Dockerfile.bak
+  sed -i .bak "s^.*org.opencontainers.image.description.*^LABEL org.opencontainers.image.source=${DOCKERFILE_GROUP}/${SUBGROUP}/${SLUG}.git^g" Dockerfile && rm Dockerfile.bak
 }
