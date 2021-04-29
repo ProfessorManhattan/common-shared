@@ -423,6 +423,10 @@ generate_documentation () {
         elif [ "$SUBGROUP" == 'software' ]; then
             local README_FILE='blueprint-readme-software.md'
         fi
+    elif [ "$REPO_TYPE" == 'ansible' ]; then
+      if [ -f ./main.yml ]; then
+        README_FILE=blueprint-readme-playbooks.md
+      fi
     fi
     jq -s '.[0] * .[1]' .blueprint.json ./.modules/docs/common.json > __bp.json
     log "Generating the CONTRIBUTING.md file"
@@ -456,8 +460,32 @@ generate_documentation () {
     fi
 }
 
+install_requirements () {
+  # Install Python 3 requirements if requirements.txt is present
+  if [ -f requirements.txt ]; then
+    pip3 install -r requirements.txt
+  fi
+
+  # Install Ansible Galaxy requirements if requirements.yml is present
+  if [ -f requirements.yml ]; then
+    ansible-galaxy install -r requirements.yml
+  fi
+}
+
 # Updates package.json
 copy_project_files_and_generate_package_json () {
+    # Prepare common Ansible files for copying over
+    if [ "$REPO_TYPE" == 'ansible' ] && [ ! -f ./main.yml ]; then
+      # Replace the role_name placeholder with the repository folder name
+      local ROLE_FOLDER=$(basename "$PWD")
+      if [[ "$OSTYPE" == "darwin"* ]]; then
+        grep -rl 'MEGABYTE_ROLE_PLACEHOLDER' ./.modules/ansible/files | xargs sed -i .bak "s/MEGABYTE_ROLE_PLACEHOLDER/${ROLE_FOLDER}/g"
+        find ./.modules/ansible/files -name "*.bak" -type f -delete
+      else
+        grep -rl 'MEGABYTE_ROLE_PLACEHOLDER' ./.modules/ansible/files | xargs sed -i "s/MEGABYTE_ROLE_PLACEHOLDER/${ROLE_FOLDER}/g"
+      fi
+    fi
+
     # Copy files over from the Dockerfile shared submodule
     if [ -f ./package.json ]; then
         # Retain information from package.json
@@ -471,25 +499,65 @@ copy_project_files_and_generate_package_json () {
                 log "Backing up the package.json description"
                 local PACKAGE_DESCRIPTION=$(cat package.json | jq '.description' | cut -d '"' -f 2)
             fi
+        elif [ "$REPO_TYPE" == 'ansible' ]; then
+          log "Backing up the package.json description"
+          local PACKAGE_DESCRIPTION=$(cat package.json | jq '.version' | cut -d '"' -f 2)
         fi
         warn "Copying the $REPO_TYPE common files into the repository - this may overwrite changes to files managed by the common repository. For more information please see the CONTRIBUTING.md document."
-        cp -Rf ./.modules/$REPO_TYPE/files/ .
+        if [ "$REPO_TYPE" == 'ansible' ] && [ -f ./main.yml ]; then
+          cp -Rf ./.modules/$REPO_TYPE/files/.gitlab . # TODO: Figure out how to combine these cp statements
+          cp -Rf ./.modules/$REPO_TYPE/files/.husky .
+          cp -Rf ./.modules/$REPO_TYPE/files/.vscode .
+          cp -Rf ./.modules/$REPO_TYPE/files/molecule .
+          cp ./.modules/$REPO_TYPE/files/.ansible-lint .ansible-lint
+          cp ./.modules/$REPO_TYPE/files/.gitignore .gitignore
+          cp ./.modules/$REPO_TYPE/files/LICENSE LICENSE
+          cp ./.modules/$REPO_TYPE/files/package.json package.json
+          cp ./.modules/$REPO_TYPE/files/requirements.txt requirements.txt
+        elif
+          cp -Rf ./.modules/$REPO_TYPE/files/ .
+
+          # Reset ./.modules/ansible if appropriate
+          if [ "$REPO_TYPE" == 'ansible' ] && [ ! -f ./main.yml ]; then
+            cd ./.modules/ansible
+            git reset --hard HEAD
+            cd ../..
+          fi
+        fi
         log "Injecting package.json with the saved name and version"
         jq --arg a "${PACKAGE_NAME}" '.name = $a' package.json > __jq.json && mv __jq.json package.json
         jq --arg a "${PACKAGE_VERSION//\/}" '.version = $a' package.json > __jq.json && mv __jq.json package.json
         if [ "$REPO_TYPE" == 'dockerfile' ] && [ "$SUBGROUP" == 'ansible-molecule' ]; then
-            log "Injecting package.json with the saved name and version"
+            log "Injecting package.json with the saved description"
+            jq --arg a "${PACKAGE_DESCRIPTION//\/}" '.description = $a' package.json > __jq.json && mv __jq.json package.json
+        elif [ "$REPO_TYPE" == 'ansible' ]; then
+            log "Injecting package.json with the saved description"
             jq --arg a "${PACKAGE_DESCRIPTION//\/}" '.description = $a' package.json > __jq.json && mv __jq.json package.json
         fi
         success "Successfully updated the package.json file and copied the shared $REPO_TYPE files into this repository"
     else
         info "Repository appears to be a new project - it does not have a package.json file"
-        log "Copying base files from the common $REPO_TYPE repository"
-        cp -Rf ./.modules/$REPO_TYPE/files/ .
-        log "Injecting the package.json name variable with the slug variable from .blueprint.json"
-        local PACKAGE_NAME=$(cat .blueprint.json | jq '.slug' | cut -d '"' -f 2)
-        jq --arg a "${PACKAGE_NAME}" '.name = $a' package.json > __jq.json && mv __jq.json package.json
-        success "Successfully initialized the project with the shared $REPO_TYPE files and updated the name in package.json"
+        if [ "$REPO_TYPE" == 'ansible' ] && [ -f main.yml ]; then
+          # The project type is an Ansible playbook
+          cp -Rf ./.modules/$REPO_TYPE/files/.gitlab . # TODO: Figure out how to combine these copy statements
+          cp -Rf ./.modules/$REPO_TYPE/files/.husky .
+          cp -Rf ./.modules/$REPO_TYPE/files/.vscode .
+          cp -Rf ./.modules/$REPO_TYPE/files/molecule .
+          cp ./.modules/$REPO_TYPE/files/.ansible-lint .ansible-lint
+          cp ./.modules/$REPO_TYPE/files/.gitignore .gitignore
+          cp ./.modules/$REPO_TYPE/files/LICENSE LICENSE
+          cp ./.modules/$REPO_TYPE/files/package.json package.json
+          cp ./.modules/$REPO_TYPE/files/requirements.txt requirements.txt
+        else
+          log "Copying base files from the common $REPO_TYPE repository"
+          cp -Rf ./.modules/$REPO_TYPE/files/ .
+          if [ "$REPO_TYPE" == 'dockerfile' ] && [ "$SUBGROUP" == 'ci-pipeline' ]; then
+            log "Injecting the package.json name variable with the slug variable from .blueprint.json"
+            local PACKAGE_NAME=$(cat .blueprint.json | jq '.slug' | cut -d '"' -f 2)
+            jq --arg a "${PACKAGE_NAME}" '.name = $a' package.json > __jq.json && mv __jq.json package.json
+            success "Successfully initialized the project with the shared $REPO_TYPE files and updated the name in package.json"
+          fi
+        fi
     fi
 
     # Run dockerfile-subgroup specific tasks
