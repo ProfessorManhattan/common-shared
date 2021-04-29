@@ -595,7 +595,7 @@ copy_project_files_and_generate_package_json () {
           cp ./.modules/$REPO_TYPE/files/LICENSE LICENSE
           cp ./.modules/$REPO_TYPE/files/package.json package.json
           cp ./.modules/$REPO_TYPE/files/requirements.txt requirements.txt
-        elif
+        else
           cp -Rf ./.modules/$REPO_TYPE/files/ .
 
           # Reset ./.modules/ansible if appropriate
