@@ -388,6 +388,22 @@ add_initctl () {
     fi
 }
 
+# Ensures the Bento submodule is present
+ensure_bento_submodule_latest () {
+  if [ ! -d "./.modules/bento" ]; then
+    log "Adding the chef/bento repository as a submodule"
+    mkdir -p ./.modules
+    git submodule add -b master https://github.com/chef/bento.git ./.modules/bento
+    success "Successfully added the chef/bento submodule"
+  else
+    log "Updating the chef/bento submodule"
+    cd ./.modules/bento
+    git checkout master && git pull origin master
+    cd ../..
+    success "Successfully updated the chef/bento submodule"
+  fi
+}
+
 # Ensures the project's documentation partials submodule is added to the project
 ensure_project_docs_submodule_latest () {
     if [ ! -d "./.modules/docs" ]; then
@@ -396,12 +412,30 @@ ensure_project_docs_submodule_latest () {
         git submodule add -b master https://gitlab.com/megabyte-space/documentation/$REPO_TYPE.git ./.modules/docs
         success "Successfully added the docs submodule"
     else
-        log "Updating the docs submodule"
+        log "Updating the documentation submodule"
         cd ./.modules/docs
         git checkout master && git pull origin master
         cd ../..
         success "Successfully updated the docs submodule"
     fi
+}
+
+ensure_windows_submodule_latest () {
+  log "Checking for presence of the Autounattend.xml file to add submodule for a Windows Packer project"
+  if [ -f ./Autounattend.xml ]; then
+    info "Project appears to be a Windows Packer project"
+    if [ ! -d "./.modules/windows" ]; then
+      log "Adding the packer-windows submodule"
+      git submodule add -b main https://github.com/StefanScherer/packer-windows ./.modules/windows
+      success "Successfully added the packer-windows submodule"
+    else
+      log "Updating the packer-windows submodule"
+      cd ./.modules/windows
+      git checkout main && git pull origin main
+      cd ../..
+      success "Successfully updated the packer-windows submodule"
+    fi
+  fi
 }
 
 # TODO: Add ensure_wget_installed and make it so that it can be installed without sudo password
