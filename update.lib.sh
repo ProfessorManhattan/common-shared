@@ -45,7 +45,7 @@ sha256 () {
     if [ "$(uname)" == "Darwin" ]; then
       echo "$2 $1" | sha256sum --check
     elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-      echo "$1 $2" | shasum -s -a 256 -c
+      echo "$1  $2" | shasum -s -a 256 -c
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
     fi
