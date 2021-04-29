@@ -47,7 +47,9 @@ sha256 () {
     elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
       echo "$1  $2" | shasum -s -a 256 -c
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
+      error "Windows support not added yet"
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
+      error "Windows support not added yet"
     fi
 }
 
@@ -98,11 +100,11 @@ ensure_docker_pushrm_installed () {
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
         # System is Windows 32-bit
         local DOWNLOAD_URL=https://github.com/christian-korneck/docker-pushrm/releases/download/v1.7.0/docker-pushrm_windows_386.exe
-        warn "Windows support has not been added yet"
+        error "Windows support has not been added yet"
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
         # System is Windows 64-bit
         local DOWNLOAD_URL=https://github.com/christian-korneck/docker-pushrm/releases/download/v1.7.0/docker-pushrm_windows_amd64.exe
-        warn "Windows support has not been added yet"
+        error "Windows support has not been added yet"
     fi
 }
 
@@ -184,10 +186,10 @@ ensure_dockerslim_installed () {
         fi
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
         # System is Windows 32-bit
-        warn "Windows support has not been added yet"
+        error "Windows support has not been added yet"
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
         # System is Windows 64-bit
-        warn "Windows support has not been added yet"
+        error "Windows support has not been added yet"
     fi
 }
 
@@ -254,11 +256,11 @@ ensure_jq_installed () {
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
         # System is Windows 32-bit
         local DOWNLOAD_URL=https://github.com/stedolan/jq/releases/download/jq-1.6/jq-win32.exe
-        warn "Windows support has not been added yet"
+        error "Windows support has not been added yet"
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
         # System is Windows 64-bit
         local DOWNLOAD_URL=https://github.com/stedolan/jq/releases/download/jq-1.6/jq-win64.exe
-        warn "Windows support has not been added yet"
+        error "Windows support has not been added yet"
     fi
 }
 
@@ -352,9 +354,11 @@ ensure_python3_installed () {
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
       local DOWNLOAD_URL=https://repo.anaconda.com/miniconda/Miniconda3-py39_4.9.2-Windows-x86.exe
       local DOWNLOAD_SHA256=5045fb9dc4405dbba21054262b7d104ba61a8739c1a56038ccb0258f233ad646
+      error "Windows support not added yet"
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
       local DOWNLOAD_URL=https://repo.anaconda.com/miniconda/Miniconda3-py39_4.9.2-Windows-x86_64.exe
       local DOWNLOAD_SHA256=c3a43d6bc4c4fa92454dbfa636ccb859a045d875df602b31ae71b9e0c3fec2b8
+      error "Windows support not added yet"
     fi
 }
 
@@ -699,4 +703,8 @@ misc_fixes () {
         chmod 755 .husky/pre-commit
         success "The Husky pre-commit has the correct file permissions"
     fi
+}
+
+update_docker_labels () {
+  sed -i .bak "s^dockerfile-project^${PACKAGE_NAME}^g" package.json && rm package.json.bak
 }
