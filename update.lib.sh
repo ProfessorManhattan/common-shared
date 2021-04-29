@@ -9,22 +9,27 @@
 ############## COMMON FUNCTIONS ##############
 ##############################################
 
-log () {
-  run-func ./.modules/shared/log.js debug "$1"
-}
-
-info () {
-  run-func ./.modules/shared/log.js info "$1"
-}
-
-success () {
-  run-func ./.modules/shared/log.js success "$1"
-}
-
+# Logs an error message
 error () {
   run-func ./.modules/shared/log.js error "$1"
 }
 
+# Logs an info message
+info () {
+  run-func ./.modules/shared/log.js info "$1"
+}
+
+# Logs a regular log message
+log () {
+  run-func ./.modules/shared/log.js debug "$1"
+}
+
+# Logs a success message
+success () {
+  run-func ./.modules/shared/log.js success "$1"
+}
+
+# Logs a warning message
 warn () {
   run-func ./.modules/shared/log.js warn "$1"
 }
@@ -32,6 +37,18 @@ warn () {
 # Determines whether or not an executable is accessible
 command_exists () {
     type "$1" &> /dev/null ;
+}
+
+# Verifies the SHA256 checksum of a file
+# Usage: sha256 <file> <checksum>
+sha256 () {
+    if [ "$(uname)" == "Darwin" ]; then
+      echo "$2 $1" | sha256sum --check
+    elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+      echo "$1 $2" | shasum -s -a 256 -c
+    elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
+    elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
+    fi
 }
 
 ##############################################
@@ -44,14 +61,17 @@ ensure_docker_pushrm_installed () {
     log "Checking whether docker-pushrm is already installed"
     if [ "$(uname)" == "Darwin" ]; then
         # System is Mac OS X
-        local DOWNLOAD_URL=https://github.com/christian-korneck/docker-pushrm/releases/download/v1.7.0/docker-pushrm_darwin_amd64
         local DESTINATION="$HOME/.docker/cli-plugins/docker-pushrm"
+        local DOWNLOAD_SHA256=ffd208cd01287f457878d4851697477c0493c5e937d7ebfa36cca46d37bff659
+        local DOWNLOAD_URL=https://github.com/christian-korneck/docker-pushrm/releases/download/v1.7.0/docker-pushrm_darwin_amd64
         if [ ! -f "$DESTINATION" ]; then
             info "docker-pushrm is not currently installed"
             log "Ensuring the ~/.docker/cli-plugins folder exists"
             mkdir -p $HOME/.docker/cli-plugins
             log "Downloading docker-pushrm"
             wget $DOWNLOAD_URL -O $DESTINATION
+            sha256 "$DESTINATION" "$DOWNLOAD_SHA256"
+            log "SHA256 checksum validated successfully"
             chmod +x $DESTINATION
             success "docker-pushrm successfully installed to the ~/.docker/cli-plugins folder"
         else
@@ -59,14 +79,17 @@ ensure_docker_pushrm_installed () {
         fi
     elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
         # System is Linux
-        local DOWNLOAD_URL=https://github.com/christian-korneck/docker-pushrm/releases/download/v1.7.0/docker-pushrm_linux_amd64
         local DESTINATION="$HOME/.docker/cli-plugins/docker-pushrm"
+        local DOWNLOAD_SHA256=7475cbdf63a6887bd46f44549fba6b04113b6979dc6977b3fdfb2cdd62162771
+        local DOWNLOAD_URL=https://github.com/christian-korneck/docker-pushrm/releases/download/v1.7.0/docker-pushrm_linux_amd64
         if [ ! -f "$DESTINATION" ]; then
             info "docker-pushrm is not currently installed"
             log "Ensuring the ~/.docker/cli-plugins folder exists"
             mkdir -p $HOME/.docker/cli-plugins
             log "Downloading docker-pushrm"
             wget $DOWNLOAD_URL -O $DESTINATION
+            sha256 "$DESTINATION" "$DOWNLOAD_SHA256"
+            log "SHA256 checksum validated successfully"
             chmod +x $DESTINATION
             success "docker-pushrm successfully installed to the ~/.docker/cli-plugins folder"
         else
@@ -83,66 +106,78 @@ ensure_docker_pushrm_installed () {
     fi
 }
 
-# Ensures DockerSlim is installed. If it is not present, it is installed to ~/.bin for
+# Ensures DockerSlim is installed. If it is not present, it is installed to ~/.local/bin for
 # the current user
 ensure_dockerslim_installed () {
     log "Checking whether DockerSlim is already installed"
     if [ "$(uname)" == "Darwin" ]; then
         # System is Mac OS X
-        local DOWNLOAD_URL=https://downloads.dockerslim.com/releases/1.35.1/dist_mac.zip
-        local DESTINATION="$HOME/.bin/docker-slim"
-        local USER_BIN_FOLDER="$HOME/.bin"
         local BASH_PROFILE="$HOME/.bash_profile"
+        local DESTINATION="$HOME/.local/bin/docker-slim"
+        local DOWNLOAD_DESTINATION=/tmp/megabytelabs/dist_mac.zip
+        local DOWNLOAD_SHA256=1e37007d1e69e98841f1af9a78c0eae4b419449c0fd66c9e40d7426c47d5d57e
+        local DOWNLOAD_URL=https://downloads.dockerslim.com/releases/1.35.1/dist_mac.zip
+        local TMP_DIR=/tmp/megabytelabs
+        local USER_BIN_FOLDER="$HOME/.local/bin"
         if [ ! -f "$DESTINATION" ] && ! command_exists docker-slim; then
             info "DockerSlim is not currently installed"
             log "Downloading DockerSlim for Mac OS X"
-            wget $DOCKER_SLIM_DOWNLOAD_LINK # TODO: A temporary directory should be used instead
-            unzip dist_mac.zip
-            log "Ensuring the ~/.bin folder exists"
+            mkdir -p $TMP_DIR
+            wget $DOCKER_SLIM_DOWNLOAD_LINK -O $DOWNLOAD_DESTINATION
+            sha256 "$DOWNLOAD_DESTINATION" "$DOWNLOAD_SHA256"
+            log "SHA256 checksum validated successfully"
+            unzip $DOWNLOAD_DESTINATION
+            log "Ensuring the ~/.local/bin folder exists"
             mkdir -p $USER_BIN_FOLDER
-            cp ./dist_mac/* $USER_BIN_FOLDER
-            rm dist_mac.zip
-            rm -rf dist_mac
+            cp $TMP_DIR/dist_mac/* $USER_BIN_FOLDER
+            rm -rf $TMP_DIR/dist_mac
+            rm $DOWNLOAD_DESTINATION
             chmod +x $USER_BIN_FOLDER/docker-slim
             chmod +x $USER_BIN_FOLDER/docker-slim-sensor
-            success "DockerSlim successfully installed to the ~/.bin folder"
+            success "DockerSlim successfully installed to the ~/.local/bin folder"
             export PATH="$USER_BIN_FOLDER:$PATH"
             # Check to see if the "export PATH" command is already present in ~/.bash_profile
-            if [[ $(grep -L 'export PATH=$HOME/.bin:$PATH' "$BASH_PROFILE") ]]; then
-                echo -e '\nexport PATH=$HOME/.bin:$PATH' >> $BASH_PROFILE
-                success "Updated the PATH variable to include ~/.bin in the $BASH_PROFILE file"
+            if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
+                echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >> $BASH_PROFILE
+                success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
             else
-              log "The ~/.bin folder is already included in the PATH variable"
+              log "The ~/.local/bin folder is already included in the PATH variable"
             fi
         else
           info "DockerSlim is already installed"
         fi
     elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
         # System is Linux
-        local DOWNLOAD_URL=https://downloads.dockerslim.com/releases/1.35.1/dist_linux.tar.gz
-        local DESTINATION="$HOME/.bin/docker-slim"
-        local USER_BIN_FOLDER="$HOME/.bin"
         local BASH_PROFILE="$HOME/.bashrc"
+        local DESTINATION="$HOME/.local/bin/docker-slim"
+        local DOWNLOAD_DESTINATION=/tmp/megabytelabs/dist_linux.tar.gz
+        local DOWNLOAD_SHA256=b0f1b488d33b09be8beb224d4d26cb2d3e72669a46d242a3734ec744116b004c
+        local DOWNLOAD_URL=https://downloads.dockerslim.com/releases/1.35.1/dist_linux.tar.gz
+        local TMP_DIR=/tmp/megabytelabs
+        local USER_BIN_FOLDER="$HOME/.local/bin"
         if [ ! -f "$DESTINATION" ] && ! command_exists docker-slim; then
             info "DockerSlim is not currently installed"
             log "Downloading DockerSlim for Linux"
-            wget $DOCKER_SLIM_DOWNLOAD_LINK # TODO: A temporary directory should be used instead - same applies for all downloads to working directory
-            tar -zxvf dist_linux.tar.gz
-            log "Ensuring the ~/.bin folder exists"
+            mkdir -p $TMP_DIR
+            wget $DOCKER_SLIM_DOWNLOAD_LINK -O $DOWNLOAD_DESTINATION
+            sha256 "$DOWNLOAD_DESTINATION" "$DOWNLOAD_SHA256"
+            log "SHA256 checksum validated successfully"
+            tar -zxvf $DOWNLOAD_DESTINATION
+            log "Ensuring the ~/.local/bin folder exists"
             mkdir -p $USER_BIN_FOLDER
-            cp ./dist_linux/* $USER_BIN_FOLDER
-            rm dist_linux.tar.gz
-            rm -rf dist_linux
+            cp $TMP_DIR/dist_linux/* $USER_BIN_FOLDER
+            rm $TMP_DIR/dist_linux.tar.gz
+            rm -rf $TMP_DIR/dist_linux
             chmod +x $USER_BIN_FOLDER/docker-slim
             chmod +x $USER_BIN_FOLDER/docker-slim-sensor
-            success "DockerSlim successfully installed to the ~/.bin folder"
+            success "DockerSlim successfully installed to the ~/.local/bin folder"
             export PATH="$USER_BIN_FOLDER:$PATH"
             # Check to see if the "export PATH" command is already present in ~/.bashrc
-            if [[ $(grep -L 'export PATH=$HOME/.bin:$PATH' "$BASH_PROFILE") ]]; then
-                echo -e '\nexport PATH=$HOME/.bin:$PATH' >> $BASH_PROFILE
-                success "Updated the PATH variable to include ~/.bin in the $BASH_PROFILE file"
+            if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
+                echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >> $BASH_PROFILE
+                success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
             else
-              log "The ~/.bin folder is already included in the PATH variable"
+              log "The ~/.local/bin folder is already included in the PATH variable"
             fi
         else
           info "DockerSlim is already installed"
@@ -156,56 +191,62 @@ ensure_dockerslim_installed () {
     fi
 }
 
-# Ensures jq is installed. If it is not present, it is installed to ~/.bin for
+# Ensures jq is installed. If it is not present, it is installed to ~/.local/bin for
 # the current user
 ensure_jq_installed () {
     log "Checking whether jq is already installed"
     if [ "$(uname)" == "Darwin" ]; then
         # System is Mac OS X
-        local DOWNLOAD_URL=https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64
-        local DESTINATION="$HOME/.bin/jq"
-        local USER_BIN_FOLDER="$HOME/.bin"
         local BASH_PROFILE="$HOME/.bash_profile"
+        local DESTINATION="$HOME/.local/bin/jq"
+        local DOWNLOAD_SHA256=5c0a0a3ea600f302ee458b30317425dd9632d1ad8882259fcaf4e9b868b2b1ef
+        local DOWNLOAD_URL=https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64
+        local USER_BIN_FOLDER="$HOME/.local/bin"
         if [ ! -f "$DESTINATION" ] && ! command_exists jq; then
             info "jq is not currently installed"
-            log "Ensuring the ~/.bin folder exists"
+            log "Ensuring the ~/.local/bin folder exists"
             mkdir -p $USER_BIN_FOLDER
-            log "Downloading jq for Mac OS X"
+            log "Downloading jq for Mac OS X" # TODO: For all installers, remove the file if the checksum fails
             wget $DOWNLOAD_URL -O $DESTINATION
+            sha256 "$DESTINATION" "$DOWNLOAD_SHA256"
+            log "SHA256 checksum validated successfully"
             chmod +x $DESTINATION
-            success "jq successfully installed to the ~/.bin folder"
+            success "jq successfully installed to the ~/.local/bin folder"
             export PATH="$USER_BIN_FOLDER:$PATH"
             # Check to see if the "export PATH" command is already present in ~/.bash_profile
-            if [[ $(grep -L 'export PATH=$HOME/.bin:$PATH' "$BASH_PROFILE") ]]; then
-                echo -e '\nexport PATH=$HOME/.bin:$PATH' >> $BASH_PROFILE
-                success "Updated the PATH variable to include ~/.bin in the $BASH_PROFILE file"
+            if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
+                echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >> $BASH_PROFILE
+                success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
             else
-              log "The ~/.bin folder is already included in the PATH variable"
+              log "The ~/.local/bin folder is already included in the PATH variable"
             fi
         else
           info "jq is already installed"
         fi
     elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
         # System is Linux
-        local DOWNLOAD_URL=https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
-        local DESTINATION="$HOME/.bin/jq"
-        local USER_BIN_FOLDER="$HOME/.bin"
         local BASH_PROFILE="$HOME/.bashrc"
+        local DESTINATION="$HOME/.local/bin/jq"
+        local DOWNLOAD_SHA256=af986793a515d500ab2d35f8d2aecd656e764504b789b66d7e1a0b727a124c44
+        local DOWNLOAD_URL=https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+        local USER_BIN_FOLDER="$HOME/.local/bin"
         if [ ! -f "$DESTINATION" ] && [ ! command_exists jq ]; then
             info "jq is not currently installed"
-            log "Ensuring the ~/.bin folder exists"
+            log "Ensuring the ~/.local/bin folder exists"
             mkdir -p $USER_BIN_FOLDER
             log "Downloading jq for Linux"
             wget $DOWNLOAD_URL -O $DESTINATION
+            sha256 "$DESTINATION" "$DOWNLOAD_SHA256"
+            log "SHA256 checksum validated successfully"
             chmod +x $DESTINATION
-            success "jq successfully installed to the ~/.bin folder"
+            success "jq successfully installed to the ~/.local/bin folder"
             export PATH="$USER_BIN_FOLDER:$PATH"
             # Check to see if the "export PATH" command is already present in ~/.bashrc
-            if [[ $(grep -L 'export PATH=$HOME/.bin:$PATH' "$BASH_PROFILE") ]]; then
-                echo -e '\nexport PATH=$HOME/.bin:$PATH' >> $BASH_PROFILE
-                success "Updated the PATH variable to include ~/.bin in the $BASH_PROFILE file"
+            if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
+                echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >> $BASH_PROFILE
+                success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
             else
-              log "The ~/.bin folder is already included in the PATH variable"
+              log "The ~/.local/bin folder is already included in the PATH variable"
             fi
         else
           info "jq is already installed"
@@ -225,10 +266,11 @@ ensure_jq_installed () {
 ensure_node_installed () {
     if ! command_exists npx; then
         echo "A recent version of Node.js is not installed."
-        echo "Installing nvm and Node.js.."
+        echo "Installing nvm"
         wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
         export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        echo "Installing Node.js via nvm"
         nvm install node
         local NODE_INSTALLED=true
     fi
@@ -239,6 +281,80 @@ ensure_node_installed () {
         info "The script will continue to use the latest version of Node.js but in order to use it yourself you will have to close/open the terminal"
         success "Successfully installed npm global dependencies (prettier, prettier-package-json, run-func)"
       fi
+    fi
+}
+
+ensure_python3_installed () {
+    log "Checking whether Python 3 is already installed"
+    if [ "$(uname)" == "Darwin" ]; then
+      local BASH_PROFILE="$HOME/.bash_profile"
+      local DOWNLOAD_DESTINATION=/tmp/megabytelabs/miniconda.sh
+      local DOWNLOAD_SHA256=b3bf77cbb81ee235ec6858146a2a84d20f8ecdeb614678030c39baacb5acbed1
+      local DOWNLOAD_URL=https://repo.anaconda.com/miniconda/Miniconda3-py39_4.9.2-MacOSX-x86_64.sh
+      local MINICONDA_BIN_FOLDER="$HOME/.local/miniconda/bin"
+      local MINICONDA_PATH="$HOME/.local/miniconda"
+      local TMP_DIR=/tmp/megabytelabs
+      if ! command_exists python3; then
+        info "Python 3 is not currently installed"
+        mkdir -p $TMP_DIR
+        mkdir -p $HOME/.local
+        log "Downloading miniconda to install Python 3"
+        wget $DOWNLOAD_URL -O $DOWNLOAD_DESTINATION
+        sha256 "$DOWNLOAD_DESTINATION" "$DOWNLOAD_SHA256"
+        log "SHA256 checksum validated successfully"
+        log "Installing Python 3 via miniconda"
+        bash $DOWNLOAD_DESTINATION -b -p $HOME/.local/miniconda
+        success "Python 3 and miniconda successfully installed to ~/.local/miniconda"
+        rm $DOWNLOAD_DESTINATION
+        export PATH="$MINICONDA_BIN_FOLDER:$PATH"
+        # Check to see if the "export PATH" command is already present in ~/.bashrc
+        if [[ $(grep -L 'export PATH=$HOME/.local/miniconda/bin:$PATH' "$BASH_PROFILE") ]]; then
+          echo -e '\nexport PATH=$HOME/.local/miniconda/bin:$PATH' >> $BASH_PROFILE
+          success "Updated the PATH variable to include ~/.local/miniconda/bin in the $BASH_PROFILE file"
+        else
+          log "The ~/.local/miniconda/bin folder is already included in the PATH variable"
+        fi
+      else
+        info "Python 3 is already installed"
+      fi
+    elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+      local BASH_PROFILE="$HOME/.bashrc"
+      local DOWNLOAD_URL=https://repo.anaconda.com/miniconda/Miniconda3-py39_4.9.2-Linux-x86_64.sh
+      local DOWNLOAD_SHA256=536817d1b14cb1ada88900f5be51ce0a5e042bae178b5550e62f61e223deae7c
+      local DOWNLOAD_DESTINATION=/tmp/megabytelabs/miniconda.sh
+      local MINICONDA_BIN_FOLDER="$HOME/.local/miniconda/bin"
+      local MINICONDA_PATH="$HOME/.local/miniconda"
+      local TMP_DIR=/tmp/megabytelabs
+      if ! command_exists python3; then
+        info "Python 3 is not currently installed"
+        mkdir -p $TMP_DIR
+        mkdir -p $HOME/.local
+        log "Downloading miniconda to install Python 3"
+        wget $DOWNLOAD_URL -O $DOWNLOAD_DESTINATION
+        sha256 "$DOWNLOAD_DESTINATION" "$DOWNLOAD_SHA256"
+        log "SHA256 checksum validated successfully"
+        log "Installing Python 3 via miniconda"
+        bash $DOWNLOAD_DESTINATION -b -p $MINICONDA_PATH
+        success "Python 3 and miniconda successfully installed to ~/.local/miniconda"
+        rm $DOWNLOAD_DESTINATION
+        export PATH="$MINICONDA_BIN_FOLDER:$PATH"
+        # Check to see if the "export PATH" command is already present in ~/.bashrc
+        if [[ $(grep -L 'export PATH=$HOME/.local/miniconda/bin:$PATH' "$BASH_PROFILE") ]]; then
+          echo -e '\nexport PATH=$HOME/.local/miniconda/bin:$PATH' >> $BASH_PROFILE
+          success "Updated the PATH variable to include ~/.local/miniconda/bin in the $BASH_PROFILE file"
+        else
+          log "The ~/.local/miniconda/bin folder is already included in the PATH variable"
+        fi
+      else
+        info "Python 3 is already installed"
+      fi
+      wget $DOWNLOAD_URL -O $DESTINATION
+    elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
+      local DOWNLOAD_URL=https://repo.anaconda.com/miniconda/Miniconda3-py39_4.9.2-Windows-x86.exe
+      local DOWNLOAD_SHA256=5045fb9dc4405dbba21054262b7d104ba61a8739c1a56038ccb0258f233ad646
+    elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
+      local DOWNLOAD_URL=https://repo.anaconda.com/miniconda/Miniconda3-py39_4.9.2-Windows-x86_64.exe
+      local DOWNLOAD_SHA256=c3a43d6bc4c4fa92454dbfa636ccb859a045d875df602b31ae71b9e0c3fec2b8
     fi
 }
 
