@@ -358,6 +358,48 @@ ensure_python3_installed () {
     fi
 }
 
+missing_virtualization_platforms_notice () {
+  if [ "$(uname)" == "Darwin" ]; then
+    if ! command_exists kvm; then
+      warn "KVM is not currently installed on your computer."
+      info "You can install KVM by using the instructions in this link: https://gitlab.com/megabyte-labs/ansible-roles/kvm"
+    fi
+    if ! command_exists VBoxManage; then
+      warn "VirtualBox is not currently installed on your computer."
+      info "You can install VirtualBox by using the instructions in this link: https://gitlab.com/megabyte-labs/ansible-roles/virtualbox"
+    fi
+    if ! command_exists vmrun; then
+      warn "VMWare Fusion is not currently installed on your computer."
+      info "You can install VMWare Fusion by using the instructions in this link: https://gitlab.com/megabyte-labs/ansible-roles/vmware"
+    fi
+    if ! command_exists prlctl; then
+      warn "Parallels is not currently installed on your computer."
+      info "You can install Parallels by using the instructions in this link: https://gitlab.com/megabyte-labs/ansible-roles/parallels"
+    fi
+  elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    if ! command_exists kvm; then
+      warn "KVM is not currently installed on your computer."
+      info "You can install KVM by using the instructions in this link: https://gitlab.com/megabyte-labs/ansible-roles/kvm"
+    fi
+    if ! command_exists VBoxManage; then
+      warn "VirtualBox is not currently installed on your computer."
+      info "You can install VirtualBox by using the instructions in this link: https://gitlab.com/megabyte-labs/ansible-roles/virtualbox"
+    fi
+    if ! command_exists vmware; then
+      warn "VMWare is not currently installed on your computer."
+      info "You can install VMWare by using the instructions in this link: https://gitlab.com/megabyte-labs/ansible-roles/vmware"
+    fi
+  elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
+    info "Virtualization platform detection notice currently not available on Windows."
+    # TODO Add same kind of check for all the above platforms except Parallels because its not available for Windows.
+    # TODO Instead add detection for Hyper-V
+  elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
+    info "Virtualization platform detection notice currently not available on Windows."
+    # TODO Add same kind of check for all the above platforms except Parallels because its not available for Windows.
+    # TODO Instead add detection for Hyper-V
+  fi
+}
+
 ##############################################
 ############### BUSINESS LOGIC ###############
 ##############################################
