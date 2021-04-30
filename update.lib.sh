@@ -667,12 +667,7 @@ copy_project_files_and_generate_package_json () {
             local SLUG=$(cat .blueprint.json | jq '.slug' | cut -d '"' -f 2)
             local CONTAINER_STATUS=$(docker images -q megabytelabs/${SLUG}:slim)
             if [[ -n "$CONTAINER_STATUS" ]]; then
-              # Container exists
-              info ":slim image appears to have already been built"
-              log "Injecting container size information into package.json description"
-              local COMPRESSED_SIZE=$(docker manifest inspect -v megabytelabs/$SLUG:slim | grep size | awk -F ':' '{sum+=$NF} END {print sum}' | awk '{$1=$1/(1024^2); print $1,"MB";})
-              sed -i .bak "s^IMAGE_SIZE_PLACEHOLDER^ \(only ${COMPRESSED_SIZE} compressed!) ^g" package.json && rm package.json.bak
-              success "Successfully injected image size information into package.json description"
+
             else
               # Container does not exist
               info ":slim container does not appear to be built yet"
