@@ -666,29 +666,7 @@ copy_project_files_and_generate_package_json () {
             success "Successfully copied the .blueprint.json description to the package.json description"
             local SLUG=$(cat .blueprint.json | jq '.slug' | cut -d '"' -f 2)
             local CONTAINER_STATUS=$(docker images -q megabytelabs/${SLUG}:slim)
-            if [[ -n "$CONTAINER_STATUS" ]]; then
-              # Container exists
-              info ":slim image appears to have already been built"
-              log "Injecting container size information into package.json description"
-              local COMPRESSED_SIZE=$(docker manifest inspect -v megabytelabs/$SLUG:slim | grep size | awk -F ':' '{sum+=$NF} END {print sum}' | awk '{$1=$1/(1024^2); print $1,"MB";})
-              sed -i .bak "s^IMAGE_SIZE_PLACEHOLDER^ \(only ${COMPRESSED_SIZE} compressed!) ^g" package.json && rm package.json.bak
-              success "Successfully injected image size information into package.json description"
-            else
-              # Container does not exist
-              info ":slim container does not appear to be built yet"
-              if [ -f slim.report.json ]; then
-                info "A DockerSlim report is present in this repository"
-                log "Injecting the package.json description with the container file size detailed in slim.report.json"
-                local SLIM_IMAGE_SIZE=$(cat slim.report.json | jq '.minified_image_size_human' | cut -d '"' -f 2)
-                sed -i .bak "s^IMAGE_SIZE_PLACEHOLDER^ \(only ${SLIM_IMAGE_SIZE} decompressed!) ^g" package.json && rm package.json.bak
-                success "Successfully added the container file size to the package.json description"
-              else
-                info "The slim.report.json file appears to be missing from this repository"
-                log "Removing the container file size placeholder from the description in package.json"
-                sed -i .bak "s^IMAGE_SIZE_PLACEHOLDER^ ^g" package.json && rm package.json.bak
-                success "Successfully removed the container file size placeholder from the description in package.json"
-              fi
-            fi
+
         fi
     fi
     log "Ensuring the package.json file is Prettier-compliant"
