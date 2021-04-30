@@ -673,8 +673,11 @@ copy_project_files_and_generate_package_json () {
               # Container does not exist
               info ":slim container does not appear to be built yet"
               if [ -f slim.report.json ]; then
-                # 111
-                log "111"
+                info "A DockerSlim report is present in this repository"
+                log "Injecting the package.json description with the container file size detailed in slim.report.json"
+                local SLIM_IMAGE_SIZE=$(cat slim.report.json | jq '.minified_image_size_human' | cut -d '"' -f 2)
+                sed -i .bak "s^IMAGE_SIZE_PLACEHOLDER^ \(only ${SLIM_IMAGE_SIZE} decompressed!) ^g" package.json && rm package.json.bak
+                success "Successfully added the container file size to the package.json description"
               else
                 # 222
                 log "222"
