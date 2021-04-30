@@ -679,8 +679,10 @@ copy_project_files_and_generate_package_json () {
                 sed -i .bak "s^IMAGE_SIZE_PLACEHOLDER^ \(only ${SLIM_IMAGE_SIZE} decompressed!) ^g" package.json && rm package.json.bak
                 success "Successfully added the container file size to the package.json description"
               else
-                # 222
-                log "222"
+                info "The slim.report.json file appears to be missing from this repository"
+                log "Removing the container file size placeholder from the description in package.json"
+                sed -i .bak "s^IMAGE_SIZE_PLACEHOLDER^ ^g" package.json && rm package.json.bak
+                success "Successfully removed the container file size placeholder from the description in package.json"
               fi
             fi
         fi
