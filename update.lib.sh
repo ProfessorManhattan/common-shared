@@ -276,6 +276,11 @@ ensure_node_installed () {
         nvm install node
         local NODE_INSTALLED=true
     fi
+    if [ ! -d node_modules ]; then
+      echo "The node_modules folder appears to be missing"
+      echo "Installing project npm dependencies"
+      npm install --ignore-scripts
+    fi
     if ! command_exists run-func; then
       npm install -g run-func
       if [ "$NODE_INSTALLED" == true ]; then
