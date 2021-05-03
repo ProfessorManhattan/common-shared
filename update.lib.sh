@@ -526,10 +526,10 @@ generate_documentation () {
     rm __bp.json
 
     # Remove formatting error
-    # log "Fixing a quirk in the README.md and CONTRIBUTING.md files"
-    # sed -i .bak 's/](#-/](#/g' README.md && rm README.md.bak
-    # sed -i .bak 's/](#-/](#/g' CONTRIBUTING.md && rm CONTRIBUTING.md.bak
-    # success "Successfully updated the README.md and CONTRIBUTING files"
+    log "Fixing a quirk in the README.md and CONTRIBUTING.md files"
+    sed -i .bak 's/](#-/](#/g' README.md && rm README.md.bak
+    sed -i .bak 's/](#-/](#/g' CONTRIBUTING.md && rm CONTRIBUTING.md.bak
+    success "Successfully updated the README.md and CONTRIBUTING files"
 
     # Inject DockerSlim build command into README.md for ci-pipeline projects
     log "Determining whether anything needs to be injected into the README.md file"
