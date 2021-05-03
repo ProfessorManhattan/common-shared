@@ -535,7 +535,7 @@ generate_documentation () {
         if [ "$SUBGROUP" == "ci-pipeline" ]; then
             log "Injecting a DockerSlim command from the package.json into the README.md"
             local PACKAGE_SLIM_BUILD=$(cat package.json | jq '.scripts."build:slim"' | cut -c2- | sed 's/.$//')
-            sed -i .bak "s^DOCKER_SLIM_BUILD_COMMAND^${PACKAGE_SLIM_BUILD}^g" README.md && rm README.md.bak
+            sed -i .bak 's^DOCKER_SLIM_BUILD_COMMAND^'"${PACKAGE_SLIM_BUILD}"'^g' README.md && rm README.md.bak
             success "Successfully updated the README.md with the DockerSlim command"
         else
           log "Project is a Dockerfile project but no changes to the README.md are necessary"
