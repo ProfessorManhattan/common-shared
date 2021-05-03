@@ -654,6 +654,7 @@ copy_project_files_and_generate_package_json () {
       # Ensures the scripts.build:slim value matches the value in .blueprint.json
       log "Ensuring the 'build:slim' variable in package.json is updated"
       local DOCKERSLIM_COMMAND=$(cat .blueprint.json | jq '.dockerslim_command' | cut -c2- | sed 's/.$//')
+      log "Replacing the placeholder in package.json with the variable from .blueprint.json"
       sed -i .bak 's^DOCKER_SLIM_COMMAND_HERE^'"${DOCKERSLIM_COMMAND}"'^g' package.json && rm package.json.bak
       success "Successfully ensured that the right 'build:slim' value is included in package.json"
     else
