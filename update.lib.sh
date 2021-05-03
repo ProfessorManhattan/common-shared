@@ -287,6 +287,9 @@ ensure_node_installed () {
         success "The latest version of Node.js has been successfully installed"
         info "The script will continue to use the latest version of Node.js but in order to use it yourself you will have to close/open the terminal"
         success "Successfully installed npm global dependency (run-func)"
+        log "Installing husky pre-commit git hook"
+        npx husky install
+        success "Successfully installed husky pre-commit git hook"
       fi
     fi
 }
@@ -600,6 +603,7 @@ copy_project_files_and_generate_package_json () {
           cp ./.modules/$REPO_TYPE/files/LICENSE LICENSE
           cp ./.modules/$REPO_TYPE/files/package.json package.json
           cp ./.modules/$REPO_TYPE/files/requirements.txt requirements.txt
+          npx husky install
         else
           cp -Rf ./.modules/$REPO_TYPE/files/ .
 
@@ -636,6 +640,7 @@ copy_project_files_and_generate_package_json () {
           cp ./.modules/$REPO_TYPE/files/LICENSE LICENSE
           cp ./.modules/$REPO_TYPE/files/package.json package.json
           cp ./.modules/$REPO_TYPE/files/requirements.txt requirements.txt
+          npx husky install
         else
           log "Copying base files from the common $REPO_TYPE repository"
           cp -Rf ./.modules/$REPO_TYPE/files/ .
