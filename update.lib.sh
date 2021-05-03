@@ -648,6 +648,21 @@ copy_project_files_and_generate_package_json () {
         fi
     fi
 
+    log "Determing whether dockerslim_command is available in .blueprint.json"
+    local HAS_DOCKERSLIM_COMMAND=$(cat .blueprint.json | jq -e 'has("dockerslim_command")')
+    if [ "$HAS_DOCKERSLIM_COMMAND" ]; then
+      # Ensures the scripts.build:slim value matches the value in .blueprint.json
+      log "Ensuring the 'build:slim' variable in package.json is updated"
+      local DOCKERSLIM_COMMAND=$(cat .blueprint.json | jq '.dockerslim_command' | cut -d '"' -f 2)
+      sed -i .bak 's^DOCKER_SLIM_COMMAND_HERE^'\'"${DOCKERSLIM_COMMAND}"\''^g' package.json && rm package.json.bak
+      success "Successfully ensured that the right 'build:slim' value is included in package.json"
+    else
+      log "Removing DockerSlim-specific tasks in package.json"
+      sed -i .bak '/build:slim/d' package.json && rm package.json.bak
+      sed -i .bak '/publish:publish-slim/d' package.json && rm package.json.bak
+      success "Removed DockerSlim-specific package.json scripts since there is no dockerslim_command specified in .blueprint.json"
+    fi
+
     # Run dockerfile-subgroup specific tasks
     if [ "$REPO_TYPE" == 'dockerfile' ]; then
         # Copies name value from package.json to other locations that should match the string
@@ -655,12 +670,6 @@ copy_project_files_and_generate_package_json () {
         log "Replacing all instances of the string 'dockerfile-project' in package.json with the package.json name"
         sed -i .bak "s^dockerfile-project^${PACKAGE_NAME}^g" package.json && rm package.json.bak
         success "Successfully updated the 'dockerfile-project' string to the package.json name"
-
-        # Ensures the scripts.build:slim value matches the value in .blueprint.json
-        log "Ensuring the 'build:slim' variable in package.json is updated"
-        local DOCKERSLIM_COMMAND=$(cat .blueprint.json | jq '.dockerslim_command' | cut -d '"' -f 2)
-        sed -i .bak 's^DOCKER_SLIM_COMMAND_HERE^'\'"${DOCKERSLIM_COMMAND}"\''^g' package.json && rm package.json.bak
-        success "Successfully ensured that the right 'build:slim' value is included in package.json"
 
         # Updates the description from .blueprint.json
         local SUBGROUP=$(cat .blueprint.json | jq '.subgroup' | cut -d '"' -f 2)
