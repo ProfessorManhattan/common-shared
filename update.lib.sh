@@ -279,6 +279,9 @@ ensure_node_installed () {
     if [ ! -d node_modules ]; then
       echo "The node_modules folder appears to be missing"
       echo "Installing project npm dependencies"
+      if [ ! -f package.json ]; then
+        cp ./.modules/$REPO_TYPE/files/package.json package.json
+      fi
       npm install --ignore-scripts
     fi
     if ! command_exists run-func; then
@@ -463,7 +466,7 @@ ensure_project_docs_submodule_latest () {
     if [ ! -d "./.modules/docs" ]; then
         log "Adding a new submodule for the documentation partials"
         mkdir -p ./.modules
-        git submodule add -b master https://gitlab.com/megabyte-space/documentation/$REPO_TYPE.git ./.modules/docs
+        git submodule add -b master https://gitlab.com/megabyte-labs/documentation/$REPO_TYPE.git ./.modules/docs
         success "Successfully added the docs submodule"
     else
         log "Updating the documentation submodule"
