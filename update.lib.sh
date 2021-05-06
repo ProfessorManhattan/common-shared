@@ -304,10 +304,12 @@ ensure_node_installed() {
         info "The script will continue to use the latest version of Node.js but in order to use it yourself you will have to close/open the terminal"
         success "Successfully installed npm global dependency (run-func)"
         log "Installing husky pre-commit git hook"
-        npx husky install
         success "Successfully installed husky pre-commit git hook"
       fi
     fi
+    log "Ensuring husky pre-commit hook is registered"
+    npx husky install
+    success "Husky pre-commit hook is registered"
   else
     info "Bypassing installation of Node.js because the 'container' environment variable is set to 'docker'"
   fi
