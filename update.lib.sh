@@ -474,7 +474,7 @@ ensure_bento_submodule_latest() {
   if [ ! -d "./.modules/bento" ]; then
     log "Adding the chef/bento repository as a submodule"
     mkdir -p ./.modules
-    git submodule add -b master --depth 1 https://github.com/chef/bento.git ./.modules/bento
+    git submodule add -b master --depth --allow-unrelated-histories https://github.com/chef/bento.git ./.modules/bento
     success "Successfully added the chef/bento submodule"
   else
     log "Updating the chef/bento submodule"
@@ -688,36 +688,35 @@ copy_project_files_and_generate_package_json() {
     fi
   fi
 
-  log "Determing whether dockerslim_command is available in .blueprint.json"
-  local HAS_DOCKERSLIM_COMMAND=$(cat .blueprint.json | jq -e 'has("dockerslim_command")')
-  if [ "$HAS_DOCKERSLIM_COMMAND" ]; then
-    info "The dockerslim_command is present in the .blueprint.json file"
-    # Ensures the scripts.build:slim value matches the value in .blueprint.json
-    log "Ensuring the 'build:slim' variable in package.json is updated"
-    local DOCKERSLIM_COMMAND=$(cat .blueprint.json | jq '.dockerslim_command' | cut -c2- | sed 's/.$//')
-    log "Replacing the placeholder in package.json with the variable from .blueprint.json"
-    sed -i .bak 's^DOCKER_SLIM_COMMAND_HERE^'"${DOCKERSLIM_COMMAND}"'^g' package.json && rm package.json.bak
-    success "Successfully ensured that the right 'build:slim' value is included in package.json"
-  else
-    info "The dockerslim_command is not present in the .blueprint.json file"
-    log "Removing DockerSlim-specific tasks in package.json"
-    sed -i .bak '/build:slim/d' package.json && rm package.json.bak
-    sed -i .bak '/publish:publish-slim/d' package.json && rm package.json.bak
-    success "Removed DockerSlim-specific package.json scripts since there is no dockerslim_command specified in .blueprint.json"
-  fi
-
-  # Remove the test:unit script if there is no test folder present
-  log "Detecting presence of the test folder in the root of the project"
-  if [ ! -d ./test ]; then
-    warn "The test folder is not present in the root of this project. If this is by design then you can ignore this. However, if it is not by design then please read the README.md and CONTRIBUTING.md and add a test case."
-    sed -i .bak '/test:unit/d' package.json && rm package.json.bak
-    success "Successfully removed the scripts.test:unit test step from package.json"
-  else
-    info "The test folder is present in the root of this project so the scripts.test:unit script in package.json is being left as is"
-  fi
-
   # Run dockerfile-subgroup specific tasks
   if [ "$REPO_TYPE" == 'dockerfile' ]; then
+    log "Determing whether dockerslim_command is available in .blueprint.json"
+    local HAS_DOCKERSLIM_COMMAND=$(cat .blueprint.json | jq -e 'has("dockerslim_command")')
+    if [ "$HAS_DOCKERSLIM_COMMAND" ]; then
+      info "The dockerslim_command is present in the .blueprint.json file"
+      # Ensures the scripts.build:slim value matches the value in .blueprint.json
+      log "Ensuring the 'build:slim' variable in package.json is updated"
+      local DOCKERSLIM_COMMAND=$(cat .blueprint.json | jq '.dockerslim_command' | cut -c2- | sed 's/.$//')
+      log "Replacing the placeholder in package.json with the variable from .blueprint.json"
+      sed -i .bak 's^DOCKER_SLIM_COMMAND_HERE^'"${DOCKERSLIM_COMMAND}"'^g' package.json && rm package.json.bak
+      success "Successfully ensured that the right 'build:slim' value is included in package.json"
+    else
+      info "The dockerslim_command is not present in the .blueprint.json file"
+      log "Removing DockerSlim-specific tasks in package.json"
+      sed -i .bak '/build:slim/d' package.json && rm package.json.bak
+      sed -i .bak '/publish:publish-slim/d' package.json && rm package.json.bak
+      success "Removed DockerSlim-specific package.json scripts since there is no dockerslim_command specified in .blueprint.json"
+    fi
+
+    # Remove the test:unit script if there is no test folder present
+    log "Detecting presence of the test folder in the root of the project"
+    if [ ! -d ./test ]; then
+      warn "The test folder is not present in the root of this project. If this is by design then you can ignore this. However, if it is not by design then please read the README.md and CONTRIBUTING.md and add a test case."
+      sed -i .bak '/test:unit/d' package.json && rm package.json.bak
+      success "Successfully removed the scripts.test:unit test step from package.json"
+    else
+      info "The test folder is present in the root of this project so the scripts.test:unit script in package.json is being left as is"
+    fi
     # Copies name value from package.json to other locations that should match the string
     log "Performing tasks specific to Dockerfile projects"
     log "Replacing all instances of the string 'dockerfile-project' in package.json with the package.json name"
