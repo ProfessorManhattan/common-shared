@@ -543,7 +543,11 @@ generate_documentation() {
       README_FILE=blueprint-readme-playbooks.md
     fi
   fi
-  jq -s '.[0] * .[1]' .blueprint.json ./.modules/docs/common.json >__bp.json
+  if [ "$REPO_TYPE" == 'packer' ]; then
+    jq -s '.[0] * .[1]' template.json ./.modules/docs/common.json >__bp.json
+  else
+    jq -s '.[0] * .[1]' .blueprint.json ./.modules/docs/common.json >__bp.json
+  fi
   log "Generating the CONTRIBUTING.md file"
   npx -y @appnest/readme generate --config __bp.json --input ./.modules/docs/blueprint-contributing.md --output CONTRIBUTING.md
   success "Successfully generated the CONTRIBUTING.md file"
