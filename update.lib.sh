@@ -70,12 +70,12 @@ ensure_docker_pushrm_installed() {
       if [ ! -f "$DESTINATION" ]; then
         info "docker-pushrm is not currently installed"
         log "Ensuring the ~/.docker/cli-plugins folder exists"
-        mkdir -p $HOME/.docker/cli-plugins
+        mkdir -p "$HOME"/.docker/cli-plugins
         log "Downloading docker-pushrm"
-        wget $DOWNLOAD_URL -O $DESTINATION
+        wget $DOWNLOAD_URL -O "$DESTINATION"
         sha256 "$DESTINATION" "$DOWNLOAD_SHA256"
         log "SHA256 checksum validated successfully"
-        chmod +x $DESTINATION
+        chmod +x "$DESTINATION"
         success "docker-pushrm successfully installed to the ~/.docker/cli-plugins folder"
       else
         info "docker-pushrm is already installed"
@@ -88,12 +88,12 @@ ensure_docker_pushrm_installed() {
       if [ ! -f "$DESTINATION" ]; then
         info "docker-pushrm is not currently installed"
         log "Ensuring the ~/.docker/cli-plugins folder exists"
-        mkdir -p $HOME/.docker/cli-plugins
+        mkdir -p "$HOME"/.docker/cli-plugins
         log "Downloading docker-pushrm"
-        wget $DOWNLOAD_URL -O $DESTINATION
+        wget $DOWNLOAD_URL -O "$DESTINATION"
         sha256 "$DESTINATION" "$DOWNLOAD_SHA256"
         log "SHA256 checksum validated successfully"
-        chmod +x $DESTINATION
+        chmod +x "$DESTINATION"
         success "docker-pushrm successfully installed to the ~/.docker/cli-plugins folder"
       else
         info "docker-pushrm is already installed"
@@ -130,22 +130,22 @@ ensure_dockerslim_installed() {
         info "DockerSlim is not currently installed"
         log "Downloading DockerSlim for Mac OS X"
         mkdir -p $TMP_DIR
-        wget $DOCKER_SLIM_DOWNLOAD_LINK -O $DOWNLOAD_DESTINATION
+        wget "$DOCKER_SLIM_DOWNLOAD_LINK" -O $DOWNLOAD_DESTINATION
         sha256 "$DOWNLOAD_DESTINATION" "$DOWNLOAD_SHA256"
         log "SHA256 checksum validated successfully"
         unzip $DOWNLOAD_DESTINATION
         log "Ensuring the ~/.local/bin folder exists"
-        mkdir -p $USER_BIN_FOLDER
-        cp $TMP_DIR/dist_mac/* $USER_BIN_FOLDER
+        mkdir -p "$USER_BIN_FOLDER"
+        cp $TMP_DIR/dist_mac/* "$USER_BIN_FOLDER"
         rm -rf $TMP_DIR/dist_mac
         rm $DOWNLOAD_DESTINATION
-        chmod +x $USER_BIN_FOLDER/docker-slim
-        chmod +x $USER_BIN_FOLDER/docker-slim-sensor
+        chmod +x "$USER_BIN_FOLDER"/docker-slim
+        chmod +x "$USER_BIN_FOLDER"/docker-slim-sensor
         success "DockerSlim successfully installed to the ~/.local/bin folder"
         export PATH="$USER_BIN_FOLDER:$PATH"
         # Check to see if the "export PATH" command is already present in ~/.bash_profile
         if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
-          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>$BASH_PROFILE
+          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>"$BASH_PROFILE"
           success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
         else
           log "The ~/.local/bin folder is already included in the PATH variable"
@@ -166,22 +166,22 @@ ensure_dockerslim_installed() {
         info "DockerSlim is not currently installed"
         log "Downloading DockerSlim for Linux"
         mkdir -p $TMP_DIR
-        wget $DOCKER_SLIM_DOWNLOAD_LINK -O $DOWNLOAD_DESTINATION
+        wget "$DOCKER_SLIM_DOWNLOAD_LINK" -O $DOWNLOAD_DESTINATION
         sha256 "$DOWNLOAD_DESTINATION" "$DOWNLOAD_SHA256"
         log "SHA256 checksum validated successfully"
         tar -zxvf $DOWNLOAD_DESTINATION
         log "Ensuring the ~/.local/bin folder exists"
-        mkdir -p $USER_BIN_FOLDER
-        cp $TMP_DIR/dist_linux/* $USER_BIN_FOLDER
+        mkdir -p "$USER_BIN_FOLDER"
+        cp $TMP_DIR/dist_linux/* "$USER_BIN_FOLDER"
         rm $TMP_DIR/dist_linux.tar.gz
         rm -rf $TMP_DIR/dist_linux
-        chmod +x $USER_BIN_FOLDER/docker-slim
-        chmod +x $USER_BIN_FOLDER/docker-slim-sensor
+        chmod +x "$USER_BIN_FOLDER"/docker-slim
+        chmod +x "$USER_BIN_FOLDER"/docker-slim-sensor
         success "DockerSlim successfully installed to the ~/.local/bin folder"
         export PATH="$USER_BIN_FOLDER:$PATH"
         # Check to see if the "export PATH" command is already present in ~/.bashrc
         if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
-          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>$BASH_PROFILE
+          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>"$BASH_PROFILE"
           success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
         else
           log "The ~/.local/bin folder is already included in the PATH variable"
@@ -216,17 +216,17 @@ ensure_jq_installed() {
       if [ ! -f "$DESTINATION" ] && ! command_exists jq; then
         info "jq is not currently installed"
         log "Ensuring the ~/.local/bin folder exists"
-        mkdir -p $USER_BIN_FOLDER
+        mkdir -p "$USER_BIN_FOLDER"
         log "Downloading jq for Mac OS X" # TODO: For all installers, remove the file if the checksum fails
-        wget $DOWNLOAD_URL -O $DESTINATION
+        wget $DOWNLOAD_URL -O "$DESTINATION"
         sha256 "$DESTINATION" "$DOWNLOAD_SHA256"
         log "SHA256 checksum validated successfully"
-        chmod +x $DESTINATION
+        chmod +x "$DESTINATION"
         success "jq successfully installed to the ~/.local/bin folder"
         export PATH="$USER_BIN_FOLDER:$PATH"
         # Check to see if the "export PATH" command is already present in ~/.bash_profile
         if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
-          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>$BASH_PROFILE
+          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>"$BASH_PROFILE"
           success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
         else
           log "The ~/.local/bin folder is already included in the PATH variable"
@@ -244,17 +244,17 @@ ensure_jq_installed() {
       if [ ! -f "$DESTINATION" ] && ! command_exists jq; then
         info "jq is not currently installed"
         log "Ensuring the ~/.local/bin folder exists"
-        mkdir -p $USER_BIN_FOLDER
+        mkdir -p "$USER_BIN_FOLDER"
         log "Downloading jq for Linux"
-        wget $DOWNLOAD_URL -O $DESTINATION
+        wget $DOWNLOAD_URL -O "$DESTINATION"
         sha256 "$DESTINATION" "$DOWNLOAD_SHA256"
         log "SHA256 checksum validated successfully"
-        chmod +x $DESTINATION
+        chmod +x "$DESTINATION"
         success "jq successfully installed to the ~/.local/bin folder"
         export PATH="$USER_BIN_FOLDER:$PATH"
         # Check to see if the "export PATH" command is already present in ~/.bashrc
         if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
-          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>$BASH_PROFILE
+          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>"$BASH_PROFILE"
           success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
         else
           log "The ~/.local/bin folder is already included in the PATH variable"
@@ -293,7 +293,7 @@ ensure_node_installed() {
       echo "The node_modules folder appears to be missing"
       echo "Installing project npm dependencies"
       if [ ! -f package.json ]; then
-        cp ./.modules/$REPO_TYPE/files/package.json package.json
+        cp ./.modules/"$REPO_TYPE"/files/package.json package.json
       fi
       npm install --ignore-scripts
     fi
@@ -327,19 +327,19 @@ ensure_python3_installed() {
       if ! command_exists python3; then
         info "Python 3 is not currently installed"
         mkdir -p $TMP_DIR
-        mkdir -p $HOME/.local
+        mkdir -p "$HOME"/.local
         log "Downloading miniconda to install Python 3"
         wget $DOWNLOAD_URL -O $DOWNLOAD_DESTINATION
         sha256 "$DOWNLOAD_DESTINATION" "$DOWNLOAD_SHA256"
         log "SHA256 checksum validated successfully"
         log "Installing Python 3 via miniconda"
-        bash $DOWNLOAD_DESTINATION -b -p $HOME/.local/miniconda
+        bash $DOWNLOAD_DESTINATION -b -p "$HOME"/.local/miniconda
         success "Python 3 and miniconda successfully installed to ~/.local/miniconda"
         rm $DOWNLOAD_DESTINATION
         export PATH="$MINICONDA_BIN_FOLDER:$PATH"
         # Check to see if the "export PATH" command is already present in ~/.bashrc
         if [[ $(grep -L 'export PATH=$HOME/.local/miniconda/bin:$PATH' "$BASH_PROFILE") ]]; then
-          echo -e '\nexport PATH=$HOME/.local/miniconda/bin:$PATH' >>$BASH_PROFILE
+          echo -e '\nexport PATH=$HOME/.local/miniconda/bin:$PATH' >>"$BASH_PROFILE"
           success "Updated the PATH variable to include ~/.local/miniconda/bin in the $BASH_PROFILE file"
         else
           log "The ~/.local/miniconda/bin folder is already included in the PATH variable"
@@ -358,19 +358,19 @@ ensure_python3_installed() {
       if ! command_exists python3; then
         info "Python 3 is not currently installed"
         mkdir -p $TMP_DIR
-        mkdir -p $HOME/.local
+        mkdir -p "$HOME"/.local
         log "Downloading miniconda to install Python 3"
         wget $DOWNLOAD_URL -O $DOWNLOAD_DESTINATION
         sha256 "$DOWNLOAD_DESTINATION" "$DOWNLOAD_SHA256"
         log "SHA256 checksum validated successfully"
         log "Installing Python 3 via miniconda"
-        bash $DOWNLOAD_DESTINATION -b -p $MINICONDA_PATH
+        bash $DOWNLOAD_DESTINATION -b -p "$MINICONDA_PATH"
         success "Python 3 and miniconda successfully installed to ~/.local/miniconda"
         rm $DOWNLOAD_DESTINATION
         export PATH="$MINICONDA_BIN_FOLDER:$PATH"
         # Check to see if the "export PATH" command is already present in ~/.bashrc
         if [[ $(grep -L 'export PATH=$HOME/.local/miniconda/bin:$PATH' "$BASH_PROFILE") ]]; then
-          echo -e '\nexport PATH=$HOME/.local/miniconda/bin:$PATH' >>$BASH_PROFILE
+          echo -e '\nexport PATH=$HOME/.local/miniconda/bin:$PATH' >>"$BASH_PROFILE"
           success "Updated the PATH variable to include ~/.local/miniconda/bin in the $BASH_PROFILE file"
         else
           log "The ~/.local/miniconda/bin folder is already included in the PATH variable"
@@ -378,7 +378,7 @@ ensure_python3_installed() {
       else
         info "Python 3 is already installed"
       fi
-      wget $DOWNLOAD_URL -O $DESTINATION
+      wget $DOWNLOAD_URL -O "$DESTINATION"
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
       local DOWNLOAD_URL=https://repo.anaconda.com/miniconda/Miniconda3-py39_4.9.2-Windows-x86.exe
       local DOWNLOAD_SHA256=5045fb9dc4405dbba21054262b7d104ba61a8739c1a56038ccb0258f233ad646
@@ -476,7 +476,7 @@ ensure_bento_submodule_latest() {
     success "Successfully added the chef/bento submodule"
   else
     log "Updating the chef/bento submodule"
-    cd ./.modules/bento
+    cd ./.modules/bento || exit
     git checkout master && git pull origin master
     cd ../..
     success "Successfully updated the chef/bento submodule"
@@ -488,11 +488,11 @@ ensure_project_docs_submodule_latest() {
   if [ ! -d "./.modules/docs" ]; then
     log "Adding a new submodule for the documentation partials"
     mkdir -p ./.modules
-    git submodule add -b master https://gitlab.com/megabyte-labs/documentation/$REPO_TYPE.git ./.modules/docs
+    git submodule add -b master https://gitlab.com/megabyte-labs/documentation/"$REPO_TYPE".git ./.modules/docs
     success "Successfully added the docs submodule"
   else
     log "Updating the documentation submodule"
-    cd ./.modules/docs
+    cd ./.modules/docs || exit
     git checkout master && git pull origin master
     cd ../..
     success "Successfully updated the docs submodule"
@@ -509,7 +509,7 @@ ensure_windows_submodule_latest() {
       success "Successfully added the packer-windows submodule"
     else
       log "Updating the packer-windows submodule"
-      cd ./.modules/windows
+      cd ./.modules/windows || exit
       git checkout main && git pull origin main
       cd ../..
       success "Successfully updated the packer-windows submodule"
@@ -597,10 +597,10 @@ copy_project_files_and_generate_package_json() {
     log "Injecting the Ansible submodule with the appropriate role folder name variable"
     local ROLE_FOLDER=$(basename "$PWD")
     if [[ "$OSTYPE" == "darwin"* ]]; then
-      grep -rl 'MEGABYTE_ROLE_PLACEHOLDER' ./.modules/$REPO_TYPE/files | xargs sed -i .bak "s/MEGABYTE_ROLE_PLACEHOLDER/${ROLE_FOLDER}/g"
-      find ./.modules/$REPO_TYPE/files -name "*.bak" -type f -delete
+      grep -rl 'MEGABYTE_ROLE_PLACEHOLDER' ./.modules/"$REPO_TYPE"/files | xargs sed -i .bak "s/MEGABYTE_ROLE_PLACEHOLDER/${ROLE_FOLDER}/g"
+      find ./.modules/"$REPO_TYPE"/files -name "*.bak" -type f -delete
     else
-      grep -rl 'MEGABYTE_ROLE_PLACEHOLDER' ./.modules/$REPO_TYPE/files | xargs sed -i "s/MEGABYTE_ROLE_PLACEHOLDER/${ROLE_FOLDER}/g"
+      grep -rl 'MEGABYTE_ROLE_PLACEHOLDER' ./.modules/"$REPO_TYPE"/files | xargs sed -i "s/MEGABYTE_ROLE_PLACEHOLDER/${ROLE_FOLDER}/g"
     fi
   fi
 
@@ -623,23 +623,23 @@ copy_project_files_and_generate_package_json() {
     fi
     warn "Copying the $REPO_TYPE common files into the repository - this may overwrite changes to files managed by the common repository. For more information please see the CONTRIBUTING.md document."
     if [ "$REPO_TYPE" == 'ansible' ] && [ -f ./main.yml ]; then
-      cp -Rf ./.modules/$REPO_TYPE/files/.gitlab . # TODO: Figure out how to combine these cp statements
-      cp -Rf ./.modules/$REPO_TYPE/files/.husky .
-      cp -Rf ./.modules/$REPO_TYPE/files/.vscode .
-      cp -Rf ./.modules/$REPO_TYPE/files/molecule .
-      cp ./.modules/$REPO_TYPE/files/.ansible-lint .ansible-lint
-      cp ./.modules/$REPO_TYPE/files/.gitignore .gitignore
-      cp ./.modules/$REPO_TYPE/files/LICENSE LICENSE
-      cp ./.modules/$REPO_TYPE/files/package.json package.json
-      cp ./.modules/$REPO_TYPE/files/requirements.txt requirements.txt
+      cp -Rf ./.modules/"$REPO_TYPE"/files/.gitlab . # TODO: Figure out how to combine these cp statements
+      cp -Rf ./.modules/"$REPO_TYPE"/files/.husky .
+      cp -Rf ./.modules/"$REPO_TYPE"/files/.vscode .
+      cp -Rf ./.modules/"$REPO_TYPE"/files/molecule .
+      cp ./.modules/"$REPO_TYPE"/files/.ansible-lint .ansible-lint
+      cp ./.modules/"$REPO_TYPE"/files/.gitignore .gitignore
+      cp ./.modules/"$REPO_TYPE"/files/LICENSE LICENSE
+      cp ./.modules/"$REPO_TYPE"/files/package.json package.json
+      cp ./.modules/"$REPO_TYPE"/files/requirements.txt requirements.txt
       npx husky install
     else
-      cp -Rf ./.modules/$REPO_TYPE/files/ .
+      cp -Rf ./.modules/"$REPO_TYPE"/files/ .
 
       # Reset ./.modules/ansible if appropriate
       if [ "$REPO_TYPE" == 'ansible' ] && [ ! -f ./main.yml ]; then
         log "Resetting Ansible submodule to HEAD"
-        cd ./.modules/ansible
+        cd ./.modules/ansible || exit
         git reset --hard HEAD
         cd ../..
       fi
@@ -660,19 +660,19 @@ copy_project_files_and_generate_package_json() {
     if [ "$REPO_TYPE" == 'ansible' ] && [ -f main.yml ]; then
       # The project type is an Ansible playbook
       log "Copying Ansible Playbook files since the main.yml file is present in the root directory"
-      cp -Rf ./.modules/$REPO_TYPE/files/.gitlab . # TODO: Figure out how to combine these copy statements
-      cp -Rf ./.modules/$REPO_TYPE/files/.husky .
-      cp -Rf ./.modules/$REPO_TYPE/files/.vscode .
-      cp -Rf ./.modules/$REPO_TYPE/files/molecule .
-      cp ./.modules/$REPO_TYPE/files/.ansible-lint .ansible-lint
-      cp ./.modules/$REPO_TYPE/files/.gitignore .gitignore
-      cp ./.modules/$REPO_TYPE/files/LICENSE LICENSE
-      cp ./.modules/$REPO_TYPE/files/package.json package.json
-      cp ./.modules/$REPO_TYPE/files/requirements.txt requirements.txt
+      cp -Rf ./.modules/"$REPO_TYPE"/files/.gitlab . # TODO: Figure out how to combine these copy statements
+      cp -Rf ./.modules/"$REPO_TYPE"/files/.husky .
+      cp -Rf ./.modules/"$REPO_TYPE"/files/.vscode .
+      cp -Rf ./.modules/"$REPO_TYPE"/files/molecule .
+      cp ./.modules/"$REPO_TYPE"/files/.ansible-lint .ansible-lint
+      cp ./.modules/"$REPO_TYPE"/files/.gitignore .gitignore
+      cp ./.modules/"$REPO_TYPE"/files/LICENSE LICENSE
+      cp ./.modules/"$REPO_TYPE"/files/package.json package.json
+      cp ./.modules/"$REPO_TYPE"/files/requirements.txt requirements.txt
       npx husky install
     else
       log "Copying base files from the common $REPO_TYPE repository"
-      cp -Rf ./.modules/$REPO_TYPE/files/ .
+      cp -Rf ./.modules/"$REPO_TYPE"/files/ .
       if [ "$REPO_TYPE" == 'dockerfile' ] && [ "$SUBGROUP" == 'ci-pipeline' ]; then
         log "Injecting the package.json name variable with the slug variable from .blueprint.json"
         local PACKAGE_NAME=$(cat .blueprint.json | jq '.slug' | cut -d '"' -f 2)
@@ -726,7 +726,7 @@ copy_project_files_and_generate_package_json() {
       jq --arg a "${DESCRIPTION_TEMPLATE}" '.description = $a' package.json >__jq.json && mv __jq.json package.json
       success "Successfully copied the .blueprint.json description to the package.json description"
       local SLUG=$(cat .blueprint.json | jq '.slug' | cut -d '"' -f 2)
-      local CONTAINER_STATUS=$(docker images -q megabytelabs/${SLUG}:slim)
+      local CONTAINER_STATUS=$(docker images -q megabytelabs/"${SLUG}":slim)
       if [[ -n "$CONTAINER_STATUS" ]]; then
         info ":slim image appears to have already been built"
         log "Injecting container size information into package.json description"
