@@ -629,7 +629,8 @@ copy_project_files_and_generate_package_json() {
     fi
     if [ "$REPO_TYPE" == 'npm' ]; then
       local PACKAGE_DEPS=$(cat package.json | jq '.dependencies')
-      local PACKAGE_DEVDEPS=$(cat package.json | jq '.devDependencies')
+      # Inherit versions from common NPM package.json devDependencies
+      local PACKAGE_DEVDEPS=$(jq -s '.[0].devDependencies * .[1].devDependencies | {devDependencies: .}' package.json ./.modules/$REPO_TYPE/files/package.json)
     fi
     warn "Copying the $REPO_TYPE common files into the repository - this may overwrite changes to files managed by the common repository. For more information please see the CONTRIBUTING.md document."
     if [ "$REPO_TYPE" == 'ansible' ] && [ -f ./main.yml ]; then
