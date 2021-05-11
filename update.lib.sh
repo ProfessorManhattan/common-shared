@@ -627,6 +627,10 @@ copy_project_files_and_generate_package_json() {
       log "Backing up the package.json description"
       local PACKAGE_DESCRIPTION=$(cat package.json | jq '.description' | cut -d '"' -f 2)
     fi
+    if [ "$REPO_TYPE" == 'npm' ]; then
+      local PACKAGE_DEPS=$(cat package.json | jq '.dependencies')
+      local PACKAGE_DEVDEPS=$(cat package.json | jq '.devDependencies')
+    fi
     warn "Copying the $REPO_TYPE common files into the repository - this may overwrite changes to files managed by the common repository. For more information please see the CONTRIBUTING.md document."
     if [ "$REPO_TYPE" == 'ansible' ] && [ -f ./main.yml ]; then
       cp -Rf ./.modules/$REPO_TYPE/files/.gitlab . # TODO: Figure out how to combine these cp statements
@@ -659,6 +663,11 @@ copy_project_files_and_generate_package_json() {
     elif [ "$REPO_TYPE" == 'ansible' ] || [ "$REPO_TYPE" == 'packer' ] || [ "$REPO_TYPE" == 'npm' ]; then
       log "Injecting package.json with the saved description"
       jq --arg a "${PACKAGE_DESCRIPTION//\//}" '.description = $a' package.json >__jq.json && mv __jq.json package.json
+    fi
+    if [ "$REPO_TYPE" == 'npm' ]; then
+      log "Injecting dependencies and devDependencies back into package.json"
+      jq --argjson a "${PACKAGE_DEPS}" '.dependencies = $a' package.json >__jq.json && mv __jq.json package.json
+      jq --argjson a "${PACKAGE_DEVDEPS}" '.devDependencies = $a' package.json >__jq.json && mv __jq.json package.json
     fi
     success "Successfully updated the package.json file and copied the shared $REPO_TYPE files into this repository"
   else
