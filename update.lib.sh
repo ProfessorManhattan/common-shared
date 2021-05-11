@@ -623,7 +623,7 @@ copy_project_files_and_generate_package_json() {
         log "Backing up the package.json description"
         local PACKAGE_DESCRIPTION=$(cat package.json | jq '.description' | cut -d '"' -f 2)
       fi
-    elif [ "$REPO_TYPE" == 'ansible' ] || [ "$REPO_TYPE" == 'packer' ]; then
+    elif [ "$REPO_TYPE" == 'ansible' ] || [ "$REPO_TYPE" == 'packer' ] || [ "$REPO_TYPE" == 'npm' ]; then
       log "Backing up the package.json description"
       local PACKAGE_DESCRIPTION=$(cat package.json | jq '.version' | cut -d '"' -f 2)
     fi
@@ -656,7 +656,7 @@ copy_project_files_and_generate_package_json() {
     if [ "$REPO_TYPE" == 'dockerfile' ] && [ "$SUBGROUP" == 'ansible-molecule' ]; then
       log "Injecting package.json with the saved description"
       jq --arg a "${PACKAGE_DESCRIPTION//\//}" '.description = $a' package.json >__jq.json && mv __jq.json package.json
-    elif [ "$REPO_TYPE" == 'ansible' ] || [ "$REPO_TYPE" == 'packer' ]; then
+    elif [ "$REPO_TYPE" == 'ansible' ] || [ "$REPO_TYPE" == 'packer' ] || [ "$REPO_TYPE" == 'npm' ]; then
       log "Injecting package.json with the saved description"
       jq --arg a "${PACKAGE_DESCRIPTION//\//}" '.description = $a' package.json >__jq.json && mv __jq.json package.json
     fi
