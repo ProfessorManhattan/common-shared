@@ -625,7 +625,7 @@ copy_project_files_and_generate_package_json() {
       fi
     elif [ "$REPO_TYPE" == 'ansible' ] || [ "$REPO_TYPE" == 'packer' ] || [ "$REPO_TYPE" == 'npm' ]; then
       log "Backing up the package.json description"
-      local PACKAGE_DESCRIPTION=$(cat package.json | jq '.version' | cut -d '"' -f 2)
+      local PACKAGE_DESCRIPTION=$(cat package.json | jq '.description' | cut -d '"' -f 2)
     fi
     warn "Copying the $REPO_TYPE common files into the repository - this may overwrite changes to files managed by the common repository. For more information please see the CONTRIBUTING.md document."
     if [ "$REPO_TYPE" == 'ansible' ] && [ -f ./main.yml ]; then
