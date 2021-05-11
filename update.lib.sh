@@ -694,6 +694,14 @@ copy_project_files_and_generate_package_json() {
         local PACKAGE_NAME=$(cat .blueprint.json | jq '.slug' | cut -d '"' -f 2)
         jq --arg a "${PACKAGE_NAME}" '.name = $a' package.json >__jq.json && mv __jq.json package.json
         success "Successfully initialized the project with the shared $REPO_TYPE files and updated the name in package.json"
+      elif [ "$REPO_TYPE" == 'npm' ]; then
+        if [ -f .blueprint.json ]; then
+          log "Injecting slug/name from .blueprint.json into package.json"
+          local PROJECT_SLUG=$(cat .blueprint.json | jq '.slug' | cut -d '"' -f 2)
+          sed -i .bak 's^PROJECT_SLUG^'"${PROJECT_SLUG}"'^g' package.json && rm package.json.bak
+        else
+          warn "Project is missing a .blueprint.json file. Please populate it, following the same format as another NPM package project that has a .blueprint.json file"
+        fi
       fi
     fi
   fi
