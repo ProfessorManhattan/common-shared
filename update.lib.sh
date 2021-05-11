@@ -630,7 +630,7 @@ copy_project_files_and_generate_package_json() {
     if [ "$REPO_TYPE" == 'npm' ]; then
       local PACKAGE_DEPS=$(cat package.json | jq '.dependencies')
       # Inherit versions from common NPM package.json devDependencies
-      local PACKAGE_DEVDEPS=$(jq -s '.[0].devDependencies * .[1].devDependencies | {devDependencies: .}' package.json ./.modules/$REPO_TYPE/files/package.json)
+      local PACKAGE_DEVDEPS=$(jq -s '.[0].devDependencies * .[1].devDependencies | .' package.json ./.modules/$REPO_TYPE/files/package.json)
     fi
     warn "Copying the $REPO_TYPE common files into the repository - this may overwrite changes to files managed by the common repository. For more information please see the CONTRIBUTING.md document."
     if [ "$REPO_TYPE" == 'ansible' ] && [ -f ./main.yml ]; then
@@ -669,6 +669,13 @@ copy_project_files_and_generate_package_json() {
       log "Injecting dependencies and devDependencies back into package.json"
       jq --argjson a "${PACKAGE_DEPS}" '.dependencies = $a' package.json >__jq.json && mv __jq.json package.json
       jq --argjson a "${PACKAGE_DEVDEPS}" '.devDependencies = $a' package.json >__jq.json && mv __jq.json package.json
+      if [ -f .blueprint.json ]; then
+        log "Injecting slug/name from .blueprint.json into package.json"
+        local PROJECT_SLUG=$(cat .blueprint.json | jq '.slug' | cut -d '"' -f 2)
+        sed -i .bak 's^PROJECT_SLUG^'"${PROJECT_SLUG}"'^g' package.json && rm package.json.bak
+      else
+        warn "Project is missing a .blueprint.json file. Please populate it, following the same format as another NPM package project that has a .blueprint.json file"
+      fi
     fi
     success "Successfully updated the package.json file and copied the shared $REPO_TYPE files into this repository"
   else
