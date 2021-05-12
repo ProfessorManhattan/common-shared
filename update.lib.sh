@@ -602,7 +602,7 @@ generate_documentation() {
       log "Project is a Dockerfile project but no changes to the README.md are necessary"
     fi
   else
-    log "No changed to the README.md necessary"
+    log "No change to the README.md necessary"
   fi
 }
 
