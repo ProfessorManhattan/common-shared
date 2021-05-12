@@ -770,9 +770,13 @@ copy_project_files_and_generate_package_json() {
       if [[ "$OSTYPE" == "darwin"* ]]; then
         sed -i .bak '/build:slim/d' package.json && rm package.json.bak
         sed -i .bak '/publish:publish-slim/d' package.json && rm package.json.bak
+        sed -i .bak '/scan:slim/d' package.json && rm package.json.bak
+        sed -i .bak '/shell:slim/d' package.json && rm package.json.bak
       else
         sed -i '/build:slim/d' package.json
         sed -i '/publish:publish-slim/d' package.json
+        sed -i '/scan:slim/d' package.json
+        sed -i '/shell:slim/d' package.json
       fi
       success "Removed DockerSlim-specific package.json scripts since there is no dockerslim_command specified in .blueprint.json"
     fi
