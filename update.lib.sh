@@ -751,7 +751,7 @@ copy_project_files_and_generate_package_json() {
   if [ "$REPO_TYPE" == 'dockerfile' ]; then
     log "Determing whether dockerslim_command is available in .blueprint.json"
     local HAS_DOCKERSLIM_COMMAND=$(jq -e 'has("dockerslim_command")' .blueprint.json)
-    if [ "$HAS_DOCKERSLIM_COMMAND" ]; then
+    if [ "$HAS_DOCKERSLIM_COMMAND" != 'false' ]; then
       info "The dockerslim_command is present in the .blueprint.json file"
       # Ensures the scripts.build:slim value matches the value in .blueprint.json
       log "Ensuring the 'build:slim' variable in package.json is updated"
