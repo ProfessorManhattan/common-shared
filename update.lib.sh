@@ -11,6 +11,7 @@
 ##############################################
 
 
+
 # Logs an error message
 error() {
   if [ "$container" != 'docker' ]; then
