@@ -4,7 +4,7 @@
 # update.sh files which are used to synchronize common files
 # across many different projects. It also includes various
 # functions that perform maintenance tasks and install missing
-# software requirements.
+# software requirements like Node.js and Python.
 
 ##############################################
 ############## COMMON FUNCTIONS ##############
