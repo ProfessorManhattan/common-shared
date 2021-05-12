@@ -843,9 +843,9 @@ copy_project_files_and_generate_package_json() {
           log "Injecting the package.json description with the container file size detailed in slim.report.json"
           local SLIM_IMAGE_SIZE=$(jq -r '.minified_image_size_human' slim.report.json)
           if [[ "$OSTYPE" == "darwin"* ]]; then
-            sed -i .bak "s^IMAGE_SIZE_PLACEHOLDER^ \(only ${SLIM_IMAGE_SIZE} decompressed!)^g" package.json && rm package.json.bak
+            sed -i .bak "s^IMAGE_SIZE_PLACEHOLDER^ \(only ${SLIM_IMAGE_SIZE}!)^g" package.json && rm package.json.bak
           else
-            sed -i "s^IMAGE_SIZE_PLACEHOLDER^ \(only ${SLIM_IMAGE_SIZE} decompressed!)^g" package.json
+            sed -i "s^IMAGE_SIZE_PLACEHOLDER^ \(only ${SLIM_IMAGE_SIZE}!)^g" package.json
           fi
           success "Successfully added the container file size to the package.json description"
         else
