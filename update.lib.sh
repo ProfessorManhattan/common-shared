@@ -3,7 +3,8 @@
 # This file houses all the shared functions used across various
 # update.sh files which are used to synchronize common files
 # across many different projects. It also includes various
-# functions that perform maintenance tasks.
+# functions that perform maintenance tasks and install missing
+# software requirements.
 
 ##############################################
 ############## COMMON FUNCTIONS ##############
