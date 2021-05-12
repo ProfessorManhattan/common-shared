@@ -470,7 +470,7 @@ add_initctl() {
   log "Checking whether initctl needs to be copied to the project's root"
   if [ "$REPO_TYPE" == 'dockerfile' ]; then
     # Determine type of Dockerfile project
-    local SUBGROUP=$(cat .blueprint.json | jq '.subgroup' | cut -d '"' -f 2)
+    local SUBGROUP=$(jq -r '.subgroup' .blueprint.json)
     if [ "$SUBGROUP" == 'ansible-molecule' ]; then
       # Copy initctl file if the Dockerfile is based on Ubuntu or Debian
       DOCKERFILE_FIRSTLINE=$(head -n 1 ./Dockerfile)
@@ -549,7 +549,7 @@ generate_documentation() {
   log "Detecting the appropriate README.md template file to use"
   local README_FILE=blueprint-readme.md
   if [ "$REPO_TYPE" == 'dockerfile' ]; then
-    local SUBGROUP=$(cat .blueprint.json | jq '.subgroup' | cut -d '"' -f 2)
+    local SUBGROUP=$(jq -r '.subgroup' .blueprint.json)
     if [ "$SUBGROUP" == 'ansible-molecule' ]; then
       local README_FILE='blueprint-readme-ansible-molecule.md'
     elif [ "$SUBGROUP" == 'apps' ]; then
@@ -586,15 +586,11 @@ generate_documentation() {
   # Inject DockerSlim build command into README.md for ci-pipeline projects
   log "Determining whether anything needs to be injected into the README.md file"
   if [ "$REPO_TYPE" == 'dockerfile' ]; then
-    local SUBGROUP=$(cat .blueprint.json | jq '.subgroup' | cut -d '"' -f 2)
+    local SUBGROUP=$(jq -r '.subgroup' .blueprint.json)
     if [ "$SUBGROUP" == "ci-pipeline" ]; then
       log "Injecting a DockerSlim command from the package.json into the README.md"
-      local PACKAGE_SLIM_BUILD=$(cat package.json | jq '.scripts."build:slim"' | cut -c2- | sed 's/.$//' | sed 's/ &&.*$//')
-      if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i .bak 's^DOCKER_SLIM_BUILD_COMMAND^'"${PACKAGE_SLIM_BUILD}"'^g' README.md && rm README.md.bak
-      else
-        sed -i 's^DOCKER_SLIM_BUILD_COMMAND^'"${PACKAGE_SLIM_BUILD}"'^g' README.md
-      fi
+      local PACKAGE_SLIM_BUILD=$(jq -r '.scripts."build:slim"' package.json)
+      sed -i'' -e 's^DOCKER_SLIM_BUILD_COMMAND^'"${PACKAGE_SLIM_BUILD}"'^g' README.md
       success "Successfully updated the README.md with the DockerSlim command"
     else
       log "Project is a Dockerfile project but no changes to the README.md are necessary"
@@ -627,33 +623,28 @@ copy_project_files_and_generate_package_json() {
     # Replace the role_name placeholder with the repository folder name
     log "Injecting the Ansible submodule with the appropriate role folder name variable"
     local ROLE_FOLDER=$(basename "$PWD")
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-      grep -rl 'MEGABYTE_ROLE_PLACEHOLDER' ./.modules/$REPO_TYPE/files | xargs sed -i .bak "s/MEGABYTE_ROLE_PLACEHOLDER/${ROLE_FOLDER}/g"
-      find ./.modules/$REPO_TYPE/files -name "*.bak" -type f -delete
-    else
-      grep -rl 'MEGABYTE_ROLE_PLACEHOLDER' ./.modules/$REPO_TYPE/files | xargs sed -i "s/MEGABYTE_ROLE_PLACEHOLDER/${ROLE_FOLDER}/g"
-    fi
+    grep -rl 'MEGABYTE_ROLE_PLACEHOLDER' ./.modules/$REPO_TYPE/files | xargs sed -i'' -e "s/MEGABYTE_ROLE_PLACEHOLDER/${ROLE_FOLDER}/g"
   fi
 
   # Copy files over from the Dockerfile shared submodule
   if [ -f ./package.json ]; then
     # Retain information from package.json
     log "Backing up the package.json name and version"
-    local PACKAGE_NAME=$(cat .blueprint.json | jq '.slug' | cut -d '"' -f 2)
-    local PACKAGE_VERSION=$(cat package.json | jq '.version' | cut -d '"' -f 2)
+    local PACKAGE_NAME=$(jq -r '.slug' .blueprint.json)
+    local PACKAGE_VERSION=$(jq -r '.version' package.json)
     if [ "$REPO_TYPE" == 'dockerfile' ]; then
-      local SUBGROUP=$(cat .blueprint.json | jq '.subgroup' | cut -d '"' -f 2)
+      local SUBGROUP=$(jq -r '.subgroup' .blueprint.json)
       # The ansible-molecule subgroup does not store its template in .blueprint.json so it is retained
       if [ "$SUBGROUP" == "ansible-molecule" ]; then
         log "Backing up the package.json description"
-        local PACKAGE_DESCRIPTION=$(cat package.json | jq '.description' | cut -d '"' -f 2)
+        local PACKAGE_DESCRIPTION=$(jq -r '.description' package.json)
       fi
     elif [ "$REPO_TYPE" == 'ansible' ] || [ "$REPO_TYPE" == 'packer' ] || [ "$REPO_TYPE" == 'npm' ]; then
       log "Backing up the package.json description"
-      local PACKAGE_DESCRIPTION=$(cat package.json | jq '.description' | cut -d '"' -f 2)
+      local PACKAGE_DESCRIPTION=$(jq -r '.description' package.json)
     fi
     if [ "$REPO_TYPE" == 'npm' ]; then
-      local PACKAGE_DEPS=$(cat package.json | jq '.dependencies')
+      local PACKAGE_DEPS=$(jq -r '.dependencies' package.json)
       # Inherit versions from common NPM package.json devDependencies
       local PACKAGE_DEVDEPS=$(jq -s '.[0].devDependencies * .[1].devDependencies | .' package.json ./.modules/$REPO_TYPE/files/package.json)
     fi
@@ -681,27 +672,23 @@ copy_project_files_and_generate_package_json() {
       fi
     fi
     log "Injecting package.json with the saved name and version"
-    jq --arg a "@megabytelabs/${PACKAGE_NAME}" '.name = $a' package.json >__jq.json && mv __jq.json package.json
-    jq --arg a "${PACKAGE_VERSION//\//}" '.version = $a' package.json >__jq.json && mv __jq.json package.json
+    echo $(jq --argjson a "@megabytelabs/${PACKAGE_NAME}" '.name = $a' package.json) > package.json
+    echo $(jq --argjson a "${PACKAGE_VERSION}" '.version = $a' package.json) > package.json
     if [ "$REPO_TYPE" == 'dockerfile' ] && [ "$SUBGROUP" == 'ansible-molecule' ]; then
       log "Injecting package.json with the saved description"
-      jq --arg a "${PACKAGE_DESCRIPTION//\//}" '.description = $a' package.json >__jq.json && mv __jq.json package.json
+      echo $(jq --argjson a "${PACKAGE_DESCRIPTION}" '.description = $a' package.json) > package.json
     elif [ "$REPO_TYPE" == 'ansible' ] || [ "$REPO_TYPE" == 'packer' ] || [ "$REPO_TYPE" == 'npm' ]; then
       log "Injecting package.json with the saved description"
-      jq --arg a "${PACKAGE_DESCRIPTION//\//}" '.description = $a' package.json >__jq.json && mv __jq.json package.json
+      echo $(jq --argjson a "${PACKAGE_DESCRIPTION}" '.description = $a' package.json) > package.json
     fi
     if [ "$REPO_TYPE" == 'npm' ]; then
       log "Injecting dependencies and devDependencies back into package.json"
-      jq --argjson a "${PACKAGE_DEPS}" '.dependencies = $a' package.json >__jq.json && mv __jq.json package.json
-      jq --argjson a "${PACKAGE_DEVDEPS}" '.devDependencies = $a' package.json >__jq.json && mv __jq.json package.json
+      echo $(jq --argjson a "${PACKAGE_DEPS}" '.dependencies = $a' package.json) > package.json
+      echo $(jq --argjson a "${PACKAGE_DEVDEPS}" '.devDependencies = $a' package.json) > package.json
       if [ -f .blueprint.json ]; then
         log "Injecting slug/name from .blueprint.json into package.json"
-        local PROJECT_SLUG=$(cat .blueprint.json | jq '.slug' | cut -d '"' -f 2)
-        if [[ "$OSTYPE" == "darwin"* ]]; then
-          sed -i .bak 's^PROJECT_SLUG^'"${PROJECT_SLUG}"'^g' package.json && rm package.json.bak
-        else
-          sed -i 's^PROJECT_SLUG^'"${PROJECT_SLUG}"'^g' package.json
-        fi
+        local PROJECT_SLUG=$(jq -r '.slug' .blueprint.json)
+        sed -i'' -e 's^PROJECT_SLUG^'"${PROJECT_SLUG}"'^g' package.json
       else
         warn "Project is missing a .blueprint.json file. Please populate it, following the same format as another NPM package project that has a .blueprint.json file"
       fi
@@ -727,18 +714,14 @@ copy_project_files_and_generate_package_json() {
       cp -Rf ./.modules/$REPO_TYPE/files/ .
       if [ "$REPO_TYPE" == 'dockerfile' ] && [ "$SUBGROUP" == 'ci-pipeline' ]; then
         log "Injecting the package.json name variable with the slug variable from .blueprint.json"
-        local PACKAGE_NAME=$(cat .blueprint.json | jq '.slug' | cut -d '"' -f 2)
-        jq --arg a "@megabytelabs/${PACKAGE_NAME}" '.name = $a' package.json >__jq.json && mv __jq.json package.json
+        local PACKAGE_NAME=$(jq -r '.slug' .blueprint.json)
+        echo $(jq --arg a "@megabytelabs/${PACKAGE_NAME}" '.name = $a' package.json) > package.json
         success "Successfully initialized the project with the shared $REPO_TYPE files and updated the name in package.json"
       elif [ "$REPO_TYPE" == 'npm' ]; then
         if [ -f .blueprint.json ]; then
           log "Injecting slug/name from .blueprint.json into package.json"
-          local PROJECT_SLUG=$(cat .blueprint.json | jq '.slug' | cut -d '"' -f 2)
-          if [[ "$OSTYPE" == "darwin"* ]]; then
-            sed -i .bak 's^PROJECT_SLUG^'"${PROJECT_SLUG}"'^g' package.json && rm package.json.bak
-          else
-            sed -i 's^PROJECT_SLUG^'"${PROJECT_SLUG}"'^g' package.json
-          fi
+          local PROJECT_SLUG=$(jq -r '.slug' .blueprint.json)
+          sed -i'' -e 's^PROJECT_SLUG^'"${PROJECT_SLUG}"'^g' package.json
         else
           warn "Project is missing a .blueprint.json file. Please populate it, following the same format as another NPM package project that has a .blueprint.json file"
         fi
@@ -749,29 +732,20 @@ copy_project_files_and_generate_package_json() {
   # Run dockerfile-subgroup specific tasks
   if [ "$REPO_TYPE" == 'dockerfile' ]; then
     log "Determing whether dockerslim_command is available in .blueprint.json"
-    local HAS_DOCKERSLIM_COMMAND=$(cat .blueprint.json | jq -e 'has("dockerslim_command")')
+    local HAS_DOCKERSLIM_COMMAND=$(jq -e 'has("dockerslim_command")' .blueprint.json)
     if [ "$HAS_DOCKERSLIM_COMMAND" ]; then
       info "The dockerslim_command is present in the .blueprint.json file"
       # Ensures the scripts.build:slim value matches the value in .blueprint.json
       log "Ensuring the 'build:slim' variable in package.json is updated"
-      local DOCKERSLIM_COMMAND=$(cat .blueprint.json | jq '.dockerslim_command' | cut -c2- | sed 's/.$//')
+      local DOCKERSLIM_COMMAND=$(jq -r '.dockerslim_command' .blueprint.json)
       log "Replacing the placeholder in package.json with the variable from .blueprint.json"
-      if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i .bak "s^DOCKER_SLIM_COMMAND_HERE^${DOCKERSLIM_COMMAND}^g" package.json && rm package.json.bak
-      else
-        sed -i "s^DOCKER_SLIM_COMMAND_HERE^${DOCKERSLIM_COMMAND}^g" package.json
-      fi
+      sed -i'' -e "s^DOCKER_SLIM_COMMAND_HERE^${DOCKERSLIM_COMMAND}^g" package.json
       success "Successfully ensured that the right 'build:slim' value is included in package.json"
     else
       info "The dockerslim_command is not present in the .blueprint.json file"
       log "Removing DockerSlim-specific tasks in package.json"
-      if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i .bak '/build:slim/d' package.json && rm package.json.bak
-        sed -i .bak '/publish:publish-slim/d' package.json && rm package.json.bak
-      else
-        sed -i '/build:slim/d' package.json
-        sed -i '/publish:publish-slim/d' package.json
-      fi
+      sed -i'' -e '/build:slim/d' package.json
+      sed -i'' -e '/publish:publish-slim/d' package.json
       success "Removed DockerSlim-specific package.json scripts since there is no dockerslim_command specified in .blueprint.json"
     fi
 
@@ -779,11 +753,7 @@ copy_project_files_and_generate_package_json() {
     log "Detecting presence of the test folder in the root of the project"
     if [ ! -d ./test ]; then
       warn "The test folder is not present in the root of this project. If this is by design then you can ignore this. However, if it is not by design then please read the README.md and CONTRIBUTING.md and add a test case."
-      if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i .bak '/test:unit/d' package.json && rm package.json.bak
-      else
-        sed -i '/test:unit/d' package.json
-      fi
+      sed -i'' -e '/test:unit/d' package.json
       success "Successfully removed the scripts.test:unit test step from package.json"
     else
       info "The test folder is present in the root of this project so the scripts.test:unit script in package.json is being left as is"
@@ -791,32 +761,24 @@ copy_project_files_and_generate_package_json() {
     # Copies name value from package.json to other locations that should match the string
     log "Performing tasks specific to Dockerfile projects"
     log "Replacing all instances of the string 'dockerfile-project' in package.json with the package.json name"
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-      sed -i .bak "s^dockerfile-project^${PACKAGE_NAME}^g" package.json && rm package.json.bak
-    else
-      sed -i "s^dockerfile-project^${PACKAGE_NAME}^g" package.json
-    fi
+    sed -i'' -e "s^dockerfile-project^${PACKAGE_NAME}^g" package.json
     success "Successfully updated the 'dockerfile-project' string to the package.json name"
 
     # Updates the description from .blueprint.json
-    local SUBGROUP=$(cat .blueprint.json | jq '.subgroup' | cut -d '"' -f 2)
+    local SUBGROUP=$(jq -r '.subgroup' .blueprint.json)
     if [ "$SUBGROUP" == 'ci-pipeline' ]; then
       log "Ensuring the package.json description is updated, using a value specified in .blueprint.json"
-      local DESCRIPTION_TEMPLATE=$(cat .blueprint.json | jq '.description_template' | cut -d '"' -f 2)
-      jq --arg a "${DESCRIPTION_TEMPLATE}" '.description = $a' package.json >__jq.json && mv __jq.json package.json
+      local DESCRIPTION_TEMPLATE=$(jq -r '.description_template' .blueprint.json)
+      echo $(jq --arg a "${DESCRIPTION_TEMPLATE}" '.description = $a' package.json) > package.json
       success "Successfully copied the .blueprint.json description to the package.json description"
-      local SLUG=$(cat .blueprint.json | jq '.slug' | cut -d '"' -f 2)
+      local SLUG=$(jq -r '.slug' .blueprint.json)
       local CONTAINER_STATUS=$(docker images -q megabytelabs/${SLUG}:slim)
       if [[ -n "$CONTAINER_STATUS" ]]; then
         info ":slim image appears to have already been built"
         log "Injecting container size information into package.json description"
-        local PACKAGE_NAME=$(cat .blueprint.json | jq '.slug' | cut -d '"' -f 2)
+        local PACKAGE_NAME=$(jq -r '.slug' .blueprint.json)
         local COMPRESSED_SIZE=$(docker manifest inspect -v "megabytelabs/$PACKAGE_NAME:slim" | grep size | awk -F ':' '{sum+=$NF} END {print sum}' | awk '{$1=$1/(1024^2); print $1,"MB";}')
-        if [[ "$OSTYPE" == "darwin"* ]]; then
-          sed -i .bak "s^IMAGE_SIZE_PLACEHOLDER^ \(only ${COMPRESSED_SIZE} compressed!)^g" package.json && rm package.json.bak
-        else
-          sed -i "s^IMAGE_SIZE_PLACEHOLDER^ \(only ${COMPRESSED_SIZE} compressed!)^g" package.json
-        fi
+        sed -i'' -e "s^IMAGE_SIZE_PLACEHOLDER^ \(only ${COMPRESSED_SIZE} compressed!)^g" package.json
         success "Successfully injected image size information into package.json description"
       else
         # Container does not exist
@@ -824,21 +786,13 @@ copy_project_files_and_generate_package_json() {
         if [ -f slim.report.json ]; then
           info "A DockerSlim report is present in this repository"
           log "Injecting the package.json description with the container file size detailed in slim.report.json"
-          local SLIM_IMAGE_SIZE=$(cat slim.report.json | jq '.minified_image_size_human' | cut -d '"' -f 2)
-          if [[ "$OSTYPE" == "darwin"* ]]; then
-            sed -i .bak "s^IMAGE_SIZE_PLACEHOLDER^ \(only ${SLIM_IMAGE_SIZE} decompressed!)^g" package.json && rm package.json.bak
-          else
-            sed -i "s^IMAGE_SIZE_PLACEHOLDER^ \(only ${SLIM_IMAGE_SIZE} decompressed!)^g" package.json
-          fi
+          local SLIM_IMAGE_SIZE=$(jq -r '.minified_image_size_human' slim.report.json)
+          sed -i'' -e "s^IMAGE_SIZE_PLACEHOLDER^ \(only ${SLIM_IMAGE_SIZE} decompressed!)^g" package.json
           success "Successfully added the container file size to the package.json description"
         else
           info "The slim.report.json file appears to be missing from this repository"
           log "Removing the container file size placeholder from the description in package.json"
-          if [[ "$OSTYPE" == "darwin"* ]]; then
-            sed -i .bak "s^IMAGE_SIZE_PLACEHOLDER^^g" package.json && rm package.json.bak
-          else
-            sed -i "s^IMAGE_SIZE_PLACEHOLDER^^g" package.json
-          fi
+          sed -i'' -e "s^IMAGE_SIZE_PLACEHOLDER^^g" package.json
           success "Successfully removed the container file size placeholder from the description in package.json"
         fi
       fi
@@ -873,16 +827,10 @@ misc_fixes() {
 
 update_docker_labels() {
   local DOCKERFILE_GROUP=https://gitlab.com/megabyte-labs/dockerfile
-  local PACKAGE_DESCRIPTION=$(cat package.json | jq '.description')
-  local SLUG=$(cat .blueprint.json | jq '.slug' | cut -d '"' -f 2)
-  local SUBGROUP=$(cat .blueprint.json | jq '.subgroup' | cut -d '"' -f 2)
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i .bak "s^.*org.opencontainers.image.description.*^LABEL org.opencontainers.image.description=${PACKAGE_DESCRIPTION}^g" Dockerfile && rm Dockerfile.bak
-    sed -i .bak "s^.*org.opencontainers.image.documentation.*^LABEL org.opencontainers.image.documentation=\"${DOCKERFILE_GROUP}/${SUBGROUP}/${SLUG}/-/blob/master/README.md\"^g" Dockerfile && rm Dockerfile.bak
-    sed -i .bak "s^.*org.opencontainers.image.source.*^LABEL org.opencontainers.image.source=\"${DOCKERFILE_GROUP}/${SUBGROUP}/${SLUG}.git\"^g" Dockerfile && rm Dockerfile.bak
-  else
-    sed -i "s^.*org.opencontainers.image.description.*^LABEL org.opencontainers.image.description=${PACKAGE_DESCRIPTION}^g" Dockerfile
-    sed -i "s^.*org.opencontainers.image.documentation.*^LABEL org.opencontainers.image.documentation=\"${DOCKERFILE_GROUP}/${SUBGROUP}/${SLUG}/-/blob/master/README.md\"^g" Dockerfile
-    sed -i "s^.*org.opencontainers.image.source.*^LABEL org.opencontainers.image.source=\"${DOCKERFILE_GROUP}/${SUBGROUP}/${SLUG}.git\"^g" Dockerfile
-  fi
+  local PACKAGE_DESCRIPTION=$(jq -r '.description' package.json)
+  local SLUG=$(jq -r '.slug' .blueprint.json)
+  local SUBGROUP=$(jq -r '.subgroup' .blueprint.json)
+  sed -i'' -e "s^.*org.opencontainers.image.description.*^LABEL org.opencontainers.image.description=${PACKAGE_DESCRIPTION}^g" Dockerfile
+  sed -i'' -e "s^.*org.opencontainers.image.documentation.*^LABEL org.opencontainers.image.documentation=\"${DOCKERFILE_GROUP}/${SUBGROUP}/${SLUG}/-/blob/master/README.md\"^g" Dockerfile
+  sed -i'' -e "s^.*org.opencontainers.image.source.*^LABEL org.opencontainers.image.source=\"${DOCKERFILE_GROUP}/${SUBGROUP}/${SLUG}.git\"^g" Dockerfile
 }
