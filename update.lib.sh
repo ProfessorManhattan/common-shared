@@ -672,19 +672,19 @@ copy_project_files_and_generate_package_json() {
       fi
     fi
     log "Injecting package.json with the saved name and version"
-    echo $(jq --argjson a "@megabytelabs/${PACKAGE_NAME}" '.name = $a' package.json) > package.json
-    echo $(jq --argjson a "${PACKAGE_VERSION}" '.version = $a' package.json) > package.json
+    jq --arg a "${PACKAGE_NAME}" '.name = $a' package.json >__jq.json && mv __jq.json package.json
+    jq --arg a "${PACKAGE_VERSION//\//}" '.version = $a' package.json >__jq.json && mv __jq.json package.json
     if [ "$REPO_TYPE" == 'dockerfile' ] && [ "$SUBGROUP" == 'ansible-molecule' ]; then
       log "Injecting package.json with the saved description"
-      echo $(jq --argjson a "${PACKAGE_DESCRIPTION}" '.description = $a' package.json) > package.json
+      jq --arg a "${PACKAGE_DESCRIPTION//\//}" '.description = $a' package.json >__jq.json && mv __jq.json package.json
     elif [ "$REPO_TYPE" == 'ansible' ] || [ "$REPO_TYPE" == 'packer' ] || [ "$REPO_TYPE" == 'npm' ]; then
       log "Injecting package.json with the saved description"
-      echo $(jq --argjson a "${PACKAGE_DESCRIPTION}" '.description = $a' package.json) > package.json
+      jq --arg a "${PACKAGE_DESCRIPTION//\//}" '.description = $a' package.json >__jq.json && mv __jq.json package.json
     fi
     if [ "$REPO_TYPE" == 'npm' ]; then
       log "Injecting dependencies and devDependencies back into package.json"
-      echo $(jq --argjson a "${PACKAGE_DEPS}" '.dependencies = $a' package.json) > package.json
-      echo $(jq --argjson a "${PACKAGE_DEVDEPS}" '.devDependencies = $a' package.json) > package.json
+      jq --argjson a "${PACKAGE_DEPS}" '.dependencies = $a' package.json >__jq.json && mv __jq.json package.json
+      jq --argjson a "${PACKAGE_DEVDEPS}" '.devDependencies = $a' package.json >__jq.json && mv __jq.json package.json
       if [ -f .blueprint.json ]; then
         log "Injecting slug/name from .blueprint.json into package.json"
         local PROJECT_SLUG=$(jq -r '.slug' .blueprint.json)
@@ -715,7 +715,7 @@ copy_project_files_and_generate_package_json() {
       if [ "$REPO_TYPE" == 'dockerfile' ] && [ "$SUBGROUP" == 'ci-pipeline' ]; then
         log "Injecting the package.json name variable with the slug variable from .blueprint.json"
         local PACKAGE_NAME=$(jq -r '.slug' .blueprint.json)
-        echo $(jq --arg a "@megabytelabs/${PACKAGE_NAME}" '.name = $a' package.json) > package.json
+        jq --arg a "${PACKAGE_NAME}" '.name = $a' package.json >__jq.json && mv __jq.json package.json
         success "Successfully initialized the project with the shared $REPO_TYPE files and updated the name in package.json"
       elif [ "$REPO_TYPE" == 'npm' ]; then
         if [ -f .blueprint.json ]; then
@@ -769,7 +769,7 @@ copy_project_files_and_generate_package_json() {
     if [ "$SUBGROUP" == 'ci-pipeline' ]; then
       log "Ensuring the package.json description is updated, using a value specified in .blueprint.json"
       local DESCRIPTION_TEMPLATE=$(jq -r '.description_template' .blueprint.json)
-      echo $(jq --arg a "${DESCRIPTION_TEMPLATE}" '.description = $a' package.json) > package.json
+      jq --arg a "${DESCRIPTION_TEMPLATE}" '.description = $a' package.json >__jq.json && mv __jq.json package.json
       success "Successfully copied the .blueprint.json description to the package.json description"
       local SLUG=$(jq -r '.slug' .blueprint.json)
       local CONTAINER_STATUS=$(docker images -q megabytelabs/${SLUG}:slim)
