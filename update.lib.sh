@@ -672,7 +672,7 @@ copy_project_files_and_generate_package_json() {
       cp ./.modules/$REPO_TYPE/files/requirements.txt requirements.txt
       npx husky install
     else
-      cp -Rf ./.modules/$REPO_TYPE/files/ .
+      cp -Rf ./.modules/$REPO_TYPE/files/* .
 
       # Reset ./.modules/ansible if appropriate
       if [ "$REPO_TYPE" == 'ansible' ] && [ ! -f ./main.yml ]; then
@@ -726,7 +726,7 @@ copy_project_files_and_generate_package_json() {
       npx husky install
     else
       log "Copying base files from the common $REPO_TYPE repository"
-      cp -Rf ./.modules/$REPO_TYPE/files/ .
+      cp -Rf ./.modules/$REPO_TYPE/files/* .
       if [ "$REPO_TYPE" == 'dockerfile' ] && [ "$SUBGROUP" == 'ci-pipeline' ]; then
         log "Injecting the package.json name variable with the slug variable from .blueprint.json"
         local PACKAGE_NAME=$(cat .blueprint.json | jq '.slug' | cut -d '"' -f 2)
