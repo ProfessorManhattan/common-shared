@@ -693,7 +693,7 @@ copy_project_files_and_generate_package_json() {
       fi
     fi
     log "Injecting package.json with the saved name and version"
-    jq --arg a "${PACKAGE_NAME}" '.name = $a' package.json >__jq.json && mv __jq.json package.json
+    jq --arg a "@megabytelabs/${PACKAGE_NAME}" '.name = $a' package.json >__jq.json && mv __jq.json package.json
     jq --arg a "${PACKAGE_VERSION//\//}" '.version = $a' package.json >__jq.json && mv __jq.json package.json
     if [ "$REPO_TYPE" == 'dockerfile' ] && [ "$SUBGROUP" == 'ansible-molecule' ]; then
       log "Injecting package.json with the saved description"
@@ -740,7 +740,7 @@ copy_project_files_and_generate_package_json() {
       if [ "$REPO_TYPE" == 'dockerfile' ] && [ "$SUBGROUP" == 'ci-pipeline' ]; then
         log "Injecting the package.json name variable with the slug variable from .blueprint.json"
         local PACKAGE_NAME=$(jq -r '.slug' .blueprint.json)
-        jq --arg a "${PACKAGE_NAME}" '.name = $a' package.json >__jq.json && mv __jq.json package.json
+        jq --arg a "@megabytelabs/${PACKAGE_NAME}" '.name = $a' package.json >__jq.json && mv __jq.json package.json
         success "Successfully initialized the project with the shared $REPO_TYPE files and updated the name in package.json"
       elif [ "$REPO_TYPE" == 'npm' ]; then
         if [ -f .blueprint.json ]; then
