@@ -500,8 +500,7 @@ ensure_bento_submodule_latest() {
   else
     log "Updating the chef/bento submodule"
     cd ./.modules/bento
-    git config pull.rebase true
-    git checkout master && git pull --depth 1 --allow-unrelated-histories origin master
+    git checkout master && git pull --depth 1 --rebase origin master
     cd ../..
     success "Successfully updated the chef/bento submodule"
   fi
@@ -517,8 +516,7 @@ ensure_project_docs_submodule_latest() {
   else
     log "Updating the documentation submodule"
     cd ./.modules/docs
-    git config pull.rebase true
-    git checkout master && git pull --depth 1 --allow-unrelated-histories origin master
+    git checkout master && git pull --depth 1 --rebase origin master
     cd ../..
     success "Successfully updated the docs submodule"
   fi
@@ -535,8 +533,7 @@ ensure_windows_submodule_latest() {
     else
       log "Updating the packer-windows submodule"
       cd ./.modules/windows
-      git config pull.rebase true
-      git checkout main && git pull --depth 1 --allow-unrelated-histories origin main
+      git checkout main && git pull --depth 1 --rebase origin main
       cd ../..
       success "Successfully updated the packer-windows submodule"
     fi
