@@ -6,9 +6,11 @@
 # functions that perform maintenance tasks and install missing
 # software requirements like Node.js and Python.
 
+
 ##############################################
 ############## COMMON FUNCTIONS ##############
 ##############################################
+
 
 # Logs an error message
 error() {
