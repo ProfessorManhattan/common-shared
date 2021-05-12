@@ -890,7 +890,7 @@ misc_fixes() {
 
 update_docker_labels() {
   local DOCKERFILE_GROUP=https://gitlab.com/megabyte-labs/dockerfile
-  local PACKAGE_DESCRIPTION=$(jq -r '.description' package.json)
+  local PACKAGE_DESCRIPTION=$(jq '.description' package.json)
   local SLUG=$(jq -r '.slug' .blueprint.json)
   local SUBGROUP=$(jq -r '.subgroup' .blueprint.json)
   if [[ "$OSTYPE" == "darwin"* ]]; then
