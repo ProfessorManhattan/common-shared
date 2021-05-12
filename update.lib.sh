@@ -496,12 +496,12 @@ ensure_bento_submodule_latest() {
   if [ ! -d "./.modules/bento" ]; then
     log "Adding the chef/bento repository as a submodule"
     mkdir -p ./.modules
-    git submodule add -b master --depth 1 https://github.com/chef/bento.git ./.modules/bento
+    git submodule add -b master https://github.com/chef/bento.git ./.modules/bento
     success "Successfully added the chef/bento submodule"
   else
     log "Updating the chef/bento submodule"
     cd ./.modules/bento
-    git checkout master && git pull --depth 1 --rebase origin master --allow-unrelated-histories
+    git checkout master && git pull origin master
     cd ../..
     success "Successfully updated the chef/bento submodule"
   fi
@@ -512,12 +512,12 @@ ensure_project_docs_submodule_latest() {
   if [ ! -d "./.modules/docs" ]; then
     log "Adding a new submodule for the documentation partials"
     mkdir -p ./.modules
-    git submodule add -b master --depth 1 https://gitlab.com/megabyte-labs/documentation/$REPO_TYPE.git ./.modules/docs
+    git submodule add -b master https://gitlab.com/megabyte-labs/documentation/$REPO_TYPE.git ./.modules/docs
     success "Successfully added the docs submodule"
   else
     log "Updating the documentation submodule"
     cd ./.modules/docs
-    git checkout master && git pull --depth 1 --rebase origin master --allow-unrelated-histories
+    git checkout master && git pull origin master
     cd ../..
     success "Successfully updated the docs submodule"
   fi
@@ -529,12 +529,12 @@ ensure_windows_submodule_latest() {
     info "Project appears to be a Windows Packer project"
     if [ ! -d "./.modules/windows" ]; then
       log "Adding the packer-windows submodule"
-      git submodule add -b main --depth 1 https://github.com/StefanScherer/packer-windows ./.modules/windows
+      git submodule add -b main https://github.com/StefanScherer/packer-windows ./.modules/windows
       success "Successfully added the packer-windows submodule"
     else
       log "Updating the packer-windows submodule"
       cd ./.modules/windows
-      git checkout main && git pull --depth 1 --rebase origin main --allow-unrelated-histories
+      git checkout main && git pull origin main
       cd ../..
       success "Successfully updated the packer-windows submodule"
     fi
