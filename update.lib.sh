@@ -11,27 +11,47 @@
 
 # Logs an error message
 error() {
-  run-func ./.modules/shared/log.js error "$1"
+  if [ "$container" != 'docker' ]; then
+    run-func ./.modules/shared/log.js error "$1"
+  else
+    echo "ERROR: $1"
+  fi
 }
 
 # Logs an info message
 info() {
-  run-func ./.modules/shared/log.js info "$1"
+  if [ "$container" != 'docker' ]; then
+    run-func ./.modules/shared/log.js info "$1"
+  else
+    echo "INFO $1"
+  fi
 }
 
 # Logs a regular log message
 log() {
-  run-func ./.modules/shared/log.js debug "$1"
+  if [ "$container" != 'docker' ]; then
+    run-func ./.modules/shared/log.js debug "$1"
+  else
+    echo "LOG: $1"
+  fi
 }
 
 # Logs a success message
 success() {
-  run-func ./.modules/shared/log.js success "$1"
+  if [ "$container" != 'docker' ]; then
+    run-func ./.modules/shared/log.js success "$1"
+  else
+    echo "SUCCESS: $1"
+  fi
 }
 
 # Logs a warning message
 warn() {
-  run-func ./.modules/shared/log.js warn "$1"
+  if [ "$container" != 'docker' ]; then
+    run-func ./.modules/shared/log.js warn "$1"
+  else
+    echo "WARN: $1"
+  fi
 }
 
 # Determines whether or not an executable is accessible
