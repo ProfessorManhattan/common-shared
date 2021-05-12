@@ -551,14 +551,25 @@ generate_documentation() {
   local README_FILE=blueprint-readme.md
   if [ "$REPO_TYPE" == 'dockerfile' ]; then
     local SUBGROUP=$(jq -r '.subgroup' .blueprint.json)
+    local HAS_DOCKERSLIM_COMMAND=$(jq -e 'has("dockerslim_command")' .blueprint.json)
     if [ "$SUBGROUP" == 'ansible-molecule' ]; then
       local README_FILE='blueprint-readme-ansible-molecule.md'
     elif [ "$SUBGROUP" == 'apps' ]; then
       local README_FILE='blueprint-readme-apps.md'
+      if [ "$HAS_DOCKERSLIM_COMMAND" != 'false' ]; then
+        local README_FILE='blueprint-readme-apps-slim.md'
+      fi
     elif [ "$SUBGROUP" == 'ci-pipeline' ]; then
       local README_FILE='blueprint-readme-ci.md'
+      log "Determing whether dockerslim_command is available in .blueprint.json"
+      if [ "$HAS_DOCKERSLIM_COMMAND" != 'false' ]; then
+        local README_FILE='blueprint-readme-ci-slim.md'
+      fi
     elif [ "$SUBGROUP" == 'software' ]; then
       local README_FILE='blueprint-readme-software.md'
+      if [ "$HAS_DOCKERSLIM_COMMAND" != 'false' ]; then
+        local README_FILE='blueprint-readme-software-slim.md'
+      fi
     fi
   elif [ "$REPO_TYPE" == 'ansible' ]; then
     if [ -f ./main.yml ]; then
