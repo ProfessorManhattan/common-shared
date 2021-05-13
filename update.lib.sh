@@ -501,7 +501,7 @@ ensure_bento_submodule_latest() {
   else
     log "Updating the chef/bento submodule"
     cd ./.modules/bento
-    git checkout master && git pull origin master
+    git checkout master && git pull origin master --ff-only
     cd ../..
     success "Successfully updated the chef/bento submodule"
   fi
@@ -517,7 +517,7 @@ ensure_project_docs_submodule_latest() {
   else
     log "Updating the documentation submodule"
     cd ./.modules/docs
-    git checkout master && git pull origin master
+    git checkout master && git pull origin master --ff-only
     cd ../..
     success "Successfully updated the docs submodule"
   fi
@@ -534,7 +534,7 @@ ensure_windows_submodule_latest() {
     else
       log "Updating the packer-windows submodule"
       cd ./.modules/windows
-      git checkout main && git pull origin main
+      git checkout main && git pull origin main --ff-only
       cd ../..
       success "Successfully updated the packer-windows submodule"
     fi
