@@ -601,7 +601,7 @@ generate_documentation() {
     local SUBGROUP=$(jq -r '.subgroup' .blueprint.json)
     if [ "$SUBGROUP" == "ci-pipeline" ]; then
       log "Injecting a DockerSlim command from the package.json into the README.md"
-      local PACKAGE_SLIM_BUILD=$(jq -r '.dockerslim_command' .blueprint.json | sed 's/\\\\//g')
+      local PACKAGE_SLIM_BUILD=$(jq -r '.dockerslim_command' .blueprint.json)
       if [[ "$OSTYPE" == "darwin"* ]]; then
         sed -i .bak 's^DOCKER_SLIM_BUILD_COMMAND^'"${PACKAGE_SLIM_BUILD}"'^g' README.md && rm README.md.bak
       else
