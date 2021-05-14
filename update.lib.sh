@@ -807,6 +807,11 @@ copy_project_files_and_generate_package_json() {
       else
         sed -i "s^DOCKER_SLIM_COMMAND_HERE^${DOCKERSLIM_COMMAND}^g" package.json
       fi
+      if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i .bak "s^DOCKER_SLIM_COMMAND_HERE^&^g" package.json && rm package.json.bak
+      else
+        sed -i "s^DOCKER_SLIM_COMMAND_HERE^&^g" package.json
+      fi
       success "Successfully ensured that the right 'build:slim' value is included in package.json"
     else
       info "The dockerslim_command is not present in the .blueprint.json file"
