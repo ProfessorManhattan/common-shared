@@ -483,7 +483,7 @@ add_docker_test_script() {
         sed -i 's^DOCKER_SLUG^'"${SLUG}"'^g' ./test/test.sh
       fi
       log "Injecting Docker slug name into ./test/test.sh"
-      local COMMAND=$(jq -r '.docker_command')
+      local COMMAND=$(jq -r '.docker_command' .blueprint.json)
       log "Injecting Docker command into ./test/test.sh"
       if [[ "$OSTYPE" == "darwin"* ]]; then
         sed -i .bak 's^DOCKER_COMMAND^'"${COMMAND}"'^g' ./test/test.sh && rm ./test/test.sh.bak
