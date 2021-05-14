@@ -614,9 +614,11 @@ generate_documentation() {
   fi
   log "Generating the CONTRIBUTING.md file"
   npx -y @appnest/readme generate --config __bp.json --input ./.modules/docs/blueprint-contributing.md --output CONTRIBUTING.md
+  npx prettier --write CONTRIBUTING.md
   success "Successfully generated the CONTRIBUTING.md file"
   log "Generating the README.md file"
   npx -y @appnest/readme generate --config __bp.json --input ./.modules/docs/$README_FILE
+  npx prettier --write README.md
   success "Successfully generated the README.md file"
   rm __bp.json
 
