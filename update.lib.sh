@@ -465,6 +465,37 @@ missing_virtualization_platforms_notice() {
 ############### BUSINESS LOGIC ###############
 ##############################################
 
+# Adds a test.sh file to the test folder in Dockerfile projects
+# if the test folder exists
+add_docker_test_script() {
+  if [ -d test ]; then
+    info "The test folder exists"
+    log "Adding the common test.sh file to the test folder"
+    cp ./.modules/$REPO_TYPE/test.sh ./test/test.sh
+    log "Checking for presence of the 'docker_command' in .blueprint.json"
+    local HAS_DOCKER_COMMAND=$(jq -e 'has("docker_command")' .blueprint.json)
+    if [ "$HAS_DOCKER_COMMAND" != 'false' ]; then
+      info "'docker_command' is present in the .blueprint.json file"
+      local SLUG=$(jq -r '.subgroup' .blueprint.json)
+      if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i .bak 's^DOCKER_SLUG^'"${SLUG}"'^g' ./test/test.sh && rm ./test/test.sh.bak
+      else
+        sed -i 's^DOCKER_SLUG^'"${SLUG}"'^g' ./test/test.sh
+      fi
+      log "Injecting Docker slug name into ./test/test.sh"
+      local COMMAND=$(jq -r '.docker_command')
+      log "Injecting Docker command into ./test/test.sh"
+      if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i .bak 's^DOCKER_COMMAND^'"${COMMAND}"'^g' ./test/test.sh && rm ./test/test.sh.bak
+      else
+        sed -i 's^DOCKER_COMMAND^'"${COMMAND}"'^g' ./test/test.sh
+      fi
+    else
+      warn "The test folder exists but there is no 'docker_command' in .blueprint.json"
+    fi
+  fi
+}
+
 # Copies a file into the working directory for Dockerfiles that rely on
 # the initctl polyfill
 add_initctl() {
