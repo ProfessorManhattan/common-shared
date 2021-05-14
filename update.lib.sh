@@ -476,7 +476,7 @@ add_docker_test_script() {
     local HAS_DOCKER_COMMAND=$(jq -e 'has("docker_command")' .blueprint.json)
     if [ "$HAS_DOCKER_COMMAND" != 'false' ]; then
       info "'docker_command' is present in the .blueprint.json file"
-      local SLUG=$(jq -r '.subgroup' .blueprint.json)
+      local SLUG=$(jq -r '.slug' .blueprint.json)
       if [[ "$OSTYPE" == "darwin"* ]]; then
         sed -i .bak 's^DOCKER_SLUG^'"${SLUG}"'^g' ./test/test.sh && rm ./test/test.sh.bak
       else
