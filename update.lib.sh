@@ -919,6 +919,18 @@ misc_fixes() {
     chmod 755 .husky/pre-commit
     success "The Husky pre-commit has the correct file permissions"
   fi
+  # Ensure paths.txt is in alphabetical order
+  if [ -f paths.txt ]; then
+    log "Ensuring paths.txt is in alphabetical order"
+    sort paths.txt -o paths.txt
+    success "paths.txt is in alphabetical order"
+  fi
+  # Ensure requirements.txt is in alphabetical order
+  if [ -f requirements.txt ]; then
+    log "Ensuring requirements.txt is in alphabetical order"
+    sort requirements.txt -o requirements.txt
+    success "requirements.txt is in alphabetical order"
+  fi
 }
 
 update_docker_labels() {
