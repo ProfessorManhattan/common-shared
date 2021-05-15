@@ -729,7 +729,20 @@ copy_project_files_and_generate_package_json() {
       fi
     fi
     log "Injecting package.json with the saved name and version"
-    jq --arg a "@megabytelabs/${PACKAGE_NAME}" '.name = $a' package.json >__jq.json && mv __jq.json package.json
+    local PACKAGE_NAME_PREFIX=""
+    if [ "$REPO_TYPE" == 'ansible' ]; then
+      if [ ! -f main.yml ]; then
+        # No main.yml file so this must be an Ansible role
+        local PACKAGE_NAME_PREFIX=ansible-
+      fi
+    elif [ "$REPO_TYPE" == 'dockerfile' ]; then
+      local PACKAGE_NAME_PREFIX=docker-
+    elif [ "$REPO_TYPE" == 'packer' ]; then
+      local PACKAGE_NAME_PREFIX=packer-
+    elif [ "$REPO_TYPE" == 'python' ]; then
+      local PACKAGE_NAME_PREFIX=python-
+    fi
+    jq --arg a "@megabytelabs/${PACKAGE_NAME_PREFIX}${PACKAGE_NAME}" '.name = $a' package.json >__jq.json && mv __jq.json package.json
     jq --arg a "${PACKAGE_VERSION//\//}" '.version = $a' package.json >__jq.json && mv __jq.json package.json
     if [ "$REPO_TYPE" == 'dockerfile' ] && [ "$SUBGROUP" == 'ansible-molecule' ]; then
       log "Injecting package.json with the saved description"
