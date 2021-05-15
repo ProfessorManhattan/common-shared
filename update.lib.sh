@@ -955,6 +955,7 @@ misc_fixes() {
     else
       info "Project ID is already present in .blueprint.json"
     fi
+  fi
 }
 
 update_docker_labels() {
