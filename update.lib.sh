@@ -955,12 +955,18 @@ misc_fixes() {
   # Ensure Ansible Galaxy project ID is injected into .blueprint.json if project is a Ansible role
   if [ -d molecule ] && [ ! -f main.yml ]; then
     info "Project appears to be an Ansible role"
+    log "Injecting role name into package.json for Docker shell scripts"
+    local ROLE_NAME=$(jq -r '.role_name' .blueprint.json)
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i .bak "s^ANSIBLE_ROLE_NAME^${ROLE_NAME}^g" package.json && rm package.json.bak
+    else
+      sed -i "s^ANSIBLE_ROLE_NAME^${ROLE_NAME}^g" package.json
+    fi
     log "Ensuring project ID is injected into .blueprint.json"
     local HAS_PROJECT_ID=$(jq -e 'has("ansible_galaxy_project_id")' .blueprint.json)
     if [ "$HAS_PROJECT_ID" != 'true' ]; then
       info "Project ID is absent from .blueprint.json"
       log "Acquiring project ID and injecting it into .blueprint.json"
-      local ROLE_NAME=$(jq -r '.role_name' .blueprint.json)
       local PROJECT_ID=$(ansible-galaxy info "professormanhattan.${ROLE_NAME}" | grep -E 'id: [0-9]' | awk {'print $2'})
       if [ "$PROJECT_ID" ]; then
         jq --arg a "${PROJECT_ID}" '.ansible_galaxy_project_id = $a' .blueprint.json >__jq.json && mv __jq.json .blueprint.json
