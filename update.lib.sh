@@ -685,6 +685,9 @@ copy_project_files_and_generate_package_json() {
     # Retain information from package.json
     log "Backing up the package.json name and version"
     local PACKAGE_NAME=$(jq -r '.slug' .blueprint.json)
+    if [ "$REPO_TYPE" == 'ansible' ]; then
+      local PACKAGE_NAME=$(jq -r '.role_name' .blueprint.json)
+    fi
     local PACKAGE_VERSION=$(jq -r '.version' package.json)
     if [ "$REPO_TYPE" == 'dockerfile' ]; then
       local SUBGROUP=$(jq -r '.subgroup' .blueprint.json)
