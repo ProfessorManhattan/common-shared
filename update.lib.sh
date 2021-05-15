@@ -940,14 +940,14 @@ misc_fixes() {
   if [ -d molecule ] && [ ! -f main.yml ]; then
     info "Project appears to be an Ansible role"
     log "Ensuring project ID is injected into .blueprint.json"
-    local HAS_PROJECT_ID=$(jq -e 'has("project_id")' .blueprint.json)
+    local HAS_PROJECT_ID=$(jq -e 'has("ansible_galaxy_project_id")' .blueprint.json)
     if [ "$HAS_PROJECT_ID" != 'true' ]; then
       info "Project ID is absent from .blueprint.json"
       log "Acquiring project ID and injecting it into .blueprint.json"
       local ROLE_NAME=$(jq -r '.role_name' .blueprint.json)
       local PROJECT_ID=$(ansible-galaxy info "professormanhattan.${ROLE_NAME}" | grep -E 'id: [0-9]' | awk {'print $2'})
       if [ "$PROJECT_ID" ]; then
-        jq --arg a "${PROJECT_ID}" '.project_id = $a' .blueprint.json >__jq.json && mv __jq.json .blueprint.json
+        jq --arg a "${PROJECT_ID}" '.ansible_galaxy_project_id = $a' .blueprint.json >__jq.json && mv __jq.json .blueprint.json
         success "Successfully acquired the project ID for professormanhattan.${ROLE_NAME} and added it to .blueprint.json"
       else
         warn "The professormanhattan.${ROLE_NAME} role does not appear to be on Ansible Galaxy"
