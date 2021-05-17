@@ -984,7 +984,7 @@ populate_alternative_descriptions() {
   if [ "$REPO_TYPE" == 'ansible' ] && [ ! -f main.yml ]; then
     # Repository is type ansible and does not have a main.yml file so it must be a role
     # Read the description from meta/main.yml
-    if [ command_exists yq ]; then
+    if command_exists yq; then
       log "Generating role descriptions"
       local DESCRIPTION=$(yq e '.galaxy_info.description' meta/main.yml)
       local LOWERCASE_DESCRIPTION=`echo ${DESCRIPTION:0:1} | tr '[A-Z]' '[a-z]'`${DESCRIPTION:1}
