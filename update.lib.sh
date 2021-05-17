@@ -617,10 +617,34 @@ generate_documentation() {
   npx prettier --write CONTRIBUTING.md
   success "Successfully generated the CONTRIBUTING.md file"
   log "Generating the README.md file"
+  if [ "$REPO_TYPE" == 'ansible' ] && [ ! -f main.yml ]; then
+    info "Project type appears to be an Ansible role"
+    log "Generating partials using mod-ansible-autodoc"
+    if ! command_exists mod-ansible-autodoc; then
+      info "mod-ansible-autodoc does not appear to be installed"
+      log "Installing mod-ansible-autodoc"
+      pip3 install mod-ansible-autodoc
+    fi
+    mod-ansible-autodoc --todo-title "### TODO" --actions-title "## Features" --tags-title "## Tags" --variables-title "## Variables"
+    local BLANK_VARIABLES_FILE_CONTENTS='""'
+    local VARIABLES_FILE_CONTENTS=$(cat ansible_variables.json)
+    if [ "$VARIABLES_FILE_CONTENTS" != "$BLANK_VARIABLES_FILE_CONTENTS" ]; then
+      # Variables file contents is not empty
+      info "There are variables present"
+      local VARIABLES_CONTENT='## Variables\n\nThis role contains variables that you can customize. The variables you can customize are located in `defaults/main.yml`. By default, the variables use sensible defaults but you may want to customize the role depending on your use case. The variables, along with descriptions and examples, are listed in the chart below:\n\n{{ ansible_variables }}\n\n'
+      if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i .bak 's^## Variables^'"$VARIABLES_CONTENT"'^g' ansible_variables.md && rm ansible_variables.md.bak
+      else
+        sed -i 's^## Variables^'"$VARIABLES_CONTENT"'^g' README.md
+      fi
+      ROLE_VARIABLES=$(jq -r '.role_variables' ansible_variables.json)
+      jq --arg a "${ROLE_VARIABLES}" '.role_variables = $a' __bp.json > __jq.json && mv __jq.json __bp.json
+    fi
+  fi
   npx -y @appnest/readme generate --config __bp.json --input ./.modules/docs/$README_FILE
   npx prettier --write README.md
   success "Successfully generated the README.md file"
-  rm __bp.json
+  rm __bp.json ansible_actions.md ansible_tags.md ansible_todo.md ansible_variables.md ansible_variables.json
 
   # Remove formatting error
   # log "Fixing a quirk in the README.md and CONTRIBUTING.md files"
