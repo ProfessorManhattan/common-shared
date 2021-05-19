@@ -337,6 +337,78 @@ ensure_node_installed() {
   fi
 }
 
+ensure_packer_installed() {
+  if [ "$container" != 'docker' ]; then
+    log "Checking whether Packer is already installed"
+    local DOWNLOAD_DESTINATION=/tmp/megabytelabs/packer.zip
+    local TMP_DIR=/tmp/megabytelabs
+    local USER_BIN_FOLDER="$HOME/.local/bin"
+    if [ "$(uname)" == "Darwin" ]; then
+      local BASH_PROFILE="$HOME/.bash_profile"
+      local DOWNLOAD_SHA256=2dd688672157eed5d9f5126b1dd160862926ab698dc91e4ffb5a7fc2deb0b037
+      local DOWNLOAD_URL=https://releases.hashicorp.com/packer/1.7.2/packer_1.7.2_darwin_amd64.zip
+      if ! command_exists packer; then
+        info "Packer is not currently installed"
+        mkdir -p $TMP_DIR
+        mkdir -p "$USER_BIN_FOLDER"
+        log "Downloading the Packer binary"
+        wget $DOWNLOAD_URL -O $DOWNLOAD_DESTINATION
+        sha256 "$DOWNLOAD_DESTINATION" "$DOWNLOAD_SHA256"
+        log "SHA256 checksum validated successfully"
+        log "Installing Packer"
+        unzip "$DOWNLOAD_DESTINATION" -d "$TMP_DIR"
+        mv "$TMP_DIR/packer" "$HOME/.local/bin/packer"
+        success "Successfully installed Packer to ~/.local/bin"
+        rm "$DOWNLOAD_DESTINATION"
+        export PATH="$USER_BIN_FOLDER:$PATH"
+        # Check to see if the "export PATH" command is already present in ~/.bashrc
+        if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
+          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>$BASH_PROFILE
+          success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
+        else
+          log "The ~/.local/bin folder is already included in the PATH variable"
+        fi
+      else
+        info "Packer is already installed"
+      fi
+    elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+      local BASH_PROFILE="$HOME/.bashrc"
+      local DOWNLOAD_SHA256=9429c3a6f80b406dbddb9b30a4e468aeac59ab6ae4d09618c8d70c4f4188442e
+      local DOWNLOAD_URL=https://releases.hashicorp.com/packer/1.7.2/packer_1.7.2_linux_amd64.zip
+      if ! command_exists packer; then
+        info "Packer is not currently installed"
+        mkdir -p $TMP_DIR
+        mkdir -p "$USER_BIN_FOLDER"
+        log "Downloading the Packer binary"
+        wget $DOWNLOAD_URL -O $DOWNLOAD_DESTINATION
+        sha256 "$DOWNLOAD_DESTINATION" "$DOWNLOAD_SHA256"
+        log "SHA256 checksum validated successfully"
+        log "Installing Packer"
+        unzip "$DOWNLOAD_DESTINATION" -d "$TMP_DIR"
+        mv "$TMP_DIR/packer" "$HOME/.local/bin/packer"
+        success "Successfully installed Packer to ~/.local/bin"
+        rm "$DOWNLOAD_DESTINATION"
+        export PATH="$USER_BIN_FOLDER:$PATH"
+        # Check to see if the "export PATH" command is already present in ~/.bashrc
+        if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
+          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>$BASH_PROFILE
+          success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
+        else
+          log "The ~/.local/bin folder is already included in the PATH variable"
+        fi
+      else
+        info "Packer is already installed"
+      fi
+    elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
+      error "Windows support not added yet"
+    elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
+      error "Windows support not added yet"
+    fi
+  else
+    info "Bypassing installation of Packer because the 'container' environment variable is set to 'docker'"
+  fi
+}
+
 ensure_python3_installed() {
   if [ "$container" != 'docker' ]; then
     log "Checking whether Python 3 is already installed"
@@ -440,7 +512,6 @@ ensure_vagrant_installed() {
         mv "$TMP_DIR/vagrant" "$HOME/.local/bin/vagrant"
         success "Successfully installed Vagrant to ~/.local/bin"
         rm "$DOWNLOAD_DESTINATION"
-        rm $DOWNLOAD_DESTINATION
         export PATH="$USER_BIN_FOLDER:$PATH"
         # Check to see if the "export PATH" command is already present in ~/.bashrc
         if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
@@ -467,7 +538,6 @@ ensure_vagrant_installed() {
         mv "$TMP_DIR/vagrant" "$HOME/.local/bin/vagrant"
         success "Successfully installed Vagrant to ~/.local/bin"
         rm "$DOWNLOAD_DESTINATION"
-        rm $DOWNLOAD_DESTINATION
         export PATH="$USER_BIN_FOLDER:$PATH"
         # Check to see if the "export PATH" command is already present in ~/.bashrc
         if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
