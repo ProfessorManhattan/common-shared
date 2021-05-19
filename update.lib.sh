@@ -1154,12 +1154,15 @@ misc_fixes() {
     log "Injecting description in template.json"
     local ISO_VERSION=$(jq -r '.variables.iso_version' template.json)
     local MAJOR_VERSION=$(cut -d '.' -f 1 <<< $ISO_VERSION)
+    local MINOR_VERSION=$(cut -d '.' -f 2 <<< $ISO_VERSION)
     local DESCRIPTION_TEMPLATE=$(jq -r '.description_template' .blueprint.json)
     jq --arg a "${DESCRIPTION_TEMPLATE}" '.variables.description = $a' template.json >__jq.json && mv __jq.json template.json
     if [[ "$OSTYPE" == "darwin"* ]]; then
       sed -i .bak "s^MAJOR_VERSION^${MAJOR_VERSION}^g" template.json && rm template.json.bak
+      sed -i .bak "s^MINOR_VERSION^${MINOR_VERSION}^g" template.json && rm template.json.bak
     else
       sed -i "s^MAJOR_VERSION^${MAJOR_VERSION}^g" template.json
+      sed -i "s^MINOR_VERSION^${MINOR_VERSION}^g" template.json
     fi
     success "Populated the description in template.json"
   fi
