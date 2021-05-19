@@ -1156,13 +1156,19 @@ misc_fixes() {
     local MAJOR_VERSION=$(cut -d '.' -f 1 <<< $ISO_VERSION)
     local MINOR_VERSION=$(cut -d '.' -f 2 <<< $ISO_VERSION)
     local DESCRIPTION_TEMPLATE=$(jq -r '.description_template' .blueprint.json)
+    local DESCRIPTION_TEMPLATE_PACKAGE=$(jq -r '.description_template_package' .blueprint.json)
     jq --arg a "${DESCRIPTION_TEMPLATE}" '.variables.description = $a' template.json >__jq.json && mv __jq.json template.json
+    jq --arg a "${DESCRIPTION_TEMPLATE_PACKAGE}" '.description = $a' package.json >__jq.json && mv __jq.json package.json
     if [[ "$OSTYPE" == "darwin"* ]]; then
       sed -i .bak "s^MAJOR_VERSION^${MAJOR_VERSION}^g" template.json && rm template.json.bak
       sed -i .bak "s^MINOR_VERSION^${MINOR_VERSION}^g" template.json && rm template.json.bak
+      sed -i .bak "s^MAJOR_VERSION^${MAJOR_VERSION}^g" package.json && rm package.json.bak
+      sed -i .bak "s^MINOR_VERSION^${MINOR_VERSION}^g" package.json && rm package.json.bak
     else
       sed -i "s^MAJOR_VERSION^${MAJOR_VERSION}^g" template.json
       sed -i "s^MINOR_VERSION^${MINOR_VERSION}^g" template.json
+      sed -i "s^MAJOR_VERSION^${MAJOR_VERSION}^g" package.json
+      sed -i "s^MINOR_VERSION^${MINOR_VERSION}^g" package.json
     fi
     success "Populated the description in template.json"
     npx prettier --write template.json
