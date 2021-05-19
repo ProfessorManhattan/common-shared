@@ -1123,7 +1123,7 @@ misc_fixes() {
     success "requirements.txt is in alphabetical order"
   fi
   # Ensure Ansible Galaxy project ID is injected into .blueprint.json if project is a Ansible role
-  if [ -d molecule ] && [ ! -f main.yml ]; then
+  if [ "$REPO_TYPE" == 'ansible' ] && [ -d molecule ] && [ ! -f main.yml ]; then
     info "Project appears to be an Ansible role"
     log "Injecting role name into package.json for Docker shell scripts"
     local ROLE_NAME=$(jq -r '.role_name' .blueprint.json)
@@ -1147,6 +1147,21 @@ misc_fixes() {
     else
       info "Project ID is already present in .blueprint.json"
     fi
+  fi
+
+  # Ensure description is populated
+  if [ "$REPO_TYPE" == 'packer' ]; then
+    log "Injecting description in template.json"
+    local ISO_VERSION=$(jq -r '.variables.iso_version' template.json)
+    local MAJOR_VERSION=$(cut -d '.' -f 1 <<< $ISO_VERSION)
+    local DESCRIPTION_TEMPLATE=$(jq -r '.description_template' .blueprint.json)
+    jq --arg a "${DESCRIPTION_TEMPLATE}" '.variables.description = $a' template.json >__jq.json && mv __jq.json template.json
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i .bak "s^MAJOR_VERSION^${MAJOR_VERSION}^g" template.json && rm template.json.bak
+    else
+      sed -i "s^MAJOR_VERSION^${MAJOR_VERSION}^g" template.json
+    fi
+    success "Populated the description in template.json"
   fi
 }
 
