@@ -1067,6 +1067,29 @@ copy_project_files_and_generate_package_json() {
   success "Successfully ensured that the package.json file is Prettier-compliant"
 }
 
+generate_vagrantfile() {
+  log "Generating Vagrantfile"
+  local OS_BOX_BASENAME=$(jq -r '.variables.box_basename' template.json)
+  local OS_DESCRIPTION=$(jq -r '.variables.description' template.json)
+  local OS_HOSTNAME=$(jq -r '.hostname' .blueprint.json)
+  local OS_TAG=$(jq -r '.vagrant_tag' .blueprint.json)
+  local VAGRANTUP_USER=$(jq -r '.variables.vagrantup_user' template.json)
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i .bak "s^OS_BOX_BASENAME^${OS_BOX_BASENAME}^g" Vagrantfile && rm Vagrantfile.bak
+    sed -i .bak "s^OS_DESCRIPTION^${OS_DESCRIPTION}^g" Vagrantfile && rm Vagrantfile.bak
+    sed -i .bak "s^OS_HOSTNAME^${OS_HOSTNAME}^g" Vagrantfile && rm Vagrantfile.bak
+    sed -i .bak "s^OS_TAG^${OS_TAG}^g" Vagrantfile && rm Vagrantfile.bak
+    sed -i .bak "s^VAGRANTUP_USER^${VAGRANTUP_USER}^g" Vagrantfile && rm Vagrantfile.bak
+  else
+    sed -i "s^OS_BOX_BASENAME^${OS_BOX_BASENAME}^g" Vagrantfile
+    sed -i "s^OS_DESCRIPTION^${OS_DESCRIPTION}^g" Vagrantfile
+    sed -i "s^OS_HOSTNAME^${OS_HOSTNAME}^g" Vagrantfile
+    sed -i "s^OS_TAG^${OS_TAG}^g" Vagrantfile
+    sed -i "s^VAGRANTUP_USER^${VAGRANTUP_USER}^g" Vagrantfile
+  fi
+  success "Generated Vagrantfile"
+}
+
 # Miscellaneous fixes
 misc_fixes() {
   # Ensure .blueprint.json is using Prettier formatting
