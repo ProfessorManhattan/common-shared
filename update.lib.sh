@@ -731,7 +731,7 @@ generate_documentation() {
     fi
   fi
   if [ "$REPO_TYPE" == 'packer' ]; then
-    jq -s '.[0] * .[1]' template.json ./.modules/docs/common.json >__bp.json
+    jq -s '.[0] * .[1] * .[2]' template.json ./.modules/docs/common.json .blueprint.json >__bp.json
   else
     jq -s '.[0] * .[1]' .blueprint.json ./.modules/docs/common.json >__bp.json
   fi
