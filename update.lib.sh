@@ -500,26 +500,7 @@ ensure_vagrant_installed() {
     if [ "$(uname)" == "Darwin" ]; then
       local BASH_PROFILE="$HOME/.bash_profile"
       if ! command_exists vagrant; then
-        info "Vagrant is not currently installed"
-        mkdir -p $TMP_DIR
-        mkdir -p "$USER_BIN_FOLDER"
-        log "Downloading the Vagrant binary"
-        wget $DOWNLOAD_URL -O $DOWNLOAD_DESTINATION
-        sha256 "$DOWNLOAD_DESTINATION" "$DOWNLOAD_SHA256"
-        log "SHA256 checksum validated successfully"
-        log "Installing Vagrant"
-        unzip "$DOWNLOAD_DESTINATION" -d "$TMP_DIR"
-        mv "$TMP_DIR/vagrant" "$HOME/.local/bin/vagrant"
-        success "Successfully installed Vagrant to ~/.local/bin"
-        rm "$DOWNLOAD_DESTINATION"
-        export PATH="$USER_BIN_FOLDER:$PATH"
-        # Check to see if the "export PATH" command is already present in ~/.bashrc
-        if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
-          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>$BASH_PROFILE
-          success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
-        else
-          log "The ~/.local/bin folder is already included in the PATH variable"
-        fi
+        brew install --cask vagrant
       else
         info "Vagrant is already installed"
       fi
