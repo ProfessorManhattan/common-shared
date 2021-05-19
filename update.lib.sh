@@ -1147,6 +1147,64 @@ populate_alternative_descriptions() {
   fi
 }
 
+remove_unused_packer_platforms() {
+  log "Pruning references to build types in template.json that do not exist"
+  # Hyper-V
+  if ! grep -q '"type": "hyperv-iso"' template.json; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i .bak '/SUPPORTED_OS_HYPERV/d' README.md && rm README.md.bak
+      sed -i .bak '/\"build:hyperv\"/d' package.json && rm package.json.bak
+    else
+      sed -i '/SUPPORTED_OS_HYPERV/d' README.md
+      sed -i '/\"build:hyperv\"/d' package.json
+    fi
+  fi
+
+  # Parallels
+  if ! grep -q '"type": "parallels-iso"' template.json; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i .bak '/SUPPORTED_OS_PARALLELS/d' README.md && rm README.md.bak
+      sed -i .bak '/\"build:parallels\"/d' package.json && rm package.json.bak
+    else
+      sed -i '/SUPPORTED_OS_PARALLELS/d' README.md
+      sed -i '/\"build:parallels\"/d' package.json
+    fi
+  fi
+
+  # QEMU/KVM
+  if ! grep -q '"type": "qemu"' template.json; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i .bak '/SUPPORTED_OS_KVM/d' README.md && rm README.md.bak
+      sed -i .bak '/\"build:kvm\"/d' package.json && rm package.json.bak
+    else
+      sed -i '/SUPPORTED_OS_KVM/d' README.md
+      sed -i '/\"build:kvm\"/d' package.json
+    fi
+  fi
+
+  # VirtualBox
+  if ! grep -q '"type": "virtualbox-iso"' template.json; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i .bak '/SUPPORTED_OS_VIRTUALBOX/d' README.md && rm README.md.bak
+      sed -i .bak '/\"build:virtualbox\"/d' package.json && rm package.json.bak
+    else
+      sed -i '/SUPPORTED_OS_VIRTUALBOX/d' README.md
+      sed -i '/\"build:virtualbox\"/d' package.json
+    fi
+  fi
+
+  # VMWare
+  if ! grep -q '"type": "vmware-iso"' template.json; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i .bak '/SUPPORTED_OS_VMWARE/d' README.md && rm README.md.bak
+      sed -i .bak '/\"build:vmware\"/d' package.json && rm package.json.bak
+    else
+      sed -i '/SUPPORTED_OS_VMWARE/d' README.md
+      sed -i '/\"build:vmware\"/d' package.json
+    fi
+  fi
+}
+
 update_docker_labels() {
   local DOCKERFILE_GROUP=https://gitlab.com/megabyte-labs/dockerfile
   local PACKAGE_DESCRIPTION=$(jq '.description' package.json)
