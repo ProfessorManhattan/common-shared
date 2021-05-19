@@ -1165,6 +1165,7 @@ misc_fixes() {
       sed -i "s^MINOR_VERSION^${MINOR_VERSION}^g" template.json
     fi
     success "Populated the description in template.json"
+    npx prettier --write template.json
   fi
 }
 
