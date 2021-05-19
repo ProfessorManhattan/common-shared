@@ -742,7 +742,7 @@ copy_project_files_and_generate_package_json() {
       cp ./.modules/$REPO_TYPE/files/requirements.txt requirements.txt
       npx husky install
     else
-      cp -Rf ./.modules/$REPO_TYPE/files/ .
+      cp -Rf ./.modules/$REPO_TYPE/files/. .
 
       # Reset ./.modules/ansible if appropriate
       if [ "$REPO_TYPE" == 'ansible' ] && [ ! -f ./main.yml ]; then
