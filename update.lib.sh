@@ -1260,16 +1260,18 @@ remove_unused_packer_platforms() {
 }
 
 run_latestos() {
-  if ! command_exists latestos; then
-    log "The pip package latestos is missing, installing it now.."
-    pip3 install latestos
-    success "latestos installed successfully"
-  fi
-  LATESTOS_TAG=$(jq -r '.vagrant_tag' .blueprint.json)
-  if [ "$LATESTOS_TAG" != 'windows' ] && [ "$LATESTOS_TAG" != 'macos' ]; then
-    log "Determining the latest OS information"
-    latestos "$LATESTOS_TAG"
-    success "Updated iso_url and iso_checksum to the latest version"
+  if [ "$container" != 'docker' ]; then
+    if ! command_exists latestos; then
+      log "The pip package latestos is missing, installing it now.."
+      pip3 install latestos
+      success "latestos installed successfully"
+    fi
+    LATESTOS_TAG=$(jq -r '.vagrant_tag' .blueprint.json)
+    if [ "$LATESTOS_TAG" != 'windows' ] && [ "$LATESTOS_TAG" != 'macos' ]; then
+      log "Determining the latest OS information"
+      latestos "$LATESTOS_TAG"
+      success "Updated iso_url and iso_checksum to the latest version"
+    fi
   fi
 }
 
