@@ -1187,15 +1187,17 @@ populate_packer_descriptions() {
     if [[ "$OSTYPE" == "darwin"* ]]; then
       sed -i .bak "s^MAJOR_VERSION^${MAJOR_VERSION}^g" template.json && rm template.json.bak
       sed -i .bak "s^MINOR_VERSION^${MINOR_VERSION}^g" template.json && rm template.json.bak
+      sed -i .bak "s^ISO_VERSION^${ISO_VERSION}^g" template.json && rm template.json.bak
       sed -i .bak "s^MAJOR_VERSION^${MAJOR_VERSION}^g" package.json && rm package.json.bak
       sed -i .bak "s^MINOR_VERSION^${MINOR_VERSION}^g" package.json && rm package.json.bak
-      sed -i .bak "s^ISO_VERSION^${ISO_VERSION}^g" template.json && rm template.json.bak
+      sed -i .bak "s^ISO_VERSION^${ISO_VERSION}^g" package.json && rm package.json.bak
     else
       sed -i "s^MAJOR_VERSION^${MAJOR_VERSION}^g" template.json
       sed -i "s^MINOR_VERSION^${MINOR_VERSION}^g" template.json
+      sed -i "s^ISO_VERSION^${ISO_VERSION}^g" template.json
       sed -i "s^MAJOR_VERSION^${MAJOR_VERSION}^g" package.json
       sed -i "s^MINOR_VERSION^${MINOR_VERSION}^g" package.json
-      sed -i "s^ISO_VERSION^${ISO_VERSION}^g" template.json
+      sed -i "s^ISO_VERSION^${ISO_VERSION}^g" package.json
     fi
     success "Populated the description in template.json"
     npx prettier --write template.json
