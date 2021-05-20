@@ -317,7 +317,8 @@ ensure_node_installed() {
       if [ ! -f package.json ]; then
         cp ./.modules/$REPO_TYPE/files/package.json package.json
       fi
-      npm install --ignore-scripts
+      npm install
+      exit 0
     fi
     if ! command_exists run-func; then
       npm install -g run-func
