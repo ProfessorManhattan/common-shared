@@ -1148,7 +1148,29 @@ misc_fixes() {
       info "Project ID is already present in .blueprint.json"
     fi
   fi
+}
 
+populate_alternative_descriptions() {
+  if [ "$REPO_TYPE" == 'ansible' ] && [ ! -f main.yml ]; then
+    # Repository is type ansible and does not have a main.yml file so it must be a role
+    # Read the description from meta/main.yml
+    if command_exists yq; then
+      log "Generating role descriptions"
+      local DESCRIPTION=$(yq e '.galaxy_info.description' meta/main.yml)
+      local LOWERCASE_DESCRIPTION=`echo ${DESCRIPTION:0:1} | tr '[A-Z]' '[a-z]'`${DESCRIPTION:1}
+      local BLUEPRINT_DESCRIPTION="An Ansible role that ${LOWERCASE_DESCRIPTION}"
+      local ALT_DESCRIPTION="This repository is the home of an Ansible role that ${LOWERCASE_DESCRIPTION}."
+      log "Writing alternative role descriptions to .blueprint.json"
+      jq --arg a "${BLUEPRINT_DESCRIPTION}" '.role_description = $a' .blueprint.json >__jq.json && mv __jq.json .blueprint.json
+      jq --arg a "${ALT_DESCRIPTION}" '.role_description_alt = $a' .blueprint.json >__jq.json && mv __jq.json .blueprint.json
+      success "Successfully populated .blueprint.json with alternative role descriptions"
+    else
+      warn "yq is not installed. Skipping logic that populates .blueprint.json with alternative description formats."
+    fi
+  fi
+}
+
+populate_packer_descriptions() {
   # Ensure description is populated
   if [ "$REPO_TYPE" == 'packer' ]; then
     log "Injecting description in template.json"
@@ -1176,26 +1198,6 @@ misc_fixes() {
     fi
     success "Populated the description in template.json"
     npx prettier --write template.json
-  fi
-}
-
-populate_alternative_descriptions() {
-  if [ "$REPO_TYPE" == 'ansible' ] && [ ! -f main.yml ]; then
-    # Repository is type ansible and does not have a main.yml file so it must be a role
-    # Read the description from meta/main.yml
-    if command_exists yq; then
-      log "Generating role descriptions"
-      local DESCRIPTION=$(yq e '.galaxy_info.description' meta/main.yml)
-      local LOWERCASE_DESCRIPTION=`echo ${DESCRIPTION:0:1} | tr '[A-Z]' '[a-z]'`${DESCRIPTION:1}
-      local BLUEPRINT_DESCRIPTION="An Ansible role that ${LOWERCASE_DESCRIPTION}"
-      local ALT_DESCRIPTION="This repository is the home of an Ansible role that ${LOWERCASE_DESCRIPTION}."
-      log "Writing alternative role descriptions to .blueprint.json"
-      jq --arg a "${BLUEPRINT_DESCRIPTION}" '.role_description = $a' .blueprint.json >__jq.json && mv __jq.json .blueprint.json
-      jq --arg a "${ALT_DESCRIPTION}" '.role_description_alt = $a' .blueprint.json >__jq.json && mv __jq.json .blueprint.json
-      success "Successfully populated .blueprint.json with alternative role descriptions"
-    else
-      warn "yq is not installed. Skipping logic that populates .blueprint.json with alternative description formats."
-    fi
   fi
 }
 
@@ -1254,6 +1256,20 @@ remove_unused_packer_platforms() {
       sed -i '/SUPPORTED_OS_VMWARE/d' README.md
       sed -i '/\"build:vmware\"/d' package.json
     fi
+  fi
+}
+
+run_latestos() {
+  if ! command_exists latestos; then
+    log "The pip package latestos is missing, installing it now.."
+    pip3 install latestos
+    success "latestos installed successfully"
+  fi
+  LATESTOS_TAG=$(jq -r '.vagrant_tag' .blueprint.json)
+  if [ "$LATESTOS_TAG" != 'windows' ] && [ "$LATESTOS_TAG" != 'macos' ]; then
+    log "Determining the latest OS information"
+    latestos "$LATESTOS_TAG"
+    success "Updated iso_url and iso_checksum to the latest version"
   fi
 }
 
