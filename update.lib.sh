@@ -1290,13 +1290,15 @@ symlink_roles() {
       find "$PWD/roles" -mindepth 2 -maxdepth 2 -type d -not -path '*/\.*' | while read -r ROLE_PATH
       do
         local ROLE_FOLDER=$(basename $ROLE_PATH)
-        ln -sf "$ROLE_PATH" ~/.ansible/roles/${ANSIBLE_GALAXY_USERNAME}.${ROLE_FOLDER}
+        rm "$HOME/.ansible/roles/${ANSIBLE_GALAXY_USERNAME}.${ROLE_FOLDER}"
+        ln -s "$ROLE_PATH" "$HOME/.ansible/roles/${ANSIBLE_GALAXY_USERNAME}.${ROLE_FOLDER}"
       done
     else
       info "Project is an Ansible role"
       log "Symlinking the current role to the local roles folder (~/.ansible/roles)"
       local ROLE_FOLDER=$(basename $PWD)
-      ln -sf "$PWD" "~/.ansible/roles/${ANSIBLE_GALAXY_USERNAME}.${ROLE_FOLDER}"
+      rm "$HOME/.ansible/roles/${ANSIBLE_GALAXY_USERNAME}.${ROLE_FOLDER}"
+      ln -s "$PWD" "~/.ansible/roles/${ANSIBLE_GALAXY_USERNAME}.${ROLE_FOLDER}"
     fi
     success "Successfully generated symlink(s)"
   fi
