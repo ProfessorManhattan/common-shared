@@ -816,6 +816,19 @@ install_requirements() {
   fi
 }
 
+copy_playbook_files() {
+  cp -Rf ./.modules/$REPO_TYPE/files/.gitlab . # TODO: Figure out how to combine these copy statements
+  cp -Rf ./.modules/$REPO_TYPE/files/.husky .
+  cp -Rf ./.modules/$REPO_TYPE/files/.vscode .
+  cp ./.modules/$REPO_TYPE/files/.ansible-lint .ansible-lint
+  cp ./.modules/$REPO_TYPE/files/.gitignore .gitignore
+  cp ./.modules/$REPO_TYPE/files/.gitlab-ci.yml .gitlab-ci.yml
+  cp ./.modules/$REPO_TYPE/files/LICENSE LICENSE
+  cp ./.modules/$REPO_TYPE/playbook-files/package.json package.json
+  cp ./.modules/$REPO_TYPE/files/requirements.txt requirements.txt
+  cp -Rf ./.modules/$REPO_TYPE/playbook-files/. .
+}
+
 # Updates package.json
 copy_project_files_and_generate_package_json() {
   # Prepare common Ansible files for copying over
@@ -858,16 +871,7 @@ copy_project_files_and_generate_package_json() {
     fi
     warn "Copying the $REPO_TYPE common files into the repository - this may overwrite changes to files managed by the common repository. For more information please see the CONTRIBUTING.md document."
     if [ "$REPO_TYPE" == 'ansible' ] && [ -f ./main.yml ]; then
-      cp -Rf ./.modules/$REPO_TYPE/files/.gitlab . # TODO: Figure out how to combine these cp statements
-      cp -Rf ./.modules/$REPO_TYPE/files/.husky .
-      cp -Rf ./.modules/$REPO_TYPE/files/.vscode .
-      cp -Rf ./.modules/$REPO_TYPE/files/molecule .
-      cp ./.modules/$REPO_TYPE/files/.ansible-lint .ansible-lint
-      cp ./.modules/$REPO_TYPE/files/.gitignore .gitignore
-      cp ./.modules/$REPO_TYPE/files/LICENSE LICENSE
-      cp ./.modules/$REPO_TYPE/files/package.json package.json
-      cp ./.modules/$REPO_TYPE/files/requirements.txt requirements.txt
-      npx husky install
+      copy_playbook_files
     else
       cp -Rf ./.modules/$REPO_TYPE/files/. .
 
@@ -924,16 +928,7 @@ copy_project_files_and_generate_package_json() {
     if [ "$REPO_TYPE" == 'ansible' ] && [ -f main.yml ]; then
       # The project type is an Ansible playbook
       log "Copying Ansible Playbook files since the main.yml file is present in the root directory"
-      cp -Rf ./.modules/$REPO_TYPE/files/.gitlab . # TODO: Figure out how to combine these copy statements
-      cp -Rf ./.modules/$REPO_TYPE/files/.husky .
-      cp -Rf ./.modules/$REPO_TYPE/files/.vscode .
-      cp -Rf ./.modules/$REPO_TYPE/files/molecule .
-      cp ./.modules/$REPO_TYPE/files/.ansible-lint .ansible-lint
-      cp ./.modules/$REPO_TYPE/files/.gitignore .gitignore
-      cp ./.modules/$REPO_TYPE/files/LICENSE LICENSE
-      cp ./.modules/$REPO_TYPE/files/package.json package.json
-      cp ./.modules/$REPO_TYPE/files/requirements.txt requirements.txt
-      npx husky install
+      copy_playbook_files
     else
       log "Copying base files from the common $REPO_TYPE repository"
       cp -Rf ./.modules/$REPO_TYPE/files/ .
