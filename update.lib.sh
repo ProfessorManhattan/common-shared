@@ -6,6 +6,9 @@
 # functions that perform maintenance tasks and install missing
 # software requirements like Node.js and Python.
 
+
+ANSIBLE_GALAXY_USERNAME=professormanhattan
+
 ##############################################
 ############## COMMON FUNCTIONS ##############
 ##############################################
@@ -1281,6 +1284,26 @@ run_latestos() {
       latestos "$LATESTOS_TAG"
       success "Updated iso_url and iso_checksum to the latest version"
     fi
+  fi
+}
+
+symlink_roles() {
+  if [ "$REPO_TYPE" == 'ansible' ]; then
+    if [ -f main.yml ]; then
+      info "Project is an Ansible Playbook"
+      log "Symlinking all of the roles in the roles folder to ~/.ansible/roles"
+      find "$PWD/roles" -mindepth 2 -maxdepth 2 -type d -not -path '*/\.*' | while read -r ROLE_PATH
+      do
+        local ROLE_FOLDER=$(basename $ROLE_PATH)
+        ln -sf "$ROLE_PATH" "~/.ansible/roles/${ANSIBLE_GALAXY_USERNAME}.${ROLE_FOLDER}"
+      done
+    else
+      info "Project is an Ansible role"
+      log "Symlinking the current role to the local roles folder (~/.ansible/roles)"
+      local ROLE_FOLDER=$(basename $PWD)
+      ln -sf "$PWD" "~/.ansible/roles/${ANSIBLE_GALAXY_USERNAME}.${ROLE_FOLDER}"
+    fi
+    success "Successfully generated symlink(s)"
   fi
 }
 
