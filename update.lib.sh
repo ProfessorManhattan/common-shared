@@ -1295,7 +1295,7 @@ symlink_roles() {
       find "$PWD/roles" -mindepth 2 -maxdepth 2 -type d -not -path '*/\.*' | while read -r ROLE_PATH
       do
         local ROLE_FOLDER=$(basename $ROLE_PATH)
-        ln -sf "$ROLE_PATH" "~/.ansible/roles/${ANSIBLE_GALAXY_USERNAME}.${ROLE_FOLDER}"
+        ln -sf "$ROLE_PATH" ~/.ansible/roles/${ANSIBLE_GALAXY_USERNAME}.${ROLE_FOLDER}
       done
     else
       info "Project is an Ansible role"
