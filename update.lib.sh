@@ -1149,6 +1149,12 @@ misc_fixes() {
       info "Project ID is already present in .blueprint.json"
     fi
   fi
+  if [ -d node_modules ]; then
+    info "node_modules folder is present"
+    log "Running npm audit fix to ensure there are no vulnerabilities"
+    npm audit fix
+    success "Ran npm audit fix"
+  fi
 }
 
 populate_alternative_descriptions() {
