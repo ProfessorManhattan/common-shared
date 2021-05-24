@@ -860,7 +860,9 @@ copy_project_files_and_generate_package_json() {
         log "Backing up the package.json description"
         local PACKAGE_DESCRIPTION=$(jq -r '.description' package.json)
       fi
-    elif [ "$REPO_TYPE" == 'ansible' ] || [ "$REPO_TYPE" == 'packer' ] || [ "$REPO_TYPE" == 'npm' ]; then
+    elif [ "$REPO_TYPE" == 'ansible' ]; then
+      local PACKAGE_DESCRIPTION=$(jq -r '.role_description' .blueprint.json)
+    elif [ "$REPO_TYPE" == 'packer' ] || [ "$REPO_TYPE" == 'npm' ]; then
       log "Backing up the package.json description"
       local PACKAGE_DESCRIPTION=$(jq -r '.description' package.json)
     fi
