@@ -701,6 +701,18 @@ ensure_windows_submodule_latest() {
 
 # TODO: Add ensure_wget_installed and make it so that it can be installed without sudo password
 
+# Generate chart data used for documentation
+generate_ansible_charts() {
+  if [ "$REPO_TYPE" == 'ansible' ]; then
+    if [ -f main.yml ]; then
+      # Playbook
+      npx @megabytelabs/ansibler --roles ./roles --output ./dependency-chart.json --base-url https://gitlab.com/megabyte-labs/ansible-roles --username professormanhattan --populate-descriptions
+    else
+      # Role
+    fi
+  fi
+}
+
 # Generates the README.md and CONTRIBUTING.md with documentation partials using
 # the Node.js library @appnest/readme
 generate_documentation() {
