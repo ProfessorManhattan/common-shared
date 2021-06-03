@@ -707,8 +707,6 @@ generate_ansible_charts() {
     if [ -f main.yml ]; then
       # Playbook
       npx @megabytelabs/ansibler --roles ./roles --output ./dependency-chart.json --base-url https://gitlab.com/megabyte-labs/ansible-roles --username professormanhattan --populate-descriptions
-    else
-      # Role
     fi
   fi
 }
