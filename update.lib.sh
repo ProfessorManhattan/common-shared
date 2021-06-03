@@ -787,7 +787,7 @@ generate_documentation() {
   npx -y @appnest/readme generate --config __bp.json --input ./.modules/docs/$README_FILE
   npx prettier --write README.md
   success "Successfully generated the README.md file"
-  rm -f __bp.json ansible_actions.md ansible_tags.md ansible_todo.md ansible_variables.md ansible_variables.json
+  rm -f __bp.json ansible_actions.md ansible_tags.md ansible_todo.md ansible_variables.md ansible_variables.json dependency-chart.json
 
   # Remove formatting error
   # log "Fixing a quirk in the README.md and CONTRIBUTING.md files"
