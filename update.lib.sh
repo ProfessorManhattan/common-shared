@@ -780,6 +780,10 @@ generate_documentation() {
       jq --arg a "${ROLE_VARIABLES}" '.role_variables = $a' __bp.json > __jq.json && mv __jq.json __bp.json
     fi
   fi
+  if [ -f dependency-chart.json ]; then
+    local ROLE_DEPENDENCIES=$(jq -r '.' dependency-chart.json)
+    jq --arg a "${ROLE_DEPENDENCIES}" '.role_dependencies = $a' __bp.json > __jq.json && mv __jq.json __bp.json
+  fi
   npx -y @appnest/readme generate --config __bp.json --input ./.modules/docs/$README_FILE
   npx prettier --write README.md
   success "Successfully generated the README.md file"
