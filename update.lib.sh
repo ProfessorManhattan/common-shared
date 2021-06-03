@@ -781,7 +781,7 @@ generate_documentation() {
     fi
   fi
   if [ -f dependency-chart.json ]; then
-    local ROLE_DEPENDENCIES=$(jq -r '.' dependency-chart.json)
+    local ROLE_DEPENDENCIES=$(jq -r '.role_dependencies' dependency-chart.json)
     jq --arg a "${ROLE_DEPENDENCIES}" '.role_dependencies = $a' __bp.json > __jq.json && mv __jq.json __bp.json
   fi
   npx -y @appnest/readme generate --config __bp.json --input ./.modules/docs/$README_FILE
