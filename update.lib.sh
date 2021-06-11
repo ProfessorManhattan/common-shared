@@ -301,6 +301,81 @@ ensure_jq_installed() {
   fi
 }
 
+# Ensures yq is installed. If it is not present, it is installed to ~/.local/bin for
+# the current user
+ensure_yq_installed() {
+  if [ "$container" != 'docker' ]; then
+    log "Checking whether yq is already installed"
+    if [ "$(uname)" == "Darwin" ]; then
+      # System is Mac OS X
+      local BASH_PROFILE="$HOME/.bash_profile"
+      local DESTINATION="$HOME/.local/bin/yq"
+      local DOWNLOAD_SHA256=b8022412841288a1ed5bfa51b3899631b566e2d9508f3ae55d4e0b9a1b6ac3a6
+      local DOWNLOAD_URL=https://github.com/mikefarah/yq/releases/download/v4.9.5/yq_darwin_amd64
+      local USER_BIN_FOLDER="$HOME/.local/bin"
+      if [ ! -f "$DESTINATION" ] && ! command_exists yq; then
+        info "yq is not currently installed"
+        log "Ensuring the ~/.local/bin folder exists"
+        mkdir -p $USER_BIN_FOLDER
+        log "Downloading yq for Mac OS X"
+        wget $DOWNLOAD_URL -O $DESTINATION
+        sha256 "$DESTINATION" "$DOWNLOAD_SHA256"
+        log "SHA256 checksum validated successfully"
+        chmod +x $DESTINATION
+        success "yq successfully installed to the ~/.local/bin folder"
+        export PATH="$USER_BIN_FOLDER:$PATH"
+        # Check to see if the "export PATH" command is already present in ~/.bash_profile
+        if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
+          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>$BASH_PROFILE
+          success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
+        else
+          log "The ~/.local/bin folder is already included in the PATH variable"
+        fi
+      else
+        info "yq is already installed"
+      fi
+    elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+      # System is Linux
+      local BASH_PROFILE="$HOME/.bashrc"
+      local DESTINATION="$HOME/.local/bin/yq"
+      local DOWNLOAD_SHA256=c0a7ea321579c6019f00ff4a46cc2f64ce903aa01ec52de21befe0f93e4a6ca1
+      local DOWNLOAD_URL=https://github.com/mikefarah/yq/releases/download/v4.9.5/yq_linux_amd64
+      local USER_BIN_FOLDER="$HOME/.local/bin"
+      if [ ! -f "$DESTINATION" ] && ! command_exists yq; then
+        info "yq is not currently installed"
+        log "Ensuring the ~/.local/bin folder exists"
+        mkdir -p $USER_BIN_FOLDER
+        log "Downloading yq for Linux"
+        wget $DOWNLOAD_URL -O $DESTINATION
+        sha256 "$DESTINATION" "$DOWNLOAD_SHA256"
+        log "SHA256 checksum validated successfully"
+        chmod +x $DESTINATION
+        success "yq successfully installed to the ~/.local/bin folder"
+        export PATH="$USER_BIN_FOLDER:$PATH"
+        # Check to see if the "export PATH" command is already present in ~/.bashrc
+        if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
+          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>$BASH_PROFILE
+          success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
+        else
+          log "The ~/.local/bin folder is already included in the PATH variable"
+        fi
+      else
+        info "yq is already installed"
+      fi
+    elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
+      # System is Windows 32-bit
+      local DOWNLOAD_URL=https://github.com/mikefarah/yq/releases/download/v4.9.5/yq_windows_386.exe
+      error "Windows support has not been added yet"
+    elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
+      # System is Windows 64-bit
+      local DOWNLOAD_URL=https://github.com/mikefarah/yq/releases/download/v4.9.5/yq_windows_amd64.exe
+      error "Windows support has not been added yet"
+    fi
+  else
+    info "Bypassing installation of yq because the 'container' environment variable is set to 'docker'"
+  fi
+}
+
 # Ensures Node.js is installed by using nvm
 ensure_node_installed() {
   if [ "$container" != 'docker' ]; then
@@ -1187,6 +1262,82 @@ populate_alternative_descriptions() {
       success "Successfully populated .blueprint.json with alternative role descriptions"
     else
       warn "yq is not installed. Skipping logic that populates .blueprint.json with alternative description formats."
+    fi
+  fi
+}
+
+populate_common_missing_ansible_dependencies() {
+  info "Attempting to automatically populate common role and collection dependencies"
+  log "Ensuring chocolatey.chocolatey collection is in requirements (if necessary)"
+  local CHOCO_REFS=$(grep -Ril "chocolatey.chocolatey" ./tasks)
+  if [ "$CHOCO_REFS" ]; then
+    local CHOCO_REQS_REFS=$(yq eval '.collections' requirements.yml)
+    if [[ ! $CHOCO_REQS_REFS =~ "chocolatey.chocolatey" ]]; then
+      yq eval -i '.collections = .collections + {"name": "chocolatey.chocolatey", "source": "https://galaxy.ansible.com"}' requirements.yml
+    fi
+  fi
+  log "Ensuring community.general collection is in requirements (if necessary)"
+  local COMMUNITY_REFS=$(grep -Ril "community.general" ./tasks)
+  if [ "$COMMUNITY_REFS" ]; then
+    local COMMUNITY_REQ_REFS=$(yq eval '.collections' requirements.yml)
+    if [[ ! $COMMUNITY_REQ_REFS =~ "community.general" ]]; then
+      yq eval -i '.collections = .collections + {"name": "chocolatey.chocolatey", "source": "https://galaxy.ansible.com"}' requirements.yml
+    fi
+  fi
+  log "Ensuring professormanhattan.homebrew role is in requirements (if necessary)"
+  local HOMEBREW_REFS=$(grep -Ril "community.general.homebrew" ./tasks)
+  if [ "$HOMEBREW_REFS" ]; then
+    local HOMEBREW_META_REFS=$(yq eval '.dependencies' meta/main.yml)
+    if [[ ! $HOMEBREW_META_REFS =~ "professormanhattan.homebrew" ]]; then
+      yq eval -i '.dependencies = .dependencies + {"role": "professormanhattan.homebrew", "when": "ansible_os_family == \"Darwin\""}' meta/main.yml
+    fi
+    local HOMEBREW_REQ_REFS=$(yq eval '.roles' requirements.yml)
+    if [[ ! $HOMEBREW_REQS_REFS =~ "professormanhattan.homebrew" ]]; then
+      yq eval -i '.roles = .roles + {"role": "professormanhattan.homebrew"}' requirements.yml
+    fi
+  fi
+  log "Ensuring professormanhattan.nodejs role is in requirements (if necessary)"
+  local NODEJS_REFS=$(grep -Ril "community.general.npm" ./tasks)
+  if [ "$NODEJS_REFS" ]; then
+    local NODEJS_META_REFS=$(yq eval '.dependencies' meta/main.yml)
+    if [[ ! $NODEJS_META_REFS =~ "professormanhattan.nodejs" ]]; then
+      yq eval -i '.dependencies = .dependencies + {"role": "professormanhattan.nodejs"}' meta/main.yml
+    fi
+    local NODEJS_REQ_REFS=$(yq eval '.roles' requirements.yml)
+    if [[ ! $NODEJS_REQS_REFS =~ "professormanhattan.nodejs" ]]; then
+      yq eval -i '.roles = .roles + {"role": "professormanhattan.nodejs"}' requirements.yml
+    fi
+  fi
+  log "Ensuring professormanhattan.ruby role is in requirements (if necessary)"
+  local RUBY_REFS=$(grep -Ril "community.general.gem" ./tasks)
+  if [ "$RUBY_REFS" ]; then
+    local RUBY_META_REFS=$(yq eval '.dependencies' meta/main.yml)
+    if [[ ! $RUBY_META_REFS =~ "professormanhattan.ruby" ]]; then
+      yq eval -i '.dependencies = .dependencies + {"role": "professormanhattan.ruby"}' meta/main.yml
+    fi
+    local RUBY_REQ_REFS=$(yq eval '.roles' requirements.yml)
+    if [[ ! $RUBY_REQS_REFS =~ "professormanhattan.ruby" ]]; then
+      yq eval -i '.roles = .roles + {"role": "professormanhattan.ruby"}' requirements.yml
+    fi
+  fi
+  log "Ensuring professormanhattan.snapd role is in requirements (if necessary)"
+  local SNAPD_REFS=$(grep -Ril "community.general.snap" ./tasks)
+  if [ "$SNAPD_REFS" ]; then
+    local SNAPD_META_REFS=$(yq eval '.dependencies' meta/main.yml)
+    if [[ ! $SNAPD_META_REFS =~ "professormanhattan.snapd" ]]; then
+      yq eval -i '.dependencies = .dependencies + {"role": "professormanhattan.snapd", "when": "ansible_os_family == \"Darwin\""}' meta/main.yml
+    fi
+    local SNAPD_REQ_REFS=$(yq eval '.roles' requirements.yml)
+    if [[ ! $SNAPD_REQS_REFS =~ "professormanhattan.snapd" ]]; then
+      yq eval -i '.roles = .roles + {"role": "professormanhattan.snapd"}' requirements.yml
+    fi
+  fi
+  log "Ensuring mas is in requirements.yml if professormanhattan.mas is in the meta dependencies list"
+  local META_REFS=$(yq eval '.dependencies' meta/main.yml)
+  if [[ $META_REFS =~ "professormanhattan.mas" ]]; then
+    local REQ_REFS=$(yq eval '.roles' requirements.yml)
+    if [[ ! $REQ_REFS =~ "professormanhattan.mas" ]]; then
+      yq eval -i '.roles = .roles + {"role": "professormanhattan.mas"}' requirements.yml
     fi
   fi
 }
