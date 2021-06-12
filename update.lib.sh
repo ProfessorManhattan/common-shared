@@ -1326,6 +1326,7 @@ populate_common_missing_ansible_dependencies() {
         yq eval -i '.roles = .roles + {"name": $ROLE_NAME}' requirements.yml
       fi
     done
+    rm _meta-deps.json
   fi
 }
 
