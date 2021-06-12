@@ -898,7 +898,7 @@ install_requirements() {
 
     # Install Ansible Galaxy requirements if requirements.yml is present
     if [ -f requirements.yml ]; then
-      ansible-galaxy install -r requirements.yml
+      ansible-galaxy install -r --ignore-errors requirements.yml
     fi
   else
     info "Bypassing installation of project requirements because the 'container' environment variable is set to 'docker'"
