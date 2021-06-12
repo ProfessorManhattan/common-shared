@@ -1122,7 +1122,7 @@ copy_project_files_and_generate_package_json() {
 
     # Updates the description from .blueprint.json
     local SUBGROUP=$(jq -r '.subgroup' .blueprint.json)
-    if [ "$SUBGROUP" == 'ci-pipeline' ] && [ "$container" != 'docker' ]; then
+    if ([ "$SUBGROUP" == 'ci-pipeline' ] || [ "$SUBGROUP" == 'ansible-molecule' ]) && [ "$container" != 'docker' ]; then
       log "Ensuring the package.json description is updated, using a value specified in .blueprint.json"
       local DESCRIPTION_TEMPLATE=$(jq -r '.description_template' .blueprint.json)
       jq --arg a "${DESCRIPTION_TEMPLATE}" '.description = $a' package.json >__jq.json && mv __jq.json package.json
