@@ -1267,78 +1267,66 @@ populate_alternative_descriptions() {
 }
 
 populate_common_missing_ansible_dependencies() {
-  info "Attempting to automatically populate common role and collection dependencies"
-  log "Ensuring chocolatey.chocolatey collection is in requirements (if necessary)"
-  local CHOCO_REFS=$(grep -Ril "chocolatey.chocolatey" ./tasks)
-  if [ "$CHOCO_REFS" ]; then
-    local CHOCO_REQS_REFS=$(yq eval '.collections' requirements.yml)
-    if [[ ! $CHOCO_REQS_REFS =~ "chocolatey.chocolatey" ]]; then
-      yq eval -i '.collections = .collections + {"name": "chocolatey.chocolatey", "source": "https://galaxy.ansible.com"}' requirements.yml
+  if [ ! -f main.yml ]; then
+    info "Project type appears to be an Ansible role"
+    info "Attempting to automatically populate common role and collection dependencies"
+    log "Ensuring chocolatey.chocolatey collection is in requirements (if necessary)"
+    local CHOCO_REFS=$(grep -Ril "chocolatey.chocolatey" ./tasks)
+    if [ "$CHOCO_REFS" ]; then
+      local CHOCO_REQS_REFS=$(yq eval '.collections' requirements.yml)
+      if [[ ! $CHOCO_REQS_REFS =~ "chocolatey.chocolatey" ]]; then
+        yq eval -i '.collections = .collections + {"name": "chocolatey.chocolatey", "source": "https://galaxy.ansible.com"}' requirements.yml
+      fi
     fi
-  fi
-  log "Ensuring community.general collection is in requirements (if necessary)"
-  local COMMUNITY_REFS=$(grep -Ril "community.general" ./tasks)
-  if [ "$COMMUNITY_REFS" ]; then
-    local COMMUNITY_REQ_REFS=$(yq eval '.collections' requirements.yml)
-    if [[ ! $COMMUNITY_REQ_REFS =~ "community.general" ]]; then
-      yq eval -i '.collections = .collections + {"name": "chocolatey.chocolatey", "source": "https://galaxy.ansible.com"}' requirements.yml
+    log "Ensuring community.general collection is in meta requirements (if necessary)"
+    local COMMUNITY_REFS=$(grep -Ril "community.general" ./tasks)
+    if [ "$COMMUNITY_REFS" ]; then
+      local COMMUNITY_REQ_REFS=$(yq eval '.collections' requirements.yml)
+      if [[ ! $COMMUNITY_REQ_REFS =~ "community.general" ]]; then
+        yq eval -i '.collections = .collections + {"name": "chocolatey.chocolatey", "source": "https://galaxy.ansible.com"}' requirements.yml
+      fi
     fi
-  fi
-  log "Ensuring professormanhattan.homebrew role is in requirements (if necessary)"
-  local HOMEBREW_REFS=$(grep -Ril "community.general.homebrew" ./tasks)
-  if [ "$HOMEBREW_REFS" ]; then
-    local HOMEBREW_META_REFS=$(yq eval '.dependencies' meta/main.yml)
-    if [[ ! $HOMEBREW_META_REFS =~ "professormanhattan.homebrew" ]]; then
-      yq eval -i '.dependencies = .dependencies + {"role": "professormanhattan.homebrew", "when": "ansible_os_family == \"Darwin\""}' meta/main.yml
+    log "Ensuring professormanhattan.homebrew role is in meta requirements (if necessary)"
+    local HOMEBREW_REFS=$(grep -Ril "community.general.homebrew" ./tasks)
+    if [ "$HOMEBREW_REFS" ]; then
+      local HOMEBREW_META_REFS=$(yq eval '.dependencies' meta/main.yml)
+      if [[ ! $HOMEBREW_META_REFS =~ "professormanhattan.homebrew" ]]; then
+        yq eval -i '.dependencies = .dependencies + {"role": "professormanhattan.homebrew", "when": "ansible_os_family == \"Darwin\""}' meta/main.yml
+      fi
     fi
-    local HOMEBREW_REQ_REFS=$(yq eval '.roles' requirements.yml)
-    if [[ ! $HOMEBREW_REQS_REFS =~ "professormanhattan.homebrew" ]]; then
-      yq eval -i '.roles = .roles + {"role": "professormanhattan.homebrew"}' requirements.yml
+    log "Ensuring professormanhattan.nodejs role is in meta requirements (if necessary)"
+    local NODEJS_REFS=$(grep -Ril "community.general.npm" ./tasks)
+    if [ "$NODEJS_REFS" ]; then
+      local NODEJS_META_REFS=$(yq eval '.dependencies' meta/main.yml)
+      if [[ ! $NODEJS_META_REFS =~ "professormanhattan.nodejs" ]]; then
+        yq eval -i '.dependencies = .dependencies + {"role": "professormanhattan.nodejs"}' meta/main.yml
+      fi
     fi
-  fi
-  log "Ensuring professormanhattan.nodejs role is in requirements (if necessary)"
-  local NODEJS_REFS=$(grep -Ril "community.general.npm" ./tasks)
-  if [ "$NODEJS_REFS" ]; then
-    local NODEJS_META_REFS=$(yq eval '.dependencies' meta/main.yml)
-    if [[ ! $NODEJS_META_REFS =~ "professormanhattan.nodejs" ]]; then
-      yq eval -i '.dependencies = .dependencies + {"role": "professormanhattan.nodejs"}' meta/main.yml
+    log "Ensuring professormanhattan.ruby role is in meta requirements (if necessary)"
+    local RUBY_REFS=$(grep -Ril "community.general.gem" ./tasks)
+    if [ "$RUBY_REFS" ]; then
+      local RUBY_META_REFS=$(yq eval '.dependencies' meta/main.yml)
+      if [[ ! $RUBY_META_REFS =~ "professormanhattan.ruby" ]]; then
+        yq eval -i '.dependencies = .dependencies + {"role": "professormanhattan.ruby"}' meta/main.yml
+      fi
     fi
-    local NODEJS_REQ_REFS=$(yq eval '.roles' requirements.yml)
-    if [[ ! $NODEJS_REQS_REFS =~ "professormanhattan.nodejs" ]]; then
-      yq eval -i '.roles = .roles + {"role": "professormanhattan.nodejs"}' requirements.yml
+    log "Ensuring professormanhattan.snapd role is in meta requirements (if necessary)"
+    local SNAPD_REFS=$(grep -Ril "community.general.snap" ./tasks)
+    if [ "$SNAPD_REFS" ]; then
+      local SNAPD_META_REFS=$(yq eval '.dependencies' meta/main.yml)
+      if [[ ! $SNAPD_META_REFS =~ "professormanhattan.snapd" ]]; then
+        yq eval -i '.dependencies = .dependencies + {"role": "professormanhattan.snapd", "when": "ansible_os_family == \"Darwin\""}' meta/main.yml
+      fi
     fi
-  fi
-  log "Ensuring professormanhattan.ruby role is in requirements (if necessary)"
-  local RUBY_REFS=$(grep -Ril "community.general.gem" ./tasks)
-  if [ "$RUBY_REFS" ]; then
-    local RUBY_META_REFS=$(yq eval '.dependencies' meta/main.yml)
-    if [[ ! $RUBY_META_REFS =~ "professormanhattan.ruby" ]]; then
-      yq eval -i '.dependencies = .dependencies + {"role": "professormanhattan.ruby"}' meta/main.yml
-    fi
-    local RUBY_REQ_REFS=$(yq eval '.roles' requirements.yml)
-    if [[ ! $RUBY_REQS_REFS =~ "professormanhattan.ruby" ]]; then
-      yq eval -i '.roles = .roles + {"role": "professormanhattan.ruby"}' requirements.yml
-    fi
-  fi
-  log "Ensuring professormanhattan.snapd role is in requirements (if necessary)"
-  local SNAPD_REFS=$(grep -Ril "community.general.snap" ./tasks)
-  if [ "$SNAPD_REFS" ]; then
-    local SNAPD_META_REFS=$(yq eval '.dependencies' meta/main.yml)
-    if [[ ! $SNAPD_META_REFS =~ "professormanhattan.snapd" ]]; then
-      yq eval -i '.dependencies = .dependencies + {"role": "professormanhattan.snapd", "when": "ansible_os_family == \"Darwin\""}' meta/main.yml
-    fi
-    local SNAPD_REQ_REFS=$(yq eval '.roles' requirements.yml)
-    if [[ ! $SNAPD_REQS_REFS =~ "professormanhattan.snapd" ]]; then
-      yq eval -i '.roles = .roles + {"role": "professormanhattan.snapd"}' requirements.yml
-    fi
-  fi
-  log "Ensuring mas is in requirements.yml if professormanhattan.mas is in the meta dependencies list"
-  local META_REFS=$(yq eval '.dependencies' meta/main.yml)
-  if [[ $META_REFS =~ "professormanhattan.mas" ]]; then
+    log "Ensuring all the dependencies in meta/main.yml are also in the requirements.yml file"
+    yq eval -j '.dependencies' meta/main.yml > _meta-deps.json
     local REQ_REFS=$(yq eval '.roles' requirements.yml)
-    if [[ ! $REQ_REFS =~ "professormanhattan.mas" ]]; then
-      yq eval -i '.roles = .roles + {"role": "professormanhattan.mas"}' requirements.yml
-    fi
+    jq -c '.[]' _meta-deps.json | while read i; do
+      local ROLE_NAME=$(jq -r '.role' $i)
+      if [[ ! $REQ_REFS =~ $ROLE_NAME ]]; then
+        yq eval -i '.roles = .roles + {"name": $ROLE_NAME}' requirements.yml
+      fi
+    done
   fi
 }
 
