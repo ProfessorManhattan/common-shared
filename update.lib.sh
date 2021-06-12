@@ -1453,7 +1453,7 @@ symlink_roles() {
       log "Symlinking the current role to the local roles folder (~/.ansible/roles)"
       local ROLE_FOLDER=$(basename $PWD)
       rm -rf "$HOME/.ansible/roles/${ANSIBLE_GALAXY_USERNAME}.${ROLE_FOLDER}"
-      ln -s "${PWD}" "~/.ansible/roles/${ANSIBLE_GALAXY_USERNAME}.${ROLE_FOLDER}"
+      ln -s "${PWD}" "$HOME/.ansible/roles/${ANSIBLE_GALAXY_USERNAME}.${ROLE_FOLDER}"
     fi
     success "Successfully generated symlink(s)"
   fi
