@@ -1323,7 +1323,7 @@ populate_common_missing_ansible_dependencies() {
     local REQ_REFS=$(yq eval '.roles' requirements.yml)
     jq -rc '.[] .role' _meta-deps.json | while read ROLE_NAME; do
       if [[ ! $REQ_REFS =~ $ROLE_NAME ]]; then
-        yq eval -i '.roles = .roles + {"name": $ROLE_NAME}' requirements.yml
+        ROLE_NAME=$ROLE_NAME yq eval -i '.roles = .roles + {"name": env(ROLE_NAME)}' requirements.yml
       fi
     done
     rm _meta-deps.json
