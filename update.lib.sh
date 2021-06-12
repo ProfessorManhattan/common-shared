@@ -839,9 +839,9 @@ generate_documentation() {
     fi
     mod-ansible-autodoc --todo-title "### TODO" --actions-title "## Features" --tags-title "### Tags" --variables-title "## Variables"
     if [[ "$OSTYPE" == "darwin"* ]]; then
-      sed -i .bak 's/####(.*):/###$1/g' ansible_actions.md && rm ansible_actions.md.bak
+      sed -i .bak -r 's/^####(.*):$/###\1/g' ansible_actions.md && rm ansible_actions.md.bak
     else
-      sed -i 's/####(.*)/###$1/g' ansible_actions.md
+      sed -i -r 's/^####(.*):$/###\1/g' ansible_actions.md
     fi
     local BLANK_VARIABLES_FILE_CONTENTS='""'
     local VARIABLES_FILE_CONTENTS=$(cat ansible_variables.json)
