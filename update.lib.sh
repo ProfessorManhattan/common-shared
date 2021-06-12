@@ -987,7 +987,12 @@ copy_project_files_and_generate_package_json() {
         local PACKAGE_NAME_PREFIX=ansible-
       fi
     elif [ "$REPO_TYPE" == 'dockerfile' ]; then
-      local PACKAGE_NAME_PREFIX=docker-
+      local SUBGROUP=$(jq -r '.subgroup' .blueprint.json)
+      if [ "$SUBGROUP" == 'ansible-molecule' ]; then
+        local PACKAGE_NAME_PREFIX=docker-ansible-molecule-
+      else
+        local PACKAGE_NAME_PREFIX=docker-
+      fi
     elif [ "$REPO_TYPE" == 'packer' ]; then
       local PACKAGE_NAME_PREFIX=packer-
     elif [ "$REPO_TYPE" == 'python' ]; then
