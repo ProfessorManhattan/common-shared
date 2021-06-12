@@ -6,13 +6,11 @@
 # functions that perform maintenance tasks and install missing
 # software requirements like Node.js and Python.
 
-
 ANSIBLE_GALAXY_USERNAME=professormanhattan
 
 ##############################################
 ############## COMMON FUNCTIONS ##############
 ##############################################
-
 
 # Logs an error message
 error() {
@@ -855,12 +853,12 @@ generate_documentation() {
         sed -i 's^## Variables^'"$VARIABLES_CONTENT"'^g' README.md
       fi
       ROLE_VARIABLES=$(jq -r '.role_variables' ansible_variables.json)
-      jq --arg a "${ROLE_VARIABLES}" '.role_variables = $a' __bp.json > __jq.json && mv __jq.json __bp.json
+      jq --arg a "${ROLE_VARIABLES}" '.role_variables = $a' __bp.json >__jq.json && mv __jq.json __bp.json
     fi
   fi
   if [ -f dependency-chart.json ]; then
     local ROLE_DEPENDENCIES=$(jq -r '.role_dependencies' dependency-chart.json)
-    jq --arg a "${ROLE_DEPENDENCIES}" '.role_dependencies = $a' __bp.json > __jq.json && mv __jq.json __bp.json
+    jq --arg a "${ROLE_DEPENDENCIES}" '.role_dependencies = $a' __bp.json >__jq.json && mv __jq.json __bp.json
   fi
   npx -y @appnest/readme generate --config __bp.json --input ./.modules/docs/$README_FILE
   npx prettier --write README.md
@@ -1275,7 +1273,7 @@ populate_alternative_descriptions() {
     if command_exists yq; then
       log "Generating role descriptions"
       local DESCRIPTION=$(yq e '.galaxy_info.description' meta/main.yml)
-      local LOWERCASE_DESCRIPTION=`echo ${DESCRIPTION:0:1} | tr '[A-Z]' '[a-z]'`${DESCRIPTION:1}
+      local LOWERCASE_DESCRIPTION=$(echo ${DESCRIPTION:0:1} | tr '[A-Z]' '[a-z]')${DESCRIPTION:1}
       local BLUEPRINT_DESCRIPTION="An Ansible role that ${LOWERCASE_DESCRIPTION}"
       local ALT_DESCRIPTION="This repository is the home of an Ansible role that ${LOWERCASE_DESCRIPTION}."
       log "Writing alternative role descriptions to .blueprint.json"
@@ -1298,7 +1296,7 @@ populate_common_missing_ansible_dependencies() {
       local CHOCO_REQS_REFS=$(yq eval '.collections' requirements.yml)
       if [[ ! $CHOCO_REQS_REFS =~ "chocolatey.chocolatey" ]]; then
         yq eval -i -P '.collections = .collections + {"name": "chocolatey.chocolatey", "source": "https://galaxy.ansible.com"}' requirements.yml
-        (echo "---" && cat requirements.yml) > _reqs.yml && mv _reqs.yml requirements.yml
+        (echo "---" && cat requirements.yml) >_reqs.yml && mv _reqs.yml requirements.yml
       fi
     fi
     log "Ensuring community.general collection is in meta requirements (if necessary)"
@@ -1307,7 +1305,7 @@ populate_common_missing_ansible_dependencies() {
       local COMMUNITY_REQ_REFS=$(yq eval '.collections' requirements.yml)
       if [[ ! $COMMUNITY_REQ_REFS =~ "community.general" ]]; then
         yq eval -i -P '.collections = .collections + {"name": "community.general", "source": "https://galaxy.ansible.com"}' requirements.yml
-        (echo "---" && cat requirements.yml) > _reqs.yml && mv _reqs.yml requirements.yml
+        (echo "---" && cat requirements.yml) >_reqs.yml && mv _reqs.yml requirements.yml
       fi
     fi
     log "Ensuring professormanhattan.homebrew role is in meta requirements (if necessary)"
@@ -1316,7 +1314,7 @@ populate_common_missing_ansible_dependencies() {
       local HOMEBREW_META_REFS=$(yq eval '.dependencies' meta/main.yml)
       if [[ ! $HOMEBREW_META_REFS =~ "professormanhattan.homebrew" ]]; then
         yq eval -i -P '.dependencies = .dependencies + {"role": "professormanhattan.homebrew", "when": "ansible_os_family == \"Darwin\""}' meta/main.yml
-        (echo "---" && cat meta/main.yml) > _meta_dash.yml && mv _meta_dash.yml meta/main.yml
+        (echo "---" && cat meta/main.yml) >_meta_dash.yml && mv _meta_dash.yml meta/main.yml
       fi
     fi
     log "Ensuring professormanhattan.nodejs role is in meta requirements (if necessary)"
@@ -1325,7 +1323,7 @@ populate_common_missing_ansible_dependencies() {
       local NODEJS_META_REFS=$(yq eval '.dependencies' meta/main.yml)
       if [[ ! $NODEJS_META_REFS =~ "professormanhattan.nodejs" ]]; then
         yq eval -i -P '.dependencies = .dependencies + {"role": "professormanhattan.nodejs"}' meta/main.yml
-        (echo "---" && cat meta/main.yml) > _meta_dash.yml && mv _meta_dash.yml meta/main.yml
+        (echo "---" && cat meta/main.yml) >_meta_dash.yml && mv _meta_dash.yml meta/main.yml
       fi
     fi
     log "Ensuring professormanhattan.ruby role is in meta requirements (if necessary)"
@@ -1334,7 +1332,7 @@ populate_common_missing_ansible_dependencies() {
       local RUBY_META_REFS=$(yq eval '.dependencies' meta/main.yml)
       if [[ ! $RUBY_META_REFS =~ "professormanhattan.ruby" ]]; then
         yq eval -i -P '.dependencies = .dependencies + {"role": "professormanhattan.ruby"}' meta/main.yml
-        (echo "---" && cat meta/main.yml) > _meta_dash.yml && mv _meta_dash.yml meta/main.yml
+        (echo "---" && cat meta/main.yml) >_meta_dash.yml && mv _meta_dash.yml meta/main.yml
       fi
     fi
     log "Ensuring professormanhattan.snapd role is in meta requirements (if necessary)"
@@ -1346,17 +1344,17 @@ populate_common_missing_ansible_dependencies() {
         local SNAPD_ROLE_INDICATOR=$(grep -Ril "role_name: snapd" ./meta/main.yml)
         if [ ! "$SNAPD_ROLE_INDICATOR" ]; then
           yq eval -i -P '.dependencies = .dependencies + {"role": "professormanhattan.snapd", "when": "ansible_os_family == \"Darwin\""}' meta/main.yml
-          (echo "---" && cat meta/main.yml) > _meta_dash.yml && mv _meta_dash.yml meta/main.yml
+          (echo "---" && cat meta/main.yml) >_meta_dash.yml && mv _meta_dash.yml meta/main.yml
         fi
       fi
     fi
     log "Ensuring all the dependencies in meta/main.yml are also in the requirements.yml file"
-    yq eval -j '.dependencies' meta/main.yml > _meta-deps.json
+    yq eval -j '.dependencies' meta/main.yml >_meta-deps.json
     local REQ_REFS=$(yq eval '.roles' requirements.yml)
     jq -rc '.[] .role' _meta-deps.json | while read ROLE_NAME; do
       if [[ ! $REQ_REFS =~ $ROLE_NAME ]]; then
         ROLE_NAME=$ROLE_NAME yq eval -i -P '.roles = .roles + {"name": env(ROLE_NAME)}' requirements.yml
-        (echo "---" && cat requirements.yml) > _reqs.yml && mv _reqs.yml requirements.yml
+        (echo "---" && cat requirements.yml) >_reqs.yml && mv _reqs.yml requirements.yml
       fi
     done
     rm _meta-deps.json
@@ -1369,14 +1367,14 @@ populate_packer_descriptions() {
   if [ "$REPO_TYPE" == 'packer' ]; then
     log "Injecting description in template.json"
     local ISO_VERSION=$(jq -r '.variables.iso_version' template.json)
-    local MAJOR_VERSION=$(cut -d '.' -f 1 <<< $ISO_VERSION)
-    local MINOR_VERSION=$(cut -d '.' -f 2 <<< $ISO_VERSION)
+    local MAJOR_VERSION=$(cut -d '.' -f 1 <<<$ISO_VERSION)
+    local MINOR_VERSION=$(cut -d '.' -f 2 <<<$ISO_VERSION)
     local DESCRIPTION_TEMPLATE=$(jq -r '.description_template' .blueprint.json)
     local DESCRIPTION_TEMPLATE_PACKAGE=$(jq -r '.description_template_package' .blueprint.json)
     local VERSION_DESCRIPTION=$(jq -r '.version_description' .blueprint.json)
     jq --arg a "${DESCRIPTION_TEMPLATE}" '.variables.description = $a' template.json >__jq.json && mv __jq.json template.json
     jq --arg a "${DESCRIPTION_TEMPLATE_PACKAGE}" '.description = $a' package.json >__jq.json && mv __jq.json package.json
-    jq --arg a "${VERSION_DESCRIPTION}" '.variables.version_description = $a' template.json > __jq.json && mv __jq.json template.json
+    jq --arg a "${VERSION_DESCRIPTION}" '.variables.version_description = $a' template.json >__jq.json && mv __jq.json template.json
     if [[ "$OSTYPE" == "darwin"* ]]; then
       sed -i .bak "s^MAJOR_VERSION^${MAJOR_VERSION}^g" template.json && rm template.json.bak
       sed -i .bak "s^MINOR_VERSION^${MINOR_VERSION}^g" template.json && rm template.json.bak
@@ -1476,8 +1474,7 @@ symlink_roles() {
     if [ -f main.yml ]; then
       info "Project is an Ansible Playbook"
       log "Symlinking all of the roles in the roles folder to ~/.ansible/roles"
-      find "$PWD/roles" -mindepth 2 -maxdepth 2 -type d -not -path '*/\.*' | while read -r ROLE_PATH
-      do
+      find "$PWD/roles" -mindepth 2 -maxdepth 2 -type d -not -path '*/\.*' | while read -r ROLE_PATH; do
         local ROLE_FOLDER=$(basename $ROLE_PATH)
         rm "$HOME/.ansible/roles/${ANSIBLE_GALAXY_USERNAME}.${ROLE_FOLDER}"
         ln -s "$ROLE_PATH" "$HOME/.ansible/roles/${ANSIBLE_GALAXY_USERNAME}.${ROLE_FOLDER}"
