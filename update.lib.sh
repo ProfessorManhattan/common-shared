@@ -1006,10 +1006,7 @@ copy_project_files_and_generate_package_json() {
       log "Injecting package.json with the saved description"
       jq --arg a "${PACKAGE_DESCRIPTION//\//}" '.description = $a' package.json >__jq.json && mv __jq.json package.json
     fi
-    if [ "$REPO_TYPE" == 'npm' ]; then
-      log "Injecting dependencies and devDependencies back into package.json"
-      jq --argjson a "${PACKAGE_DEPS}" '.dependencies = $a' package.json >__jq.json && mv __jq.json package.json
-      jq --argjson a "${PACKAGE_DEVDEPS}" '.devDependencies = $a' package.json >__jq.json && mv __jq.json package.json
+    if [ "$REPO_TYPE" == 'npm' ] || [ "$REPO_TYPE" == 'packer' ]; then
       if [ -f .blueprint.json ]; then
         log "Injecting slug/name from .blueprint.json into package.json"
         local PROJECT_SLUG=$(jq -r '.slug' .blueprint.json)
@@ -1021,6 +1018,11 @@ copy_project_files_and_generate_package_json() {
       else
         warn "Project is missing a .blueprint.json file. Please populate it, following the same format as another NPM package project that has a .blueprint.json file"
       fi
+    fi
+    if [ "$REPO_TYPE" == 'npm' ]; then
+      log "Injecting dependencies and devDependencies back into package.json"
+      jq --argjson a "${PACKAGE_DEPS}" '.dependencies = $a' package.json >__jq.json && mv __jq.json package.json
+      jq --argjson a "${PACKAGE_DEVDEPS}" '.devDependencies = $a' package.json >__jq.json && mv __jq.json package.json
     fi
     success "Successfully updated the package.json file and copied the shared $REPO_TYPE files into this repository"
   else
@@ -1056,6 +1058,16 @@ copy_project_files_and_generate_package_json() {
 
   # Run dockerfile-subgroup specific tasks
   if [ "$REPO_TYPE" == 'dockerfile' ]; then
+    log "Populating repository URL and bugs URL in package.json"
+    local SUBGROUP=$(jq -r '.subgroup' .blueprint.json)
+    local PROJECT_SLUG=$(jq -r '.slug' .blueprint.json)
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i .bak 's^DOCKER_PROJECT_SLUG^'"${PROJECT_SLUG}"'^g' package.json && rm package.json.bak
+      sed -i .bak 's^DOCKER_PROJECT_SUBGROUP^'"${SUBGROUP}"'^g' package.json && rm package.json.bak
+    else
+      sed -i 's^DOCKER_PROJECT_SLUG^'"${PROJECT_SLUG}"'^g' package.json
+      sed -i 's^DOCKER_PROJECT_SUBGROUP^'"${SUBGROUP}"'^g' package.json
+    fi
     log "Ensure slug_full in .blueprint.json is populated"
     local SLUG=$(jq -r '.slug' .blueprint.json)
     local SUBGROUP=$(jq -r '.subgroup' .blueprint.json)
@@ -1233,9 +1245,7 @@ misc_fixes() {
     sort requirements.txt -o requirements.txt
     success "requirements.txt is in alphabetical order"
   fi
-  # Ensure Ansible Galaxy project ID is injected into .blueprint.json if project is a Ansible role
-  if [ "$REPO_TYPE" == 'ansible' ] && [ -d molecule ] && [ ! -f main.yml ]; then
-    info "Project appears to be an Ansible role"
+  if [ "$REPO_TYPE" == 'ansible' ]; then
     log "Injecting role name into package.json for Docker shell scripts"
     local ROLE_NAME=$(jq -r '.role_name' .blueprint.json)
     if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -1243,6 +1253,10 @@ misc_fixes() {
     else
       sed -i "s^ANSIBLE_ROLE_NAME^${ROLE_NAME}^g" package.json
     fi
+  fi
+  # Ensure Ansible Galaxy project ID is injected into .blueprint.json if project is a Ansible role
+  if [ "$REPO_TYPE" == 'ansible' ] && [ -d molecule ] && [ ! -f main.yml ]; then
+    info "Project appears to be an Ansible role"
     log "Ensuring project ID is injected into .blueprint.json"
     local HAS_PROJECT_ID=$(jq -e 'has("ansible_galaxy_project_id")' .blueprint.json)
     if [ "$HAS_PROJECT_ID" != 'true' ]; then
