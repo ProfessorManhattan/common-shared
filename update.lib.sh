@@ -1284,7 +1284,7 @@ populate_common_missing_ansible_dependencies() {
     if [ "$COMMUNITY_REFS" ]; then
       local COMMUNITY_REQ_REFS=$(yq eval '.collections' requirements.yml)
       if [[ ! $COMMUNITY_REQ_REFS =~ "community.general" ]]; then
-        yq eval -i -P '.collections = .collections + {"name": "chocolatey.chocolatey", "source": "https://galaxy.ansible.com"}' requirements.yml
+        yq eval -i -P '.collections = .collections + {"name": "community.general", "source": "https://galaxy.ansible.com"}' requirements.yml
         (echo "---" && cat requirements.yml) > _reqs.yml && mv _reqs.yml requirements.yml
       fi
     fi
