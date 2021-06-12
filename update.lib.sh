@@ -1276,6 +1276,7 @@ populate_common_missing_ansible_dependencies() {
       local CHOCO_REQS_REFS=$(yq eval '.collections' requirements.yml)
       if [[ ! $CHOCO_REQS_REFS =~ "chocolatey.chocolatey" ]]; then
         yq eval -i '.collections = .collections + {"name": "chocolatey.chocolatey", "source": "https://galaxy.ansible.com"}' requirements.yml
+        (echo "---" && cat requirements.yml) > _reqs.yml && mv _reqs.yml requirements.yml
       fi
     fi
     log "Ensuring community.general collection is in meta requirements (if necessary)"
@@ -1284,6 +1285,7 @@ populate_common_missing_ansible_dependencies() {
       local COMMUNITY_REQ_REFS=$(yq eval '.collections' requirements.yml)
       if [[ ! $COMMUNITY_REQ_REFS =~ "community.general" ]]; then
         yq eval -i '.collections = .collections + {"name": "chocolatey.chocolatey", "source": "https://galaxy.ansible.com"}' requirements.yml
+        (echo "---" && cat requirements.yml) > _reqs.yml && mv _reqs.yml requirements.yml
       fi
     fi
     log "Ensuring professormanhattan.homebrew role is in meta requirements (if necessary)"
@@ -1292,6 +1294,7 @@ populate_common_missing_ansible_dependencies() {
       local HOMEBREW_META_REFS=$(yq eval '.dependencies' meta/main.yml)
       if [[ ! $HOMEBREW_META_REFS =~ "professormanhattan.homebrew" ]]; then
         yq eval -i '.dependencies = .dependencies + {"role": "professormanhattan.homebrew", "when": "ansible_os_family == \"Darwin\""}' meta/main.yml
+        (echo "---" && cat meta/main.yml) > _meta_dash.yml && mv _meta_dash.yml meta/main.yml
       fi
     fi
     log "Ensuring professormanhattan.nodejs role is in meta requirements (if necessary)"
@@ -1300,6 +1303,7 @@ populate_common_missing_ansible_dependencies() {
       local NODEJS_META_REFS=$(yq eval '.dependencies' meta/main.yml)
       if [[ ! $NODEJS_META_REFS =~ "professormanhattan.nodejs" ]]; then
         yq eval -i '.dependencies = .dependencies + {"role": "professormanhattan.nodejs"}' meta/main.yml
+        (echo "---" && cat meta/main.yml) > _meta_dash.yml && mv _meta_dash.yml meta/main.yml
       fi
     fi
     log "Ensuring professormanhattan.ruby role is in meta requirements (if necessary)"
@@ -1308,6 +1312,7 @@ populate_common_missing_ansible_dependencies() {
       local RUBY_META_REFS=$(yq eval '.dependencies' meta/main.yml)
       if [[ ! $RUBY_META_REFS =~ "professormanhattan.ruby" ]]; then
         yq eval -i '.dependencies = .dependencies + {"role": "professormanhattan.ruby"}' meta/main.yml
+        (echo "---" && cat meta/main.yml) > _meta_dash.yml && mv _meta_dash.yml meta/main.yml
       fi
     fi
     log "Ensuring professormanhattan.snapd role is in meta requirements (if necessary)"
@@ -1316,6 +1321,7 @@ populate_common_missing_ansible_dependencies() {
       local SNAPD_META_REFS=$(yq eval '.dependencies' meta/main.yml)
       if [[ ! $SNAPD_META_REFS =~ "professormanhattan.snapd" ]]; then
         yq eval -i '.dependencies = .dependencies + {"role": "professormanhattan.snapd", "when": "ansible_os_family == \"Darwin\""}' meta/main.yml
+        (echo "---" && cat meta/main.yml) > _meta_dash.yml && mv _meta_dash.yml meta/main.yml
       fi
     fi
     log "Ensuring all the dependencies in meta/main.yml are also in the requirements.yml file"
@@ -1324,6 +1330,7 @@ populate_common_missing_ansible_dependencies() {
     jq -rc '.[] .role' _meta-deps.json | while read ROLE_NAME; do
       if [[ ! $REQ_REFS =~ $ROLE_NAME ]]; then
         ROLE_NAME=$ROLE_NAME yq eval -i '.roles = .roles + {"name": env(ROLE_NAME)}' requirements.yml
+        (echo "---" && cat requirements.yml) > _reqs.yml && mv _reqs.yml requirements.yml
       fi
     done
     rm _meta-deps.json
