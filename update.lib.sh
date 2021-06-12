@@ -1105,8 +1105,8 @@ copy_project_files_and_generate_package_json() {
     log "Performing tasks specific to Dockerfile projects"
     log "Replacing all instances of the string 'dockerfile-project' in package.json with the package.json name"
     local SUBGROUP=$(jq -r '.subgroup' .blueprint.json)
-    if [ "$SUBGROUP" == "ansible-molecule"]; then
-      local PACKAGE_NAME_PREFIX=ansible-molecule-
+    if [ "$SUBGROUP" == "ansible-molecule" ]; then
+      local PACKAGE_NAME_PREFIX="ansible-molecule-"
     fi
     if [[ "$OSTYPE" == "darwin"* ]]; then
       sed -i .bak "s^dockerfile-project^${PACKAGE_NAME_PREFIX}${PACKAGE_NAME}^g" package.json && rm package.json.bak
