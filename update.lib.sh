@@ -1241,7 +1241,7 @@ misc_fixes() {
   if [ -d node_modules ]; then
     info "node_modules folder is present"
     log "Running npm audit fix to ensure there are no vulnerabilities"
-    npm audit fix
+    npm audit fix | continue
     success "Ran npm audit fix"
   fi
 }
