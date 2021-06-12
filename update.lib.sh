@@ -1327,6 +1327,7 @@ populate_common_missing_ansible_dependencies() {
       fi
     done
     rm _meta-deps.json
+    success "Successfully ensured common dependencies were populated"
   fi
 }
 
