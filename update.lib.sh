@@ -837,7 +837,7 @@ generate_documentation() {
       log "Installing mod-ansible-autodoc"
       pip3 install mod-ansible-autodoc
     fi
-    mod-ansible-autodoc --todo-title "### TODO" --actions-title "## Features" --tags-title "## Tags" --variables-title "## Variables"
+    mod-ansible-autodoc --todo-title "### TODO" --actions-title "### Features" --tags-title "### Tags" --variables-title "### Variables"
     local BLANK_VARIABLES_FILE_CONTENTS='""'
     local VARIABLES_FILE_CONTENTS=$(cat ansible_variables.json)
     if [ "$VARIABLES_FILE_CONTENTS" != "$BLANK_VARIABLES_FILE_CONTENTS" ]; then
