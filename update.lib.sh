@@ -1057,13 +1057,13 @@ copy_project_files_and_generate_package_json() {
 
   # Run dockerfile-subgroup specific tasks
   if [ "$REPO_TYPE" == 'dockerfile' ]; then
-    log "Ensure slug_github in .blueprint.json is populated"
+    log "Ensure slug_full in .blueprint.json is populated"
     local SLUG=$(jq -r '.slug' .blueprint.json)
     local SUBGROUP=$(jq -r '.subgroup' .blueprint.json)
     if [ "$SUBGROUP" == 'ansible-molecule' ]; then
-      jq --arg a "${SUBGROUP}-${SLUG}" '.slug_github = $a' .blueprint.json >__jq.json && mv __jq.json .blueprint.json
+      jq --arg a "${SUBGROUP}-${SLUG}" '.slug_full = $a' .blueprint.json >__jq.json && mv __jq.json .blueprint.json
     else
-      jq --arg a "${SLUG}" '.slug_github = $a' .blueprint.json >__jq.json && mv __jq.json .blueprint.json
+      jq --arg a "${SLUG}" '.slug_full = $a' .blueprint.json >__jq.json && mv __jq.json .blueprint.json
     fi
     log "Determing whether dockerslim_command is available in .blueprint.json"
     local HAS_DOCKERSLIM_COMMAND=$(jq -e 'has("dockerslim_command")' .blueprint.json)
