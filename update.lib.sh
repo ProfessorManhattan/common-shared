@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable
 
 # This file houses all the shared functions used across various
 # update.sh files which are used to synchronize common files
