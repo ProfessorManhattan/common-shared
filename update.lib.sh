@@ -1321,8 +1321,7 @@ populate_common_missing_ansible_dependencies() {
     log "Ensuring all the dependencies in meta/main.yml are also in the requirements.yml file"
     yq eval -j '.dependencies' meta/main.yml > _meta-deps.json
     local REQ_REFS=$(yq eval '.roles' requirements.yml)
-    jq -c '.[]' _meta-deps.json | while read i; do
-      local ROLE_NAME=$(jq -r '.role' $i)
+    jq -rc '.[] .role' _meta-deps.json | while read ROLE_NAME; do
       if [[ ! $REQ_REFS =~ $ROLE_NAME ]]; then
         yq eval -i '.roles = .roles + {"name": $ROLE_NAME}' requirements.yml
       fi
