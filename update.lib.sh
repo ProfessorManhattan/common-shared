@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC1083,SC1091,SC2003,SC2016,SC2021,SC2046,SC2076,SC2086,SC2143,SC2155,SC2154,SC2164,SC2235
+# shellcheck disable=SC1083,SC1091,SC2003,SC2016,SC2021,SC2046,SC2076,SC2086,SC2143,SC2155,SC2154,SC2162,SC2164,SC2235
 
 # This file houses all the shared functions used across various
 # update.sh files which are used to synchronize common files
