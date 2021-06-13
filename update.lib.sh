@@ -862,7 +862,6 @@ generate_documentation() {
     jq --arg a "${ROLE_DEPENDENCIES}" '.role_dependencies = $a' __bp.json >__jq.json && mv __jq.json __bp.json
   fi
   npx -y @appnest/readme generate --config __bp.json --input ./.modules/docs/$README_FILE
-  npx prettier --write README.md
   success "Successfully generated the README.md file"
   rm -f __bp.json ansible_actions.md ansible_tags.md ansible_todo.md ansible_variables.md ansible_variables.json dependency-chart.json
 
@@ -891,6 +890,7 @@ generate_documentation() {
   else
     log "No change to the README.md necessary"
   fi
+  npx prettier --write README.md
 }
 
 install_requirements() {
