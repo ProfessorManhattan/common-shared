@@ -990,7 +990,7 @@ copy_project_files_and_generate_package_json() {
       if [ "$SUBGROUP" == 'ansible-molecule' ]; then
         local PACKAGE_NAME_PREFIX=docker-ansible-molecule-
       else
-        local PACKAGE_NAME_PREFIX=docker-
+        local PACKAGE_NAME_PREFIX=""
       fi
     elif [ "$REPO_TYPE" == 'packer' ]; then
       local PACKAGE_NAME_PREFIX=packer-
