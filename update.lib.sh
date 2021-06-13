@@ -1200,14 +1200,14 @@ generate_vagrantfile() {
   if [[ "$OSTYPE" == "darwin"* ]]; then
     sed -i .bak "s^OS_BOX_BASENAME^${OS_BOX_BASENAME}^g" Vagrantfile && rm Vagrantfile.bak
     sed -i .bak "s^OS_DESCRIPTION^${OS_DESCRIPTION}^g" Vagrantfile && rm Vagrantfile.bak
-    sed -i .bak "s^OS_HOSTNAME^${OS_HOSTNAME}^g" Vagrantfile && rm Vagrantfile.bak
-    sed -i .bak "s^OS_TAG^${OS_TAG}^g" Vagrantfile && rm Vagrantfile.bak
+    sed -i .bak "s^OSHOSTNAME^${OS_HOSTNAME}^g" Vagrantfile && rm Vagrantfile.bak
+    sed -i .bak "s^OSPLACEHOLDER^${OS_TAG}^g" Vagrantfile && rm Vagrantfile.bak
     sed -i .bak "s^VAGRANTUP_USER^${VAGRANTUP_USER}^g" Vagrantfile && rm Vagrantfile.bak
   else
     sed -i "s^OS_BOX_BASENAME^${OS_BOX_BASENAME}^g" Vagrantfile
     sed -i "s^OS_DESCRIPTION^${OS_DESCRIPTION}^g" Vagrantfile
-    sed -i "s^OS_HOSTNAME^${OS_HOSTNAME}^g" Vagrantfile
-    sed -i "s^OS_TAG^${OS_TAG}^g" Vagrantfile
+    sed -i "s^OSHOSTNAME^${OS_HOSTNAME}^g" Vagrantfile
+    sed -i "s^OSPLACEHOLDER^${OS_TAG}^g" Vagrantfile
     sed -i "s^VAGRANTUP_USER^${VAGRANTUP_USER}^g" Vagrantfile
   fi
   success "Generated Vagrantfile"
