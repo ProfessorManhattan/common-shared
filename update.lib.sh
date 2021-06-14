@@ -825,7 +825,6 @@ generate_documentation() {
   fi
   log "Generating the CONTRIBUTING.md file"
   npx -y @appnest/readme generate --config __bp.json --input ./.modules/docs/blueprint-contributing.md --output CONTRIBUTING.md
-  npx prettier --write CONTRIBUTING.md
   success "Successfully generated the CONTRIBUTING.md file"
   log "Generating the README.md file"
   if [ "$REPO_TYPE" == 'ansible' ] && [ ! -f main.yml ]; then
@@ -890,7 +889,15 @@ generate_documentation() {
   else
     log "No change to the README.md necessary"
   fi
-  npx prettier --write README.md
+  log "Injecting styled dividers into markdown files"
+  for MARKDOWN_FILE in *.md; do
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i .bak 's^.*https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/.*.png)].\(\(.*\)\).$^<a href="\1" style="width:100%"><img style="width:100%" alt="-----------------------------------------------------" src="https://gitlab.com/megabyte-labs/assets/-/raw/master/png/aqua-divider.png"></div>^g' $MARKDOWN_FILE && rm $MARKDOWN_FILE.bak
+    else
+      sed -i 's^.*https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/.*.png)].\(\(.*\)\).$^<a href="\1" style="width:100%"><img style="width:100%" alt="-----------------------------------------------------" src="https://gitlab.com/megabyte-labs/assets/-/raw/master/png/aqua-divider.png"></div>^g' $MARKDOWN_FILE
+    fi
+    npx prettier --write $MARKDOWN_FILE
+  done
 }
 
 install_requirements() {
