@@ -1,7 +1,7 @@
 const consola = require('consola')
 
 const logger = consola.create({
-  level: 5,
+  level: 5
 })
 
 const success = (message) => logger.success(message)
