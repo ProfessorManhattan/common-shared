@@ -407,9 +407,12 @@ ensure_node_installed() {
         success "Successfully installed husky pre-commit git hook"
       fi
     fi
-    log "Ensuring husky pre-commit hook is registered"
-    npx husky install
-    success "Husky pre-commit hook is registered"
+    log "Checking if pre-commit hook needs to be installed"
+    if [ -d .git ]; then
+      log "Ensuring husky pre-commit hook is registered"
+      npx husky install
+      success "Husky pre-commit hook is registered"
+    fi
   else
     info "Bypassing installation of Node.js because the 'container' environment variable is set to 'docker'"
   fi
