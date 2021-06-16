@@ -1416,6 +1416,10 @@ populate_packer_descriptions() {
       sed -i "s^ISO_VERSION^${ISO_VERSION}^g" package.json
     fi
     success "Populated the description in template.json"
+    log "Running packer fix"
+    packer fix template.json > __template.json
+    mv __template.json template.json
+    log "Formatting fixed template with Prettier"
     npx prettier --write template.json
   fi
 }
