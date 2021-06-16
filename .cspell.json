@@ -67,6 +67,10 @@
     "slim.report.json",
     "yarn.lock",
     "tsconfig.json",
-    "node_modules/**"
+    "node_modules/**",
+    "build/**",
+    ".nyc_output/**",
+    ".cspell.json",
+    ".gitignore"
   ]
 }
