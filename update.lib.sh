@@ -1119,6 +1119,7 @@ copy_project_files_and_generate_package_json() {
         sed -i '/scan:slim/d' package.json
         sed -i '/shell:slim/d' package.json
       fi
+      rm -f slim.report.json
       success "Removed DockerSlim-specific package.json scripts since there is no dockerslim_command specified in .blueprint.json"
     fi
 
