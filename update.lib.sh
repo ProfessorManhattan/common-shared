@@ -669,33 +669,33 @@ missing_virtualization_platforms_notice() {
 ############### BUSINESS LOGIC ###############
 ##############################################
 
-# Adds a test.sh file to the test folder in Dockerfile projects
+# Adds a test.sh file to the slim_test folder in Dockerfile projects
 # if the test folder exists
 add_docker_test_script() {
-  if [ -d test ]; then
-    info "The test folder exists"
-    log "Adding the common test.sh file to the test folder"
-    cp ./.modules/$REPO_TYPE/test.sh ./test/test.sh
+  if [ -d slim_test ]; then
+    info "The slim_test folder exists"
+    log "Adding the common test.sh file to the slim_test folder"
+    cp ./.modules/$REPO_TYPE/test.sh ./slim_test/test.sh
     log "Checking for presence of the 'docker_command' in .blueprint.json"
     local HAS_DOCKER_COMMAND=$(jq -e 'has("docker_command")' .blueprint.json)
     if [ "$HAS_DOCKER_COMMAND" != 'false' ]; then
       info "'docker_command' is present in the .blueprint.json file"
       local SLUG=$(jq -r '.slug' .blueprint.json)
       if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i .bak 's^DOCKER_SLUG^'"${SLUG}"'^g' ./test/test.sh && rm ./test/test.sh.bak
+        sed -i .bak 's^DOCKER_SLUG^'"${SLUG}"'^g' ./slim_test/test.sh && rm ./slim_test/test.sh.bak
       else
-        sed -i 's^DOCKER_SLUG^'"${SLUG}"'^g' ./test/test.sh
+        sed -i 's^DOCKER_SLUG^'"${SLUG}"'^g' ./slim_test/test.sh
       fi
-      log "Injecting Docker slug name into ./test/test.sh"
+      log "Injecting Docker slug name into ./slim_test/test.sh"
       local COMMAND=$(jq -r '.docker_command' .blueprint.json)
-      log "Injecting Docker command into ./test/test.sh"
+      log "Injecting Docker command into ./slim_test/test.sh"
       if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i .bak 's^DOCKER_COMMAND^'"${COMMAND}"'^g' ./test/test.sh && rm ./test/test.sh.bak
+        sed -i .bak 's^DOCKER_COMMAND^'"${COMMAND}"'^g' ./slim_test/test.sh && rm ./slim_test/test.sh.bak
       else
-        sed -i 's^DOCKER_COMMAND^'"${COMMAND}"'^g' ./test/test.sh
+        sed -i 's^DOCKER_COMMAND^'"${COMMAND}"'^g' ./slim_test/test.sh
       fi
     else
-      warn "The test folder exists but there is no 'docker_command' in .blueprint.json"
+      warn "The slim_test folder exists but there is no 'docker_command' in .blueprint.json"
     fi
   fi
 }
@@ -1123,10 +1123,10 @@ copy_project_files_and_generate_package_json() {
       success "Removed DockerSlim-specific package.json scripts since there is no dockerslim_command specified in .blueprint.json"
     fi
 
-    # Remove the test:unit script if there is no test folder present
-    log "Detecting presence of the test folder in the root of the project"
-    if [ ! -d ./test ]; then
-      warn "The test folder is not present in the root of this project. If this is by design then you can ignore this. However, if it is not by design then please read the README.md and CONTRIBUTING.md and add a test case."
+    # Remove the test:unit script if there is no slim_test folder present
+    log "Detecting presence of the slim_test folder in the root of the project"
+    if [ ! -d ./slim_test ]; then
+      warn "The slim_test folder is not present in the root of this project. If this is by design then you can ignore this. However, if it is not by design then please read the README.md and CONTRIBUTING.md and add a test case."
       if [[ "$OSTYPE" == "darwin"* ]]; then
         sed -i .bak '/test:unit/d' package.json && rm package.json.bak
       else
@@ -1134,7 +1134,7 @@ copy_project_files_and_generate_package_json() {
       fi
       success "Successfully removed the scripts.test:unit test step from package.json"
     else
-      info "The test folder is present in the root of this project so the scripts.test:unit script in package.json is being left as is"
+      info "The slim_test folder is present in the root of this project so the scripts.test:unit script in package.json is being left as is"
     fi
     # Copies name value from package.json to other locations that should match the string
     log "Performing tasks specific to Dockerfile projects"
