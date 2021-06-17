@@ -893,7 +893,14 @@ generate_documentation() {
     log "No change to the README.md necessary"
   fi
   log "Injecting styled dividers into markdown files"
-
+  for MARKDOWN_FILE in *.md; do
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i .bak 's^.*https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/.*.png)][(]\(.*\)[)]$^<a href="\1" style="width:100%"><img style="width:100%" alt="-----------------------------------------------------" src="https://gitlab.com/megabyte-labs/assets/-/raw/master/png/aqua-divider.png"></a>^g' $MARKDOWN_FILE && rm $MARKDOWN_FILE.bak
+    else
+      sed -i 's^.*https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/.*.png)][(]\(.*\)[)]$^<a href="\1" style="width:100%"><img style="width:100%" alt="-----------------------------------------------------" src="https://gitlab.com/megabyte-labs/assets/-/raw/master/png/aqua-divider.png"></a>^g' $MARKDOWN_FILE
+    fi
+    npx prettier --write $MARKDOWN_FILE
+  done
 }
 
 install_requirements() {
