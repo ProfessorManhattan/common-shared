@@ -1195,7 +1195,9 @@ copy_project_files_and_generate_package_json() {
       fi
     else
       local DESCRIPTION=$(jq -r '.description_cached' .blueprint.json)
-      jq --arg variable "$DESCRIPTION" '.description = $DESCRIPTION' package.json
+      if [ "$DESCRIPTION" != 'null' ]; then
+        jq --arg variable "$DESCRIPTION" '.description = $DESCRIPTION' package.json
+      fi
     fi
   fi
   log "Ensuring the package.json file is Prettier-compliant"
@@ -1294,7 +1296,7 @@ misc_fixes() {
   fi
   if [ "$REPO_TYPE" == 'dockerfile' ]; then
     local DESCRIPTION=$(jq -r '.description' package.json)
-    jq --arg variable "$DESCRIPTION" '.description_cached = $DESCRIPTION' .blueprint.json
+    jq --arg a "$DESCRIPTION" '.description_cached = $DESCRIPTION' .blueprint.json
   fi
 }
 
