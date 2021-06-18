@@ -1196,7 +1196,7 @@ copy_project_files_and_generate_package_json() {
     else
       local DESCRIPTION=$(jq -r '.description_cached' .blueprint.json)
       if [ "$DESCRIPTION" != 'null' ]; then
-        jq --arg a "$DESCRIPTION" '.description = $a' package.json > __package.json && mv __package.json package.json
+        jq --arg a "$DESCRIPTION" '.description = $a' package.json >__package.json && mv __package.json package.json
       fi
     fi
   fi
@@ -1296,7 +1296,7 @@ misc_fixes() {
   fi
   if [ "$REPO_TYPE" == 'dockerfile' ]; then
     local DESCRIPTION=$(jq -r '.description' package.json)
-    jq --arg a "${DESCRIPTION}" '.description_cached = $a' .blueprint.json > __blueprint.json && mv __blueprint.json .blueprint.json
+    jq --arg a "${DESCRIPTION}" '.description_cached = $a' .blueprint.json >__blueprint.json && mv __blueprint.json .blueprint.json
   fi
 }
 
