@@ -1152,13 +1152,12 @@ copy_project_files_and_generate_package_json() {
 
     # Updates the description from .blueprint.json
     local SUBGROUP=$(jq -r '.subgroup' .blueprint.json)
-    if ([ "$SUBGROUP" == 'ci-pipeline' ] || [ "$SUBGROUP" == 'ansible-molecule' ]) && [ "$container" != 'docker' ]; then
+    if ([ "$SUBGROUP" == 'ci-pipeline' ] || [ "$SUBGROUP" == 'ansible-molecule' ]) && (command_exists docker); then
       log "Ensuring the package.json description is updated, using a value specified in .blueprint.json"
       local DESCRIPTION_TEMPLATE=$(jq -r '.description_template' .blueprint.json)
       jq --arg a "${DESCRIPTION_TEMPLATE}" '.description = $a' package.json >__jq.json && mv __jq.json package.json
       success "Successfully copied the .blueprint.json description to the package.json description"
       local SLUG=$(jq -r '.slug' .blueprint.json)
-      local CONTAINER_STATUS=$(docker images -q megabytelabs/${SLUG}:slim)
       if [[ -n "$CONTAINER_STATUS" ]]; then
         info ":slim image appears to have already been built"
         log "Injecting container size information into package.json description"
@@ -1194,6 +1193,9 @@ copy_project_files_and_generate_package_json() {
           success "Successfully removed the container file size placeholder from the description in package.json"
         fi
       fi
+    else
+      local DESCRIPTION=$(jq -r '.description_cached' .blueprint.json)
+      jq --arg variable "$DESCRIPTION" '.description = $DESCRIPTION' package.json
     fi
   fi
   log "Ensuring the package.json file is Prettier-compliant"
@@ -1290,6 +1292,8 @@ misc_fixes() {
     npm audit fix || true
     success "Ran npm audit fix"
   fi
+  local DESCRIPTION=$(jq -r '.description' package.json)
+  jq --arg variable "$DESCRIPTION" '.description_cached = $DESCRIPTION' .blueprint.json
 }
 
 populate_alternative_descriptions() {
