@@ -1292,8 +1292,10 @@ misc_fixes() {
     npm audit fix || true
     success "Ran npm audit fix"
   fi
-  local DESCRIPTION=$(jq -r '.description' package.json)
-  jq --arg variable "$DESCRIPTION" '.description_cached = $DESCRIPTION' .blueprint.json
+  if [ "$REPO_TYPE" == 'dockerfile' ]; then
+    local DESCRIPTION=$(jq -r '.description' package.json)
+    jq --arg variable "$DESCRIPTION" '.description_cached = $DESCRIPTION' .blueprint.json
+  fi
 }
 
 populate_alternative_descriptions() {
