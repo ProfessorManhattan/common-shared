@@ -1,5 +1,5 @@
 {
-  "name": "@{{npm_organization}}/{{github_prefix}}{{slug}}",
+  "name": "@{{npmjs_organization}}/{{github_prefix}}{{slug}}",
   "description": "{{description}}",
   "license": "{{license}}",
   "author": "{{author.name}} <{{author.email}}> ({{link.home}})",
@@ -10,7 +10,7 @@
   },
   "bugs": {
     "email": "{{email.help}}",
-    "url": "{{repo}}/-/issues"
+    "url": "{{repo}}{{repository.location.issues}}"
   },
   "version": "0.0.1",
   "scripts": {
@@ -20,9 +20,9 @@
     "fix:shellcheck": "find . -type d \\( -name .cache -o -name .git -o -name .modules  -o -name node_modules -o -name .husky -o -name venv \\) -prune -o -type f \\( -name \\*.sh -o -name \\*.sh.j2 \\) -print0 | xargs -0 shellcheck -f diff | git apply",
     "info": "npm-scripts-info",
     "postinstall": "if [ -d .git ]; then husky install; fi",
-    "lint": "run-s lint:*",
     "lint:prettier": "prettier --list-different .",
     "lint:shellcheck": "find . -type d \\( -name .cache -o -name .git -o -name .modules  -o -name node_modules -o -name .husky -o -name venv \\) -prune -o -type f \\( -name \\*.sh -o -name \\*.sh.j2 \\) -print0 | xargs -0 -r -n1 shellcheck",
+    "lint:staged": "lint-staged",
     "misc:markdown-links": "find . -type d \\( -name .cache -o -name .git -o -name .github -o -name .gitlab -o -name .modules  -o -name node_modules \\) -prune -o -type f \\( -name \\*.md \\) -print0 | xargs -0 -r -n1 markdown-link-check",
     "version": "standard-version --no-verify"
   },
@@ -32,8 +32,8 @@
     }
   },
   "devDependencies": {
-    "{{prettier_config}}": "^1.0.0",
-    "cspell": "^5.6.3",
+    "@megabytelabs/prettier-config": "^1.0.0",
+    "cspell": "^5.6.6",
     "cz-conventional-changelog": "^3.3.0",
     "husky": "^6.0.0",
     "lint-staged": "^11.0.0",
@@ -45,21 +45,6 @@
     "shellcheck": "^1.0.0",
     "standard-version": "^9.3.0"
   },
-  "keywords": [
-    "{{slug}}",
-    "ansible",
-    "megabytelabs",
-    "playbook",
-    "professormanhattan",
-    "archlinux",
-    "centos",
-    "debian",
-    "fedora",
-    "macos",
-    "ubuntu",
-    "windows",
-    "molecule"
-  ],
   "engines": {
     "node": ">=10"
   },
@@ -74,18 +59,37 @@
     }
   ],
   "lint-staged": {
+    "**/*": [
+      "check-merge-conflict",
+      "check-added-large-files",
+      "check-case-conflict",
+      "check-docstring-first",
+      "check-executables-have-shebangs",
+      "check-symlinks",
+      "detect-private-key"
+    ],
     "**/*.{js,json,md,ts,yml}": [
       "prettier --write"
     ],
     "**/*.{sh,sh.j2}": [
       "prettier --write",
-      "docker run -v \"$PWD:/mnt\" megabytelabs/shellcheck"
+      "shellcheck"
+    ],
+    "**/*.xml": [
+      "check-xml"
+    ],
+    "**/*.yml": [
+      "check-yaml",
+      "yamllint"
     ],
     "package.json": [
       "prettier-package-json --write"
+    ],
+    "requirements.txt": [
+      "requirements-txt-fixer"
     ]
   },
-  "prettier": "{{prettier_config}}",
+  "prettier": "@megabytelabs/prettier-config",
   "scripts-info": {
     "commit": "Whenever committing code, run 'task commit' - 'task commit' will utilize this step and make your commits better",
     "fix:prettier": "Automatically format files with Prettier",
@@ -93,6 +97,7 @@
     "info": "Displays descriptions of all the npm tasks",
     "lint:prettier": "Checks for presence of files that Prettier wants to format differently",
     "lint:shellcheck": "Performs linting of shell scripts with Shellcheck",
+    "lint:staged": "Performs many validations on only the current commit's staged files",
     "misc:markdown-links": "Checks markdown files for broken links",
     "prepare-release": "Prepares the repository for a release",
     "version": "Used by 'npm run prepare-release' to update the CHANGELOG"
