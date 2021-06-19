@@ -1,5 +1,5 @@
 {
-  "name": "@{{npmjs_organization}}/{{github_prefix}}{{slug}}",
+  "name": "@{{profile.npmjs_organization}}/{{github_prefix}}{{slug}}",
   "description": "{{description}}",
   "license": "{{license}}",
   "author": "{{author.name}} <{{author.email}}> ({{link.home}})",
