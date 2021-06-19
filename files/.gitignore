@@ -1,0 +1,6 @@
+.cache/
+.git/
+.husky/
+.nyc_output/
+build/
+venv/
