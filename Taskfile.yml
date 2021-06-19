@@ -1,0 +1,124 @@
+version: '3'
+
+tasks:
+  default:
+    cmds:
+      - echo "Hey"
+  fix-formatting:
+    desc: Automatically format most files using Prettier
+    cmds:
+      - npm run fix:prettier
+
+  fix-python:
+    desc: Automatically format Python files using Black
+    cmds:
+      - black --exclude '\.cache/|.*\.cache/|\.common/|.*\.common/|.git/|.*\.git/|node_modules/|.*node_modules/|roles/' .
+
+  fix-scripts:
+    desc: (Experimental) Automatically apply fixes to .sh files using Shellcheck
+    cmds:
+      - npm run fix:shellcheck
+
+  lint:
+    deps: [lint-ansible, lint-dockerfiles, lint-python, lint-yaml]
+
+  lint-ansible:
+    deps: [symlink-ansible-roles]
+    desc: Lint Ansible projects using Ansible Lint
+    cmds:
+      - ansible-lint
+    sources:
+      - defaults/**/*
+      - environments/**/*
+      - group_vars/**/*
+      - host_vars/**/*
+      - inventories/**/*
+      - meta/**/*
+      - molecule/**/*
+      - playbooks/**/*
+      - tasks/**/*
+      - tests/**/*
+      - vars/**/*
+      - ./*.yml
+    method: checksum
+
+  lint-dockerfiles:
+    desc: Lint Dockerfiles using Hadolint (requires Docker)
+    cmds:
+      - find . -type d \\( -name .cache -o -name .common -o -name .git -o -name .modules  -o -name node_modules -o -name .husky -o -name .task -o -name test \\) -prune -o -type f \\( -name Dockerfile -o -name Dockerfile.j2 \\) -print0 | xargs -0 -r -n1 docker run -v ${PWD}:/work -w /work megabytelabs/hadolint:slim
+    sources:
+      - Dockerfile
+      - Dockerfile.j2
+      - ./**/Dockerfile
+      - ./**/Dockerfile.j2
+    method: checksum
+
+  lint-python:
+    desc: Lint Python files using Flake8
+    cmds:
+      - flake8 .
+
+  lint-yaml:
+    desc: Lint .yml files using YAML Lint
+    cmds:
+      - yamllint .
+    sources:
+      - defaults/**/*
+      - environments/**/*
+      - group_vars/**/*
+      - host_vars/**/*
+      - inventories/**/*
+      - meta/**/*
+      - molecule/**/*
+      - playbooks/**/*
+      - tasks/**/*
+      - tests/**/*
+      - vars/**/*
+      - ./*.yml
+    method: checksum
+
+  markdown-link-check:
+    desc: Scan markdown files for broken links
+    cmds:
+      - npm run misc:markdown-links
+
+  prepare-release:
+    desc: Ensure the project has upstream changes, lint, and then update the version
+    cmds:
+      - task: update
+      - task: lint
+      - task: version
+
+  shell:
+    desc: Start a terminal session using Docker with any Linux operating system
+    summary: |
+      Start a Docker terminal session
+
+      Use Docker to run commands on nearly any operating system. The operating
+      systems are all stock distros with systemd added.
+
+      Example usage:
+      task shell -- ubuntu-21.04
+
+      Available operating systems:
+      archlinux, centos-7, centos-8, 
+    
+
+  symlink-ansible-role:
+    desc: Symlink all the roles in the roles folder to ~/.ansible/roles
+    vars:
+      ROLE_FOLDER:
+        sh: basename $PWD
+    cmds:
+      - export ANSIBLE_GALAXY_USERNAME_PREFIX=professormanhattan.
+      - rm -f "$HOME/.ansible/roles/${ANSIBLE_GALAXY_USERNAME_PREFIX}.${ROLE_FOLDER}"
+      - mkdir -p "$HOME/.ansible/roles"
+      - ln -s "$PWD" "~/.ansible/roles/${ANSIBLE_GALAXY_USERNAME_PREFIX}.${ROLE_FOLDER}"
+    sources:
+      - roles/*/*/
+    method: timestamp
+
+  version:
+    desc: Increment the version (use the prepare-release task instead)
+    cmds:
+      - npm run version

@@ -1,7 +1,7 @@
 ---
 ignore: |
-  venv
   .cache/
+  .common/
   .github/
   .gitlab/
   .modules/
@@ -9,6 +9,7 @@ ignore: |
   .travis.yml
   environments/prod/
   node_modules/
+  venv/
 
 extends: default
 
