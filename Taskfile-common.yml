@@ -4,6 +4,17 @@ tasks:
   default:
     cmds:
       - echo "Hey"
+  bootstrap:
+    desc: Scaffold/update the project by copying the appropriate files from the .common submodule
+    dir: .common
+    cmds: |
+        for FOLDER in files-*/; do
+          FOLDER_SUBTYPE=$(echo $FOLDER | sed 's/files-\(.*\)\//\1/')
+          if [ "$FOLDER_SUBTYPE" == "$REPOSITORY_SUBTYPE" ]; then
+            cp -rT files-$FOLDER_SUBTYPE files
+            hbs
+          fi
+        done
   fix-formatting:
     desc: Automatically format most files using Prettier
     cmds:
@@ -110,7 +121,7 @@ tasks:
   molecule-docker:
     desc: Performs a full test, including a test for idempotency, on all available Linux systems using Docker
     summary: |
-      This task runs the project's Molecule tests using Docker. It only tests against 
+      This task runs the project's Molecule tests using Docker. It only tests against
       Linux systems. If the role/project contains any steps that use the
       community.general.snap plugin, then only the operating systems that support that
       plugin with Docker are tested.
