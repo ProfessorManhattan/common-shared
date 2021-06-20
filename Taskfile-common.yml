@@ -8,13 +8,13 @@ tasks:
     desc: Scaffold/update the project by copying the appropriate files from the .common submodule
     dir: .common
     cmds: |
-        for FOLDER in files-*/; do
-          FOLDER_SUBTYPE=$(echo $FOLDER | sed 's/files-\(.*\)\//\1/')
-          if [ "$FOLDER_SUBTYPE" == "$REPOSITORY_SUBTYPE" ]; then
-            cp -rT files-$FOLDER_SUBTYPE files
-            hbs
-          fi
-        done
+      for FOLDER in files-*/; do
+        FOLDER_SUBTYPE=$(echo $FOLDER | sed 's/files-\(.*\)\//\1/')
+        if [ "$FOLDER_SUBTYPE" == "$REPOSITORY_SUBTYPE" ]; then
+          cp -rT files-$FOLDER_SUBTYPE files
+          hbs
+        fi
+      done
   fix-formatting:
     desc: Automatically format most files using Prettier
     cmds:
