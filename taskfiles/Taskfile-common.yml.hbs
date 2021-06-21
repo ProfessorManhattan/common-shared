@@ -93,13 +93,32 @@ tasks:
 
   update:
     desc: Refresh the project with the latest upstream code and ensure blueprint data has propagated
+    vars:
+      BLUEPRINT_DATA:
+        sh: jq '.blueprint' package.json
+      COMMON_JSON: ".common/files-$REPOSITORY_SUBTYPE/common.json"
+      PKG_DEPS:
+        sh: jq '.dependencies' package.json
+      PKG_DEV_DEPS:
+        sh: jq '.devDependencies' package.json
+      PKG_VERSION:
+        sh: jq '.version' package.json
     cmds:
+      - source "./.common/scripts/log.sh"
       - cp ./.common/.start.sh .start.sh
+      - info "Compiling templated files"
+      - mkdir .tmp
+      - jq --arg a "${BLUEPRINT_DATA}" '. = . * $a' $COMMON_JSON
+      - jq --arg a "${BLUEPRINT_DATA}" '.role_variables = $a' __bp.json >__jq.json && mv __jq.json __bp.json
+      - jq -s '.[0] * .[1].blueprint' "$COMMON_JSON" "$BLUEPRINT_DATA"
       - |
-        for FOLDER in files-*/; do
-          FOLDER_SUBGROUP=$(echo $FOLDER | sed 's/files-\(.*\)\//\1/')
-          if [ "$FOLDER_SUBGROUP" == "$REPOSITORY_SUBTYPE" ]; then
-            cp -rT files-$FOLDER_SUBTYPE files
-            hbs
+        FILES=$(find .common/files-$REPOSITORY_SUBTYPE)
+        for FILE in "$FILES"; do
+          if [ "${FILE##*.}" == 'hbs' ]; then
+            hbs --data "$COMMON_JSON" "$FILE" --stdout > "$(dirname $FILE)/${FILE%.*}"
           fi
         done
+      - rm -rf .common/files-$REPOSITORY_SUBTYPE/**.hbs
+      - rm -rf .common/files-$REPOSITORY_SUBTYPE/**/*.hbs
+      - info "Backing u"
+      -
