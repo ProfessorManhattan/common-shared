@@ -95,14 +95,14 @@ tasks:
     desc: Refresh the project with the latest upstream code and ensure blueprint data has propagated
     vars:
       BLUEPRINT_DATA:
-        sh: jq '.blueprint' package.json
+        sh: jq -r '.blueprint' package.json
       COMMON_JSON: ".common/files-$REPOSITORY_SUBTYPE/common.json"
       PKG_DEPS:
-        sh: jq '.dependencies' package.json
+        sh: jq -r '.dependencies' package.json
       PKG_DEV_DEPS:
-        sh: jq '.devDependencies' package.json
+        sh: jq -r '.devDependencies' package.json
       PKG_VERSION:
-        sh: jq '.version' package.json
+        sh: jq -r '.version' package.json
     cmds:
       - source "./.common/scripts/log.sh"
       - cp ./.common/.start.sh .start.sh
