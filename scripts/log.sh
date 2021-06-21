@@ -24,8 +24,6 @@
 #   equal to `NODE_PATH="$(npm root -g):$NODE_PATH"` to ensure the `signale` logging works
 #   as expected.
 
-LOG_PREFIX=testy
-LOG_SUFFIX=""
 if commandExists node; then
   NODE_PATH="$(npm root -g):$NODE_PATH"
   if [ "${container:=}" != 'docker' ]; then
@@ -34,7 +32,7 @@ if commandExists node; then
 fi
 
 function signale() {
-  node -e 'require("signale").'"$1"'(prefix: '"$LOG_PREFIX"', message:"'"$2"'", suffix: "'"$LOG_SUFFIX"'")'
+  node -e 'require("signale").'"$1"'(prefix: "'"${LOG_PREFIX:=}"'", message:"'"$2"'", suffix: "'"${LOG_SUFFIX:=}"'")'
 }
 
 function error() {

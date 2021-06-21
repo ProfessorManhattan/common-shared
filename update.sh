@@ -13,8 +13,8 @@
 
 set -e
 
-source "./.common/scripts/log.sh"
 source "./.common/scripts/common.sh"
+source "./.common/scripts/log.sh"
 source "./.common/scripts/software.sh"
 source "./.common/scripts/notices.sh"
 source "./.common/lib.sh"
