@@ -85,7 +85,7 @@
     ],
     "**/*.yml": [
       "check-yaml",
-      "yamllint"
+      "yamllint -s"
     ],
     "package.json": [
       "prettier-package-json --write"
