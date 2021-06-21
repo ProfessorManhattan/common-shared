@@ -15,7 +15,6 @@
   "version": "0.0.1",
   "scripts": {
     "commit": "git-cz",
-    "fix": "run-s fix:*",
     "fix:prettier": "prettier --write . && prettier-package-json --write package.json",
     "fix:shellcheck": "find . -type d \\( -name .cache -o -name .git -o -name .modules  -o -name node_modules -o -name .husky -o -name venv \\) -prune -o -type f \\( -name \\*.sh -o -name \\*.sh.j2 \\) -print0 | xargs -0 shellcheck -f diff | git apply",
     "info": "npm-scripts-info",
@@ -38,7 +37,6 @@
     "husky": "^6.0.0",
     "lint-staged": "^11.0.0",
     "markdown-link-check": "^3.8.7",
-    "npm-scripts-info": "^0.3.9",
     "prettier": "^2.3.1",
     "prettier-package-json": "^2.6.0",
     "prettier-plugin-sh": "^0.6.1",
@@ -57,6 +55,10 @@
       "type": "patreon",
       "url": "{{profile_link.patreon}}/{{profile.patreon}}"
     }
+  ],
+  "keywords": [
+    "megabytelabs",
+    "professormanhattan"
   ],
   "lint-staged": {
     "**/*": [
@@ -90,21 +92,12 @@
     ],
     "requirements.txt": [
       "requirements-txt-fixer"
+    ],
+    ".gitlab-ci.yml": [
+      "npx gitlab-ci-lint"
     ]
   },
   "prettier": "@megabytelabs/prettier-config",
-  "scripts-info": {
-    "commit": "Whenever committing code, run 'task commit' - 'task commit' will utilize this step and make your commits better",
-    "fix:prettier": "Automatically format files with Prettier",
-    "fix:shellcheck": "Attempts to automatically fix shell scripts with Shellcheck",
-    "info": "Displays descriptions of all the npm tasks",
-    "lint:prettier": "Checks for presence of files that Prettier wants to format differently",
-    "lint:shellcheck": "Performs linting of shell scripts with Shellcheck",
-    "lint:staged": "Performs many validations on only the current commit's staged files",
-    "misc:markdown-links": "Checks markdown files for broken links",
-    "prepare-release": "Prepares the repository for a release",
-    "version": "Used by 'npm run prepare-release' to update the CHANGELOG"
-  },
   "standard-version": {
     "scripts": {
       "prerelease": "git add --all"
