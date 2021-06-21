@@ -26,13 +26,14 @@
 
 if commandExists node; then
   NODE_PATH="$(npm root -g):$NODE_PATH"
+  export NODE_PATH
   if [ "${container:=}" != 'docker' ]; then
     ENHANCED_LOGGING=true
   fi
 fi
 
 function signale() {
-  node -e 'require("signale").'"$1"'(prefix: "'"${LOG_PREFIX:=}"'", message:"'"$2"'", suffix: "'"${LOG_SUFFIX:=}"'")'
+  node -e 'require("signale").'"$1"'({prefix: "'"${LOG_PREFIX:=}"'", message:"'"$2"'", suffix: "'"${LOG_SUFFIX:=}"'"})'
 }
 
 function error() {
