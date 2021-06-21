@@ -38,7 +38,7 @@ tasks:
       The example above will look through all the folders two levels deep (e.g. ./roles/tools/nmap,
       ./roles/system/snapd)in the roles folder and display any roles that are missing the file.
     cmds:
-      - find ./roles -mindepth 2 -maxdepth 2 -type d '!' -exec test -e "{}/{{.CLI_ARGS}}" ';' -print
+      - find ./roles -mindepth 2 -maxdepth 2 -type d '!' -exec test -e "{}/\{{.CLI_ARGS}}" ';' -print
     preconditions:
       - sh: "test -d roles"
         msg: "The roles folder is missing. Is the project set up right?"
@@ -70,7 +70,7 @@ tasks:
 {{#if hbs.role}}
 
   symlink:
-    desc: Symlink the current role to ~/.ansible/roles/{{GALAXY_NAMESPACE}}.{{GALAXY_ROLE_NAME}}
+    desc: Symlink the current role to ~/.ansible/roles/\{{GALAXY_NAMESPACE}}.\{{GALAXY_ROLE_NAME}}
     summary: |
       $ Symlink this role to ~/.ansible/roles/\{{ namespace }}.\{{ role_name }}
 
