@@ -9,6 +9,13 @@ tasks:
     desc: Scaffold/update the project by copying the appropriate files from the .common submodule
     dir: .common
 
+  commit:
+    desc: Lint staged files, report spelling errors, and then add commit details
+    cmds:
+      - npm run lint-staged
+      - task: spelling
+      - npm run commit -- --no-verify
+
   fix-formatting:
     desc: Automatically format most files using Prettier
     cmds:
@@ -97,6 +104,16 @@ tasks:
         sh: basename $PWD
     cmds:
       - docker run --cap-drop=ALL -it -v ${PWD}:/{{WORKDIR}} -w /{{WORKDIR}} --rm megabytelabs/ansible-molecule-{{.CLI_ARGS}}:latest /bin/bash
+
+  spelling:
+    desc: Checks for spelling errors in staged files
+    vars:
+      STAGED_FILES:
+        sh: git diff --cached --name-only
+    cmds:
+      - npx cspell --no-summary --no-progress --show-context --no-must-find-files --config .common/.cspell.json || true
+    preconditions:
+      - git diff --cached --name-only
 
   update:
     desc: Ensure the project is completely up-to-date and ready for development

@@ -71,6 +71,9 @@
     "**/*.{js,json,md,ts,yml}": [
       "prettier --write"
     ],
+    "**/*.{js}": [
+      "npx standard --fix"
+    ],
     "**/*.{sh,sh.j2}": [
       "prettier --write",
       "shellcheck"
