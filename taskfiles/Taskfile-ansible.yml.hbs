@@ -1,0 +1,86 @@
+---
+version: '3'
+
+tasks:
+  fix:
+    desc: Apply automatic code formatting techniques (Prettier, Black, and Shellcheck)
+    deps: [fix-formatting, fix-python, fix-scripts]
+
+  lint:
+    desc: Lint the project by running all the linters in parallel (Ansible, Hadolint, Flake8, and YAML Lint)
+    deps: [lint:ansible, lint:docker, lint-python, lint-yaml]
+{{#if hbs.ansible}}
+
+  requirements:
+    desc: Install the Node.js, Python, and Ansible Galaxy package dependencies
+    deps: [requirements-nodejs, requirements-python,requirements-galaxy]
+
+  requirements-galaxy:
+    cmds:
+      - ansible-galaxy install -r requirements.yml
+    preconditions:
+      - sh: "test -f requirements.yml"
+        msg: "The requirements.yml file is missing! It should be present even if it is empty (which should almost never be the case)."
+{{/if}}
+{{#if hbs.playbook}}
+
+  find-missing-files:
+    desc: Find roles that are missing files
+    summary: |
+      $ Find roles that are missing any given file
+
+      This task scans through all the folders in the roles/ directory and checks
+      for the presence of a file that you pass in through the CLI.
+
+      Example usage:
+      > task find-missing-files -- logo.png
+
+      The example above will look through all the folders two levels deep (e.g. ./roles/tools/nmap,
+      ./roles/system/snapd)in the roles folder and display any roles that are missing the file.
+    cmds:
+      - find ./roles -mindepth 2 -maxdepth 2 -type d '!' -exec test -e "{}/{{.CLI_ARGS}}" ';' -print
+    preconditions:
+      - sh: "test -d roles"
+        msg: "The roles folder is missing. Is the project set up right?"
+
+  symlink:
+    desc: Symlink all the roles in the roles/ folder to ~/.ansible/roles
+    summary: |
+      $ Symlink each role to ~/.ansible/roles/\{{ namespace }}.\{{ role_name }}
+
+      In the playbook, roles are sometimes referred to by their folder name and in other cases
+      they are referred to with their namespace prepended (e.g. professormanhattan.role_name).
+      This can cause issues so, in order for everything to work, each folder needs to be symlinked
+      to ~/.ansible/roles with the namespace prepended.
+    cmds:
+      - |
+        find ./roles -mindepth 2 -maxdepth 2 -type d -print0 | while read -d $'\0' ROLE_PATH; do;
+          PATH_BASENAME=$(basename "$ROLE_PATH");
+          if [ ! -d "~/.ansible/roles/$GALAXY_NAMESPACE.$PATH_BASENAME" ]; then
+            ln -sf "$PWD/$ROLE_PATH" "~/.ansible/roles/$GALAXY_NAMESPACE.$PATH_BASENAME"
+          fi
+        done
+    sources:
+      - roles/*/*/
+    method: timestamp
+    preconditions:
+      - sh: "test -d roles"
+        msg: "The roles folder is missing. Is the project set up right?"
+{{/if}}
+{{#if hbs.role}}
+
+  symlink:
+    desc: Symlink the current role to ~/.ansible/roles/{{GALAXY_NAMESPACE}}.{{GALAXY_ROLE_NAME}}
+    summary: |
+      $ Symlink this role to ~/.ansible/roles/\{{ namespace }}.\{{ role_name }}
+
+      Roles are sometimes referred to by their folder name (which ideally is also the role_name in
+      the meta/main.yml file) and they are sometimes referred to by their Ansible Galaxy name which
+      has the namespace prepended (e.g. professormanhattan.role_name). In order to make sure Ansible
+      can find the role in both cases, a symlink in ~/.ansible/roles that points to the folder needs
+      to be created.
+    cmds:
+      - mkdir -p "$HOME/.ansible/roles"
+      - rm -f "$HOME/.ansible/roles/${GALAXY_NAMESPACE}.${GALAXY_ROLE_NAME}"
+      - ln -s "$PWD" "~/.ansible/roles/${GALAXY_NAMESPACE}.${GALAXY_ROLE_NAME}"
+{{/if}}
