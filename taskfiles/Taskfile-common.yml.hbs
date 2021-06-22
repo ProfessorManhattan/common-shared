@@ -143,12 +143,25 @@ tasks:
         sh: jq -r '.blueprint' package.json
       COMMON_JSON: ".common/common.$REPOSITORY_SUBTYPE.json"
     cmds:
-      - TMP=$(mktemp)
+      - TMP="$(mktemp)"
       - jq -S --arg blueprint "\{{.BLUEPRINT_DATA}}" '. = . * ($blueprint | fromjson)' ".common/variables.$REPOSITORY_SUBTYPE.json" > "$TMP"
       - mv "$TMP" .variables.json
+{{#if hbs.role}}
+      - DESCRIPTION=$(yq e '.galaxy_info.description' meta/main.yml)
+      - LOWERCASE_DESC=$(echo ${DESCRIPTION:0:1} | tr '[A-Z]' '[a-z]')${DESCRIPTION:1}
+      - SUBHEADER_DESCRIPTION="An Ansible role that ${LOWERCASE_DESC}"
+      - ALT_DESCRIPTION="This repository is the home of an [Ansible](https://www.ansible.com/) role that ${LOWERCASE_DESCRIPTION}."
+      - TMP="$(mktemp)"
+      - jq -S --arg subheader "$SUBHEADER_DESCRIPTION" --arg alt "$ALT_DESCRIPTION" '.subheader_description = $subheader | .alt_description = $alt' .variables.json > "$TMP"
+      - mv "$TMP" .variables.json
+{{/if}}
     preconditions:
       - sh: "type jq &> /dev/null"
-        msg: "jq is not installed! Install it by running `bash .start.sh`."
+        msg: "jq is not installed! You can install it by running `bash .start.sh`."
+      - sh: "type yq &> /dev/null"
+        msg: "yq is not installed! You can install it by running `bash .start.sh`."
+      - sh: "test -f meta/main.yml"
+        msg: "The meta/main.yml file is missing. A properly populated meta/main.yml is required. You can find an example of one at https://github.com/ProfessorManhattan/ansible-snapd."
 
   update-all:
     deps: [update-contributing, update-readme{{#if hbs.role}}-role{{/if}}, update-files]
@@ -170,7 +183,7 @@ tasks:
       - mv "$TMP" .variables.json
     preconditions:
       - sh: "type mod-ansible-autodoc &> /dev/null"
-        msg: "The Python package `mod-ansible-autodoc` is missing. Ensure the Python requirements are installed by running `pip3 install -r requirements.txt`."
+        msg: "The Python package `mod-ansible-autodoc` is missing. Ensure the Python requirements are installed by running `pip3 install -r requirements.txt` or running `bash .start.sh`."
 
   _ansibler:
     cmds:
