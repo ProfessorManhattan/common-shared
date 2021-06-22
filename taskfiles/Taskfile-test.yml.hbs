@@ -6,12 +6,15 @@ tasks:
   local:
     desc: Run the Ansible play on the local machine
     cmds:
+      - 
       - cp tests/inventory inventory
       - if [ ! -f main.yml.bak ]; then mv main.yml main.yml.bak; fi
       - cp tests/test.yml main.yml
       - if [ ! -f ansible.cfg.bak ]; then mv ansible.cfg ansible.cfg.bak; fi
       - cp tests/ansible.cfg ansible.cfg
       - ansible-playbook --ask-sudo-pass main.yml
+      - mv main.yml.bak main.yml
+      - mv ansible.cfg.bak ansible.cfg
 
   molecule-desktop:
     desc: Provisions a desktop VirtualBox VM and then runs a Molecule test
@@ -69,6 +72,7 @@ tasks:
         fi
 {{/if}}
 {{#if hbs.playbook}}
+
     vagrant:
       desc: Runs the playbook using Vagrant
       summary: |
@@ -84,5 +88,5 @@ tasks:
         Example:
         > task test:vagrant -- --provider=vmware_workstation windows
       cmds:
-        - vagrant up {{.CLI_ARGS}}
+        - vagrant up \{{.CLI_ARGS}}
 {{/if}}
