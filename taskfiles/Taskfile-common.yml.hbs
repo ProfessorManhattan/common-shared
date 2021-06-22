@@ -152,7 +152,7 @@ tasks:
       - SUBHEADER_DESCRIPTION="An Ansible role that ${LOWERCASE_DESC}"
       - ALT_DESCRIPTION="This repository is the home of an [Ansible](https://www.ansible.com/) role that ${LOWERCASE_DESCRIPTION}."
       - TMP="$(mktemp)"
-      - jq -S --arg subheader "$SUBHEADER_DESCRIPTION" --arg alt "$ALT_DESCRIPTION" '.subheader_description = $subheader | .alt_description = $alt' .variables.json > "$TMP"
+      - jq -S --arg subheader "$SUBHEADER_DESCRIPTION" --arg alt "$ALT_DESCRIPTION" '.subheader_description = $subheader | .alternative_description = $alt' .variables.json > "$TMP"
       - mv "$TMP" .variables.json
 {{/if}}
     preconditions:
