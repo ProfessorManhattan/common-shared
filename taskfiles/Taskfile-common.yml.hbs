@@ -69,7 +69,7 @@ tasks:
     cmds:
       - npm install
     sources:
-      - .common/files-{{.REPOSITORY_SUBTYPE}}/package.json
+      - .common/files-\{{.REPOSITORY_SUBTYPE}}/package.json
     preconditions:
       - sh: "test -f package.json"
         msg: "The package.json file appears to be missing!"
@@ -141,10 +141,10 @@ tasks:
     vars:
       BLUEPRINT_DATA:
         sh: jq -r '.blueprint' package.json
-      COMMON_JSON: ".common/common.$REPOSITORY_SUBTYPE.json"
+      COMMON_JSON: ".common/common.\{{.REPOSITORY_SUBTYPE}}.json"
     cmds:
       - TMP="$(mktemp)"
-      - jq -S --arg blueprint "\{{.BLUEPRINT_DATA}}" '. = . * ($blueprint | fromjson)' ".common/variables.$REPOSITORY_SUBTYPE.json" > "$TMP"
+      - jq -S --arg blueprint "\{{.BLUEPRINT_DATA}}" '. = . * ($blueprint | fromjson)' ".common/variables.\{{.REPOSITORY_SUBTYPE}}.json" > "$TMP"
       - mv "$TMP" .variables.json
 {{#if hbs.role}}
       - DESCRIPTION=$(yq e '.galaxy_info.description' meta/main.yml)
@@ -223,15 +223,15 @@ tasks:
         sh: jq -r '.version' package.json
     cmds:
       -- |
-        FILES="$(find .common/files-$REPOSITORY_SUBTYPE)"
+        FILES="$(find .common/files-\{{.REPOSITORY_SUBTYPE}})"
         for FILE in "$FILES"; do
           if [ "${FILE##*.}" == 'hbs' ]; then
             hbs --data .variables.json "$FILE" --stdout > "$(dirname $FILE)/${FILE%.*}"
           fi
         done
-      - rm -rf ".common/files-$REPOSITORY_SUBTYPE/**.hbs"
-      - rm -rf ".common/files-$REPOSITORY_SUBTYPE/**/*.hbs"
-      - rsync -aP ".common/files-$REPOSITORY_SUBTYPE/" ./
+      - rm -rf ".common/files-\{{.REPOSITORY_SUBTYPE}}/**.hbs"
+      - rm -rf ".common/files-\{{.REPOSITORY_SUBTYPE}}/**/*.hbs"
+      - rsync -aP ".common/files-\{{.REPOSITORY_SUBTYPE}}/" ./
       - TMP="$(mktemp)"
       # The following command merges upstream package.json dependencies and devDependencies and overwrites them with the upstream versions.
       # It allows the package.json in each project to include whatever dependencies it needs while at the same time it allows all the
@@ -249,7 +249,7 @@ tasks:
 
   update-readme:
     vars:
-      README_TEMPLATE: "blueprint-readme{{#if hbs.ansible}}-$REPOSITORY_SUBTYPE{{/if}}.md"
+      README_TEMPLATE: "blueprint-readme{{#if hbs.ansible}}-\{{.REPOSITORY_SUBTYPE}}{{/if}}.md"
     cmds:
       - readme generate --config .variables.json --input ".common/docs/\{{.README_TEMPLATE}}"
       - rm -f ansible_actions.md ansible_tags.md ansible_todo.md ansible_variables.md ansible_variables.json dependency-chart.json
