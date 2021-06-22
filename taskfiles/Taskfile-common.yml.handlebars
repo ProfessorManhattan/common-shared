@@ -279,7 +279,7 @@ tasks:
       - |
         if [[ '{{OS}}' == 'darwin' ]]; then
           sed -i .bak 's^\{{.REGEX}}^\{{.DIVIDER_SRC}}"></a>^g'\
-            \{{.SCRUB_FILE}} && rm {{.SCRUB_FILE}}.bak
+            \{{.SCRUB_FILE}} && rm \{{.SCRUB_FILE}}.bak
         else
           sed -i 's^\{{.REGEX}}^\{{.DIVIDER_SRC}}"></a>^g'
             \{{.SCRUB_FILE}}
