@@ -226,7 +226,7 @@ tasks:
 
   update-files:
     env:
-      FILES
+      FILES:
         sh: find .common/files-\{{.REPOSITORY_SUBTYPE}}
       PKG_DEPS:
         sh: jq -r '.dependencies' package.json
