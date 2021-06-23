@@ -76,11 +76,8 @@ tasks:
 
   requirements-python:
     cmds:
-      - source ".common/scripts/log.sh"
-      - info "Setting up a virtual Python environment"
       - virtualenv venv
       - source venv/bin/activate
-      - info "Installing pip requirements"
       - pip3 install requirements.txt
     sources:
       - requirements.txt
@@ -235,6 +232,8 @@ tasks:
         sh: jq -r '.dependencies' package.json
       PKG_DEV_DEPS:
         sh: jq -r '.devDependencies' package.json
+      PKG_SCRIPTS:
+        sh: jq -r '.scripts' package.json
       PKG_VERSION:
         sh: jq -r '.version' package.json
       TMP:
@@ -242,26 +241,29 @@ tasks:
     cmds:
       - |
         for FILE in "$FILES"; do
-          if [ "${FILE##*.}" == 'hbs' ]; then
+          if [ "${FILE##*.}" == 'handlebars' ]; then
             hbs --data .variables.json "$FILE" --stdout > "$(dirname $FILE)/${FILE%.*}"
           fi
         done
-      - rm -rf ".common/files-\{{.REPOSITORY_SUBTYPE}}/**.hbs"
-      - rm -rf ".common/files-\{{.REPOSITORY_SUBTYPE}}/**/*.hbs"
+      - rm -rf ".common/files-\{{.REPOSITORY_SUBTYPE}}/**.handlebars"
+      - rm -rf ".common/files-\{{.REPOSITORY_SUBTYPE}}/**/*.handlebars"
       - rsync -aP ".common/files-\{{.REPOSITORY_SUBTYPE}}/" ./
       # The following command merges upstream package.json dependencies and devDependencies and overwrites them with the upstream versions.
       # It allows the package.json in each project to include whatever dependencies it needs while at the same time it allows all the
       # common dependencies to be updated at the same time. It also ensures the version is persistent. It is entirely possible that this
       # might cause issues if a project relies on an outdated dependency or if the upstream dependencies are out of date.
-      - jq -S --arg deps "$PKG_DEPS" --arg devDeps "$PKG_DEV_DEPS" --arg version "$PKG_VERSION" \
-          '.dependencies = (.dependencies + ($deps | fromjson)) | .devDependencies = (.devDependencies + ($devDeps | fromjson)) | .version = $version'
+      - jq --arg deps "$PKG_DEPS" --arg devDeps "$PKG_DEV_DEPS" --arg scripts "$PKG_SCRIPTS" --arg version "$PKG_VERSION" \
+          '.dependencies = (.dependencies + ($deps | fromjson)) | .devDependencies = (.devDependencies + ($devDeps | fromjson)) | .scripts = (.scripts + ($scripts | fromjson)) | .version = $version'
           package.json > "$TMP"
       - mv "$TMP" package.json
+      - prettier-package-json --write
     preconditions:
       - sh: "type rsync &> /dev/null"
-        msg: "rsync is not installed!"
+        msg: "`rsync` is not installed!"
       - sh: "type hbs &> /dev/null"
-        msg: "hbs-cli is not installed globally. Install it by running `npm install -g hbs-cli` or by running `bash .start.sh`."
+        msg: "`hbs-cli` is not installed globally. Install it by running `npm install -g hbs-cli` or by running `bash .start.sh`."
+      - sh: "type prettier-package-json &> /dev/null"
+        msg: "`prettier-package-json` is not installed globally. Install it by running `npm install -g prettier-package-json` or by running `bash .start.sh`."
 
   update-readme:
     vars:
