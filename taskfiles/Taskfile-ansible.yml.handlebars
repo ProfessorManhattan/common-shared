@@ -87,7 +87,7 @@ tasks:
       DEPENDENCIES:
         sh: yq eval '.dependencies' meta/main.yml
       IS_SNAP:
-        sh: grep -Ril "role_name: snapd" meta/main.yml
+        sh: "grep -Ril 'role_name: snapd' meta/main.yml"
     cmds:
       - task: _populate-collection
         vars:
