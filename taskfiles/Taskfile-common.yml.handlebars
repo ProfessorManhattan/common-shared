@@ -78,14 +78,14 @@ tasks:
         msg: "The package.json file appears to be missing!"
 
   nodejs-global-dependencies:
-    deps: [_hbs, _prettier, _prettier-package-json, _readme{{#if hbs.ansible}}, _ansibler{{/if}}]
+    deps: [_npm-hbs, _npm-prettier, _npm-prettier-package-json, _npm-readme{{#if hbs.ansible}}, _npm-ansibler{{/if}}]
 
-  _ansibler: if ! type ansibler &> /dev/null; then npm install -g ansibler; fi
-  _hbs: if ! type hbs &> /dev/null; then npm install -g hbs-cli; fi
-  _prettier: if ! type prettier &> /dev/null; then npm install -g prettier prettier-plugin-sh
+  _npm-ansibler: if ! type ansibler &> /dev/null; then npm install -g ansibler; fi
+  _npm-hbs: if ! type hbs &> /dev/null; then npm install -g hbs-cli; fi
+  _npm-prettier: if ! type prettier &> /dev/null; then npm install -g prettier prettier-plugin-sh
     @megabytelabs/prettier-config{{#if hbs.ansible}} @megabytelabs/prettier-config-ansible{{/if}}; fi
-  _prettier-package-json: if ! type prettier-package-json &> /dev/null; then npm install -g prettier-package-json; fi
-  _readme: if ! type readme &> /dev/null; then npm install -g @appnest/readme; fi
+  _npm-prettier-package-json: if ! type prettier-package-json &> /dev/null; then npm install -g prettier-package-json; fi
+  _npm-readme: if ! type readme &> /dev/null; then npm install -g @appnest/readme; fi
 
   python-requirements:
     cmds:
@@ -192,11 +192,12 @@ tasks:
     deps: [update-contributing, update-readme{{#if hbs.role}}-role{{/if}}, update-files]
 
   update-readme-role:
-    deps: [_ansibler, _mod-ansible-autodoc]
+    deps: [_npm-ansibler, _mod-ansible-autodoc]
     cmds:
       - task: update-readme
 
   _mod-ansible-autodoc:
+    deps: [python-requirements]
     env:
       ACTIONS_DESCRIPTION:
         sh: jq -r '.autodoc_actions_description'
@@ -217,6 +218,7 @@ tasks:
           `pip3 install -r requirements.txt` or `bash .start.sh`."
 
   _ansibler:
+    deps: [_npm-ansibler]
     env:
       TMP:
         sh: mktemp
@@ -232,6 +234,7 @@ tasks:
         msg: "`ansibler` is not installed globally. Install all the requirements by running `task common:requirements` or run `bash .start.sh`."
 
   update-contributing:
+    deps: [_npm-prettier, _npm-readme]
     vars:
       CONTRIB_TEMPLATE: .common/docs/blueprint-contributing.md
     cmds:
@@ -251,7 +254,7 @@ tasks:
         msg: "`@appnest/readme` is not installed globally. Install all the requirements by running `task common:requirements` or run `bash .start.sh`."
 
   update-files:
-    deps: [_hbs, _prettier-package-json]
+    deps: [_npm-hbs, _npm-prettier-package-json]
     env:
       FILES:
         sh: find .common/files-\{{.REPOSITORY_SUBTYPE}}
@@ -299,7 +302,7 @@ tasks:
         msg: "`prettier-package-json` is not installed globally. Install all the requirements by running `task common:requirements` or run `bash .start.sh`."
 
   update-readme:
-    deps: [_readme]
+    deps: [_npm-prettier, _npm-readme]
     vars:
       README_TEMPLATE: blueprint-readme{{#if hbs.ansible}}-\{{.REPOSITORY_SUBTYPE}}{{/if}}.md
     cmds:

@@ -8,7 +8,7 @@ tasks:
 {{#if hbs.ansible}}
 
   ansible:
-    deps: [ansible:symlink]
+    deps: [ansible:symlink, common:galaxy-requirements]
     desc: Lint Ansible projects using Ansible Lint
     cmds:
       - ansible-lint
@@ -45,6 +45,7 @@ tasks:
 {{#if hbs.python}}
 
   python:
+    deps: [common:python-requirements]
     desc: Lint Python files using Flake8
     cmds:
       - flake8 .
@@ -52,6 +53,7 @@ tasks:
 {{#if hbs.yaml}}
 
   yaml:
+    deps: [common:python-requirements]
     desc: Lint .yml files using YAML Lint
     cmds:
       - yamllint -s .
@@ -59,6 +61,7 @@ tasks:
 {{#if hbs.ansible}}
 
   yaml:
+    deps: [common:python-requirements]
     desc: Lint .yml files using YAML Lint
     cmds:
       - yamllint -s .
