@@ -62,7 +62,7 @@ tasks:
 
   requirements-galaxy:
     cmds:
-      - ansible-galaxy install -r requirements.yml
+      - ansible-galaxy install -r requirements.yml --ignore-errors
     sources:
       - requirements.yml
     preconditions:
