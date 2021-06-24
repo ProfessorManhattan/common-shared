@@ -17,6 +17,9 @@ tasks:
     desc: Automatically format Python files using Black
     cmds:
       - black --exclude '\.cache/|.*\.cache/|\.common/|.*\.common/|.git/|.*\.git/|node_modules/|.*node_modules/|roles/' .
+    sources:
+      - **.py
+      - **/*.py
 {{/if}}
 
   scripts:
