@@ -36,10 +36,10 @@ tasks:
         -type f \( -name Dockerfile -o -name Dockerfile.j2 \) -print0 | xargs -0 -r -n1
         docker run -v "$PWD:/work" -w /work megabytelabs/hadolint:slim
     sources:
-      - **Dockerfile
-      - **/Dockerfile
-      - **Dockerfile.j2
-      - **/Dockerfile.j2
+      - ./Dockerfile
+      - ./**/Dockerfile
+      - ./Dockerfile.j2
+      - ./**/Dockerfile.j2
     method: checksum
 {{/if}}
 {{#if hbs.python}}
