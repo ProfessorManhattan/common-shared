@@ -79,8 +79,4 @@ function warn() {
   fi
 }
 
-export -f error
-export -f info
-export -f star
-export -f success
-export -f warn
+$2 $1
