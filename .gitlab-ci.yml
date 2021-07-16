@@ -2,6 +2,7 @@
 stages:
   - fix
   - lint
+  - propagate
 
 include:
   - remote: https://gitlab.com/megabyte-labs/ci/gitlab-ci-templates/-/raw/master/fix/prettier-fix.gitlab-ci.yml
