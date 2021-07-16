@@ -14,7 +14,7 @@ promptForEnv()
  * which folder in the environments/ folder to use to create symlinks
  * to the root of the project.
  */
-async function promptForEnv() {
+async function promptForEnv () {
   const response = await inquirer.prompt([
     {
       type: 'list',
@@ -31,7 +31,7 @@ async function promptForEnv() {
     if (fs.existsSync(element)) {
       fs.lstat(element, (err, stats) => {
         if (err) {
-          return signale.error('The logger encountered a fatal error!', err);
+          return signale.error('The logger encountered a fatal error!', err)
         }
         if (!stats.isSymbolicLink()) {
           signale.error(
@@ -48,7 +48,7 @@ async function promptForEnv() {
           fs.unlinkSync(element)
           fs.symlinkSync(target, element, (err, stats) => {
             if (err) {
-              return signale.error('The logger encountered a fatal error!', err);
+              return signale.error('The logger encountered a fatal error!', err)
             }
             signale.note(element + ' is now linked to environments/' + env + '/' + element + '.')
           })
@@ -57,7 +57,7 @@ async function promptForEnv() {
     } else {
       fs.symlinkSync(target, element, (err, stats) => {
         if (err) {
-          return signale.error('The logger encountered a fatal error!', err);
+          return signale.error('The logger encountered a fatal error!', err)
         }
         signale.note(element + '/ is now linked to environments/' + env + '/' + element + '.')
       })
@@ -76,7 +76,7 @@ async function promptForEnv() {
  * @param {The path to scan for directories} path
  * @returns An array of directories located in the path
  */
-function getDirectories(path) {
+function getDirectories (path) {
   return fs.readdirSync(path).filter(function (file) {
     return fs.statSync(path + '/' + file).isDirectory()
   })
