@@ -162,8 +162,9 @@ tasks:
       > task shell -- ubuntu-21.04
 
       Available operating systems:
-      archlinux, centos-7, centos-8, debian-9, debian-10, fedora-33, fedora-34,
-      ubuntu-18.04, ubuntu-20.04, ubuntu-21.04
+        * archlinux.  * debian-9     * fedora-34      * ubuntu-21.04
+        * centos-7    * debian-10    * ubuntu-18.04
+        * centos-8    * fedora-33    * ubuntu-20.04
     vars:
       WORKDIR:
         sh: basename $PWD
@@ -253,6 +254,7 @@ tasks:
   update-readme-role:
     deps: [npm-ansibler, _mod-ansible-autodoc]
     cmds:
+      - task: _ansibler
       - task: update-readme
 
   _mod-ansible-autodoc:
@@ -271,8 +273,7 @@ tasks:
       - jq --arg vars "$ROLE_VARIABLES" '.role_variables = $vars' .variables.json > "$TMP"
       - mv "$TMP" .variables.json
     sources:
-      - tasks/*.yml
-      - tasks/**/*.yml
+      - tasks**/*.yml
     preconditions:
       - sh: "type mod-ansible-autodoc &> /dev/null"
         msg: "The Python package `mod-ansible-autodoc` is missing. Ensure the Python requirements are installed by running
