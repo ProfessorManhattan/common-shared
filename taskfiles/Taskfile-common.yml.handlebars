@@ -366,6 +366,7 @@ tasks:
         | .scripts = (($scripts | fromjson) * .scripts) | .version = $version' package.json > "$TMP"
       - mv "$TMP" package.json
       - prettier-package-json --write
+      - cd .common && git reset --hard HEAD && cd ..
     sources:
       - .variables.json
     preconditions:
