@@ -30,6 +30,9 @@ async function promptForEnv() {
     const target = './environments/' + env + '/' + element
     if (fs.existsSync(element)) {
       fs.lstat(element, (err, stats) => {
+        if (err) {
+          return signale.error('The logger encountered a fatal error!', err);
+        }
         if (!stats.isSymbolicLink()) {
           signale.error(
             'The `' +
@@ -44,12 +47,18 @@ async function promptForEnv() {
         } else {
           fs.unlinkSync(element)
           fs.symlinkSync(target, element, (err, stats) => {
+            if (err) {
+              return signale.error('The logger encountered a fatal error!', err);
+            }
             signale.note(element + ' is now linked to environments/' + env + '/' + element + '.')
           })
         }
       })
     } else {
       fs.symlinkSync(target, element, (err, stats) => {
+        if (err) {
+          return signale.error('The logger encountered a fatal error!', err);
+        }
         signale.note(element + '/ is now linked to environments/' + env + '/' + element + '.')
       })
     }
