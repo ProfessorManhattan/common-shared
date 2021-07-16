@@ -53,7 +53,7 @@ tasks:
     cmds:
       - export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
       - |
-        if [ -z "{{.CLI_ARGS}}" ]; then
+        if [ -z "\{{.CLI_ARGS}}" ]; then
           molecule converge -s \{{.CLI_ARGS}}-desktop
         else
           OPERATING_SYSTEM=$(node .common/scripts/molecule-desktop.js)
