@@ -91,7 +91,7 @@ tasks:
   nodejs-global-dependencies:
     deps: [npm-hbs, npm-prettier, npm-prettier-package-json, npm-readme{{#if hbs.ansible}}, npm-ansibler{{/if}}]
     status:
-      - [[ "${container:=}" == 'docker' ]]
+      - '[[ "${container:=}" == "docker" ]]'
 
   npm-ansibler:
     deps:
