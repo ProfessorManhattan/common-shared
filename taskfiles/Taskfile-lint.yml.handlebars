@@ -28,7 +28,7 @@ tasks:
     cmds:
       - ansible-lint
     sources:
-      - **/*.yml
+      - "**/*.yml"
 {{/if}}
 
   formatting:
@@ -50,7 +50,7 @@ tasks:
     cmds:
       - npm run lint:prettier
     sources:
-      - **/*.(css|html|js|json|less|md|mjml|php|scss|sh|ts|xml|yml)
+      - "**/*.(css|html|js|json|less|md|mjml|php|scss|sh|ts|xml|yml)"
 {{#if hbs.dockerfile}}
 
   docker:
@@ -84,7 +84,7 @@ tasks:
         -prune -o -type f \( -name Dockerfile -o -name Dockerfile.j2 \) -print0 | xargs -0 -r -n1
         docker run -v "$PWD:/work" -w /work megabytelabs/hadolint:slim
     sources:
-      - **/(Dockerfile|Dockerfile.j2)
+      - "**/(Dockerfile|Dockerfile.j2)"
 {{/if}}
 {{#if hbs.python}}
 
@@ -112,7 +112,7 @@ tasks:
     cmds:
       - flake8 .
     sources:
-      - **/*.py
+      - "**/*.py"
 {{/if}}
 
   scripts:
@@ -134,7 +134,7 @@ tasks:
     cmds:
       - npm run fix:shellcheck
     sources:
-      - **/*.(sh|sh.j2)
+      - "**/*.(sh|sh.j2)"
 {{#if hbs.yaml}}
 
   yaml:
@@ -158,5 +158,5 @@ tasks:
     cmds:
       - yamllint -s .
     sources:
-      - **/*.yml
+      - "**/*.yml"
 {{/if}}

@@ -26,7 +26,7 @@ tasks:
     cmds:
       - npm run fix:prettier
     sources:
-      - **/*.(css|html|js|json|less|md|mjml|php|scss|sh|ts|xml|yml)
+      - "**/*.(css|html|js|json|less|md|mjml|php|scss|sh|ts|xml|yml)"
 {{#if hbs.python}}
 
   python:
@@ -47,7 +47,7 @@ tasks:
     cmds:
       - black --exclude '\.cache/|.*\.cache/|\.common/|.*\.common/|.git/|.*\.git/|node_modules/|.*node_modules/|roles/|.*venv/' .
     sources:
-      - **/*.py
+      - "**/*.py"
 {{/if}}
 
   scripts:
@@ -80,4 +80,4 @@ tasks:
     cmds:
       - npm run fix:shellcheck
     sources:
-      - **/*.(sh|sh.j2)
+      - "**/*.(sh|sh.j2)"
