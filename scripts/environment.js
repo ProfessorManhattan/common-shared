@@ -1,5 +1,7 @@
 'use strict'
 
+/* eslint-disable space-before-function-paren */
+
 import inquirer from 'inquirer'
 import signale from 'signale'
 import * as fs from 'fs'
@@ -14,7 +16,7 @@ promptForEnv()
  * which folder in the environments/ folder to use to create symlinks
  * to the root of the project.
  */
-async function promptForEnv () {
+async function promptForEnv() {
   const response = await inquirer.prompt([
     {
       type: 'list',
@@ -76,7 +78,7 @@ async function promptForEnv () {
  * @param {The path to scan for directories} path
  * @returns An array of directories located in the path
  */
-function getDirectories (path) {
+function getDirectories(path) {
   return fs.readdirSync(path).filter(function (file) {
     return fs.statSync(path + '/' + file).isDirectory()
   })
