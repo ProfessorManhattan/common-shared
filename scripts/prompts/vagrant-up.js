@@ -150,4 +150,4 @@ async function run() {
   console.log('--provider=' + virtualizationPlatform + ' ' + operatingSystem)
 }
 
-run();
+run()
