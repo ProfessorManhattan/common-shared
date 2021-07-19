@@ -108,11 +108,11 @@ tasks:
       - task: clean
       - task: update
 
-  hard-reset:
+  reset-force:
     deps:
       - software:git
     desc: "Aggressively reset the project (WARNING: This will wipe uncommitted work)"
-    label: hard-reset
+    label: reset-force
     summary: |
       $ Aggressively reset the project
 
