@@ -185,7 +185,7 @@ tasks:
       - :software:python
     cmds:
       - task: python-requirements-venv
-      - . venv/bin/activate
+      - task: python-requirements-venv-activate
       - task: python-requirements-pip
     status:
       - '[[ "${container:=}" == "docker" ]]'
@@ -195,9 +195,13 @@ tasks:
       - if ! type virtualenv &> /dev/null; then pip3 install virtualenv; fi
       - virtualenv venv
     status:
-      - test -d venv
-      - test -d venv/bin
       - test -f venv/bin/activate
+
+  python-requirements-venv-activate:
+    cmds:
+      - . venv/bin/activate
+    status:
+      - '[[ "$PATH" =~ "$PWD/venv/bin" ]]'
 
   python-requirements-pip:
     cmds:
