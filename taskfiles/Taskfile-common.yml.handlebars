@@ -390,12 +390,14 @@ tasks:
   ansibler:
     deps:
       - python-requirements
-    #cmds:
-    #  - task: ansibler-compatibility-chart
-    #  - task: _ansibler
-    #preconditions:
-    #  - sh: "type ansibler &> /dev/null"
-    #    msg: "`ansibler` is not installed globally. Install all the requirements by running `task common:requirements`."
+    cmds:
+      - task: ansibler-compatibility-chart
+      - task: _ansibler
+    preconditions:
+      - sh: "type ansibler &> /dev/null"
+        msg: "`ansibler` is not installed globally. Install all the requirements by running `task common:requirements`."
+    status:
+      - true
 
   _ansibler:
     deps: [{{#if hbs.role}}ansibler-populate-platforms, {{/if}}ansibler-role-dependencies]
