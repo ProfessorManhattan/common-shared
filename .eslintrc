@@ -194,7 +194,7 @@
     "no-empty": "error",
     "no-eval": "error",
     "no-extra-bind": "error",
-    "no-extra-semi": "off",
+    "no-extra-semi": "error",
     "no-fallthrough": "error",
     "no-invalid-this": "error",
     "no-irregular-whitespace": "error",
