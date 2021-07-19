@@ -149,3 +149,5 @@ async function run() {
   const virtualizationPlatform = await promptForPlatform()
   console.log('--provider=' + virtualizationPlatform + ' ' + operatingSystem)
 }
+
+run();
