@@ -100,9 +100,7 @@ async function promptForPlatform() {
     // may or may not be required on both `where` and the program name.
     const attempts = [`where ${program}`, `where ${program}.exe`, `where.exe ${program}`, `where.exe ${program}.exe`]
 
-    // eslint-disable-next-line fp/no-let
     let success = false
-    // eslint-disable-next-line fp/no-loops
     for (const a of attempts) {
       try {
         exec(a)
@@ -143,11 +141,11 @@ async function promptForPlatform() {
       choices
     }
   ])
-  return response.virtualizationPlatform
+  return platformMap[response.virtualizationPlatform]
 }
 
 async function run() {
   const operatingSystem = await promptForDesktop()
   const virtualizationPlatform = await promptForPlatform()
-  console.log('--provider=' + platformMap[virtualizationPlatform] + ' ' + operatingSystem)
+  console.log('--provider=' + virtualizationPlatform + ' ' + operatingSystem)
 }
