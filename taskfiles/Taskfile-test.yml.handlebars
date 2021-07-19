@@ -134,9 +134,18 @@ tasks:
           * centos       * macos
           * debian       * ubuntu
 
-        Example:
+        Example opening interactive prompt:
+        > task test:vagrant
+
+        Example bypassing interactive prompt:
         > task test:vagrant -- --provider=vmware_workstation windows
       cmds:
         - echo "TODO: Check if provider is installed and prompt for install if it is not"
-        - vagrant up \{{.CLI_ARGS}}
+        - |
+        if [ -z "\{{.CLI_ARGS}}" ]; then
+          vagrant up \{{.CLI_ARGS}}
+        else
+          VAGRANT_COMMAND=$(node .common/scripts/vagrant-up.js)
+          vagrant up "$VAGRANT_COMMAND"
+        fi
 {{/if}}
