@@ -879,7 +879,7 @@ tasks:
           latestos \{{.TAG}}
         fi
     status:
-      - [[ '\{{.TAG}}}' == 'macos' ]]
+      - '[[ "\{{.TAG}}}" == "macos" ]]'
     preconditions:
       - sh: test -f template.json
         msg: "The `template.json` file is missing from the root of this project."
