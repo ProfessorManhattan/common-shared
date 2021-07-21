@@ -15,7 +15,7 @@ tasks:
       RANDOM_STRING:
         sh: openssl rand -hex 14
     cmds:
-      - bash .common/log info "Cleaning up the project by removing caches etc."
+      - bash .common/log log "Cleaning up the project by removing caches etc."
       - rm .variables.json 2> /dev/null
       - mv .autodoc /tmp/\{{.RANDOM_STRING}}-autodoc 2> /dev/null
       - mv .task /tmp/\{{.RANDOM_STRING}}-task 2> /dev/null
@@ -45,7 +45,9 @@ tasks:
       using `git commit -m`. However, if you really need to, you can add the flag `--no-verify`
       to your regular `git commit -m` command to bypass the pre-commit hook.
     cmds:
+      - bash .common/log log "Running pre-commit hook"
       - . ./.husky/pre-commit
+      - bash .common/log log "Initiating the commit dialog"
       - npm run commit -- --no-verify
 
   markdown-link-check:
@@ -60,7 +62,7 @@ tasks:
       For more information on `markdown-link-check`, see the following page:
       https://github.com/tcort/markdown-link-check
     cmds:
-      - bash .common/log info "Checking for broken links in markdown files"
+      - bash .common/log log "Checking for broken links in markdown files"
       - npm run misc:markdown-links
 
   prepare-release:
@@ -103,7 +105,7 @@ tasks:
     cmds:
       - |
         if [ "${container:=}" != 'docker' ]; then
-          bash .common/log info "Installing Ansible Galaxy requirements"
+          bash .common/log log "Running `ansible-galaxy install -r requirements.yml --ignore-errors`"
           ansible-galaxy install -r requirements.yml --ignore-errors
           bash .common/log success "Successfully installed Ansible Galaxy requirements"
         fi
