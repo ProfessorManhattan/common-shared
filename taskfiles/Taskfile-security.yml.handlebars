@@ -1,0 +1,50 @@
+---
+version: '3'
+
+tasks:
+{{#if dockerfile}}
+  snyk:
+    deps:
+      - :common:npm-snyk
+      - :software:jq
+    desc: Analyze the Docker container for security vulnerabilities with Snyk (requires login)
+    summary: |
+      $ Analyze the Docker container with Snyk
+
+      One of the services Snyk provides is the capability to identify Docker container vulnerabilities. These
+      vulnerabilities can potentially be used by bad actors so, normally, care should be taken to fix
+      the vulnerabilities Snyk reports whenever possible. To use Snyk, you must be authenticated with their
+      service. Signing in is free and easy (albeit, there is a limit to the number of scans you can run for free).
+      All you have to do is run `snyk auth` with the `snyk` NPM package installed. This attempts to automate the
+      login process but if there are any issues then you can manually authenticate by running `snyk auth` which
+      will open up a browser.
+
+      For more information on Snyk, see: https://snyk.io/what-is-snyk/
+    vars:
+      DOCKER_IMAGE:
+        sh: jq -r '.slug' .variables.json
+    cmds:
+      - bash .common/log info "Testing {{profile.dockerhub}}/\{{.DOCKER_IMAGE}}:latest for vulnerabilities with Snyk"
+      - snyk test --docker {{profile.dockerhub}}/\{{.DOCKER_IMAGE}}:latest --file=Dockerfile
+      - bash .common/log info "Testing {{profile.dockerhub}}/\{{.DOCKER_IMAGE}}:slim for vulnerabilities with Snyk"
+      - snyk test --docker {{profile.dockerhub}}/\{{.DOCKER_IMAGE}}:slim --file=Dockerfile
+
+  trivy:
+    deps:
+      - :software:jq
+      - :software:trivy
+    desc: Analyze the Docker container for security vulnerabilities with Trivy
+    summary: |
+      $ Analyze the Docker container with Trivy
+
+      For more information on Trivy, see: https://aquasecurity.github.io/trivy/
+    vars:
+      DOCKER_IMAGE:
+        sh: jq -r '.slug' .variables.json
+    cmds:
+      - bash .common/log info "Testing {{profile.dockerhub}}/\{{.DOCKER_IMAGE}}:latest for vulnerabilities with Trivy"
+      - snyk test --docker {{profile.dockerhub}}/\{{.DOCKER_IMAGE}}:latest --file=Dockerfile
+      - bash .common/log info "Testing {{profile.dockerhub}}/\{{.DOCKER_IMAGE}}:slim for vulnerabilities with Trivy"
+      - snyk test --docker {{profile.dockerhub}}/\{{.DOCKER_IMAGE}}:slim --file=Dockerfile
+
+{{/if}}

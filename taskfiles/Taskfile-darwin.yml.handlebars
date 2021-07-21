@@ -71,6 +71,14 @@ tasks:
     status:
       - type rsync &> /dev/null
 
+  trivy:
+    cmds:
+      - task: install-doctor
+        vars:
+          SOFTWARE: trivy
+    status:
+      - type trivy &> /dev/null
+
   vagrant:
     cmds:
       - task: install-doctor
