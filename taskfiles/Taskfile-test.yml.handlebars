@@ -98,7 +98,7 @@ tasks:
       > task test:molecule-docker
     vars:
       SNAP_REFS:
-        sh: grep -Ril \"community.general.snap:\" ./tasks
+        sh: grep -Ril \"community.general.snap:\" ./tasks || true
     cmds:
       - |
         if [ "\{{.SNAP_REFS}}" ]; then
