@@ -174,7 +174,7 @@ tasks:
       then install the Python requirements by running `pip3 install -r requirements` after
       initiating a `virtualenv`. In some types of projects, additional types of requirements are
       installed (e.g. Ansible projects also install Ansible Galaxy requirements).
-    deps: [nodejs-dependencies, nodejs-global-dependencies, python-requirements{{#if hbs.ansible}}, galaxy-requirements{{/if}}]
+    deps: [nodejs-dependencies, nodejs-global-dependencies, python-requirements]
 
 {{#if hbs.ansible}}
   galaxy-requirements:
@@ -324,6 +324,9 @@ tasks:
       - task: python-requirements-venv
       - task: python-requirements-venv-activate
       - task: python-requirements-pip
+{{#if hbs.ansible}}
+      - task: galaxy-requirements
+{{/if}}
     status:
       - '[[ "${container:=}" == "docker" ]]'
 
@@ -451,7 +454,7 @@ tasks:
 
   update-repositories:
     cmds:
-      # - task: update-common
+      - task: update-common
       - task: update-modules
       - task: update-project
 
