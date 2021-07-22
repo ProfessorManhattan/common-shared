@@ -252,7 +252,7 @@ tasks:
         if [ "${container:=}" != 'docker' ]; then
           bash .common/log info "Running \"npm install\""
           npm install
-          npm audit fix --force
+          npm audit fix --force || true
           bash .common/log success "Successfully ran \"npm install\""
         fi
     sources:
