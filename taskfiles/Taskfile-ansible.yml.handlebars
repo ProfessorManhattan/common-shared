@@ -2,7 +2,6 @@
 version: '3'
 
 tasks:
-{{#if hbs.ansible}}
   ansibler-compatibility-chart:
     cmds:
       - ansibler --generate-compatibility-chart
@@ -43,7 +42,6 @@ tasks:
     status:
       - true
 
-{{/if}}
 {{#if hbs.playbook}}
   environment-prompt:
     deps:
@@ -115,7 +113,7 @@ tasks:
         msg: "The roles folder is missing. Is the project set up right?"
 
 {{/if}}
-{{#if hbs.ansible}}
+{{#if hbs.role}}
   mod-ansible-autodoc-variables:
     env:
       ROLE_VARIABLES:
@@ -158,8 +156,6 @@ tasks:
           by running `task common:requirements`. Also, ensure `mod-ansible-autodoc` is included in the `requirements.txt`
           file."
 
-{{/if}}
-{{#if hbs.role}}
   populate-collection:
     deps:
       - :software:yq
@@ -306,8 +302,6 @@ tasks:
           fi
         done
 
-{{/if}}
-{{#if hbs.role}}
   update-galaxy-id:
     vars:
       HAS_PROJECT_ID:
@@ -326,8 +320,6 @@ tasks:
     status:
       - '[[ "\{{.HAS_PROJECT_ID}}" == "true" ]]'
 
-{{/if}}
-{{#if hbs.role}}
   update-variables:
     deps:
       - :software:jq
