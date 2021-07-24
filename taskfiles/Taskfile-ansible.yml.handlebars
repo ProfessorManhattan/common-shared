@@ -286,7 +286,7 @@ tasks:
       - ln -s "$PWD" "~/.ansible/roles/\{{.GALAXY_NAMESPACE}}.\{{.GALAXY_ROLE_NAME}}"
     status:
       - test -d "$HOME/.ansible/roles/professormanhattan.androidstudio"
-      - '[ "{{.SYMLINK}}" == "$PWD" ]'
+      - '[ "\{{.SYMLINK}}" == "$PWD" ]'
 
   sync-requirements:
     deps:
