@@ -17,7 +17,7 @@ tasks:
       RANDOM_STRING:
         sh: openssl rand -hex 14
     cmds:
-      - t info "Cleaning up the project by removing caches etc."
+      - info: "Cleaning up the project by removing caches etc."
       - rm .variables.json 2> /dev/null
       - mv .autodoc /tmp/\{{.RANDOM_STRING}}-autodoc 2> /dev/null
       - mv .task /tmp/\{{.RANDOM_STRING}}-task 2> /dev/null
@@ -328,7 +328,7 @@ tasks:
     cmds:
       - cd .common
       - git reset --hard HEAD
-      - git pull origin master --ff-only || true
+      - git pull origin master --no-rebase || true
       - cd ..
     preconditions:
       - sh: "type git &> /dev/null"
