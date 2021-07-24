@@ -17,8 +17,7 @@
   "scripts": {
     "commit": "git-cz",
     "postinstall": "if [ -d .git ]; then husky install; fi && if [ -f .husky/pre-commit ]; then chmod 755 .husky/pre-commit; fi",
-    "prepare-release": "task prepare-release",
-    "version": "standard-version --no-verify"
+    "prepare-release": "task prepare-release"
   },
   "config": {
     "commitizen": {
@@ -58,7 +57,7 @@
       "check-symlinks",
       "destroyed-symlinks"
     ],
-    "**/*.(css|html|json|less|md|mjml|php|scss|sh|ts)": [
+    "**/*.(css|html|json|less|mjml|php|scss|sh|ts)": [
       "prettier --write"
     ],
     "**/*.js": [
@@ -68,6 +67,10 @@
     "**/*.json": [
       "check-json"
       "pretty-format-json --autofix"
+    ],
+    "**/*.md": [
+      "prettier --write",
+      "proselint --config .common/proselint.json"
     ],
     "**/*.(sh|sh.j2)": [
       "shellcheck"
