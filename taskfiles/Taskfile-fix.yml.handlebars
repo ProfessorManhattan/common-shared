@@ -6,6 +6,7 @@ tasks:
     desc: Apply automatic code formatting techniques (Prettier, Black, and Shellcheck)
     deps:
       - formatting
+      - json
 {{#if hbs.packer}}
       - packer
 {{/if}}
@@ -36,6 +37,41 @@ tasks:
       - prettier-package-json --write package.json
     sources:
       - "**/*.(css|html|js|json|less|md|mjml|php|scss|sh|ts|xml|yml)"
+
+  json:
+    deps:
+      - :common:python-requirements
+    desc: Alphabetically sort JSON
+    summary: |
+      $ Automatically alphabetize JSON
+
+      Scan through the project and alphabetize all the JSON files that are not in .gitignore folders
+      like '.venv/', 'node_modules/', etc. This task will check the '.variables.json' file for a key
+      titled 'json_top_keys' and if it exists then those keys will be prioritized during the
+      sorting. You can ensure the 'json_top_keys' value is persistent by adding the value in the
+      'blueprint' section of package.json. By default the command will apply the logic in a loop but
+      you can also pass a filename to only sort one JSON file (see example below).
+
+      Example sorting a single JSON file:
+      > task fix:json -- single.json
+
+      Example looping through project:
+      > task fix:json
+    env:
+      TOP_KEYS:
+        sh: jq -r '.json_top_keys' .variables.json
+    cmds:
+      - |
+        if [ -z "\{{.CLI_ARGS}}" ]; then
+          find . -type d \( -name .autodoc -o -name .cache -o -name .common -o -name .git -o -name .husky
+            -o -name .modules -o -name .task -o -name .venv -o -name node_modules -o -name venv \) -prune
+            -o -type f \( -name \*.sh -o -name \*.sh.j2 \) -print0 | xargs -0 -r -n1 pretty-format-json
+            --autofix --top-keys \{{.TOP_KEYS}}
+        else
+          pretty-format-json --autofix --top-keys \{{.TOP_KEYS}} \{{.CLI_ARGS}}
+        fi
+    sources:
+      - "**/*.json"
 
 {{#if hbs.packer}}
   packer:

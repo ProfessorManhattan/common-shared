@@ -55,7 +55,8 @@
     "**/*": [
       "check-merge-conflict",
       "check-added-large-files",
-      "check-symlinks"
+      "check-symlinks",
+      "destroyed-symlinks"
     ],
     "**/*.(css|html|json|less|md|mjml|php|scss|sh|ts)": [
       "prettier --write"
@@ -64,8 +65,15 @@
       "npx standard --fix",
       "prettier --write"
     ],
+    "**/*.json": [
+      "check-json"
+      "pretty-format-json --autofix"
+    ],
     "**/*.(sh|sh.j2)": [
       "shellcheck"
+    ],
+    "**/*.toml": [
+      "check-toml"
     ],
     "**/*.xml": [
       "check-xml",
