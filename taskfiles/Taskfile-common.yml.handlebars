@@ -358,7 +358,7 @@ tasks:
       - sh: type readme &> /dev/null
         msg: "`@appnest/readme` is not installed globally. Install all the requirements by running `task common:requirements`."
 
- update-files-handlebars:
+  update-files-handlebars:
     deps:
       - :npm:hbs
     cmds:
