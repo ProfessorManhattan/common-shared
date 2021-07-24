@@ -1,0 +1,216 @@
+---
+version: '3'
+
+tasks:
+{{#if hbs.playbook}}
+  environment-prompt:
+    deps:
+      - :common:nodejs-dependencies
+    env:
+      ENVIRONMENT:
+        sh: node .common/scripts/prompts/environment.js
+    cmds:
+        - |
+          if [ ! -z "$ENVIRONMENT" ]; then
+            for ITEM in "environments/$ENVIRONMENT/*"; do
+              if [ -d "$ITEM" ] || [ -f "$ITEM" ]; then
+                t info "Skipping environments/$ENVIRONMENT/$ITEM because it already exists as a file/folder in the root of the project."
+              else
+                rm -f $ITEM
+                ln -s "./environments/$ENVIRONMENT/$ITEM" "$ITEM"
+              fi
+            done
+          fi
+    preconditions:
+      - sh: "test -d node_modules"
+        msg: "This task has dependencies in the `node_modules` folder which is missing. Install them by running `task common:nodejs-dependencies`."
+    status:
+      - '[[ -z "\{{.CLI_ARGS}}" ]]'
+
+  environment:
+    desc: Prompts for which environment to use and then symlinks to it
+    summary: |
+      $ Switch environments using an interactive dialogue
+
+      Ansible does not really provide any great ways to switch between environments (or sets of
+      host_vars, group_vars etc.). If you place all the files and folders you wish to constitute
+      as an environment inside a folder named as the name of the environment then you can use
+      this task to handle the symlinking and switching between environments.
+
+      You can directly switch enironments to `environments/prod/` by running:
+      > task ansible:environment -- prod
+    cmds:
+      - |
+        if [ ! -z "\{{.CLI_ARGS}}" ]; then
+          for ITEM in environments/\{{.CLI_ARGS}}/*; do
+            if [ -d "$ITEM" ] || [ -f "$ITEM" ]; then
+              t info "Skipping environments/\{{.CLI_ARGS}}/$ITEM because it already exists as a file/folder in the root of the project."
+            else
+              rm -f $ITEM
+              ln -s "./environments/\{{.CLI_ARGS}}/$ITEM" "$ITEM"
+            fi
+          done
+        fi
+      - task: environment-prompt
+
+  find-missing-files:
+    desc: Find roles that are missing files
+    summary: |
+      $ Find roles that are missing any given file
+
+      This task scans through all the folders in the roles/ directory and checks
+      for the presence of a file that you pass in through the CLI.
+
+      Example usage:
+      > task find-missing-files -- logo.png
+
+      The example above will look through all the folders two levels deep (e.g. ./roles/tools/nmap,
+      ./roles/system/snapd)in the roles folder and display any roles that are missing the file.
+    cmds:
+      - find ./roles -mindepth 2 -maxdepth 2 -type d '!' -exec test -e "{}/\{{.CLI_ARGS}}" ';' -print
+    preconditions:
+      - sh: "test -d roles"
+        msg: "The roles folder is missing. Is the project set up right?"
+
+{{/if}}
+{{#if hbs.role}}
+  populate-collection:
+    env:
+      COLLECTIONS:
+        sh: yq eval '.collections' requirements.yml
+      REFERENCES:
+        sh: grep -Ril "\{{.KEY}}" ./tasks || true
+    cmds:
+      - |
+        if [[ ! "$COLLECTIONS" =~ "\{{.KEY}}" ]] && [ "$REFERENCES" ]; then
+          yq eval -i -P '.collections = .collections + \{{.VAL}}' requirements.yml
+        fi
+    status:
+      - '[[ "$COLLECTIONS" =~ "\{{.KEY}}" ]] || [ ! "$REFERENCES" ]'
+
+  populate-dependencies:
+    desc: Attempt to automatically populate meta/main.yml and requirements.yml
+    summary: |
+      $ Automatically populate meta/main.yml and requirements.yml
+
+      A role can sometimes have dependencies that need to be installed prior to being run (e.g. most
+      roles in Ansible >2.9 need the `community.general` collection installed). Roles also sometimes
+      need other roles to run before they are run (e.g. a task that installs a Node.js package needs
+      the Node.js installer to run first). This task will scan for common dependencies by doing a text
+      search for a handful of common strings. It will then attempt to automatically populate
+      `meta/main.yml` and the `requirements.yml`.
+
+      Items it attempts to auto-populate for:
+        * chocolatey.chocolatey        * community.general.gem
+        * community.general            * community.general.npm
+        * community.general.homebrew   * community.general.snap
+    cmds:
+      - task: populate-collection
+        vars:
+          KEY: chocolatey.chocolatey
+          VAL: '{"name": "chocolatey.chocolatey", "source": "https://galaxy.ansible.com"}'
+      - task: populate-collection
+        vars:
+          KEY: community.general
+          VAL: '{"name": "community.general", "source": "https://galaxy.ansible.com"}'
+      - task: populate-dependency
+        vars:
+          KEY: community.general.homebrew
+          ROLE: professormanhattan.homebrew
+          VAL: '{"role": "professormanhattan.homebrew", "when": "ansible_os_family == \"Darwin\""}'
+      - task: populate-dependency
+        vars:
+          KEY: community.general.npm
+          ROLE: professormanhattan.nodejs
+          VAL: '{"role": "professormanhattan.nodejs"}'
+      - task: populate-dependency
+        vars:
+          KEY: community.general.gem
+          ROLE: professormanhattan.ruby
+          VAL: '{"role": "professormanhattan.ruby"}'
+      - task: populate-dependency
+        vars:
+          KEY: community.general.snap
+          ROLE: professormanhattan.snapd
+          VAL: '{"role": "professormanhattan.snapd", "when": "ansible_system == \"Linux\""}'
+      - task: sync-requirements
+    sources:
+      - meta/main.yml
+      - requirements.yml
+      - tasks/**/*.yml
+
+  populate-dependency:
+    env:
+      DEPENDENCIES:
+        sh: yq eval '.dependencies' meta/main.yml
+      REFERENCES:
+        sh: grep -Ril "\{{.KEY}}" ./tasks || true
+    cmds:
+      - |
+        if [[ ! "$DEPENDENCIES" =~ "\{{.ROLE}}" ]] && [ "$REFERENCES" ]; then
+          yq eval -i -P '.dependencies = .dependencies + \{{.VAL}}' meta/main.yml
+        fi
+    status:
+      - '[[ "$DEPENDENCIES" =~ "\{{.ROLE}}" ]] || [ ! "$REFERENCES" ]'
+
+{{/if}}
+{{#if hbs.playbook}}
+  symlink:
+    desc: Symlink all the roles in the roles/ folder to ~/.ansible/roles
+    summary: |
+      $ Symlink each role to ~/.ansible/roles/\{{.GALAXY_NAMESPACE}}.\role_name
+
+      In the playbook, roles are sometimes referred to by their folder name and in other cases
+      they are referred to with their namespace prepended (e.g. \{{.GALAXY_NAMESPACE}}.role_name).
+      This can cause issues so, in order for everything to work, each folder needs to be symlinked
+      to ~/.ansible/roles with the namespace prepended.
+    cmds:
+      - |
+        find ./roles -mindepth 2 -maxdepth 2 -type d -print0 | while read -d $'\0' ROLE_PATH; do;
+          PATH_BASENAME=$(basename "$ROLE_PATH");
+          if [ ! -d "~/.ansible/roles/\{{.GALAXY_NAMESPACE}}.$PATH_BASENAME" ]; then
+            ln -sf "$PWD/$ROLE_PATH" "~/.ansible/roles/\{{.GALAXY_NAMESPACE}}.$PATH_BASENAME"
+          fi
+        done
+    preconditions:
+      - sh: "test -d roles"
+        msg: "The roles folder is missing. Is the project set up right?"
+{{/if}}
+{{#if hbs.role}}
+  symlink:
+    desc: Symlink the current role to ~/.ansible/roles/\{{.GALAXY_NAMESPACE}}.\{{.GALAXY_ROLE_NAME}}
+    summary: |
+      $ Symlink this role to ~/.ansible/roles/\{{.GALAXY_NAMESPACE}}.\{{.GALAXY_ROLE_NAME}}
+
+      Roles are sometimes referred to by their folder name (which ideally is also the role_name in
+      the meta/main.yml file) and they are sometimes referred to by their Ansible Galaxy name which
+      has the namespace prepended (e.g. \{{.GALAXY_NAMESPACE}}.role_name). In order to make sure Ansible
+      can find the role in both cases, a symlink in ~/.ansible/roles that points to the folder needs
+      to be created.
+    vars:
+      SYMLINK:
+        sh: readlink "$HOME/.ansible/roles/professormanhattan.androidstudio"
+    cmds:
+      - mkdir -p "$HOME/.ansible/roles"
+      - rm -f "$HOME/.ansible/roles/\{{.GALAXY_NAMESPACE}}.\{{.GALAXY_ROLE_NAME}}"
+      - ln -s "$PWD" "~/.ansible/roles/\{{.GALAXY_NAMESPACE}}.\{{.GALAXY_ROLE_NAME}}"
+    status:
+      - test -d "$HOME/.ansible/roles/professormanhattan.androidstudio"
+      - '[ "{{.SYMLINK}}" == "$PWD" ]'
+
+  sync-requirements:
+    env:
+      ROLES:
+        sh: yq eval '.roles' requirements.yml
+      TMP:
+        sh: mktemp
+    cmds:
+      - yq eval -j '.dependencies' meta/main.yml > "$TMP"
+      - |
+        jq -rc '.[] .role' "$TMP" | while read ROLE_NAME; do
+          if [[ ! "$ROLES" =~ "$ROLE_NAME" ]]; then
+            ROLE_NAME="$ROLE_NAME" yq eval -i -P '.roles = .roles + {"name": env(ROLE_NAME)}' requirements.yml
+          fi
+        done
+
+{{/if}}
