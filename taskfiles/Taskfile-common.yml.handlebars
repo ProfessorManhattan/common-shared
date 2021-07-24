@@ -387,13 +387,13 @@ tasks:
         sh: head -n 1 Dockerfile
 {{/if}}
       PKG_BLUEPRINT:
-        sh: jq -r '.blueprint' package.json
+        sh: jq -r '.blueprint' package.json | sed 's/^null$/{}/'
       PKG_DEPS:
-        sh: jq -r '.dependencies' package.json
+        sh: jq -r '.dependencies' package.json | sed 's/^null$/{}/'
       PKG_DEV_DEPS:
-        sh: jq -r '.devDependencies' package.json
+        sh: jq -r '.devDependencies' package.json | sed 's/^null$/{}/'
       PKG_SCRIPTS:
-        sh: jq -r '.scripts' package.json
+        sh: jq -r '.scripts' package.json | sed 's/^null$/{}/'
       PKG_VERSION:
         sh: jq -r '.version' package.json
       TMP:
