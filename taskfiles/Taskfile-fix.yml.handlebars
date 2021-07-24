@@ -1,6 +1,12 @@
 ---
 version: '3'
 
+vars:
+  IGNORE_FOLDERS:
+    sh: -name .autodoc -o -name .cache -o -name .common -o -name .git -o -name .husky
+      -o -name .modules -o -name .npm -o -name .task -o -name .venv -o -name node_modules
+      -o -name venv
+
 tasks:
   all:
     desc: Apply automatic code formatting techniques (Prettier, Black, and Shellcheck)
@@ -63,15 +69,45 @@ tasks:
     cmds:
       - |
         if [ -z "\{{.CLI_ARGS}}" ]; then
-          find . -type d \( -name .autodoc -o -name .cache -o -name .common -o -name .git -o -name .husky
-            -o -name .modules -o -name .task -o -name .venv -o -name node_modules -o -name venv \) -prune
-            -o -type f \( -name \*.sh -o -name \*.sh.j2 \) -print0 | xargs -0 -r -n1 pretty-format-json
-            --autofix --top-keys \{{.TOP_KEYS}}
+          find . -type d \( \{{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name \*.json \) -print0 |
+            xargs -0 -r -n1 pretty-format-json --autofix --top-keys \{{.TOP_KEYS}}
         else
           pretty-format-json --autofix --top-keys \{{.TOP_KEYS}} \{{.CLI_ARGS}}
         fi
     sources:
       - "**/*.json"
+
+    misc:
+      deps:
+        - :common:python-requirements
+      desc: Perform miscellaneous fixes such as removing BOM and ensuring LF line endings
+      summary: |
+        $ Miscellaneous fixes
+
+        This task allows you to loop through the files in the project and apply miscellaneous
+        fixes. You can also specify a single file. The fixes applied are:
+
+          * Remove UTF-8 BOM
+          * Ensure line endings are LF
+
+        Example applying fixes to all files:
+        > task fix:misc
+
+        Example applying fixes to single file:
+        > task fix:misc -- singlefile.js
+      cmds:
+        - |
+          function misc() {
+            fix-byte-order-marker "$1" &
+            mixed-line-ending --fix=lf "$1" &
+          }
+          if [ -z "\{{.CLI_ARGS}}" ]; then
+            find . -type d \( \{{.IGNORE_FOLDERS}} \) -prune -o -type f -print0 | xargs -0 -r -n1 misc
+            wait
+          else
+            misc "\{{.CLI_ARGS}}"
+            wait
+          fi
 
 {{#if hbs.packer}}
   packer:
@@ -96,7 +132,7 @@ tasks:
           mv tmp-template.json "$TEMPLATE"
         done
     sources:
-      - "**/*template.json"
+      - "*template.json"
 
 {{/if}}
 {{#if hbs.python}}
@@ -116,7 +152,8 @@ tasks:
 
       For more information on Black, see: https://github.com/psf/black
     cmds:
-      - black --force-exclude '\.common\/|\.modules\/|node_modules\/' .
+      - find . -type d \( \{{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name \*.py \) -print0 |
+          xargs -0 -r -n1 black
     sources:
       - "**/*.py"
 
