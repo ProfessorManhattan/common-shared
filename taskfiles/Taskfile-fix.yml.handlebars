@@ -80,7 +80,6 @@ tasks:
 
       For more information on Black, see: https://github.com/psf/black
     cmds:
-      - bash .common/log log "Automatically formatting Python code with 'black'"
       - black --force-exclude '\.common\/|\.modules\/|node_modules\/' .
     sources:
       - "**/*.py"
