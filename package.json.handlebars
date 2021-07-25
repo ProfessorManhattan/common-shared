@@ -15,16 +15,16 @@
   },
   "version": "0.0.1",
   "scripts": {
-    "commit": "git-cz",
-    "fix:prettier": "prettier --write . && prettier-package-json --write package.json",
-    "fix:shellcheck": "find . -type d \\( -name .cache -o -name .git -o -name .modules  -o -name node_modules -o -name .husky -o -name venv \\) -prune -o -type f \\( -name \\*.sh -o -name \\*.sh.j2 \\) -print0 | xargs -0 shellcheck -f diff | git apply",
-    "info": "npm-scripts-info",
-    "postinstall": "if [ -d .git ]; then husky install; fi && if [ -f .husky/pre-commit ]; then chmod 755 .husky/pre-commit; fi",
-    "lint:prettier": "prettier --list-different .",
-    "lint:shellcheck": "find . -type d \\( -name .cache -o -name .git -o -name .modules  -o -name node_modules -o -name .husky -o -name venv \\) -prune -o -type f \\( -name \\*.sh -o -name \\*.sh.j2 \\) -print0 | xargs -0 -r -n1 shellcheck",
-    "lint-staged": "lint-staged",
-    "misc:markdown-links": "find . -type d \\( -name .cache -o -name .git -o -name .github -o -name .gitlab -o -name .modules  -o -name node_modules \\) -prune -o -type f \\( -name \\*.md \\) -print0 | xargs -0 -r -n1 markdown-link-check",
-    "version": "standard-version --no-verify"
+    "clean": "task common:clean",
+    "commit": "task common:commit",
+    "info": "task --list",
+    "prepare": "bash .common/npm-prepare.js",
+    "prepare-release": "task common:prepare-release",
+    "requirements": "task common:requirements",
+    "reset": "task common:reset",
+    "reset-force": "task common:reset-force",
+    "prepare-release": "task common:prepare-release",
+    "update": "task common:update"
   },
   "config": {
     "commitizen": {
@@ -34,18 +34,11 @@
   "dependencies": {},
   "devDependencies": {
     "@megabytelabs/prettier-config": "^1.0.0",
-    "cspell": "^5.6.6",
     "cz-conventional-changelog": "^3.3.0",
-    "husky": "^6.0.0",
     "inquirer": "^6.5.2",
-    "lint-staged": "^11.0.0",
-    "markdown-link-check": "^3.8.7",
-    "prettier": "^2.3.1",
-    "prettier-package-json": "^2.6.0",
     "prettier-plugin-sh": "^0.6.1",
-    "shellcheck": "^1.0.0",
-    "signale": "^1.4.0",
-    "standard-version": "^9.3.0"
+    "remark-preset-lint-recommended": "^5.0.0",
+    "signale": "^1.4.0"
   },
   "engines": {
     "node": ">=10"
@@ -66,42 +59,59 @@
   ],
   "lint-staged": {
     "**/*": [
+      "blocklint --wordlist blacklist,slave,whitelist",
       "check-merge-conflict",
       "check-added-large-files",
-      "check-case-conflict",
-      "check-docstring-first",
-      "check-executables-have-shebangs",
       "check-symlinks",
-      "detect-private-key"
+      "destroyed-symlinks"
     ],
-    "**/*.{js,json,md,ts,yml}": [
+    "**/*.(css|html|json|less|mjml|php|scss|sh|ts)": [
       "prettier --write"
     ],
-    "**/*.{js}": [
-      "npx standard --fix"
+    "**/*.(jpg|png)": [
+      "task image:compress --"
     ],
-    "**/*.{sh,sh.j2}": [
+    "**/*.js": [
+      "npx standard --fix",
+      "prettier --write"
+    ],
+    "**/*.json": [
+      "check-json",
+      "pretty-format-json --autofix"
+    ],
+    "**/*.md": [
       "prettier --write",
+      "remark",
+      "proselint --config .common/proselint.json"
+    ],
+    "**/*.(sh|sh.j2)": [
       "shellcheck"
     ],
+    "**/*.toml": [
+      "check-toml"
+    ],
     "**/*.xml": [
-      "check-xml"
+      "check-xml",
+      "prettier --write"
     ],
     "**/*.yml": [
       "check-yaml",
-      "yamllint -s"
+      "yamllint -s",
+      "prettier --write"
     ],
     "package.json": [
       "prettier-package-json --write"
     ],
     "requirements.txt": [
       "requirements-txt-fixer"
-    ],
-    ".gitlab-ci.yml": [
-      "npx gitlab-ci-lint"
     ]
   },
   "prettier": "@megabytelabs/prettier-config",
+  "remarkConfig": {
+    "plugins": [
+      "remark-preset-lint-recommended"
+    ]
+  },
   "standard-version": {
     "scripts": {
       "prerelease": "git add --all"

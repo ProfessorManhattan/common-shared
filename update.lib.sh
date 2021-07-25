@@ -60,7 +60,7 @@ warn() {
 
 # Determines whether or not an executable is accessible
 command_exists() {
-  type "$1" &>/dev/null
+  type "$1" &> /dev/null
 }
 
 # Verifies the SHA256 checksum of a file
@@ -169,7 +169,7 @@ ensure_dockerslim_installed() {
         export PATH="$USER_BIN_FOLDER:$PATH"
         # Check to see if the "export PATH" command is already present in ~/.bash_profile
         if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
-          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>$BASH_PROFILE
+          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >> $BASH_PROFILE
           success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
         else
           log "The ~/.local/bin folder is already included in the PATH variable"
@@ -205,7 +205,7 @@ ensure_dockerslim_installed() {
         export PATH="$USER_BIN_FOLDER:$PATH"
         # Check to see if the "export PATH" command is already present in ~/.bashrc
         if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
-          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>$BASH_PROFILE
+          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >> $BASH_PROFILE
           success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
         else
           log "The ~/.local/bin folder is already included in the PATH variable"
@@ -250,7 +250,7 @@ ensure_jq_installed() {
         export PATH="$USER_BIN_FOLDER:$PATH"
         # Check to see if the "export PATH" command is already present in ~/.bash_profile
         if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
-          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>$BASH_PROFILE
+          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >> $BASH_PROFILE
           success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
         else
           log "The ~/.local/bin folder is already included in the PATH variable"
@@ -278,7 +278,7 @@ ensure_jq_installed() {
         export PATH="$USER_BIN_FOLDER:$PATH"
         # Check to see if the "export PATH" command is already present in ~/.bashrc
         if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
-          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>$BASH_PROFILE
+          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >> $BASH_PROFILE
           success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
         else
           log "The ~/.local/bin folder is already included in the PATH variable"
@@ -325,7 +325,7 @@ ensure_yq_installed() {
         export PATH="$USER_BIN_FOLDER:$PATH"
         # Check to see if the "export PATH" command is already present in ~/.bash_profile
         if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
-          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>$BASH_PROFILE
+          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >> $BASH_PROFILE
           success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
         else
           log "The ~/.local/bin folder is already included in the PATH variable"
@@ -353,7 +353,7 @@ ensure_yq_installed() {
         export PATH="$USER_BIN_FOLDER:$PATH"
         # Check to see if the "export PATH" command is already present in ~/.bashrc
         if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
-          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>$BASH_PROFILE
+          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >> $BASH_PROFILE
           success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
         else
           log "The ~/.local/bin folder is already included in the PATH variable"
@@ -444,7 +444,7 @@ ensure_packer_installed() {
         export PATH="$USER_BIN_FOLDER:$PATH"
         # Check to see if the "export PATH" command is already present in ~/.bashrc
         if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
-          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>$BASH_PROFILE
+          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >> $BASH_PROFILE
           success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
         else
           log "The ~/.local/bin folder is already included in the PATH variable"
@@ -472,7 +472,7 @@ ensure_packer_installed() {
         export PATH="$USER_BIN_FOLDER:$PATH"
         # Check to see if the "export PATH" command is already present in ~/.bashrc
         if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
-          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>$BASH_PROFILE
+          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >> $BASH_PROFILE
           success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
         else
           log "The ~/.local/bin folder is already included in the PATH variable"
@@ -516,7 +516,7 @@ ensure_python3_installed() {
         export PATH="$MINICONDA_BIN_FOLDER:$PATH"
         # Check to see if the "export PATH" command is already present in ~/.bashrc
         if [[ $(grep -L 'export PATH=$HOME/.local/miniconda/bin:$PATH' "$BASH_PROFILE") ]]; then
-          echo -e '\nexport PATH=$HOME/.local/miniconda/bin:$PATH' >>$BASH_PROFILE
+          echo -e '\nexport PATH=$HOME/.local/miniconda/bin:$PATH' >> $BASH_PROFILE
           success "Updated the PATH variable to include ~/.local/miniconda/bin in the $BASH_PROFILE file"
         else
           log "The ~/.local/miniconda/bin folder is already included in the PATH variable"
@@ -547,7 +547,7 @@ ensure_python3_installed() {
         export PATH="$MINICONDA_BIN_FOLDER:$PATH"
         # Check to see if the "export PATH" command is already present in ~/.bashrc
         if [[ $(grep -L 'export PATH=$HOME/.local/miniconda/bin:$PATH' "$BASH_PROFILE") ]]; then
-          echo -e '\nexport PATH=$HOME/.local/miniconda/bin:$PATH' >>$BASH_PROFILE
+          echo -e '\nexport PATH=$HOME/.local/miniconda/bin:$PATH' >> $BASH_PROFILE
           success "Updated the PATH variable to include ~/.local/miniconda/bin in the $BASH_PROFILE file"
         else
           log "The ~/.local/miniconda/bin folder is already included in the PATH variable"
@@ -603,7 +603,7 @@ ensure_vagrant_installed() {
         export PATH="$USER_BIN_FOLDER:$PATH"
         # Check to see if the "export PATH" command is already present in ~/.bashrc
         if [[ $(grep -L 'export PATH=$HOME/.local/bin:$PATH' "$BASH_PROFILE") ]]; then
-          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >>$BASH_PROFILE
+          echo -e '\nexport PATH=$HOME/.local/bin:$PATH' >> $BASH_PROFILE
           success "Updated the PATH variable to include ~/.local/bin in the $BASH_PROFILE file"
         else
           log "The ~/.local/bin folder is already included in the PATH variable"
@@ -822,9 +822,9 @@ generate_documentation() {
     fi
   fi
   if [ "$REPO_TYPE" == 'packer' ]; then
-    jq -s '.[0] * .[1] * .[2]' template.json ./.modules/docs/common.json .blueprint.json >__bp.json
+    jq -s '.[0] * .[1] * .[2]' template.json ./.modules/docs/common.json .blueprint.json > __bp.json
   else
-    jq -s '.[0] * .[1]' .blueprint.json ./.modules/docs/common.json >__bp.json
+    jq -s '.[0] * .[1]' .blueprint.json ./.modules/docs/common.json > __bp.json
   fi
   log "Generating the CONTRIBUTING.md file"
   npx -y @appnest/readme generate --config __bp.json --input ./.modules/docs/blueprint-contributing.md --output CONTRIBUTING.md
@@ -856,12 +856,12 @@ generate_documentation() {
         sed -i 's^## Variables^'"$VARIABLES_CONTENT"'^g' README.md
       fi
       ROLE_VARIABLES=$(jq -r '.role_variables' ansible_variables.json)
-      jq --arg a "${ROLE_VARIABLES}" '.role_variables = $a' __bp.json >__jq.json && mv __jq.json __bp.json
+      jq --arg a "${ROLE_VARIABLES}" '.role_variables = $a' __bp.json > __jq.json && mv __jq.json __bp.json
     fi
   fi
   if [ -f dependency-chart.json ]; then
     local ROLE_DEPENDENCIES=$(jq -r '.role_dependencies' dependency-chart.json)
-    jq --arg a "${ROLE_DEPENDENCIES}" '.role_dependencies = $a' __bp.json >__jq.json && mv __jq.json __bp.json
+    jq --arg a "${ROLE_DEPENDENCIES}" '.role_dependencies = $a' __bp.json > __jq.json && mv __jq.json __bp.json
   fi
   npx -y @appnest/readme generate --config __bp.json --input ./.modules/docs/$README_FILE
   success "Successfully generated the README.md file"
@@ -1007,14 +1007,14 @@ copy_project_files_and_generate_package_json() {
     elif [ "$REPO_TYPE" == 'python' ]; then
       local PACKAGE_NAME_PREFIX=python-
     fi
-    jq --arg a "@megabytelabs/${PACKAGE_NAME_PREFIX}${PACKAGE_NAME}" '.name = $a' package.json >__jq.json && mv __jq.json package.json
-    jq --arg a "${PACKAGE_VERSION//\//}" '.version = $a' package.json >__jq.json && mv __jq.json package.json
+    jq --arg a "@megabytelabs/${PACKAGE_NAME_PREFIX}${PACKAGE_NAME}" '.name = $a' package.json > __jq.json && mv __jq.json package.json
+    jq --arg a "${PACKAGE_VERSION//\//}" '.version = $a' package.json > __jq.json && mv __jq.json package.json
     if [ "$REPO_TYPE" == 'dockerfile' ] && [ "$SUBGROUP" == 'ansible-molecule' ]; then
       log "Injecting package.json with the saved description"
-      jq --arg a "${PACKAGE_DESCRIPTION//\//}" '.description = $a' package.json >__jq.json && mv __jq.json package.json
+      jq --arg a "${PACKAGE_DESCRIPTION//\//}" '.description = $a' package.json > __jq.json && mv __jq.json package.json
     elif [ "$REPO_TYPE" == 'ansible' ] || [ "$REPO_TYPE" == 'packer' ] || [ "$REPO_TYPE" == 'npm' ]; then
       log "Injecting package.json with the saved description"
-      jq --arg a "${PACKAGE_DESCRIPTION//\//}" '.description = $a' package.json >__jq.json && mv __jq.json package.json
+      jq --arg a "${PACKAGE_DESCRIPTION//\//}" '.description = $a' package.json > __jq.json && mv __jq.json package.json
     fi
     if [ "$REPO_TYPE" == 'npm' ] || [ "$REPO_TYPE" == 'packer' ]; then
       if [ -f .blueprint.json ]; then
@@ -1031,8 +1031,8 @@ copy_project_files_and_generate_package_json() {
     fi
     if [ "$REPO_TYPE" == 'npm' ]; then
       log "Injecting dependencies and devDependencies back into package.json"
-      jq --argjson a "${PACKAGE_DEPS}" '.dependencies = $a' package.json >__jq.json && mv __jq.json package.json
-      jq --argjson a "${PACKAGE_DEVDEPS}" '.devDependencies = $a' package.json >__jq.json && mv __jq.json package.json
+      jq --argjson a "${PACKAGE_DEPS}" '.dependencies = $a' package.json > __jq.json && mv __jq.json package.json
+      jq --argjson a "${PACKAGE_DEVDEPS}" '.devDependencies = $a' package.json > __jq.json && mv __jq.json package.json
     fi
     success "Successfully updated the package.json file and copied the shared $REPO_TYPE files into this repository"
   else
@@ -1047,7 +1047,7 @@ copy_project_files_and_generate_package_json() {
       if [ "$REPO_TYPE" == 'dockerfile' ] && [ "$SUBGROUP" == 'ci-pipeline' ]; then
         log "Injecting the package.json name variable with the slug variable from .blueprint.json"
         local PACKAGE_NAME=$(jq -r '.slug' .blueprint.json)
-        jq --arg a "@megabytelabs/${PACKAGE_NAME}" '.name = $a' package.json >__jq.json && mv __jq.json package.json
+        jq --arg a "@megabytelabs/${PACKAGE_NAME}" '.name = $a' package.json > __jq.json && mv __jq.json package.json
         success "Successfully initialized the project with the shared $REPO_TYPE files and updated the name in package.json"
       elif [ "$REPO_TYPE" == 'npm' ]; then
         if [ -f .blueprint.json ]; then
@@ -1082,9 +1082,9 @@ copy_project_files_and_generate_package_json() {
     local SLUG=$(jq -r '.slug' .blueprint.json)
     local SUBGROUP=$(jq -r '.subgroup' .blueprint.json)
     if [ "$SUBGROUP" == 'ansible-molecule' ]; then
-      jq --arg a "${SUBGROUP}-${SLUG}" '.slug_full = $a' .blueprint.json >__jq.json && mv __jq.json .blueprint.json
+      jq --arg a "${SUBGROUP}-${SLUG}" '.slug_full = $a' .blueprint.json > __jq.json && mv __jq.json .blueprint.json
     else
-      jq --arg a "${SLUG}" '.slug_full = $a' .blueprint.json >__jq.json && mv __jq.json .blueprint.json
+      jq --arg a "${SLUG}" '.slug_full = $a' .blueprint.json > __jq.json && mv __jq.json .blueprint.json
     fi
     log "Determing whether dockerslim_command is available in .blueprint.json"
     local HAS_DOCKERSLIM_COMMAND=$(jq -e 'has("dockerslim_command")' .blueprint.json)
@@ -1155,7 +1155,7 @@ copy_project_files_and_generate_package_json() {
     if ([ "$SUBGROUP" == 'ci-pipeline' ] || [ "$SUBGROUP" == 'ansible-molecule' ]) && (command_exists docker); then
       log "Ensuring the package.json description is updated, using a value specified in .blueprint.json"
       local DESCRIPTION_TEMPLATE=$(jq -r '.description_template' .blueprint.json)
-      jq --arg a "${DESCRIPTION_TEMPLATE}" '.description = $a' package.json >__jq.json && mv __jq.json package.json
+      jq --arg a "${DESCRIPTION_TEMPLATE}" '.description = $a' package.json > __jq.json && mv __jq.json package.json
       success "Successfully copied the .blueprint.json description to the package.json description"
       local SLUG=$(jq -r '.slug' .blueprint.json)
       if [[ -n "$CONTAINER_STATUS" ]]; then
@@ -1196,7 +1196,7 @@ copy_project_files_and_generate_package_json() {
     else
       local DESCRIPTION=$(jq -r '.description_cached' .blueprint.json)
       if [ "$DESCRIPTION" != 'null' ]; then
-        jq --arg a "$DESCRIPTION" '.description = $a' package.json >__package.json && mv __package.json package.json
+        jq --arg a "$DESCRIPTION" '.description = $a' package.json > __package.json && mv __package.json package.json
       fi
     fi
   fi
@@ -1279,7 +1279,7 @@ misc_fixes() {
       log "Acquiring project ID and injecting it into .blueprint.json"
       local PROJECT_ID=$(ansible-galaxy info "professormanhattan.${ROLE_NAME}" | grep -E 'id: [0-9]' | awk {'print $2'})
       if [ "$PROJECT_ID" ]; then
-        jq --arg a "${PROJECT_ID}" '.ansible_galaxy_project_id = $a' .blueprint.json >__jq.json && mv __jq.json .blueprint.json
+        jq --arg a "${PROJECT_ID}" '.ansible_galaxy_project_id = $a' .blueprint.json > __jq.json && mv __jq.json .blueprint.json
         success "Successfully acquired the project ID for professormanhattan.${ROLE_NAME} and added it to .blueprint.json"
       else
         warn "The professormanhattan.${ROLE_NAME} role does not appear to be on Ansible Galaxy"
@@ -1296,7 +1296,7 @@ misc_fixes() {
   fi
   if [ "$REPO_TYPE" == 'dockerfile' ]; then
     local DESCRIPTION=$(jq -r '.description' package.json)
-    jq --arg a "${DESCRIPTION}" '.description_cached = $a' .blueprint.json >__blueprint.json && mv __blueprint.json .blueprint.json
+    jq --arg a "${DESCRIPTION}" '.description_cached = $a' .blueprint.json > __blueprint.json && mv __blueprint.json .blueprint.json
   fi
 }
 
@@ -1311,8 +1311,8 @@ populate_alternative_descriptions() {
       local BLUEPRINT_DESCRIPTION="An Ansible role that ${LOWERCASE_DESCRIPTION}"
       local ALT_DESCRIPTION="This repository is the home of an Ansible role that ${LOWERCASE_DESCRIPTION}."
       log "Writing alternative role descriptions to .blueprint.json"
-      jq --arg a "${BLUEPRINT_DESCRIPTION}" '.role_description = $a' .blueprint.json >__jq.json && mv __jq.json .blueprint.json
-      jq --arg a "${ALT_DESCRIPTION}" '.role_description_alt = $a' .blueprint.json >__jq.json && mv __jq.json .blueprint.json
+      jq --arg a "${BLUEPRINT_DESCRIPTION}" '.role_description = $a' .blueprint.json > __jq.json && mv __jq.json .blueprint.json
+      jq --arg a "${ALT_DESCRIPTION}" '.role_description_alt = $a' .blueprint.json > __jq.json && mv __jq.json .blueprint.json
       success "Successfully populated .blueprint.json with alternative role descriptions"
     else
       warn "yq is not installed. Skipping logic that populates .blueprint.json with alternative description formats."
@@ -1330,7 +1330,7 @@ populate_common_missing_ansible_dependencies() {
       local CHOCO_REQS_REFS=$(yq eval '.collections' requirements.yml)
       if [[ ! $CHOCO_REQS_REFS =~ "chocolatey.chocolatey" ]]; then
         yq eval -i -P '.collections = .collections + {"name": "chocolatey.chocolatey", "source": "https://galaxy.ansible.com"}' requirements.yml
-        (echo "---" && cat requirements.yml) >_reqs.yml && mv _reqs.yml requirements.yml
+        (echo "---" && cat requirements.yml) > _reqs.yml && mv _reqs.yml requirements.yml
       fi
     fi
     log "Ensuring community.general collection is in meta requirements (if necessary)"
@@ -1339,7 +1339,7 @@ populate_common_missing_ansible_dependencies() {
       local COMMUNITY_REQ_REFS=$(yq eval '.collections' requirements.yml)
       if [[ ! $COMMUNITY_REQ_REFS =~ "community.general" ]]; then
         yq eval -i -P '.collections = .collections + {"name": "community.general", "source": "https://galaxy.ansible.com"}' requirements.yml
-        (echo "---" && cat requirements.yml) >_reqs.yml && mv _reqs.yml requirements.yml
+        (echo "---" && cat requirements.yml) > _reqs.yml && mv _reqs.yml requirements.yml
       fi
     fi
     log "Ensuring professormanhattan.homebrew role is in meta requirements (if necessary)"
@@ -1348,7 +1348,7 @@ populate_common_missing_ansible_dependencies() {
       local HOMEBREW_META_REFS=$(yq eval '.dependencies' meta/main.yml)
       if [[ ! $HOMEBREW_META_REFS =~ "professormanhattan.homebrew" ]]; then
         yq eval -i -P '.dependencies = .dependencies + {"role": "professormanhattan.homebrew", "when": "ansible_os_family == \"Darwin\""}' meta/main.yml
-        (echo "---" && cat meta/main.yml) >_meta_dash.yml && mv _meta_dash.yml meta/main.yml
+        (echo "---" && cat meta/main.yml) > _meta_dash.yml && mv _meta_dash.yml meta/main.yml
       fi
     fi
     log "Ensuring professormanhattan.nodejs role is in meta requirements (if necessary)"
@@ -1357,7 +1357,7 @@ populate_common_missing_ansible_dependencies() {
       local NODEJS_META_REFS=$(yq eval '.dependencies' meta/main.yml)
       if [[ ! $NODEJS_META_REFS =~ "professormanhattan.nodejs" ]]; then
         yq eval -i -P '.dependencies = .dependencies + {"role": "professormanhattan.nodejs"}' meta/main.yml
-        (echo "---" && cat meta/main.yml) >_meta_dash.yml && mv _meta_dash.yml meta/main.yml
+        (echo "---" && cat meta/main.yml) > _meta_dash.yml && mv _meta_dash.yml meta/main.yml
       fi
     fi
     log "Ensuring professormanhattan.ruby role is in meta requirements (if necessary)"
@@ -1366,7 +1366,7 @@ populate_common_missing_ansible_dependencies() {
       local RUBY_META_REFS=$(yq eval '.dependencies' meta/main.yml)
       if [[ ! $RUBY_META_REFS =~ "professormanhattan.ruby" ]]; then
         yq eval -i -P '.dependencies = .dependencies + {"role": "professormanhattan.ruby"}' meta/main.yml
-        (echo "---" && cat meta/main.yml) >_meta_dash.yml && mv _meta_dash.yml meta/main.yml
+        (echo "---" && cat meta/main.yml) > _meta_dash.yml && mv _meta_dash.yml meta/main.yml
       fi
     fi
     log "Ensuring professormanhattan.snapd role is in meta requirements (if necessary)"
@@ -1378,17 +1378,17 @@ populate_common_missing_ansible_dependencies() {
         local SNAPD_ROLE_INDICATOR=$(grep -Ril "role_name: snapd" ./meta/main.yml)
         if [ ! "$SNAPD_ROLE_INDICATOR" ]; then
           yq eval -i -P '.dependencies = .dependencies + {"role": "professormanhattan.snapd", "when": "ansible_os_family == \"Darwin\""}' meta/main.yml
-          (echo "---" && cat meta/main.yml) >_meta_dash.yml && mv _meta_dash.yml meta/main.yml
+          (echo "---" && cat meta/main.yml) > _meta_dash.yml && mv _meta_dash.yml meta/main.yml
         fi
       fi
     fi
     log "Ensuring all the dependencies in meta/main.yml are also in the requirements.yml file"
-    yq eval -j '.dependencies' meta/main.yml >_meta-deps.json
+    yq eval -j '.dependencies' meta/main.yml > _meta-deps.json
     local REQ_REFS=$(yq eval '.roles' requirements.yml)
     jq -rc '.[] .role' _meta-deps.json | while read ROLE_NAME; do
       if [[ ! $REQ_REFS =~ $ROLE_NAME ]]; then
         ROLE_NAME=$ROLE_NAME yq eval -i -P '.roles = .roles + {"name": env(ROLE_NAME)}' requirements.yml
-        (echo "---" && cat requirements.yml) >_reqs.yml && mv _reqs.yml requirements.yml
+        (echo "---" && cat requirements.yml) > _reqs.yml && mv _reqs.yml requirements.yml
       fi
     done
     rm _meta-deps.json
@@ -1401,14 +1401,14 @@ populate_packer_descriptions() {
   if [ "$REPO_TYPE" == 'packer' ]; then
     log "Injecting description in template.json"
     local ISO_VERSION=$(jq -r '.variables.iso_version' template.json)
-    local MAJOR_VERSION=$(cut -d '.' -f 1 <<<$ISO_VERSION)
-    local MINOR_VERSION=$(cut -d '.' -f 2 <<<$ISO_VERSION)
+    local MAJOR_VERSION=$(cut -d '.' -f 1 <<< $ISO_VERSION)
+    local MINOR_VERSION=$(cut -d '.' -f 2 <<< $ISO_VERSION)
     local DESCRIPTION_TEMPLATE=$(jq -r '.description_template' .blueprint.json)
     local DESCRIPTION_TEMPLATE_PACKAGE=$(jq -r '.description_template_package' .blueprint.json)
     local VERSION_DESCRIPTION=$(jq -r '.version_description' .blueprint.json)
-    jq --arg a "${DESCRIPTION_TEMPLATE}" '.variables.description = $a' template.json >__jq.json && mv __jq.json template.json
-    jq --arg a "${DESCRIPTION_TEMPLATE_PACKAGE}" '.description = $a' package.json >__jq.json && mv __jq.json package.json
-    jq --arg a "${VERSION_DESCRIPTION}" '.variables.version_description = $a' template.json >__jq.json && mv __jq.json template.json
+    jq --arg a "${DESCRIPTION_TEMPLATE}" '.variables.description = $a' template.json > __jq.json && mv __jq.json template.json
+    jq --arg a "${DESCRIPTION_TEMPLATE_PACKAGE}" '.description = $a' package.json > __jq.json && mv __jq.json package.json
+    jq --arg a "${VERSION_DESCRIPTION}" '.variables.version_description = $a' template.json > __jq.json && mv __jq.json template.json
     if [[ "$OSTYPE" == "darwin"* ]]; then
       sed -i .bak "s^MAJOR_VERSION^${MAJOR_VERSION}^g" template.json && rm template.json.bak
       sed -i .bak "s^MINOR_VERSION^${MINOR_VERSION}^g" template.json && rm template.json.bak
@@ -1427,7 +1427,7 @@ populate_packer_descriptions() {
     success "Populated the description in template.json"
     if command_exists packer; then
       log "Running packer fix"
-      packer fix template.json >__template.json
+      packer fix template.json > __template.json
       mv __template.json template.json
     fi
     log "Formatting fixed template with Prettier"

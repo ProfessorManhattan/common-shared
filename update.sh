@@ -28,7 +28,7 @@ if [ "${container:=}" != 'docker' ]; then
   success "Node.js, Task, and jq are all installed"
 fi
 
-task requirements update
+task common:update
 
 if [ "${container:=}" != 'docker' ]; then
   missingDockerNotice

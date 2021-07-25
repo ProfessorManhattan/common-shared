@@ -1,16 +1,43 @@
 ---
 version: '3'
 
+vars:
+  IGNORE_FOLDERS: -name .autodoc -o -name .cache -o -name .common -o -name .git -o -name .husky
+    -o -name .modules -o -name .npm -o -name .task -o -name .venv -o -name node_modules
+    -o -name venv
+
 tasks:
   all:
     desc: Lint the project by running all the linters in parallel
-    deps: [formatting{{#if hbs.ansible}}, ansible{{/if}}{{#if hbs.dockerfile}}, docker{{/if}}{{#if hbs.python}}, python{{/if}}{{#if hbs.yaml}}, yaml{{/if}}]
+    deps:
+      - formatting
 {{#if hbs.ansible}}
+      - ansible
+{{/if}}
+{{#if hbs.dockerfile}}
+      - docker
+{{/if}}
+      - markdown
+{{#if hbs.packer}}
+      - packer
+{{/if}}
+      - private-keys
+{{#if hbs.python}}
+      - python
+{{/if}}
+      - scripts
+{{#if hbs.vagrant}}
+      - vagrant
+{{/if}}
+{{#if hbs.yaml}}
+      - yaml
+{{/if}}
 
+{{#if hbs.ansible}}
   ansible:
     deps:
       - :ansible:symlink
-      - :common:galaxy-requirements
+      - :common:python-requirements
     desc: Lint Ansible projects using Ansible Lint
     summary: |
       $ Lint an Ansible project using Ansible Lint
@@ -29,30 +56,18 @@ tasks:
       - ansible-lint
     sources:
       - "**/*.yml"
-{{/if}}
 
-  formatting:
+{{/if}}
+  commit:
     deps:
       - :common:nodejs-dependencies
-    desc: Lint formatting using Prettier
-    summary: |
-      $ Report formatting errors with Prettier
-
-      This task will run Prettier on the project and list the possible fixes without automatically
-      applying the fixes. It will report mistakes like inconsistent indent lengths, trailing spaces,
-      and more. This task is a wrapper for the `npm run lint:prettier` command. It will use the configuration
-      specified in the `package.json` file under the `prettier` key.
-
-      If this command is incompatible with a file then you can add the file to the `.prettierignore`
-      file.
-
-      For more information on Prettier, see: https://prettier.io/
+      - :npm:commitlint
     cmds:
-      - npm run lint:prettier
-    sources:
-      - "**/*.(css|html|js|json|less|md|mjml|php|scss|sh|ts|xml|yml)"
-{{#if hbs.dockerfile}}
+      - commitlint --config .common/commitlint.config.js --edit "\{{.CLI_ARGS}}"
+    status:
+      - '[[ "\{{.CLI_ARGS}}" ]]'
 
+{{#if hbs.dockerfile}}
   docker:
     deps:
       - :software:docker
@@ -77,17 +92,225 @@ tasks:
         * .common       * .modules      * test
         * .git          * .task         * venv
 
+      Example scanning the whole project:
+      > task lint:docker
+
+      Example scanning single file:
+      > task lint:docker -- CustomDockerfile
+
       For more information on Hadolint, see: https://github.com/hadolint/hadolint
     cmds:
-      - find . -type d \( -name .cache -o -name .common -o -name .git -o -name .modules
-        -o -name node_modules -o -name .husky -o -name .task -o -name test -o -name venv \)
-        -prune -o -type f \( -name Dockerfile -o -name Dockerfile.j2 \) -print0 | xargs -0 -r -n1
-        docker run -v "$PWD:/work" -w /work megabytelabs/hadolint:slim
+      - |
+        if [ -z "\{{.CLI_ARGS}}" ]; then
+          find . -type d \( \{{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name Dockerfile -o
+            -name Dockerfile.j2 \) -print0 | xargs -0 -r -n1 docker run -v "$PWD:/work" -w /work
+            megabytelabs/hadolint:slim
+        else
+          docker run -v "$PWD:/work" -w /work megabytelabs/hadolint:slim \{{.CLI_ARGS}}
+        fi
     sources:
       - "**/(Dockerfile|Dockerfile.j2)"
-{{/if}}
-{{#if hbs.python}}
 
+{{/if}}
+  formatting:
+    deps:
+      - :npm:prettier
+    desc: Lint formatting using Prettier
+    summary: |
+      $ Report formatting errors with Prettier
+
+      This task will run Prettier on the project and list the possible fixes without automatically
+      applying the fixes. It will report mistakes like inconsistent indent lengths, trailing spaces,
+      and more. This task is a wrapper for the `npm run lint:prettier` command. It will use the configuration
+      specified in the `package.json` file under the `prettier` key.
+
+      If this command is incompatible with a file then you can add the file to the `.prettierignore`
+      file.
+
+      For more information on Prettier, see: https://prettier.io/
+    cmds:
+      - prettier --list-different .
+      - prettier-package-json --list-different package.json
+    sources:
+      - "**/*.(css|html|js|json|less|md|mjml|php|scss|sh|ts|xml|yml)"
+
+  lint-staged:
+    deps:
+      - :npm:lint-staged
+    cmds:
+      - lint-staged
+
+  gitleaks:
+    deps:
+      - :software:gitleaks
+    desc: Scans repository (including git history) for possible leaked keys
+    summary: |
+      $ Scan repository with Gitleaks
+
+      Find accidentally committed passwords, private keys, and API keys by scanning the repository with
+      'Gitleaks'.
+
+      Example of scanning current repository:
+      > task lint:gitleaks
+
+      Example of scanning a public git repository:
+      > task lint:gitleaks -- https://github.com/installdoc/windows12
+
+      For more information on 'Gitleaks', see: https://github.com/zricethezav/gitleaks
+    cmds:
+      - |
+        if [ -z "\{{.CLI_ARGS}}" ]; then
+          gitleaks -p . -v
+        else
+          gitleaks --repo-url "\{{.CLI_ARGS}}" -v
+        fi
+
+  markdown:
+    deps:
+      - :nodejs:dependencies
+      - :npm:remark
+    desc: Lint markdown files
+    summary: |
+      $ Lint markdown files
+
+      This task uses 'remark-lint' under the hood to provide markdown style recommendations.
+
+      Example scanning all markdown files:
+      > task lint:markdown
+
+      Example scanning single markdown file:
+      > task lint:markdown -- TEST.md
+
+      For more information on 'remark', see: https://github.com/remarkjs/remark
+
+      For more information on 'remark-lint', see: https://github.com/remarkjs/remark-lint
+    cmds:
+      - |
+        if [ -z "\{{.CLI_ARGS}}" ]; then
+          find . -type d \( \{{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name \*.md \) -print0 |
+            xargs -0 -r -n1 remark
+        else
+          remark \{{.CLI_ARGS}}
+        fi
+    sources:
+      - "**/*.md"
+
+  markdown-broken-links:
+    deps:
+      - :npm:markdown-link-check
+    desc: Scan markdown files for broken links
+    summary: |
+      $ Report any broken links in the files that end with .md
+
+      This task uses the npm package called `markdown-link-check` to scan all the links
+      and then report which ones are broken.
+
+      Example scanning the whole project:
+      > task lint:markdown-broken-links
+
+      Example scanning single file:
+      > task lint:markdown-broken-links -- filename.md
+
+      For more information on `markdown-link-check`, see the following page:
+      https://github.com/tcort/markdown-link-check
+    cmds:
+      - |
+        if [ -z "\{{.CLI_ARGS}}" ]; then
+          find . -type d \( \{{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name \*.md \) -print0 |
+            xargs -0 -r -n1 markdown-link-check
+        else
+          markdown-link-check \{{.CLI_ARGS}}
+        fi
+    sources:
+      - "**/*.md"
+
+{{#if hbs.packer}}
+  packer:
+    deps:
+      - :software:packer
+    desc: Validate the Packer templates ending with `template.json`
+    summary: |
+      $ Validate Packer templates
+
+      This task will loop through all the Packer templates ending with `template.json`
+      in the root of this project and report any errors that the templates might have.
+      Alternatively, you can scan a single file (see example below).
+
+      Example scanning for all files ending with 'template.json' in the root directory:
+      > task lint:packer
+
+      Example scanning single file:
+      > task lint:packer -- filename.json
+
+      For more information on `packer validate`, see: https://www.packer.io/docs/commands/validate
+    cmds:
+      - |
+        if [ -z "\{{.CLI_ARGS}}" ]; then
+          for TEMPLATE in *template.json; do
+            packer validate "$TEMPLATE"
+          done
+        else
+          packer validate \{{.CLI_ARGS}}
+        fi
+    sources:
+      - "*template.json"
+
+{{/if}}
+  private-keys:
+    deps:
+      - :common:python-requirements
+    desc: Scan for private keys
+    summary: |
+      $ Scan for private keys
+
+      This task will scan the project for private keys that might not belong where they are. You
+      can pass this task a single file or let it loop through the project. If you loop through
+      the project, common folders like 'node_modules/' and 'venv/' will be ignored.
+
+      Example scanning the whole project:
+      > task lint:private-keys
+
+      Example scanning single file:
+      > task lint:private-keys -- filename.ext
+    cmds:
+      - |
+        if [ -z "\{{.CLI_ARGS}}" ]; then
+          find . -type d \( \{{.IGNORE_FOLDERS}} \) -prune -o -type f -print0 | xargs -0 -r -n1 detect-private-key
+        else
+          detect-private-key \{{.CLI_ARGS}}
+        fi
+    sources:
+      - "**/*"
+
+  prose:
+    deps:
+      - :common:python-requirements
+    desc: Lint for English prose
+    summary: |
+      # Lint for English prose
+
+      This task uses 'proselint' to analyze markdown files for prose. It will generate recommendations
+      based on typography, grammar, and wording.
+
+      Example scanning all markdown files:
+      > task lint:prose
+
+      Example scanning specific file (markdown or not):
+      > task lint:prose -- myfile.js
+
+      For more information on proselint, see: https://github.com/amperser/proselint
+    cmds:
+      - |
+        if [ -z "\{{.CLI_ARGS}}" ]; then
+          find . -type d \( \{{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name \*.md \) -print0 |
+            xargs -0 -r -n1 proselint --config .common/proselint.json
+        else
+          proselint --config .common/proselint.json \{{.CLI_ARGS}}
+        fi
+    sources:
+      - "**/*.md"
+
+{{#if hbs.python}}
   python:
     deps:
       - :common:python-requirements
@@ -108,16 +331,27 @@ tasks:
       NOTE: In order to maintain our strict quality standards, disabling Flake8 rules should only be done
       when absolutely necessary.
 
+      Example scanning all files:
+      > task lint:python
+
+      Example scanning specific file:
+      > task lint:python -- myfile.py
+
       For more information on Flake8, see: https://github.com/PyCQA/flake8
     cmds:
-      - flake8 .
+      - |
+        if [ -z "\{{.CLI_ARGS}}" ]; then
+          flake8 .
+        else
+          flake8 \{{.CLI_ARGS}}
+        fi
     sources:
       - "**/*.py"
-{{/if}}
 
+{{/if}}
   scripts:
     deps:
-      - :common:nodejs-dependencies
+      - :npm:shellcheck
     desc: Report possible errors in shell scripts
     summary: |
       $ Report possible errors in shell scripts using Shellcheck
@@ -130,13 +364,82 @@ tasks:
         * .git          * node_modules
         * .husky        * slim_test
 
+      Example scanning all files:
+      > task lint:scripts
+
+      Example scanning specific file:
+      > task lint:scripts -- myfile.sh
+
       For more information on Shellcheck, see: https://github.com/koalaman/shellcheck
     cmds:
-      - npm run fix:shellcheck
+      - |
+        if [ -z "\{{.CLI_ARGS}}" ]; then
+          find . -type d \( \{{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name \*.sh -o -name \*.sh.j2 \) -print0 |
+            xargs -0 -r -n1 shellcheck
+        else
+          shellcheck \{{.CLI_ARGS}}
+        fi
     sources:
       - "**/*.(sh|sh.j2)"
-{{#if hbs.yaml}}
 
+  spelling:
+    deps:
+      - :npm:cspell
+      - :software:git
+      - :software:node
+    desc: Checks for spelling errors in staged files
+    summary: |
+      $ Check for spelling errors in staged files
+
+      Use cspell to check for possible spelling errors using the configuration stored in `.common/.cspell.json`.
+
+      This task is utilized by the pre-commit hook. For more information about cspell, see:
+      https://www.npmjs.com/package/cspell
+
+      Example scanning all staged files:
+      > task lint:spelling
+
+      Example scanning specific file:
+      > task lint:spelling -- myfile.sh
+
+      Although this task only analyzes staged files, you can manually run cspell, for example, on all JavaScript
+      files by running:
+      > npx cspell '**/*.js'
+    env:
+      STAGED_FILES:
+        sh: git diff --cached --name-only
+    cmds:
+      - |
+        if [ -z "\{{.CLI_ARGS}}" ]; then
+          cspell --no-summary --no-progress --show-context --no-must-find-files --config .common/.cspell.json
+            "$STAGED_FILES" || true
+        else
+          cspell --no-progress --show-context --no-must-find-files --config .cspell.json \{{.CLI_ARGS}}
+        fi
+    preconditions:
+      - sh: "git diff --cached --name-only"
+        msg: "Cannot perform a spell check because there are no staged files"
+
+{{#if hbs.vagrant}}
+  vagrant:
+    deps:
+      - :software:vagrant
+    desc: Validate the Vagrantfile
+    summary: |
+      $ Validate the Vagrantfile
+
+      This task is an alias for `vagrant validate`. Vagrant's `validate` command
+      will ensure the Vagrantfile in the root of this repository has no errors and
+      is using valid syntax.
+
+      For more information on `vagrant validate`, see: https://www.vagrantup.com/docs/cli/validate
+    cmds:
+      - vagrant validate
+    sources:
+      - Vagrantfile
+
+{{/if}}
+{{#if hbs.yaml}}
   yaml:
     deps:
       - :common:python-requirements
@@ -154,9 +457,21 @@ tasks:
 
       NOTE: Disabling YAML Lint rules should only be done when absolutely necessary.
 
+      Example scanning all '**/*.yml' files:
+      > task lint:yaml
+
+      Example scanning specific file':
+      > task lint:yaml -- myfile.sh
+
       For more information on YAML Lint, see: https://github.com/adrienverge/yamllint
     cmds:
-      - yamllint -s .
+      - |
+        if [ -z "\{{.CLI_ARGS}}" ]; then
+          yamllint -s .
+        else
+          yamllint \{{.CLI_ARGS}}
+        fi
     sources:
       - "**/*.yml"
+
 {{/if}}
