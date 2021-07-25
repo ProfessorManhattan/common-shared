@@ -67,6 +67,9 @@
     "**/*.(css|html|json|less|mjml|php|scss|sh|ts)": [
       "prettier --write"
     ],
+    "**/*.(jpg|png)": [
+      "task image:compress --"
+    ],
     "**/*.js": [
       "npx standard --fix",
       "prettier --write"

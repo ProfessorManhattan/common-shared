@@ -95,6 +95,13 @@ tasks:
           NPM_PACKAGE: remark-cli
           NPM_PACKAGE_BIN: remark
 
+  sharp:
+    cmds:
+      - task: npm-install
+        vars:
+          NPM_PACKAGE: sharp-cli
+          NPM_PACKAGE_BIN: sharp
+
   shellcheck:
     cmds:
       - task: npm-install
@@ -115,3 +122,10 @@ tasks:
         vars:
           NPM_PACKAGE: standard-version
           NPM_PACKAGE_BIN: standard-version
+
+  tinypng:
+    cmds:
+      - task: npm-install
+        vars:
+          NPM_PACKAGE: tinypng-cli
+          NPM_PACKAGE_BIN: tinypng

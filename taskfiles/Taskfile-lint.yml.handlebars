@@ -141,6 +141,31 @@ tasks:
     cmds:
       - lint-staged
 
+  gitleaks:
+    deps:
+      - :software:gitleaks
+    desc: Scans repository (including git history) for possible leaked keys
+    summary: |
+      $ Scan repository with Gitleaks
+
+      Find accidentally committed passwords, private keys, and API keys by scanning the repository with
+      'Gitleaks'.
+
+      Example of scanning current repository:
+      > task lint:gitleaks
+
+      Example of scanning a public git repository:
+      > task lint:gitleaks -- https://github.com/installdoc/windows12
+
+      For more information on 'Gitleaks', see: https://github.com/zricethezav/gitleaks
+    cmds:
+      - |
+        if [ -z "\{{.CLI_ARGS}}" ]; then
+          gitleaks -p . -v
+        else
+          gitleaks --repo-url "\{{.CLI_ARGS}}" -v
+        fi
+
   markdown:
     deps:
       - :nodejs:dependencies
