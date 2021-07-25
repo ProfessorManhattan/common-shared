@@ -59,6 +59,7 @@
   ],
   "lint-staged": {
     "**/*": [
+      "blocklint --wordlist blacklist,slave,whitelist",
       "check-merge-conflict",
       "check-added-large-files",
       "check-symlinks",
