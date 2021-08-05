@@ -11,7 +11,8 @@ tasks:
       TMP_JSON:
         sh: mktemp
     cmds:
-      - echo '{"version": "2.0.0"}' > "$TMP_JSON"
+      - |
+        echo '{"version": "2.0.0"}' > "$TMP_JSON"
       - TASKS='['
       - |
         while read LINE; do
