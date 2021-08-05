@@ -8,10 +8,10 @@ tasks:
     env:
       TASK_LIST:
         sh: task --list
-      TMP:
+      TMP_JSON:
         sh: mktemp
     cmds:
-      - echo '{"version": "2.0.0"}' > "$TMP"
+      - echo '{"version": "2.0.0"}' > "$TMP_JSON"
       - TASKS='['
       - |
         while read LINE; do
@@ -24,4 +24,4 @@ tasks:
             TASKS+="{\"label\": \"$LABEL\", \"type\": \"$TYPE\", \"command\": \"$COMMAND\"},"
           fi
         done <<< "$TASK_LIST"
-      - jq --arg tasks "${TASKS%?}]" '.tasks = ($tasks | fromjson)' "$TMP" > .vscode/tasks.json
+      - jq --arg tasks "${TASKS%?}]" '.tasks = ($tasks | fromjson)' "$TMP_JSON" > .vscode/tasks.json
