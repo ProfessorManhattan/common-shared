@@ -128,7 +128,7 @@ tasks:
     preconditions:
       - sh: '[ "\{{.DESCRIPTION}}" != "null" ]'
         msg: "The `.description` in `package.json` must be set."
-      - sh: '[ "\{{.GITLAB_PATH}}' != "null" ]'
+      - sh: '[ "\{{.GITLAB_PATH}}" != "null" ]'
         msg: "The `.blueprint.gitlab_path` variable (e.g. `megabyte-labs/ansible-roles/androidstudio`) in `package.json` must be set."
       - sh: '[ "\{{.NAME}}" != "null" ]'
         msg: "The `.blueprint.name` variable in `package.json` must be set."
