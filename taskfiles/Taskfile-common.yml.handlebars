@@ -619,6 +619,17 @@ tasks:
 {{/if}}
       - update-repositories
     desc: Refresh the project with the latest upstream code and ensure blueprint data has propagated
+    summary: |
+      # Refresh project with latest upstream code and ensure project files are up-to-date
+
+      This task will pull the latest upstream code and overwrite any files that are out of date.
+      Ideally, you should run this task often to ensure there are no merge conflicts and to
+      ensure you are using the latest production settings. This task is also run by CI so
+      normally if you pull the latest changes, you should already have the updates that this
+      task applies.
+
+      Example usage:
+      `task common:update`
     cmds:
       - task: update-start
       - task: update-all
@@ -626,3 +637,23 @@ tasks:
       - task: :docker:update-labels
 {{/if}}
       - true success "Successfully updated the project with the latest upstream changes"
+
+  update-services:
+    deps:
+      - update
+    desc: Update elements of the repository that require API access
+    summary: |
+      # Update elements of the repository that require API access
+
+      This task will ensure that the git repositories and other services related to the
+      project are updated with the configurations.
+
+      Example usage:
+      `task common:update-services`
+    cmds:
+      - task: update-services-repos
+
+  update-services-repos:
+    deps:
+      - :git:update-gitlab
+      - :git:update-github

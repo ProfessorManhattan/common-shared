@@ -84,15 +84,6 @@ tasks:
     status:
       - type jq &> /dev/null
 
-  lab:
-    cmds:
-      - task: install-doctor
-        vars:
-          SOFTWARE: lab
-    run: once
-    status:
-      - type lab &> /dev/null
-
   node:
     cmds:
       - task: install-doctor

@@ -2,34 +2,130 @@
 version: '3'
 
 vars:
+  GITHUB_ISSUES: true
   GITHUB_ORG: ProfessorManhattan
   GITHUB_USER: ProfessorManhattan
+  GITHUB_WIKI: false
+  GITLAB_WIKI: false
+  TIMEZONE: America/New_York
 
 env:
-  CLICOLOR: # set to "0" to disable printing ANSI colors in output.
+  CLICOLOR:
     sh: if [[ "${container:=}" == 'docker' ]]; then echo "0"; else echo "1"; fi
 
 tasks:
-  mirror:
+  create-github:
+    deps:
+      - :software:gh
+      - :software:jq
+    vars:
+      DESCRIPTION:
+        sh: jq -r '.description' package.json
+      GITHUB_REPO:
+        sh: jq -r '.blueprint.repository.github' package.json
+      GITHUB_SLUG:
+        sh: jq -r '.name' package.json | sed 's/.*\///'
+      HOMEPAGE:
+        sh: jq -r '.homepage' package.json
+      PROJECT_TYPE:
+        sh: if [[ $(jq -r '.private' package.json) == 'true' ]]; then echo '--private'; else echo '--public'; fi
+    env:
+      TMP:
+        sh: mktemp
+    cmds:
+      - |
+        if [ ! -z "$GITHUB_TOKEN" ]; then
+          gh repo create "\{{.GITHUB_SLUG}}" --enable-wiki=\{{.GITHUB_WIKI}} -y --description "\{{.DESCRIPTION}}" --homepage "\{{.HOMEPAGE}}" \
+            \{{.PROJECT_TYPE}} 2>&1 | grep "HTTP 422: Repository creation failed."
+          if [[ $? == 0 ]]; then
+            true error "GitHub repository `\{{.GITHUB_ORG}}/\{{.GITHUB_SLUG}}` already exists."
+          else
+            true success "GitHub repository `\{{.GITHUB_ORG}}/\{{.GITHUB_SLUG}}` successfully created!"
+          fi
+          jq --arg repo "https://github.com/\{{.GITHUB_ORG}}/\{{.GITHUB_SLUG}}" '.blueprint.repository.github = $repo' package.json > "$TMP"
+          mv "$TMP" package.json
+        else
+          true warn "The `GITHUB_TOKEN` environment variable is not set so the GitLab repository cannot be updated via the API."
+        fi
+    run: once
+    status:
+      - '[ "\{{.GITHUB_REPO}}" != "null" ]'
+    preconditions:
+      - sh: '[ "\{{.DESCRIPTION}}" != "null" ]'
+        msg: "The `.description` in `package.json` must be set."
+      - sh: '[ "\{{.GITHUB_SLUG}}" != "null" ]'
+        msg: "The `.name` in `package.json` must be set."
+      - sh: '[ "\{{.HOMEPAGE}}" != "null" ]'
+        msg: "The `.homepage` in `package.json` must be set."
+
+  create-gitlab:
     deps:
       - :software:glab
       - :software:jq
     vars:
+      DESCRIPTION:
+        sh: jq -r '.description' package.json
+      GITLAB_PATH:
+        sh: jq -r '.blueprint.gitlab_path' package.json
+      GITLAB_REPO:
+        sh: jq -r '.blueprint.repository.gitlab' package.json
+      NAME:
+        sh: jq -r '.blueprint.name' package.json
+      PROJECT_TYPE:
+        sh: if [[ $(jq -r '.private' package.json) == 'true' ]]; then echo '--private'; else echo '--public'; fi
+      TMP:
+        sh: mktemp
+    env:
+      KEYWORDS:
+        sh: jq -r '.keywords | tostring' package.json | sed 's/\[//' | sed 's/\]//'
+    cmds:
+      - |
+        if [ ! -z "$GITLAB_TOKEN" ]; then
+          glab repo create \{{.GITLAB_PATH}} --description "\{{.DESCRIPTION}}" --name "\{{.NAME}}" \{{.PROJECT_TYPE}} \
+            --tag "$KEYWORDS"
+          if [[ $? == 0 ]]; then
+            true success "GitLab repository `\{{.GITLAB_PATH}}` successfully created!"
+          else
+            true error "GitLab repository `\{{.GITLAB_PATH}}` already exists.
+          fi
+          jq --arg repo "https://gitlab.com/\{{.GITLAB_PATH}}" '.blueprint.repository.gitlab = $repo' package.json > "$TMP"
+          mv "$TMP" package.json
+        else
+          true warn "The `GITLAB_TOKEN` environment variable is not set so the GitLab repository cannot be created."
+        fi
+    run: once
+    status:
+      - '[ "\{{.GITLAB_REPO}}" != "null" ]'
+    preconditions:
+      - sh: '[ "\{{.DESCRIPTION}}" != "null" ]'
+        msg: "The `.description` in `package.json` must be set."
+      - sh: '[ "\{{.GITLAB_PATH}}' != "null" ]'
+        msg: "The `.blueprint.gitlab_path` variable (e.g. `megabyte-labs/ansible-roles/androidstudio`) in `package.json` must be set."
+      - sh: '[ "\{{.NAME}}" != "null" ]'
+        msg: "The `.blueprint.name` variable in `package.json` must be set."
+
+  mirror-gitlab:
+    deps:
+      - :software:glab
+      - :software:jq
+      - create-github
+      - create-gitlab
+    vars:
+      GITHUB_SLUG:
+        sh: jq -r '.name' package.json | sed 's/.*\///'
       GITLAB_REPO_ID:
         sh: glab api projects/:fullpath | jq -r '.id'
-      NAME:
-        sh: jq -r '.name' package.json | sed 's/.*\///'
       PUSH_MIRROR_COUNT:
         sh: glab api projects/:fullpath/remote_mirrors | jq '. | length'
     cmds:
       - |
         if [[ "$PUSH_MIRROR_COUNT" == '0' ]]; then
-          glab api projects/:fullpath/remote_mirrors --method POST --header "Content-Type: application/json"
-            -f "url=https://\{{.GITHUB_USER}}:$GITHUB_TOKEN@github.com/\{{.GITHUB_ORG}}/\{{.NAME}}.git"
+          glab api projects/:fullpath/remote_mirrors --method POST --header "Content-Type: application/json" \
+            -f "url=https://\{{.GITHUB_USER}}:$GITHUB_TOKEN@github.com/\{{.GITHUB_ORG}}/\{{.GITHUB_SLUG}}.git" \
             -f 'enabled=true'
         fi
-      - curl -H 'Content-Type: application/json' -H "Authorization: Bearer $GITLAB_TOKEN" -XPUT --data
-          "{\"mirror\": true, \"import_url\": \"https://\{{.GITHUB_USER}}:$GITHUB_TOKEN@github.com/\{{.GITHUB_ORG}}/\{{.NAME}}.git\"}"
+      - curl -H 'Content-Type: application/json' -H "Authorization: Bearer $GITLAB_TOKEN" -XPUT --data \
+          "{\"mirror\": true, \"import_url\": \"https://\{{.GITHUB_USER}}:$GITHUB_TOKEN@github.com/\{{.GITHUB_ORG}}/\{{.GITHUB_SLUG}}.git\"}" \
           "https://gitlab.com/api/v4/projects/\{{.GITLAB_REPO_ID}}"
     sources:
       - package.json
@@ -40,6 +136,44 @@ tasks:
         msg: "The `GITLAB_TOKEN` environment variable must be set to enable mirroring."
       - sh: '[ ! -z "\{{.GITLAB_REPO_ID}}" ]'
         msg: "Unable to acquire `GITLAB_REPO_ID`. Ensure origin is pointing to GitLab."
+
+  pipelines-gitlab:
+    deps:
+      - :software:glab
+      - :software:jq
+      - create-gitlab
+    vars:
+      PIPELINE_COUNT:
+        sh: jq -r '.gitlab_pipelines | length' .variables.json
+    env:
+      PIPELINE_RES:
+        sh: glab api projects/:fullpath/pipeline_schedules
+      PIPELINES:
+        sh: jq -r '.gitlab_pipelines' .variables.json
+    cmds:
+      - |
+        if [ ! -z "$GITLAB_TOKEN" ]; then
+          MAX_INDEX=$((\{{.PIPELINE_COUNT}} - 1))
+          for PIPELINE_INDEX in {0..$MAX_INDEX}; do
+            ACTIVE=$(echo "$PIPELINES" | jq --arg i "$PIPELINE_INDEX" '.[$i | tonumber].active')
+            CRON=$(echo "$PIPELINES" | jq --arg i "$PIPELINE_INDEX" '.[$i | tonumber].cron')
+            DESC=$(echo "$PIPELINES" | jq --arg i "$PIPELINE_INDEX" '.[$i | tonumber].description')
+            REF=$(echo "$PIPELINES" | jq --arg i "$PIPELINE_INDEX" '.[$i | tonumber].ref')
+            if ! $(echo "$PIPELINE_RES") | grep "$DESC"; then
+              glab api projects/:fullpath/pipeline_schedules -X POST -f active="$ACTIVE" -f description="$DESC" \
+                -f ref="$REF" -f cron="$CRON"
+              true success "Pipeline with description of `$DESC` successfully added"
+            else
+              true log "Pipeline with description of `$DESC` already added"
+          done
+          for
+        else
+          true warn "The `GITLAB_TOKEN` environment variable is not set so the GitLab pipelines cannot be updated via the API."
+        fi
+    sources:
+      - .variables.json
+    status:
+      - '[ -z "$GITLAB_TOKEN" ]'
 
   remotes:
     deps:
@@ -66,77 +200,77 @@ tasks:
     deps:
       - :software:gh
       - :software:jq
+      - create-github
     vars:
       DESCRIPTION:
         sh: jq -r '.description' package.json
-      GITHUB_REPO:
-        sh: jq -r '.blueprint.repository.github' package.json
       HOMEPAGE:
         sh: jq -r '.homepage' package.json
-      NAME:
-        sh: jq -r '.name' package.json | sed 's/.*\///'
       PRIVATE:
         sh: jq -r '.private' package.json | sed 's/null/false/'
-      PROJECT_TYPE:
-        sh: if [[ $(jq -r '.private' package.json) == 'true' ]]; then echo '--private'; else echo '--public'; fi
-    env:
-      TMP:
-        sh: mktemp
     cmds:
       - |
         if [ ! -z "$GITHUB_TOKEN" ]; then
-          if [ "\{{.GITHUB_REPO}}" == 'null' ]; then
-            if [ "\{{.PRIVATE}}" == 'true' ]; then PROJECT_TYPE="--private"; else PROJECT_TYPE="--public"; fi
-            gh repo create "\{{.NAME}}" --enable-wiki=false -y --description "\{{.DESCRIPTION}}" --homepage "\{{.HOMEPAGE}}"
-              \{{.PROJECT_TYPE}} 2>&1 | grep "HTTP 422: Repository creation failed."
-            if [[ $? == 0 ]]; then
-              true log "GitHub repository titled `\{{.NAME}}` appears to already exists. Updating the repository instead."
-              gh api -X PATCH repos/{owner}/{repo} -f description="\{{.DESCRIPTION}}" -f homepage="\{{.HOMEPAGE}}"
-                -f has_issues=true -f has_wiki=false -f private="\{{.PRIVATE}}"
-            else
-              true success "GitHub repository titled `\{{.NAME}}` successfully created!"
-            fi
-            jq --arg repo "https://github.com/\{{.GITHUB_ORG}}/\{{.NAME}}" '.blueprint.repository.github = $repo' package.json > "$TMP"
-            mv "$TMP" package.json
-          else
-            gh api -X PATCH repos/{owner}/{repo} -f description="\{{.DESCRIPTION}}" -f homepage="\{{.HOMEPAGE}}"
-              -f has_issues=true -f has_wiki=false -f private="\{{.PRIVATE}}"
-          fi
+          gh api -X PATCH repos/{owner}/{repo} -f description="\{{.DESCRIPTION}}" -f homepage="\{{.HOMEPAGE}}" \
+            -f has_issues=\{{.GITHUB_ISSUES}} -f has_wiki=\{{.GITHUB_WIKI}} -f private="\{{.PRIVATE}}"
         else
-          true warn "The `GITHUB_TOKEN` environment variable is not set so the GitHub repository cannot be created/updated."
+          true warn "The `GITHUB_TOKEN` environment variable is not set so the GitHub repository cannot be updated via the API."
         fi
     sources:
       - package.json
     status:
-      - '[ "$GITHUB_REPO" != "null" ]'
       - '[ -z "$GITHUB_TOKEN" ]'
     preconditions:
       - sh: '[ "\{{.DESCRIPTION}}" != "null" ]'
         msg: "The `.description` in `package.json` must be set."
       - sh: '[ "\{{.HOMEPAGE}}" != "null" ]'
         msg: "The `.homepage` in `package.json` must be set."
-      - sh: '[ "\{{.NAME}}" != "null" ]'
-        msg: "The `.name` in `package.json` must be set."
 
   update-gitlab:
     deps:
       - :software:glab
       - :software:jq
+      - create-gitlab
     vars:
       DESCRIPTION:
         sh: jq -r '.description' package.json
+      DOCS_URL:
+        sh: jq -r '.docs.link' .variables.json
       GITLAB_PATH:
         sh: jq -r '.blueprint.gitlab_path' package.json
+      GITLAB_REPO:
+        sh: jq -r '.blueprint.repository.gitlab' package.json
+      GROUP:
+        sh: jq -r '.group' .variables.json
       NAME:
-        sh: jq -r '.name' package.json | sed 's/.*\///'
+        sh: jq -r '.blueprint.name' package.json
       PROJECT_TYPE:
-        sh: if [[ $(jq -r '.private' package.json) == 'true' ]]; then echo '--private'; else echo '--public'; fi
+        sh: if [[ $(jq -r '.private' package.json) == 'true' ]]; then echo 'private'; else echo 'public'; fi
+    env:
+      KEYWORDS:
+        sh: jq -r '.keywords | tostring' package.json | sed 's/\[//' | sed 's/\]//'
     cmds:
       - |
-        if [ ! -z "$GITHUB_TOKEN" ]; then
-          glab repo create \{{.GITLAB_PATH}} --description "\{{.DESCRIPTION}}" --name "\{{.NAME}}" \{{.PROJECT_TYPE}}
+        if [ ! -z "$GITLAB_TOKEN" ]; then
+          glab api projects/:fullpath -X PUT -f description="\{{.DESCRIPTION}}" -f name="\{{.NAME}}" \
+            -f wiki_enabled=\{{.GITLAB_WIKI}} -f visibility="\{{.PROJECT_TYPE}}" -f tag_list="$KEYWORDS"
+          glab api projects/:fullpath/services/external-wiki -X PUT -f external_wiki_url="\{{.DOCS_URL}}/\{{.GROUP}}"
         else
-          true warn "The `GITLAB_TOKEN` environment variable is not set so the GitLab repository cannot be created/updated."
+          true warn "The `GITLAB_TOKEN` environment variable is not set so the GitLab repository cannot be updated via the API."
         fi
+      - task: update-gitlab-api
     sources:
       - package.json
+      - .variables.json
+    status:
+      - '[ -z "$GITLAB_TOKEN" ]'
+    preconditions:
+      - sh: '[ "\{{.DESCRIPTION}}" != "null" ]'
+        msg: "The `.description` in `package.json` must be set."
+      - sh: '[ "\{{.NAME}}" != "null" ]'
+        msg: "The `.blueprint.name` variable in `package.json` must be set."
+
+  update-gitlab-api:
+    deps:
+      - pipelines-gitlab
+      - mirror-gitlab
