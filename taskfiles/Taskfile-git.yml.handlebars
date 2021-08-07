@@ -14,6 +14,35 @@ env:
     sh: if [[ "${container:=}" == 'docker' ]]; then echo "0"; else echo "1"; fi
 
 tasks:
+  convert-folder-to-submodule:
+    deps:
+      - update-github
+      - update-gitlab
+    vars:
+      BASENAME:
+        sh: basename "$PWD"
+      GITLAB_REPO:
+        sh: jq -r '.blueprint.repository.gitlab' package.json
+    cmds:
+      - git init
+      - git remote add origin "\{{.GITLAB_REPO}}"
+      - git add --all
+      - git commit -m "refactor(convert-dir-to-submodule) Adding folder/project to its own git repository."
+      - git push origin master
+      - |
+        cd ..
+        rm -rf \{{.BASENAME}}
+        git add \{{.BASENAME}}
+        git commit -m "refactor(convert-dir-to-submodule) Removing folder which will now be a submodule."
+        git submodule add -b master "\{{.GITLAB_REPO}}" \{{.BASENAME}}
+        git add \{{.BASENAME}}
+        git commit -m "refactor(convert-dir-to-submodule) Adding new submodule which was previously a directory."
+        git push -u origin HEAD
+      - true success "Converted the `\{{.BASENAME}}` directory to a submodule"
+    preconditions:
+      - sh: '[[ ! $(git rev-parse --git-dir) =~ '.git/modules' ]]'
+        msg: "Cannot convert the directory to a submodule - the directory already appears to be a submodule."
+
   create-github:
     deps:
       - :software:gh
@@ -104,6 +133,34 @@ tasks:
       - sh: '[ "\{{.NAME}}" != "null" ]'
         msg: "The `.blueprint.name` variable in `package.json` must be set."
 
+  external-wiki-gitlab:
+    deps:
+      - :common:update
+      - :software:glab
+      - :software:jq
+      - create-gitlab
+    vars:
+      DOCS_URL:
+        sh: jq -r '.docs.link' .variables.json
+      GROUP:
+        sh: jq -r '.group' .variables.json
+    cmds:
+      - |
+        if [ -z "$GITLAB_TOKEN" ]; then
+          glab api projects/:fullpath/services/external-wiki -X PUT -f external_wiki_url="\{{.DOCS_URL}}/\{{.GROUP}}"
+        else
+          true warn "The `GITLAB_TOKEN` environment variable is not set so the GitLab repository's external wiki cannot be updated via the API."
+        fi
+    sources:
+      - .variables.json
+    status:
+      - '[ -z "$GITLAB_TOKEN" ]'
+    preconditions:
+      - sh: '[ "\{{.DOCS_URL}}" != "null" ]'
+        msg: "The `.docs.link` variable in `.variables.json` must be set."
+      - sh: '[ "\{{.GROUP}}" != "null" ]'
+        msg: "The `.group` variable in `.variables.json` must be set."
+
   mirror-gitlab:
     deps:
       - :software:glab
@@ -175,9 +232,59 @@ tasks:
     status:
       - '[ -z "$GITLAB_TOKEN" ]'
 
+  remove-submodules:
+    deps:
+      - :software:git
+    desc: Remove all submodules in the current directory and optionally filter by RegEx
+    summary: |
+      # Remove submodules in current directory
+
+      This task will remove all the submodules in the current directory and its' children.
+      You can optionally specify RegEx to only remove submodules that match a particular pattern.
+      Please note that this task is not _perfect_. You should commit your current changes before using it
+      and then reset the repository with `git reset --hard HEAD` if anything pops up on `git status` that
+      you do not like after running it.
+
+      **Example removing all submodules that are children of the working directory:**
+      `task git:remove-submodules`
+
+      **Example removing all submodules that are children of the working directory and matching a pattern:**
+      `task git:remove-submodules -- docs`
+    vars:
+      GITMODULES_PATH:
+        sh: git rev-parse --git-dir | sed 's/\.git\/modules\(.*\)/.gitmodules/' | sed 's/\.git$/.gitmodules/'
+          | sed "s,^.gitmodules$,$PWD/.gitmodules,"gitmodules/'
+      REGEX_ARG:
+        sh: if [ -z "\{{.CLI_ARGS}}" ]; then echo ""; else echo " | \{{.CLI_ARGS}}"; fi
+      RELATIVE_PATH:
+        sh: pwd | sed "s,^$(git rev-parse --show-toplevel),," | cut -c2-
+      TOP_LEVEL:
+        sh: git rev-parse --show-toplevel
+    cmds:
+      - |
+        MODULE_PATHS=$(git config --file "\{{.GITMODULES_PATH}}" --name-only --get-regexp "\{{.RELATIVE_PATH}}"
+          | sed 's/^submodule\.//' | grep "path$" | sed 's/\.path$//'\{{.REGEX_ARG}})
+        for MODULE_PATH in "$MODULE_PATHS"; do
+          RELATIVE_PATH=$(echo "$MODULE_PATH" | sed "s,^\{{.RELATIVE_PATH}}/,,")
+          true log "Removing `$RELATIVE_PATH` submodule"
+          git submodule deinit "$RELATIVE_PATH"
+          git rm "$RELATIVE_PATH"
+          rm -rf "\{{.TOP_LEVEL}}/.git/modules/$MODULE_PATH"
+        done
+
   remotes:
     deps:
       - :software:git
+    desc: Configure the git remote `origin` to point to GitLab and the git remote `all` to point to GitLab and GitHub
+    summary: |
+      # Configure git remote
+
+      This task will set the origin to the GitLab repository associated with this project. It will then also create
+      a remote named `all` which will point to both the GitLab repository and the GitHub mirror. You can then
+      push to both repositories at the same time by running `git push origin master`.
+
+      **Example usage:**
+      `task git:remotes`
     vars:
       GITHUB_REPO:
         sh: jq -r '.blueprint.repository.github' package.json
@@ -197,6 +304,17 @@ tasks:
       - '[ -z "\{{.GITLAB_REPO}}" ]'
 
   update-github:
+    deps:
+      - update-meta-github
+
+  update-gitlab:
+    deps:
+      - external-wiki-gitlab
+      - pipelines-gitlab
+      - mirror-gitlab
+      - update-meta-gitlab
+
+  update-meta-github:
     deps:
       - :software:gh
       - :software:jq
@@ -226,7 +344,7 @@ tasks:
       - sh: '[ "\{{.HOMEPAGE}}" != "null" ]'
         msg: "The `.homepage` in `package.json` must be set."
 
-  update-gitlab:
+  update-meta-gitlab:
     deps:
       - :software:glab
       - :software:jq
@@ -234,14 +352,10 @@ tasks:
     vars:
       DESCRIPTION:
         sh: jq -r '.description' package.json
-      DOCS_URL:
-        sh: jq -r '.docs.link' .variables.json
       GITLAB_PATH:
         sh: jq -r '.blueprint.gitlab_path' package.json
       GITLAB_REPO:
         sh: jq -r '.blueprint.repository.gitlab' package.json
-      GROUP:
-        sh: jq -r '.group' .variables.json
       NAME:
         sh: jq -r '.blueprint.name' package.json
       PROJECT_TYPE:
@@ -254,14 +368,11 @@ tasks:
         if [ ! -z "$GITLAB_TOKEN" ]; then
           glab api projects/:fullpath -X PUT -f description="\{{.DESCRIPTION}}" -f name="\{{.NAME}}" \
             -f wiki_enabled=\{{.GITLAB_WIKI}} -f visibility="\{{.PROJECT_TYPE}}" -f tag_list="$KEYWORDS"
-          glab api projects/:fullpath/services/external-wiki -X PUT -f external_wiki_url="\{{.DOCS_URL}}/\{{.GROUP}}"
         else
           true warn "The `GITLAB_TOKEN` environment variable is not set so the GitLab repository cannot be updated via the API."
         fi
-      - task: update-gitlab-api
     sources:
       - package.json
-      - .variables.json
     status:
       - '[ -z "$GITLAB_TOKEN" ]'
     preconditions:
@@ -269,8 +380,3 @@ tasks:
         msg: "The `.description` in `package.json` must be set."
       - sh: '[ "\{{.NAME}}" != "null" ]'
         msg: "The `.blueprint.name` variable in `package.json` must be set."
-
-  update-gitlab-api:
-    deps:
-      - pipelines-gitlab
-      - mirror-gitlab
