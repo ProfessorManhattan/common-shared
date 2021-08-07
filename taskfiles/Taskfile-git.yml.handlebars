@@ -40,7 +40,7 @@ tasks:
         git push -u origin HEAD
       - true success "Converted the `\{{.BASENAME}}` directory to a submodule"
     preconditions:
-      - sh: '[[ ! $(git rev-parse --git-dir) =~ '.git/modules' ]]'
+      - sh: '[[ ! $(git rev-parse --git-dir) =~ ".git/modules" ]]'
         msg: "Cannot convert the directory to a submodule - the directory already appears to be a submodule."
 
   create-github:
