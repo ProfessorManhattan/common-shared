@@ -55,10 +55,10 @@ When browsing around our various common file repositories, you might notice that
 
 Common file sub-types will always have their own group in the [Megabyte Labs GitLab group](https://gitlab.com/megabyte-labs). For example, if the common file repository is of the type Dockerfile, then the sub-groups will be:
 
-* [ansible-molecule](https://gitlab.com/megabyte-labs/dockerfile/ansible-molecule)
-* [app](https://gitlab.com/megabyte-labs/dockerfile/app)
-* [ci-pipeline](https://gitlab.com/megabyte-labs/dockerfile/ci-pipeline)
-* [software](https://gitlab.com/megabyte-labs/dockerfile/software)
+- [ansible-molecule](https://gitlab.com/megabyte-labs/dockerfile/ansible-molecule)
+- [app](https://gitlab.com/megabyte-labs/dockerfile/app)
+- [ci-pipeline](https://gitlab.com/megabyte-labs/dockerfile/ci-pipeline)
+- [software](https://gitlab.com/megabyte-labs/dockerfile/software)
 
 This is because the Dockerfile group contains four sub-groups. Notice how the group names correspond to the slugs of each of the sub-types group pages.
 
