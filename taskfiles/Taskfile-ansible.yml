@@ -7,7 +7,7 @@ vars:
   MetaPath: meta/main.yml
   MoleculeResultsPath: molecule/.results
   RequirementsPath: requirements.yml
-  RoleName: {{.GALAXY_NAMESPACE}}.{{.GALAXY_ROLE_NAME}}
+  RoleName: '{{.GALAXY_NAMESPACE}}.{{.GALAXY_ROLE_NAME}}'
   VariablesPath: '.variables.json'
 
 tasks:
@@ -107,7 +107,8 @@ tasks:
         collection:\n\n{{"{{"}}{{.CollectionDeps}}{{"}}"}}'
     cmds:
       - mkdir -p '{{dir .FilePath}}'
-      - {{if (eq .CollectionLength 0)}}""
+      - |
+        {{if (eq .CollectionLength 0)}}
           echo '' > {{.FilePath}}
         {{else if (eq .CollectionLength 1)}}
           echo '{{.SingleCollectionText}}' > '{{.FilePath}}'
@@ -246,7 +247,7 @@ tasks:
       - mv ansible_actions.md ansible_tags.md ansible_todo.md ansible_variables.json ansible_variables.md .autodoc
     log:
       error: 'Error running `mod-ansible-autodoc`'
-      success 'Generated documentation partials with `mod-ansible-autodoc` and moved them to the `.autodoc` folder'
+      success: 'Generated documentation partials with `mod-ansible-autodoc` and moved them to the `.autodoc` folder'
     sources:
       - '{{.VariablesPath}}'
       - '.autodoc/*'
@@ -351,8 +352,8 @@ tasks:
         vars:
           CLI_ARGS: {{.MetaPath}}
     log:
-      error: 'Failed to ensure that `{{.ROLE}}` is included in the `{{.MetaPath}}` file\'s `dependencies`'
-      success: 'Ensured `{{.ROLE}}` is included in the `{{.MetaPath}}` file's `dependencies`'
+      error: 'Failed to ensure `{{.ROLE}}` is included in the `{{.MetaPath}}` `dependencies`'
+      success: 'Ensured `{{.ROLE}}` is included in the `{{.MetaPath}}` `dependencies`'
     status:
       - '[[ "$DEPENDENCIES" =~ "{{.ROLE}}" ]] || [ ! "$REFERENCES" ]'
 
@@ -485,7 +486,7 @@ tasks:
     deps:
       - :software:jq
       - :software:yq
-    var:
+    vars:
       AltPrefix: This repository is the home of an [Ansible](https://www.ansible.com/) role that
       Description:
         sh: yq e '.galaxy_info.description' '{{.MetaPath}}'
