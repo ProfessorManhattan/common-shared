@@ -2,34 +2,6 @@
 version: "3"
 
 tasks:
-  update:
-    deps:
-      - '{{if eq .REPOSITORY_TYPE "packer"}}:packer:latestos{{end}}'
-      - '{{if eq .REPOSITORY_SUBTYPE "role"}}:ansible:populate:dependencies{{end}}'
-      - '{{if eq .REPOSITORY_SUBTYPE "role"}}:ansible:populate:meta{{end}}'
-      - '{{if eq .REPOSITORY_SUBTYPE "role"}}:ansible:update:galaxy-id{{end}}'
-      - repositories
-    label: update
-    desc: Refresh the project with the latest upstream code and ensure blueprint data has propagated
-    summary: |
-      # Refresh project with latest upstream code and ensure project files are up-to-date
-
-      This task will pull the latest upstream code and overwrite any files that are out of date.
-      Ideally, you should run this task often to ensure there are no merge conflicts and to
-      ensure you are using the latest production settings. This task is also run by CI so
-      normally if you pull the latest changes, you should already have the updates that this
-      task applies.
-
-      **Example usage:**
-      `task update`
-    run: once
-    cmds:
-      - task: start
-      - task: all
-      - task: '{{if eq .REPOSITORY_TYPE "docker"}}:docker:update-labels{{end}}'
-    log:
-      success: Successfully updated the project with the latest upstream changes
-
   all:
     deps:
       - '{{if eq .REPOSITORY_TYPE "packer"}}:packer:update:descriptions{{end}}'
@@ -249,14 +221,6 @@ tasks:
     deps:
       - :git:gitlab:update
       - :git:github:update
-  update:sort:
-    cmds:
-      - if [ -f paths.txt ]; then sort paths.txt -o paths.txt; fi
-      - if [ -f requirements.txt ]; then sort requirements.txt -o requirements.txt; fi
-    sources:
-      - paths.txt
-      - requirements.txt
-
   start:
     deps:
       - requirements
@@ -275,6 +239,42 @@ tasks:
       - cp .common/files-{{.REPOSITORY_SUBTYPE}}/Taskfile.yml Taskfile.yml
     sources:
       - .common/files-{{.REPOSITORY_SUBTYPE}}/Taskfile.yml
+
+  update:
+    deps:
+      - '{{if eq .REPOSITORY_TYPE "packer"}}:packer:latestos{{end}}'
+      - '{{if eq .REPOSITORY_SUBTYPE "role"}}:ansible:populate:dependencies{{end}}'
+      - '{{if eq .REPOSITORY_SUBTYPE "role"}}:ansible:populate:meta{{end}}'
+      - '{{if eq .REPOSITORY_SUBTYPE "role"}}:ansible:update:galaxy-id{{end}}'
+      - repositories
+    label: update
+    desc: Refresh the project with the latest upstream code and ensure blueprint data has propagated
+    summary: |
+      # Refresh project with latest upstream code and ensure project files are up-to-date
+
+      This task will pull the latest upstream code and overwrite any files that are out of date.
+      Ideally, you should run this task often to ensure there are no merge conflicts and to
+      ensure you are using the latest production settings. This task is also run by CI so
+      normally if you pull the latest changes, you should already have the updates that this
+      task applies.
+
+      **Example usage:**
+      `task update`
+    run: once
+    cmds:
+      - task: start
+      - task: all
+      - task: '{{if eq .REPOSITORY_TYPE "docker"}}:docker:update-labels{{end}}'
+    log:
+      success: Successfully updated the project with the latest upstream changes
+
+  update:sort:
+    cmds:
+      - if [ -f paths.txt ]; then sort paths.txt -o paths.txt; fi
+      - if [ -f requirements.txt ]; then sort requirements.txt -o requirements.txt; fi
+    sources:
+      - paths.txt
+      - requirements.txt
 
   variables:
     deps:

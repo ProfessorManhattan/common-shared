@@ -90,6 +90,7 @@ tasks:
   private-keys:cli: detect-private-key {{.CLI_ARGS}}
 
   private-keys:default: find . -type d \( {{.IGNORE_FOLDERS}} \) -prune -o -type f -print0 | xargs -0 -r -n1 detect-private-key
+
   snyk:
     deps:
       - :install:npm:snyk

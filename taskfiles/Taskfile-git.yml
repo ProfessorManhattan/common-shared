@@ -239,6 +239,7 @@ tasks:
 
     sources:
       - .variables.json
+
   gitlab:update:
     deps:
       - gitlab:mirror
@@ -282,6 +283,7 @@ tasks:
         msg: The `.description` in `package.json` must be set.
       - sh: '[ "{{.NAME}}" != "null" ]'
         msg: The `.blueprint.name` variable in `package.json` must be set.
+
   gitlab:wiki:
     deps:
       - :common:update
@@ -362,9 +364,9 @@ tasks:
     status:
       - '[ -z "{{.GITHUB_REPO}}" ]'
       - '[ -z "{{.GITLAB_REPO}}" ]'
-
     sources:
       - package.json
+
   remove:submodules:
     deps:
       - :install:software:git

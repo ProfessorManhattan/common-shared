@@ -14,29 +14,29 @@ tasks:
 
   npm:commitizen:
     run: once
-
     cmds:
       - task: npm:global
         vars:
           FORCE_INSTALL: true
           NPM_PACKAGE: commitizen
           NPM_PACKAGE_BIN: git-cz
+
   npm:commitlint:
     run: once
-
     cmds:
       - task: npm:global
         vars:
           NPM_PACKAGE: "@commitlint/cli"
           NPM_PACKAGE_BIN: commitlint
+
   npm:cspell:
     run: once
-
     cmds:
       - task: npm:global
         vars:
           NPM_PACKAGE: cspell
           NPM_PACKAGE_BIN: cspell
+
   npm:global:
     deps:
       - :install:software:node
@@ -56,39 +56,38 @@ tasks:
 
   npm:hbs:
     run: once
-
     cmds:
       - task: npm:global
         vars:
           NPM_PACKAGE: hbs-cli
           NPM_PACKAGE_BIN: hbs
+
   npm:husky:
     run: once
-
     cmds:
       - task: npm:global
         vars:
           NPM_PACKAGE: husky
           NPM_PACKAGE_BIN: husky
+
   npm:lint-staged:
     run: once
-
     cmds:
       - task: npm:global
         vars:
           NPM_PACKAGE: lint-staged
           NPM_PACKAGE_BIN: lint-staged
+
   npm:markdown-link-check:
     run: once
-
     cmds:
       - task: npm:global
         vars:
           NPM_PACKAGE: markdown-link-check
           NPM_PACKAGE_BIN: markdown-link-check
+
   npm:prettier:
     run: once
-
     cmds:
       - task: npm:global
         vars:
@@ -98,70 +97,71 @@ tasks:
         vars:
           NPM_PACKAGE: prettier
           NPM_PACKAGE_BIN: prettier
+
   npm:prettier-package-json:
     run: once
-
     cmds:
       - task: npm:global
         vars:
           NPM_PACKAGE: prettier-package-json
           NPM_PACKAGE_BIN: prettier-package-json
+
   npm:readme:
     run: once
-
     cmds:
       - task: npm:global
         vars:
           NPM_PACKAGE: "@appnest/readme"
           NPM_PACKAGE_BIN: readme
+
   npm:remark:
     run: once
-
     cmds:
       - task: npm:global
         vars:
           NPM_PACKAGE: remark-cli
           NPM_PACKAGE_BIN: remark
+
   npm:sharp:
     run: once
-
     cmds:
       - task: npm:global
         vars:
           NPM_PACKAGE: sharp-cli
           NPM_PACKAGE_BIN: sharp
+
   npm:shellcheck:
     run: once
-
     cmds:
       - task: npm:global
         vars:
           NPM_PACKAGE: shellcheck
           NPM_PACKAGE_BIN: shellcheck
+
   npm:snyk:
     run: once
-
     cmds:
       - task: npm:global
         vars:
           NPM_PACKAGE: snyk
           NPM_PACKAGE_BIN: snyk
+
   npm:standard:
     run: once
-
     cmds:
       - task: npm:global
         vars:
           NPM_PACKAGE: standard
           NPM_PACKAGE_BIN: standard
+
   npm:standard-version:
     run: once
-
     cmds:
       - task: npm:global
         vars:
           NPM_PACKAGE: standard-version
           NPM_PACKAGE_BIN: standard-version
+
   npm:tinypng:
     run: once
     cmds:
@@ -169,6 +169,7 @@ tasks:
         vars:
           NPM_PACKAGE: tinypng-cli
           NPM_PACKAGE_BIN: tinypng
+
   python:virtualenv:
     deps:
       - software:python

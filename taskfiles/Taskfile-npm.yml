@@ -33,6 +33,7 @@ tasks:
           fi
         done
         wait
+
   test:unit:
     deps:
       - :common:node:dependencies:local

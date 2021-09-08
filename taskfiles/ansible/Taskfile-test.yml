@@ -28,8 +28,6 @@ tasks:
     log:
       error: Finished local testing of the Ansible play with error(s)
       success: Local testing of the Ansible play was successful!
-    meta:
-      desc:
     preconditions:
       - sh: typeof ansible &> /dev/null
         msg: "Ansible is not available. Install the dependencies by running `task common:requirements`."
@@ -111,10 +109,10 @@ tasks:
   molecule:virtualbox:converge:prompt: node .common/scripts/prompts/molecule-desktop.js
 
   molecule:virtualbox:e2e:
-    label: test:e2e
     deps:
       - :common:python:requirements
       - :install:software:virtualbox
+    label: test:e2e
     desc: Runs a full E2E Molecule test for all supported operating systems
     summary: |
       # Run a full E2E Molecule test for all supported operating systems
