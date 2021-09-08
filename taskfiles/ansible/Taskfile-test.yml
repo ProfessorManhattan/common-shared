@@ -4,7 +4,7 @@ version: "3"
 tasks:
   local:
     deps:
-      - :ansible:symlink
+      - :ansible:symlink:{{.REPOSITORY_SUBTYPE}}
       - :common:python:requirements
     label: test:local
     desc: Run the Ansible play on the local machine

@@ -21,7 +21,7 @@ tasks:
 
   ansible:
     deps:
-      - :ansible:symlink
+      - :ansible:symlink:{{.REPOSITORY_SUBTYPE}}
       - :common:python:requirements
     desc: Lint Ansible projects using Ansible Lint
     summary: |
