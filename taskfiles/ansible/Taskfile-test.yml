@@ -100,6 +100,7 @@ tasks:
       * ubuntu
       * windows
     env:
+      # yamllint disable-line rule:truthy
       OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
     cmds:
       - task: test:molecule:virtualbox:converge:{{if .CLI_ARGS}}cli{{else}}prompt{{end}}
