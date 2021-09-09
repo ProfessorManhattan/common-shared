@@ -1,5 +1,5 @@
 ---
-version: "3"
+version: '3'
 
 tasks:
   all:
@@ -21,8 +21,8 @@ tasks:
     cmds:
       - cd .common && git reset --hard HEAD && git pull origin master --no-rebase || true && cd ..
     preconditions:
-      - sh: "type git &> /dev/null"
-        msg: "git is not installed."
+      - sh: 'type git &> /dev/null'
+        msg: 'git is not installed.'
 
   contributing:
     deps:
@@ -46,9 +46,9 @@ tasks:
       - sh: test -f .common/docs/blueprint-contributing.md
         msg: The CONTRIBUTING.md template file is not present at `.common/docs/blueprint-contributing.md`
       - sh: test -f .variables.json
-        msg: "The .variables.json file is not present."
+        msg: 'The .variables.json file is not present.'
       - sh: type readme &> /dev/null
-        msg: "`@appnest/readme` is not installed globally."
+        msg: '`@appnest/readme` is not installed globally.'
 
   files:
     deps:
@@ -103,9 +103,9 @@ tasks:
       - .variables.json
     preconditions:
       - sh: type rsync &> /dev/null
-        msg: "`rsync` is not installed!"
-      - sh: "type prettier-package-json &> /dev/null"
-        msg: "`prettier-package-json` is not installed globally."
+        msg: '`rsync` is not installed!'
+      - sh: 'type prettier-package-json &> /dev/null'
+        msg: '`prettier-package-json` is not installed globally.'
 
   files:handlebars:
     deps:
@@ -122,8 +122,8 @@ tasks:
       - .common/**/*.handlebars
       - .variables.json
     preconditions:
-      - sh: "type hbs &> /dev/null"
-        msg: "`hbs-cli` is not installed globally."
+      - sh: 'type hbs &> /dev/null'
+        msg: '`hbs-cli` is not installed globally.'
 
   markdown:scrub:
     vars:
@@ -134,9 +134,9 @@ tasks:
     cmds:
       - task: markdown:scrub:{{OS}}
         vars:
-          DIVIDER_SRC: "{{.DIVIDER_SRC}}"
-          REGEX: "{{.REGEX}}"
-          SCRUB_FILE: "{{.SCRUB_FILE}}"
+          DIVIDER_SRC: '{{.DIVIDER_SRC}}'
+          REGEX: '{{.REGEX}}'
+          SCRUB_FILE: '{{.SCRUB_FILE}}'
 
   markdown:scrub:darwin: sed -i .bak 's^{{.REGEX}}^{{.DIVIDER_SRC}}^g' {{.SCRUB_FILE}} && rm {{.SCRUB_FILE}}.bak
 
@@ -167,7 +167,7 @@ tasks:
           done
         fi
     status:
-      - "! ls .modules/*/ > /dev/null 2>&1"
+      - '! ls .modules/*/ > /dev/null 2>&1'
 
   project:
     cmds:
@@ -196,14 +196,14 @@ tasks:
       - .autodoc/*
       - .variables.json
     preconditions:
-      - sh: "test -f .common/docs/{{.README_TEMPLATE}}"
-        msg: "The README.md template file is not present at `.common/docs/{{.README_TEMPLATE}}`."
+      - sh: 'test -f .common/docs/{{.README_TEMPLATE}}'
+        msg: 'The README.md template file is not present at `.common/docs/{{.README_TEMPLATE}}`.'
       - sh: test -f .variables.json
-        msg: "The `.variables.json` file is not present."
+        msg: 'The `.variables.json` file is not present.'
       - sh: type readme &> /dev/null
-        msg: "`@appnest/readme` is not installed globally."
+        msg: '`@appnest/readme` is not installed globally.'
       - sh: type prettier &> /dev/null
-        msg: "`prettier` is not installed globally."
+        msg: '`prettier` is not installed globally.'
 
   repositories:
     cmds:
@@ -288,7 +288,7 @@ tasks:
     deps:
       - :install:software:jq
     vars:
-      COMMON_JSON: ".common/common.{{.REPOSITORY_SUBTYPE}}.json"
+      COMMON_JSON: '.common/common.{{.REPOSITORY_SUBTYPE}}.json'
     env:
       BLUEPRINT_DATA:
         sh: jq -r '.blueprint' package.json
@@ -303,7 +303,7 @@ tasks:
       - .common/variables.{{.REPOSITORY_SUBTYPE}}.json
       - package.json
     preconditions:
-      - sh: "type jq &> /dev/null"
+      - sh: 'type jq &> /dev/null'
         msg: jq is not installed.
-      - sh: "type yq &> /dev/null"
+      - sh: 'type yq &> /dev/null'
         msg: yq is not installed.
