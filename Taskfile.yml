@@ -1,5 +1,5 @@
 ---
-version: '3'
+version: "3"
 
 includes:
   ansible: ./taskfiles/ansible/Taskfile.yml
@@ -29,6 +29,8 @@ vars:
   REPOSITORY_TYPE: ansible
 
 tasks:
+  donothing: "true"
+
   start:
     desc: Set up the project and refresh it with the latest changes
     summary: |
@@ -40,4 +42,4 @@ tasks:
       **Example usage:**
       `task start`
     cmds:
-      - task: common:update
+      - task: common:update:update
