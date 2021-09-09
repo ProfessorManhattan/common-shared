@@ -1,5 +1,5 @@
 ---
-version: "3"
+version: '3'
 
 vars:
   COLLECTION_DEPS: collection_dependencies
@@ -7,7 +7,7 @@ vars:
   META_PATH: meta/main.yml
   MOLECULE_RESULTS_PATH: molecule/.results
   REQUIREMENTS_PATH: requirements.yml
-  ROLE_NAME: "{{.GALAXY_NAMESPACE}}.{{.GALAXY_ROLE_NAME}}"
+  ROLE_NAME: '{{.GALAXY_NAMESPACE}}.{{.GALAXY_ROLE_NAME}}'
   VARIABLES_PATH: .variables.json
 
 tasks:
@@ -28,11 +28,11 @@ tasks:
       - jq --arg collections "$COLLECTIONS" '.{{.COLLECTION_DEPS}} = ($collections | fromjson)' '{{.VARIABLES_PATH}}' > "$TMP"
       - mv "$TMP" '{{.VARIABLES_PATH}}'
     log:
-      error: "Failed to populate the `{{.COLLECTION_DEPS}}` variable in `{{.VARIABLES_PATH}}`"
-      success: "Populated the `{{.COLLECTION_DEPS}}` variable in `{{.VARIABLES_PATH}}`"
+      error: 'Failed to populate the `{{.COLLECTION_DEPS}}` variable in `{{.VARIABLES_PATH}}`'
+      success: 'Populated the `{{.COLLECTION_DEPS}}` variable in `{{.VARIABLES_PATH}}`'
     sources:
-      - "{{.VARIABLES_PATH}}"
-      - "{{.REQUIREMENTS_PATH}}"
+      - '{{.VARIABLES_PATH}}'
+      - '{{.REQUIREMENTS_PATH}}'
 
   collection-dependencies:markdown:
     deps:
@@ -44,8 +44,7 @@ tasks:
       MULTIPLE_COLLECTION_TEXT:
         '### Galaxy Collections\n\nThis role is dependent on multiple Ansible Galaxy collections.
         The collections along with a links to their source are listed below.\n\n{{"{{"}}{{.COLLECTION_DEPS}}{{"}}"}}'
-      SINGLE_COLLECTION_TEXT:
-        '### Galaxy Collection\n\nThis role is dependent on the following Ansible Galaxy
+      SINGLE_COLLECTION_TEXT: '### Galaxy Collection\n\nThis role is dependent on the following Ansible Galaxy
         collection:\n\n{{"{{"}}{{.COLLECTION_DEPS}}{{"}}"}}'
     cmds:
       - mkdir -p '{{dir .FILE_PATH}}'
@@ -58,11 +57,11 @@ tasks:
           echo '{{.MULTIPLE_COLLECTION_TEXT}}' > '{{.FILE_PATH}}'
         {{end}}
     log:
-      error: "Failed to create `{{.FILE_PATH}}`"
-      success: "Generated `{{.FILE_PATH}}`"
+      error: 'Failed to create `{{.FILE_PATH}}`'
+      success: 'Generated `{{.FILE_PATH}}`'
     sources:
-      - "{{.FILE_PATH}}"
-      - "{{.VARIABLES_PATH}}"
+      - '{{.FILE_PATH}}'
+      - '{{.VARIABLES_PATH}}'
 
   galaxy:requirements:
     deps:
@@ -105,13 +104,12 @@ tasks:
       error: Error running `mod-ansible-autodoc`
       success: Generated documentation partials with `mod-ansible-autodoc` and moved them to the `.autodoc` folder
     sources:
-      - "{{.VARIABLES_PATH}}"
-      - ".autodoc/*"
+      - '{{.VARIABLES_PATH}}'
+      - '.autodoc/*'
       - tasks/**/*.yml
     preconditions:
-      - sh: "type mod-ansible-autodoc &> /dev/null"
-        msg:
-          The Python package `mod-ansible-autodoc` is missing. Ensure all the requirements are installed
+      - sh: 'type mod-ansible-autodoc &> /dev/null'
+        msg: The Python package `mod-ansible-autodoc` is missing. Ensure all the requirements are installed
           by running `task common:requirements`. Also, ensure `mod-ansible-autodoc` is included in the `requirements.txt`
           file.
 
@@ -125,8 +123,8 @@ tasks:
       - jq --arg vars "$ROLE_VARIABLES" '.role_variables = ($vars | fromjson)' '{{.VARIABLES_PATH}}' > "$TMP"
       - mv "$TMP" '{{.VARIABLES_PATH}}'
     log:
-      error: "Failed to inject `{{.VARIABLES_PATH}}` with the `role_variables` stored in `ansible_variables.json`"
-      success: "Injected `{{.VARIABLES_PATH}}` with the `role_variables` from `ansible_variables.json`"
+      error: 'Failed to inject `{{.VARIABLES_PATH}}` with the `role_variables` stored in `ansible_variables.json`'
+      success: 'Injected `{{.VARIABLES_PATH}}` with the `role_variables` from `ansible_variables.json`'
     sources:
       - ansible_variables.json
 
@@ -212,7 +210,7 @@ tasks:
         true log info "Found "$(echo "$FILES" | wc -l | xargs)" roles missing {{.CLI_ARGS}}:"
         echo "$FILES"
     log:
-      error: "Failed to search for the file named `{{.CLI_ARGS}}`"
+      error: 'Failed to search for the file named `{{.CLI_ARGS}}`'
     preconditions:
       - sh: test -d roles
         msg: The `roles/` folder is missing. Is the project set up right?
@@ -232,10 +230,10 @@ tasks:
         fi
       - task: :fix:yml-dashes
         vars:
-          CLI_ARGS: "{{.REQUIREMENTS_PATH}}"
+          CLI_ARGS: '{{.REQUIREMENTS_PATH}}'
     log:
-      error: "Failed to populate and/or format the `{{.REQUIREMENTS_PATH}}` with the `{{.KEY}}` collection"
-      success: "Ensured that `{{.REQUIREMENTS_PATH}}` includes the `{{.KEY}}` collection"
+      error: 'Failed to populate and/or format the `{{.REQUIREMENTS_PATH}}` with the `{{.KEY}}` collection'
+      success: 'Ensured that `{{.REQUIREMENTS_PATH}}` includes the `{{.KEY}}` collection'
     status:
       - '[[ "$COLLECTIONS" =~ "{{.KEY}}" ]] || [ ! "$REFERENCES" ]'
 
@@ -290,8 +288,8 @@ tasks:
           VAL: '{"role": "professormanhattan.snapd", "when": "ansible_system == \"Linux\""}'
       - task: sync-requirements
     sources:
-      - "{{.META_PATH}}"
-      - "{{.REQUIREMENTS_PATH}}"
+      - '{{.META_PATH}}'
+      - '{{.REQUIREMENTS_PATH}}'
       - tasks/**/*.yml
 
   populate:dependency:
@@ -309,10 +307,10 @@ tasks:
         fi
       - task: :fix:yml-dashes
         vars:
-          CLI_ARGS: "{{ .META_PATH }}"
+          CLI_ARGS: '{{ .META_PATH }}'
     log:
-      error: "Failed to ensure `{{.ROLE}}` is included in the `{{.META_PATH}}` `dependencies`"
-      success: "Ensured `{{.ROLE}}` is included in the `{{.META_PATH}}` `dependencies`"
+      error: 'Failed to ensure `{{.ROLE}}` is included in the `{{.META_PATH}}` `dependencies`'
+      success: 'Ensured `{{.ROLE}}` is included in the `{{.META_PATH}}` `dependencies`'
     status:
       - '[[ "$DEPENDENCIES" =~ "{{.ROLE}}" ]] || [ ! "$REFERENCES" ]'
 
@@ -336,17 +334,14 @@ tasks:
       error: Failed to update the `blueprint` variable in `package.json` with meta information
       success: Ensured the `blueprint` variable in `package.json` is populated with up-to-date meta information
     preconditions:
-      - sh: "test -f {{.META_PATH}}"
-        msg:
-          The `{{.META_PATH}}` file is missing. A properly filled out `{{.META_PATH}}` file is required for the
+      - sh: 'test -f {{.META_PATH}}'
+        msg: The `{{.META_PATH}}` file is missing. A properly filled out `{{.META_PATH}}` file is required for the
           update process. {{.REFERENCE_LINK}}
       - sh: '[[ "{{.DESCRIPTION}}" != "null" ]]'
-        msg:
-          The `{{.META_PATH}}` file has a null value for the `galaxy_info.description` key. Ensure the description
+        msg: The `{{.META_PATH}}` file has a null value for the `galaxy_info.description` key. Ensure the description
           is populated in `{{.META_PATH}}`. {{.REFERENCE_LINK}}
       - sh: '[[ "{{.GALAXY_ROLE_NAME}}" != "null" ]]'
-        msg:
-          The `{{.META_PATH}}` file has a null value for the `galaxy_info.role_name` key. Ensure the role name is
+        msg: The `{{.META_PATH}}` file has a null value for the `galaxy_info.role_name` key. Ensure the role name is
           populated in `{{.META_PATH}}`. {{.REFERENCE_LINK}}
 
   symlink:playbook:
@@ -391,8 +386,8 @@ tasks:
       - rm -f "$HOME/.ansible/roles/{{.ROLE_NAME}}"
       - ln -s "$PWD" '~/.ansible/roles/{{.ROLE_NAME}}'
     log:
-      error: "Failed to symlink `{{.ROLE_NAME}}` to `~/.ansible/roles/{{.ROLE_NAME}}`"
-      success: "Symlinked `{{.ROLE_NAME}}` to `~/.ansible/roles/{{.ROLE_NAME}}`"
+      error: 'Failed to symlink `{{.ROLE_NAME}}` to `~/.ansible/roles/{{.ROLE_NAME}}`'
+      success: 'Symlinked `{{.ROLE_NAME}}` to `~/.ansible/roles/{{.ROLE_NAME}}`'
     status:
       - test -d "$HOME/.ansible/roles/{{.ROLE_NAME}}"
       - '[[ "{{.SYMLINK}}" == "$PWD" ]]'
@@ -413,10 +408,10 @@ tasks:
         done
       - task: :fix:yml-dashes
         vars:
-          CLI_ARGS: "{{.REQUIREMENTS_PATH}}"
+          CLI_ARGS: '{{.REQUIREMENTS_PATH}}'
     log:
-      error: "Failed to sync requirements from `{{.META_PATH}}` to `{{.REQUIREMENTS_PATH}}`"
-      success: "Successfully synchronized requirements from `{{.META_PATH}}` to `{{.REQUIREMENTS_PATH}}`"
+      error: 'Failed to sync requirements from `{{.META_PATH}}` to `{{.REQUIREMENTS_PATH}}`'
+      success: 'Successfully synchronized requirements from `{{.META_PATH}}` to `{{.REQUIREMENTS_PATH}}`'
 
   update:galaxy-id:
     vars:
@@ -452,33 +447,32 @@ tasks:
       ALT_PREFIX: This repository is the home of an [Ansible](https://www.ansible.com/) role that
       DESCRIPTION:
         sh: yq e '.galaxy_info.description' '{{.META_PATH}}'
-      DESCRIPTION_LOWER: "{{lower (trunc 1 .DESCRIPTION)}}{{substr 1 (len .DESCRIPTION) .DESCRIPTION}}"
+      DESCRIPTION_LOWER: '{{lower (trunc 1 .DESCRIPTION)}}{{substr 1 (len .DESCRIPTION) .DESCRIPTION}}'
       SUBHEADER_PREFIX: An Ansible role that
     env:
-      ALT: "{{.ALT_PREFIX}} {{.DESCRIPTION_LOWER}}"
+      ALT: '{{.ALT_PREFIX}} {{.DESCRIPTION_LOWER}}'
       GALAXY_INFO:
         sh: yq e -j '.galaxy_info' '{{.META_PATH}}'
-      SUBHEADER: "{{.SUBHEADER_PREFIX}} {{.DESCRIPTION_LOWER}}"
+      SUBHEADER: '{{.SUBHEADER_PREFIX}} {{.DESCRIPTION_LOWER}}'
       TMP:
         sh: mktemp
     cmds:
       - jq -S --arg alt "$ALT" --arg galaxyinfo "$GALAXY_INFO" --arg subheader "$SUBHEADER"
         .alternative_description = $alt | .galaxy_info = ($galaxyinfo | fromjson) | '.subheader_description = $subheader' '{{.VARIABLES_PATH}}' > "$TMP"
     log:
-      error: "Failed to inject `{{.VARIABLES_PATH}}` with alternative descriptions"
-      success: "Ensured `{{.VARIABLES_PATH}}` has alternative descriptions"
+      error: 'Failed to inject `{{.VARIABLES_PATH}}` with alternative descriptions'
+      success: 'Ensured `{{.VARIABLES_PATH}}` has alternative descriptions'
     sources:
-      - ".common/variables.{{.REPOSITORY_SUBTYPE}}.json"
-      - "{{.META_PATH}}"
+      - '.common/variables.{{.REPOSITORY_SUBTYPE}}.json'
+      - '{{.META_PATH}}'
       - package.json
     preconditions:
-      - sh: "type jq &> /dev/null"
-        msg: "jq is not installed! You can install it by running `task software:jq`."
-      - sh: "type yq &> /dev/null"
-        msg: "yq is not installed! You can install it by running `task software:yq`."
+      - sh: 'type jq &> /dev/null'
+        msg: 'jq is not installed! You can install it by running `task software:jq`.'
+      - sh: 'type yq &> /dev/null'
+        msg: 'yq is not installed! You can install it by running `task software:yq`.'
       - sh: 'test -f "{{.META_PATH}}"'
-        msg:
-          "The `{{.META_PATH}}` file is missing. A properly populated `{{.META_PATH}}` is required. You can find an
-          example of one at https://github.com/ProfessorManhattan/ansible-snapd."
+        msg: 'The `{{.META_PATH}}` file is missing. A properly populated `{{.META_PATH}}` is required. You can find an
+          example of one at https://github.com/ProfessorManhattan/ansible-snapd.'
       - sh: 'test -f "{{.VARIABLES_PATH}}"'
-        msg: "The `{{.VARIABLES_PATH}}` file is missing!"
+        msg: 'The `{{.VARIABLES_PATH}}` file is missing!'

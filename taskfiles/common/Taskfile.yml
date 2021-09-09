@@ -1,5 +1,5 @@
 ---
-version: "3"
+version: '3'
 
 tasks:
   clean:
@@ -103,8 +103,8 @@ tasks:
           fi
         fi
     sources:
-      - ".common/files-{{.REPOSITORY_SUBTYPE}}/{{.FILE}}"
-      - "{{.FILE}}"
+      - '.common/files-{{.REPOSITORY_SUBTYPE}}/{{.FILE}}'
+      - '{{.FILE}}'
 
   man-page:
     desc: Build `man` page from the README.md file
@@ -224,7 +224,7 @@ tasks:
       - . .venv/bin/activate
     preconditions:
       - sh: test -f .venv/bin/activate
-        msg: "`.venv/bin/activate` is missing!"
+        msg: '`.venv/bin/activate` is missing!'
 
   requirements:
     deps:
@@ -259,7 +259,7 @@ tasks:
   reset-force:
     deps:
       - software:git
-    desc: "Aggressively reset the project (WARNING: This will wipe uncommitted work)"
+    desc: 'Aggressively reset the project (WARNING: This will wipe uncommitted work)'
     summary: |
       # Aggressively reset the project
 
@@ -308,8 +308,8 @@ tasks:
     cmds:
       - task: shell:{{if .CLI_ARGS}}cli{{else}}prompt{{end}}
     preconditions:
-      - sh: "type docker &> /dev/null"
-        msg: "Docker is not installed! Install it by running `task software:docker`."
+      - sh: 'type docker &> /dev/null'
+        msg: 'Docker is not installed! Install it by running `task software:docker`.'
 
   shell:cli: docker run --cap-drop=ALL -it -v "$PWD:/{{.WORKDIR}}" -w /{{.WORKDIR}} --rm megabytelabs/ansible-molecule-{{.CLI_ARGS}}:latest /bin/bash
 
@@ -323,5 +323,5 @@ tasks:
       - '[[ ! -z "{{.CLI_ARGS}}" ]]'
 
     preconditions:
-      - sh: "type node &> /dev/null"
-        msg: "Node.js is not installed! Install it by running `task install:software:node`."
+      - sh: 'type node &> /dev/null'
+        msg: 'Node.js is not installed! Install it by running `task install:software:node`.'

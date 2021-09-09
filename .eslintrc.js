@@ -55,17 +55,7 @@ module.exports = {
           'error',
           {
             pathPattern: '^$',
-            order: [
-              'version',
-              'includes',
-              'output',
-              'silent',
-              'method',
-              'vars',
-              'env',
-              'dotenv',
-              'tasks'
-            ]
+            order: ['version', 'includes', 'output', 'silent', 'method', 'vars', 'env', 'dotenv', 'tasks']
           },
           {
             pathPattern: '(?:deps|includes|log|env|vars)$',
