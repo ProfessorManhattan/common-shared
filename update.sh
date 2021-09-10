@@ -11,13 +11,12 @@
 #   2. Bootstraps the project by using Task to run initialization tasks which bootstrap the project
 #   3. Notifies the user about missing software dependencies that require root priviledges to install
 
-set -e
+set -eo pipefail
 
 source "./.common/scripts/common.sh"
 source "./.common/scripts/log.sh"
 source "./.common/scripts/software.sh"
 source "./.common/scripts/notices.sh"
-source "./.common/lib.sh"
 
 if [ "${container:=}" != 'docker' ]; then
   info "Ensuring Node.js, Task, jq, and yq are installed"
@@ -28,7 +27,7 @@ if [ "${container:=}" != 'docker' ]; then
   success "Node.js, Task, and jq are all installed"
 fi
 
-task common:update
+task common:update:all
 
 if [ "${container:=}" != 'docker' ]; then
   missingDockerNotice
