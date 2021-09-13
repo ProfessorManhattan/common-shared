@@ -102,10 +102,6 @@ tasks:
     cmds:
       - task: npm:global
         vars:
-          NPM_PACKAGE: prettier-plugin-sh
-          NPM_PACKAGE_BIN: prettier
-      - task: npm:global
-        vars:
           NPM_PACKAGE: prettier
           NPM_PACKAGE_BIN: prettier
 

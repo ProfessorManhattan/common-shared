@@ -244,8 +244,7 @@ function ensurePythonInstalled() {
 }
 
 # @description Ensures Task is installed. If it is not present, it is installed to ~/.local/bin.
-function ensureTaskInstalled() {
-  if ! commandExists task; then
+function installTask() {
     log "Installing Task"
     DOWNLOAD_DESTINATION=/tmp/megabytelabs/task.tar.gz
     if [ "$SYSTEM" == 'Darwin' ] || [ "$SYSTEM" == 'Linux' ]; then
@@ -270,9 +269,6 @@ function ensureTaskInstalled() {
     elif [ "$SYSTEM" == 'Win64' ]; then
       error "Windows support not added yet"
     fi
-  else
-    info "Task is already installed"
-  fi
 }
 
 # @description Ensures Vagrant is installed. If it is not present, it is installed to ~/.local/bin.
