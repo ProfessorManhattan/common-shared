@@ -48,16 +48,11 @@ module.exports = {
     output: '',
 
     // Globs to include when looking for files to highlight.
-    includeGlobs: [
-      '*.md'
-    ],
+    includeGlobs: ['*.md'],
 
     // String patterns to ignore (not globs). The entire file
     // path will be searched and if any of these strings
     // appear, the file will be ignored.
-    excludePatterns: [
-      '/node_modules/',
-      '/vendor/'
-    ]
+    excludePatterns: ['/node_modules/', '/vendor/']
   }
 }
