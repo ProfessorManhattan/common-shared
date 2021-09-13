@@ -26,13 +26,13 @@ const templates = {
 const getExtends = (type, subType) => {
   switch (type + '-' + subType) {
     case 'angular-app':
-      return [templates.eslint, ...templates.typescript, ...plugin.yml, templates.prettier]
+      return [templates.eslint, ...templates.typescript, ...plugins.yml, templates.prettier]
     case 'angular-website':
-      return [templates.eslint, ...templates.typescript, ...plugin.yml, templates.prettier]
+      return [templates.eslint, ...templates.typescript, ...plugins.yml, templates.prettier]
     case 'npm-cli':
-      return [templates.eslint, ...templates.typescript, ...plugin.yml, templates.prettier]
+      return [templates.eslint, ...templates.typescript, ...plugins.yml, templates.prettier]
     case 'npm-library':
-      return [templates.eslint, ...templates.typescript, ...plugin.yml, templates.prettier]
+      return [templates.eslint, ...templates.typescript, ...plugins.yml, templates.prettier]
     default:
       return [...templates.yml, templates.prettier]
   }
