@@ -1,38 +1,92 @@
-/**
- * TODO: All plugins/extends should be loaded based on whether or not
- * they are in the `devDependencies` in `package.json`
- */
+import fs from 'fs';
+import YAML from 'yaml';
+
+const taskfile = YAML.parse(fs.readFileSync('./Taskfile.yml', 'utf8'));
+
+// TODO: Incorporate @typescript-eslint/tslint
+const plugins = {
+    typescript: [
+        '@typescript-eslint',
+        'eslint-plugin-prefer-arrow',
+        'eslint-plugin-import',
+        'eslint-plugin-jsdoc',
+        'eslint-plugin-tsdoc',
+        'eslint-plugin-unicorn',
+        'jsdoc'
+    ]
+};
+
+const templates = {
+  eslint: 'eslint:all',
+  prettier: 'plugin:prettier/recommended',
+  typescript: [
+    'plugin:import/typescript',
+    'plugin:unicorn/recommended',
+    'plugin:jsdoc/recommended'
+  ],
+  yml: [
+    'plugin:yml/standard',
+    'plugin:yml/prettier'
+  ]
+};
+
+const getExtends = (type, subType) => {
+    switch (type + '-' + subType) {
+        case 'angular-app':
+            return [templates.eslint, ...templates.typescript, ...plugin.yml, templates.prettier];
+        case 'angular-website':
+            return [templates.eslint, ...templates.typescript, ...plugin.yml, templates.prettier];
+        case 'npm-cli':
+            return [templates.eslint, ...templates.typescript, ...plugin.yml, templates.prettier];
+        case 'npm-library':
+            return [templates.eslint, ...templates.typescript, ...plugin.yml, templates.prettier];
+        default:
+            return [...templates.yml, templates.prettier];
+    }
+}
+
+const getParser = (type, subType) => {
+    switch (type + '-' + subType) {
+        case 'angular-app':
+            return '@typescript-eslint/parser';
+        case 'angular-website':
+            return '@typescript-eslint/parser';
+        case 'npm-cli':
+            return '@typescript-eslint/parser';
+        case 'npm-library':
+            return '@typescript-eslint/parser';
+        default:
+            return 'espree';
+    }
+}
+
+const getPlugins = (type, subType) => {
+    switch (type + '-' + subType) {
+        case 'angular-app':
+            return plugins.typescript;
+        case 'angular-website':
+            return plugins.typescript;
+        case 'npm-cli':
+            return plugins.typescript;
+        case 'npm-library':
+            return plugins.typescript;
+        default:
+            return [];
+    }
+}
 
 module.exports = {
   env: {
     es6: true,
     node: true
   },
-  parser: '@typescript-eslint/parser',
+  parser: getParser(taskfile.vars.REPOSITORY_TYPE, taskfile.vars.REPOSITORY_SUBTYPE),
   parserOptions: {
     project: 'tsconfig.json',
     sourceType: 'module'
   },
-  extends: [
-    'eslint:all',
-    'plugin:import/typescript',
-    'plugin:unicorn/recommended',
-    'plugin:yml/standard',
-    'plugin:yml/prettier',
-    'plugin:jsdoc/recommended',
-    // "plugin:@typescript-eslint/all",
-    'plugin:prettier/recommended'
-  ],
-  plugins: [
-    '@typescript-eslint',
-    // "@typescript-eslint/tslint",
-    'eslint-plugin-prefer-arrow',
-    'eslint-plugin-import',
-    'eslint-plugin-jsdoc',
-    'eslint-plugin-tsdoc',
-    'eslint-plugin-unicorn',
-    'jsdoc'
-  ],
+  extends: getExtends(taskfile.vars.REPOSITORY_TYPE, taskfile.vars.REPOSITORY_SUBTYPE),
+  plugins: getPlugins(taskfile.vars.REPOSITORY_TYPE, taskfile.vars.REPOSITORY_SUBTYPE),
   overrides: [
     {
       files: ['*.js', '*.jsx'],

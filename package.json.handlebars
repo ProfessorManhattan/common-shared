@@ -18,7 +18,7 @@
     "clean": "task common:clean",
     "commit": "task common:commit",
     "info": "task --list",
-    "prepare": "bash .common/scripts/npm-prepare.sh",
+    "prepare": "task common:husky",
     "prepare-release": "task common:prepare-release",
     "requirements": "task common:requirements",
     "reset": "task common:reset",
@@ -36,12 +36,10 @@
     "@commitlint/config-conventional": "^13.1.0",
     "@megabytelabs/prettier-config": "^2.0.0",
     "cz-conventional-changelog": "^3.3.0",
-    "inquirer": "^8.1.2",
-    "prettier-plugin-sh": "^0.7.1",
-    "remark-cli": "10.0.0",
-    "remark-lint": "9.0.1",
-    "remark-preset-lint-recommended": "^6.0.1",
-    "remark-torchlight": "0.0.2"
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-yml": "0.10.1",
+    "prettier-plugin-sh": "^0.7.1"
   },
   "engines": {
     "node": ">=10"
@@ -84,7 +82,6 @@
       "prettier --write"
     ],
     "**/*.md": [
-      "remark",
       "prettier --write"
     ],
     "**/*.(sh|sh.j2)": [
@@ -102,6 +99,7 @@
       "check-yaml",
       "yamllint -s",
       "task fix:yaml:dashes --",
+      "task fix:yaml:order --",
       "prettier --write"
     ],
     "logo.png": [
@@ -118,11 +116,6 @@
     ]
   },
   "prettier": "@megabytelabs/prettier-config",
-  "remarkConfig": {
-    "plugins": [
-      "remark-preset-lint-recommended"
-    ]
-  },
   "standard-version": {
     "scripts": {
       "prerelease": "git add --all"
