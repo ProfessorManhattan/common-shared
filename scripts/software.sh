@@ -245,30 +245,30 @@ function ensurePythonInstalled() {
 
 # @description Ensures Task is installed. If it is not present, it is installed to ~/.local/bin.
 function installTask() {
-    log "Installing Task"
-    DOWNLOAD_DESTINATION=/tmp/megabytelabs/task.tar.gz
-    if [ "$SYSTEM" == 'Darwin' ] || [ "$SYSTEM" == 'Linux' ]; then
-      if [ "$SYSTEM" == 'Darwin' ]; then
-        DOWNLOAD_SHA256=a82117a3b560f35be9d5d34a1eb6707f1cdde1e2ab9ed22cd5a72bd97682a83e
-        DOWNLOAD_URL=https://github.com/go-task/task/releases/download/v3.4.3/task_darwin_amd64.tar.gz
-      else
-        DOWNLOAD_SHA256=1492e0d185eb7e8547136c8813e51189f59c1d9e21e5395ede9b9a40d55c796e
-        DOWNLOAD_URL=https://github.com/go-task/task/releases/download/v3.4.3/task_linux_amd64.tar.gz
-      fi
-      info "Downloading Task"
-      wget "$DOWNLOAD_URL" -O "$DOWNLOAD_DESTINATION"
-      sha256 "$DOWNLOAD_DESTINATION" "$DOWNLOAD_SHA256"
-      mkdir "$TMP_DIR/task"
-      tar -xzvf "$DOWNLOAD_DESTINATION" -C "$TMP_DIR/task"
-      mv "$TMP_DIR/task" "$HOME/.local/bin/task"
-      success "Successfully installed Task to ~/.local/bin"
-      rm "$DOWNLOAD_DESTINATION"
-      ensureLocalPath
-    elif [ "$SYSTEM" == 'Win32' ]; then
-      error "Windows support not added yet"
-    elif [ "$SYSTEM" == 'Win64' ]; then
-      error "Windows support not added yet"
+  log "Installing Task"
+  DOWNLOAD_DESTINATION=/tmp/megabytelabs/task.tar.gz
+  if [ "$SYSTEM" == 'Darwin' ] || [ "$SYSTEM" == 'Linux' ]; then
+    if [ "$SYSTEM" == 'Darwin' ]; then
+      DOWNLOAD_SHA256=a82117a3b560f35be9d5d34a1eb6707f1cdde1e2ab9ed22cd5a72bd97682a83e
+      DOWNLOAD_URL=https://github.com/go-task/task/releases/download/v3.4.3/task_darwin_amd64.tar.gz
+    else
+      DOWNLOAD_SHA256=1492e0d185eb7e8547136c8813e51189f59c1d9e21e5395ede9b9a40d55c796e
+      DOWNLOAD_URL=https://github.com/go-task/task/releases/download/v3.4.3/task_linux_amd64.tar.gz
     fi
+    info "Downloading Task"
+    wget "$DOWNLOAD_URL" -O "$DOWNLOAD_DESTINATION"
+    sha256 "$DOWNLOAD_DESTINATION" "$DOWNLOAD_SHA256"
+    mkdir "$TMP_DIR/task"
+    tar -xzvf "$DOWNLOAD_DESTINATION" -C "$TMP_DIR/task"
+    mv "$TMP_DIR/task" "$HOME/.local/bin/task"
+    success "Successfully installed Task to ~/.local/bin"
+    rm "$DOWNLOAD_DESTINATION"
+    ensureLocalPath
+  elif [ "$SYSTEM" == 'Win32' ]; then
+    error "Windows support not added yet"
+  elif [ "$SYSTEM" == 'Win64' ]; then
+    error "Windows support not added yet"
+  fi
 }
 
 # @description Ensures Vagrant is installed. If it is not present, it is installed to ~/.local/bin.
