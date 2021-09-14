@@ -1,4 +1,3 @@
 blocklint
-pre-commit-hooks
 proselint
 yamllint
