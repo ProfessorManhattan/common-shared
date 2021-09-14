@@ -1,0 +1,42 @@
+---
+version: '3'
+
+output: interleaved
+
+vars:
+  REPOSITORY_SUBTYPE: {{subgroup}}
+  REPOSITORY_TYPE: {{group}}
+
+includes:
+  ansible: ./.common/taskfiles/ansible/Taskfile.yml
+  ansible:ansibler: ./.common/taskfiles/ansible/Taskfile-ansibler.yml
+  ansible:test: ./.common/taskfiles/ansible/Taskfile-test.yml
+  common: ./.common/taskfiles/common/Taskfile.yml
+  common:update: ./.common/taskfiles/common/Taskfile-update.yml
+  docker: ./.common/taskfiles/Taskfile-docker.yml
+  fix: ./.common/taskfiles/Taskfile-fix.yml
+  git: ./.common/taskfiles/Taskfile-git.yml
+  image: ./.common/taskfiles/Taskfile-image.yml
+  install: ./.common/taskfiles/Taskfile-install.yml
+  lint: ./.common/taskfiles/Taskfile-lint.yml
+  npm: ./.common/taskfiles/Taskfile-npm.yml
+  packer: ./.common/taskfiles/Taskfile-packer.yml
+  python: ./.common/taskfiles/Taskfile-python.yml
+  security: ./.common/taskfiles/Taskfile-security.yml
+  vscode: ./.common/taskfiles/Taskfile-vscode.yml
+
+tasks:
+  donothing: 'true'
+
+  start:
+    desc: Set up the project and refresh it with the latest changes
+    summary: |
+      # Set up the project
+
+      This task will scaffold the project with the latest upstream changes
+      and ensure your development environment has all the dependencies installed.
+
+      **Example usage:**
+      `task start`
+    cmds:
+      - task: common:update:update
