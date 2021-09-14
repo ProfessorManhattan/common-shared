@@ -12,8 +12,8 @@
 
 set -eo pipefail
 
-export REPO_TYPE={{group}}
-export REPO_SUBTYPE="Populated by GitLab CI"
+export REPO_TYPE="{{group}}"
+export REPO_SUBTYPE="{{subgroup}}"
 
 # @description Ensures ~/.local/bin is in the PATH variable
 function ensureLocalPath() {
@@ -88,3 +88,5 @@ fi
 cp ".common/files-$REPO_SUBTYPE/Taskfile.yml" Taskfile.yml
 
 task common:update:all
+
+cp ".common/files-$REPO_SUBTYPE/.start.sh" .start.sh &
