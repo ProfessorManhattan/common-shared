@@ -70,12 +70,15 @@ if [ -d .git ]; then
   git submodule update --init --recursive
 fi
 
-if [ ! -d .common ]; then
-  git submodule add -b master "https://gitlab.com/megabyte-space/common/$REPO_TYPE.git" ".common"
-else
-  cd .common
-  git checkout master && git pull origin master --ff-only
-  cd ..
+if [ "$REPO_TYPE" != 'common' ]; then
+  if [ ! -d .common ]; then
+    git submodule add -b master "https://gitlab.com/megabyte-space/common/$REPO_TYPE.git" ".common"
+  else
+    cd .common
+    git checkout master && git pull origin master --ff-only
+    cd ..
+  fi
+  cp ".common/files-$REPO_SUBTYPE/Taskfile.yml" Taskfile.yml
 fi
 
 if ! type task &> /dev/null; then
@@ -85,8 +88,8 @@ if ! type task &> /dev/null; then
   wait
 fi
 
-cp ".common/files-$REPO_SUBTYPE/Taskfile.yml" Taskfile.yml
-
 task start
 
-cp ".common/files-$REPO_SUBTYPE/.start.sh" .start.sh &
+if [ "$REPO_TYPE" != 'common' ]; then
+  cp ".common/files-$REPO_SUBTYPE/.start.sh" .start.sh &
+fi
