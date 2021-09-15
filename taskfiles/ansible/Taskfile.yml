@@ -479,7 +479,7 @@ tasks:
       - sh: 'test -f "{{.VARIABLES_PATH}}"'
         msg: 'The `{{.VARIABLES_PATH}}` file is missing!'
 
-  vault:
+  vault:lint:file:
     summary: |
       # Check for unencrypted Ansible Vault files
 
