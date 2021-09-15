@@ -87,9 +87,9 @@ tasks:
     deps:
       - :install:npm:prettier
     cmds:
-      - prettier --write slim.report.json
+      - prettier --write .assets/slim.report.json
     sources:
-      - slim.report.json
+      - .assets/slim.report.json
 
   build:slim:sizes:
     deps:
