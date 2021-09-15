@@ -87,7 +87,7 @@
     ],
     "**/*.(sh|sh.j2)": [
       "shellcheck",
-      "prettier --write"
+      "prettier --plugin=./node_modules/prettier-plugin-sh --write"
     ],
     "**/*.toml": [
       "check-toml"
