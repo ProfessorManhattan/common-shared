@@ -129,9 +129,11 @@ tasks:
       DESCRIPTION:
         sh: jq -r '.description' package.json
       GITLAB_PATH:
-        sh: jq -r '.blueprint.gitlab_path' package.json
+        sh: jq -r '.blueprint.repository.gitlab' package.json | sed 's/https:\/\/gitlab.com\///'
       GITLAB_REPO:
         sh: jq -r '.blueprint.repository.gitlab' package.json
+      GITLAB_GROUP:
+        sh: jq -r '.blueprint.repository.gitlab' package.json | sed 's/https:\/\/gitlab.com\///' | sed 's!/[^/]*$!!'
       NAME:
         sh: jq -r '.blueprint.name' package.json
       PROJECT_TYPE:
@@ -143,17 +145,14 @@ tasks:
         sh: jq -r '.keywords | tostring' package.json | sed 's/\[//' | sed 's/\]//'
     run: once
     cmds:
-      - |
+      - >
         if [ ! -z "$GITLAB_TOKEN" ]; then
-          glab repo create {{.GITLAB_PATH}} --description "{{.DESCRIPTION}}" --name "{{.NAME}}" {{.PROJECT_TYPE}} \
-            --tag "$KEYWORDS"
-          if [[ $? == 0 ]]; then
-            true success "GitLab repository `{{.GITLAB_PATH}}` successfully created!"
+          if glab repo create '{{.GITLAB_PATH}}' --group '{{.GITLAB_GROUP}}' --description '{{.DESCRIPTION}}' --name '{{.NAME}}' \
+              {{.PROJECT_TYPE}} --tag '$KEYWORDS'; then
+            true success 'GitLab repository `{{.GITLAB_PATH}}` successfully created!'
           else
-            true error "GitLab repository `{{.GITLAB_PATH}}` already exists.
+            true error 'GitLab repository `{{.GITLAB_PATH}}` already exists.'
           fi
-          jq --arg repo "https://gitlab.com/{{.GITLAB_PATH}}" '.blueprint.repository.gitlab = $repo' package.json > "$TMP"
-          mv "$TMP" package.json
         else
           true warn "The `GITLAB_TOKEN` environment variable is not set so the GitLab repository cannot be created."
         fi
@@ -162,8 +161,6 @@ tasks:
     preconditions:
       - sh: '[ "{{.DESCRIPTION}}" != "null" ]'
         msg: The `.description` in `package.json` must be set.
-      - sh: '[ "{{.GITLAB_PATH}}" != "null" ]'
-        msg: The `.blueprint.gitlab_path` variable (e.g. `megabyte-labs/ansible-roles/androidstudio`) in `package.json` must be set.
       - sh: '[ "{{.NAME}}" != "null" ]'
         msg: The `.blueprint.name` variable in `package.json` must be set.
 
@@ -242,7 +239,7 @@ tasks:
 
   gitlab:update:
     deps:
-      - gitlab:mirror
+      #- gitlab:mirror
       - gitlab:pipelines
       - gitlab:update:meta
       - gitlab:wiki
@@ -255,10 +252,6 @@ tasks:
     vars:
       DESCRIPTION:
         sh: jq -r '.description' package.json
-      GITLAB_PATH:
-        sh: jq -r '.blueprint.gitlab_path' package.json
-      GITLAB_REPO:
-        sh: jq -r '.blueprint.repository.gitlab' package.json
       NAME:
         sh: jq -r '.blueprint.name' package.json
       PROJECT_TYPE:
