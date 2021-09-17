@@ -371,22 +371,38 @@ tasks:
       **Example removing all submodules that are children of the working directory and matching a pattern:**
       `task git:remove-submodules -- docs`
     vars:
-      GITMODULES_PATH:
-        sh: git rev-parse --git-dir | sed 's/\.git\/modules\(.*\)/.gitmodules/' | sed 's/\.git$/.gitmodules/'
+      GITMODULES_PATH: '.gitmodules'
+      ROOT_GIT: # /home/hawkwood/Downloads/Backup/Code
+        sh: git rev-parse --git-dir | sed 's/\.git\/modules\(.*\)/.gitmodules/' | sed 's/\.git$/.gitmodules/' | sed 's/.gitmodules$//'
       REGEX_ARG:
-        sh: if [ -z "{{.CLI_ARGS}}" ]; then echo ""; else echo " | {{.CLI_ARGS}}"; fi
+        sh: if [ -z "{{.CLI_ARGS}}" ]; then echo ""; else echo " | grep {{.CLI_ARGS}}"; fi
       RELATIVE_PATH:
         sh: pwd | sed "s,^$(git rev-parse --show-toplevel),," | cut -c2-
-      TOP_LEVEL:
+      TOP_LEVEL: # /home/hawkwood/Downloads/Backup/Code/docker/ci-pipeline/hadolint
         sh: git rev-parse --show-toplevel
     cmds:
-      - >
-        MODULE_PATHS=$(git config --file "{{.GITMODULES_PATH}}" --name-only --get-regexp "{{.RELATIVE_PATH}}" |
-          sed 's/^submodule\.//' | grep "path$" | sed 's/\.path$//'{{.REGEX_ARG}})
-        for MODULE_PATH in "$MODULE_PATHS"; do
-          RELATIVE_PATH=$(echo "$MODULE_PATH" | sed "s,^{{.RELATIVE_PATH}}/,,")
-          true log "Removing `$RELATIVE_PATH` submodule"
-          git submodule deinit "$RELATIVE_PATH"
-          git rm "$RELATIVE_PATH"
-          rm -rf "{{.TOP_LEVEL}}/.git/modules/$MODULE_PATH"
-        done
+      - |
+        if [ -f '.gitmodules' ]; then
+          MODULE_PATHS=$(git config --file "{{.GITMODULES_PATH}}" --name-only --get-regexp "{{.RELATIVE_PATH}}" |
+            sed 's/^submodule\.//' | grep "path$" | sed 's/\.path$//'{{.REGEX_ARG}})
+          echo "YOOO"
+          for MODULE_PATH in "$MODULE_PATHS"; do
+            # https://github.com/a14m/gitsubmodule/blob/master/gitsubmodule
+            git config -f '{{.GITMODULES_PATH}}' --remove-section "submodule.$MODULE_PATH" | true
+            git add '{{.GITMODULES_PATH}}'
+            # /home/hawkwood/Downloads/Backup/Code/.git/modules/docker/ci-pipeline/hadolint/config
+            {{if eq .ROOT_GIT ""}}
+              CONFIG_PATH='.git'
+            {{else}}
+              CONFIG_PATH="$(pwd | sed 's,{{.ROOT_GIT}},,')"
+            {{end}}
+            git config -f '{{.ROOT_GIT}}./{{if ne .ROOT_GIT ""}}.git/modules/{{end}}'"$CONFIG_PATH"'/config' --remove-section "submodule.$MODULE_PATH"
+            git rm --cached "$MODULE_PATH"
+            rm -rf "{{.ROOT_GIT}}./.git/modules/$CONFIG_PATH"
+            rm -rf "$MODULE_PATH"
+          done
+        else
+          true info 'This task does not run unless there is a `.gitmodules` file in the current directory'
+        fi
+    status:
+      - '! test -f .gitmodules'
