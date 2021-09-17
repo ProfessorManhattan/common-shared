@@ -231,7 +231,7 @@ tasks:
 
   gitlab:update:
     deps:
-      #- gitlab:mirror
+      - gitlab:mirror
       - gitlab:pipelines
       - gitlab:update:meta
       - gitlab:wiki
