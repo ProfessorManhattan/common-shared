@@ -5,15 +5,9 @@ const taskfile = YAML.parse(fs.readFileSync('./Taskfile.yml', 'utf8'))
 
 // TODO: Incorporate @typescript-eslint/tslint
 const plugins = {
-  eslint: [
-    'editorconfig'
-  ],
-  html: [
-    'html'
-  ],
-  prettier: [
-    'prettier'
-  ],
+  eslint: ['editorconfig'],
+  html: ['html'],
+  prettier: ['prettier'],
   typescript: [
     '@typescript-eslint',
     'eslint-plugin-prefer-arrow',
@@ -31,7 +25,13 @@ const templates = {
   eslint: ['eslint:all', 'plugin:eslint-comments/recommended', 'plugin:editorconfig/all'],
   json: ['plugin:jsonc/recommended-with-json', 'plugin:jsonc/prettier'],
   prettier: ['prettier', 'plugin:prettier/recommended'],
-  typescript: ['plugin:import/typescript', 'plugin:regexp/recommended', 'plugin:promise/recommended', 'plugin:unicorn/recommended', 'plugin:jsdoc/recommended'],
+  typescript: [
+    'plugin:import/typescript',
+    'plugin:regexp/recommended',
+    'plugin:promise/recommended',
+    'plugin:unicorn/recommended',
+    'plugin:jsdoc/recommended'
+  ],
   yml: ['plugin:yml/standard', 'plugin:yml/prettier']
 }
 
@@ -94,9 +94,9 @@ module.exports = {
   plugins: getPlugins(taskfile.vars.REPOSITORY_TYPE, taskfile.vars.REPOSITORY_SUBTYPE),
   overrides: [
     {
-      files: ["*.json", "*.json5"],
+      files: ['*.json', '*.json5'],
       excludedFiles: ['package.json', 'package-lock.json'],
-      parser: "jsonc-eslint-parser",
+      parser: 'jsonc-eslint-parser',
       rules: {
         'jsonc/sort-keys': [
           'error',
