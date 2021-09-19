@@ -264,7 +264,7 @@ tasks:
       tasks:
 
       1. Ensures the first line of the file is `---`
-      2. Sorts the file according to the layout specified by `.eslintrc.js`
+      2. Sorts the file according to the layout specified by `.eslintrc.cjs`
 
       **Example usage:**
       `task fix:yaml`
@@ -340,7 +340,7 @@ tasks:
     summary: |
       # Ensure YML files are sorted properly
 
-      This task will sort YML keys alphabetically and also obey the order specified in `.eslintrc.js`.
+      This task will sort YML keys alphabetically and also obey the order specified in `.eslintrc.cjs`.
       It uses [ESLint](https://eslint.org/) along with the [`eslint-plugin-yml`](https://ota-meshi.github.io/eslint-plugin-yml/)
       plugin.
 
