@@ -48,9 +48,22 @@ const templates = {
 const getExtends = (type, subType) => {
   switch (type + '-' + subType) {
     case 'angular-app':
-      return [...templates.angular, ...templates.eslint, ...templates.typescript, ...templates.json, ...plugins.yml, ...templates.prettier]
+      return [
+        ...templates.angular,
+        ...templates.eslint,
+        ...templates.typescript,
+        ...templates.json,
+        ...plugins.yml,
+        ...templates.prettier
+      ]
     case 'angular-website':
-      return [...templates.angular, ...templates.eslint, ...templates.typescript, ...templates.json, ...templates.prettier]
+      return [
+        ...templates.angular,
+        ...templates.eslint,
+        ...templates.typescript,
+        ...templates.json,
+        ...templates.prettier
+      ]
     case 'npm-cli':
       return [...templates.eslint, ...templates.typescript, ...templates.json, ...templates.prettier]
     case 'npm-library':
@@ -271,8 +284,8 @@ module.exports = {
         ],
         'quote-props': ['error', 'as-needed'],
         semi: 'off',
-        "simple-import-sort/imports": "error",
-        "simple-import-sort/exports": "error",
+        'simple-import-sort/imports': 'error',
+        'simple-import-sort/exports': 'error',
         'space-before-function-paren': 'off',
         'space-in-parens': ['off', 'never'],
         'spaced-comment': [
@@ -282,22 +295,22 @@ module.exports = {
             markers: ['/']
           }
         ],
-        "sort-class-members/sort-class-members": [
-			    2,
-			    {
-				    "order": [
-					    "[static-properties]",
-					    "[static-methods]",
-					    "[properties]",
-					    "[conventional-private-properties]",
-					    "constructor",
-					    "[methods]",
-					    "[conventional-private-methods]"
-				    ],
-				    "accessorPairPositioning": "getThenSet"
-			    }
-		    ],
-        "sort-keys-fix/sort-keys-fix": "warn",
+        'sort-class-members/sort-class-members': [
+          2,
+          {
+            order: [
+              '[static-properties]',
+              '[static-methods]',
+              '[properties]',
+              '[conventional-private-properties]',
+              'constructor',
+              '[methods]',
+              '[conventional-private-methods]'
+            ],
+            accessorPairPositioning: 'getThenSet'
+          }
+        ],
+        'sort-keys-fix/sort-keys-fix': 'warn',
         'tsdoc/syntax': 'error',
         'unused-imports/no-unused-imports': 'error'
         /* "@typescript-eslint/tslint/config": [ // TODO: Make it so this works for both projects that do and do not have a tsconfig.json file
