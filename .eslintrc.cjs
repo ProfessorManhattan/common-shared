@@ -21,7 +21,7 @@ const plugins = {
     'rxjs',
     'simple-import-sort',
     'sort-class-members',
-    'sort-keys'fix',
+    'sort-keys-fix',
     'typescript-sort-keys',
     'unused-imports'
   ]
