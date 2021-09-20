@@ -76,6 +76,7 @@ tasks:
           eslint-plugin-typescript-sort-keys
           eslint-plugin-unicorn
           eslint-plugin-unused-imports
+          prettier
           prettier-plugin-organize-imports
           typescript
 
