@@ -253,12 +253,12 @@ tasks:
       DESCRIPTION:
         sh: jq -r '.description' package.json
     cmds:
-      # yYmllint disable rule:line-length
+      # yamllint disable rule:line-length
       # eslint-disable max-len
       - sed -i .bak "s^.*org.opencontainers.image.description.*^LABEL org.opencontainers.image.description=${DESCRIPTION}^g" Dockerfile && rm Dockerfile.bak
       - sed -i .bak "s^.*org.opencontainers.image.documentation.*^LABEL org.opencontainers.image.documentation=\"{{.GROUP_URL}}/{{.REPOSITORY_SUBTYPE}}/{{.SLUG}}/-/blob/master/README.md\"^g" Dockerfile && rm Dockerfile.bak
       - sed -i .bak "s^.*org.opencontainers.image.source.*^LABEL org.opencontainers.image.source=\"{{.GROUP_URL}}/{{.REPOSITORY_SUBTYPE}}/{{.SLUG}}.git\"^g" Dockerfile && rm Dockerfile.bak
-      # yYmllint enable rule:line-length eslint-enable max-lens
+      # yamllint enable rule:line-length eslint-enable max-lens
       # eslint-enable max-len
 
   update:labels:linux:
@@ -269,10 +269,10 @@ tasks:
       DESCRIPTION:
         sh: jq -r '.description' package.json
     cmds:
-      # yYmllint disable rule:line-length
+      # yamllint disable rule:line-length
       # eslint-disable max-len
       - sed -i "s^.*org.opencontainers.image.description.*^LABEL org.opencontainers.image.description=${DESCRIPTION}^g" Dockerfile
       - sed -i "s^.*org.opencontainers.image.documentation.*^LABEL org.opencontainers.image.documentation={{.GROUP_URL}}/{{.REPOSITORY_SUBTYPE}}/{{.SLUG}}/-/blob/master/README.md\"^g" Dockerfile
       - sed -i "s^.*org.opencontainers.image.source.\*^LABEL org.opencontainers.image.source={{.GROUP_URL}}/{{.REPOSITORY_SUBTYPE}}/{{.SLUG}}.git\"^g" Dockerfile
-      # yYmllint enable rule:line-length
+      # yamllint enable rule:line-length
       # eslint-enable max-len

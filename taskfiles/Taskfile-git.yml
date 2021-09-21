@@ -396,9 +396,11 @@ tasks:
         sh: if [ -z "{{.CLI_ARGS}}" ]; then echo ""; else echo " | grep {{.CLI_ARGS}}"; fi
       RELATIVE_PATH:
         sh: pwd | sed "s,^$(git rev-parse --show-toplevel),," | cut -c2-
-      ROOT_GIT: # /home/hawkwood/Downloads/Backup/Code
+      # /home/hawkwood/Downloads/Backup/Code
+      ROOT_GIT:
         sh: git rev-parse --git-dir | sed 's/\.git\/modules\(.*\)/.gitmodules/' | sed 's/\.git$/.gitmodules/' | sed 's/.gitmodules$//'
-      TOP_LEVEL: # /home/hawkwood/Downloads/Backup/Code/docker/ci-pipeline/hadolint
+      # /home/hawkwood/Downloads/Backup/Code/docker/ci-pipeline/hadolint
+      TOP_LEVEL:
         sh: git rev-parse --show-toplevel
     cmds:
       - |

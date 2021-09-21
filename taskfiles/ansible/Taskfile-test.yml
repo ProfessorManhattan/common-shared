@@ -103,7 +103,7 @@ tasks:
       * ubuntu
       * windows
     env:
-      # yYmllint disable-line rule:truthy
+      # yamllint disable-line rule:truthy
       OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
     cmds:
       - task: test:molecule:virtualbox:converge:{{if .CLI_ARGS}}cli{{else}}prompt{{end}}
@@ -137,7 +137,7 @@ tasks:
       MOLECULE_DATE:
         sh: date '+%Y-%m-%d'
     env:
-      # yYmllint disable-line rule:truthy
+      # yamllint disable-line rule:truthy
       OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
     cmds:
       - task: molecule:virtualbox:e2e:{{if eq .CLI_ARGS "matrix"}}cli{{else}}default{{end}}
