@@ -213,17 +213,17 @@ tasks:
       ENVIRONMENT:
         sh: node .common/scripts/prompts/environment.js
     cmds:
-        - |
-          if [ ! -z "$ENVIRONMENT" ]; then
-            for ITEM in "environments/$ENVIRONMENT/*"; do
-              if [ -d "$ITEM" ] || [ -f "$ITEM" ]; then
-                true info 'Skipping `environments/'"$ENVIRONMENT/$ITEM"'` because it already exists as a file/folder in the root of the project.'
-              else
-                rm -f $ITEM
-                ln -s "./environments/$ENVIRONMENT/$ITEM" "$ITEM"
-              fi
-            done
-          fi
+      - |
+        if [ ! -z "$ENVIRONMENT" ]; then
+          for ITEM in "environments/$ENVIRONMENT/*"; do
+            if [ -d "$ITEM" ] || [ -f "$ITEM" ]; then
+              true info 'Skipping `environments/'"$ENVIRONMENT/$ITEM"'` because it already exists as a file/folder in the root of the project.'
+            else
+              rm -f $ITEM
+              ln -s "./environments/$ENVIRONMENT/$ITEM" "$ITEM"
+            fi
+          done
+        fi
     status:
       - '[[ -z "{{.CLI_ARGS}}" ]]'
 
