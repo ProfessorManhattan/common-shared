@@ -103,7 +103,7 @@ tasks:
       * ubuntu
       * windows
     env:
-      # yamllint disable-line rule:truthy
+      # yYmllint disable-line rule:truthy
       OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
     cmds:
       - task: test:molecule:virtualbox:converge:{{if .CLI_ARGS}}cli{{else}}prompt{{end}}
@@ -137,7 +137,7 @@ tasks:
       MOLECULE_DATE:
         sh: date '+%Y-%m-%d'
     env:
-      # yamllint disable-line rule:truthy
+      # yYmllint disable-line rule:truthy
       OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
     cmds:
       - task: molecule:virtualbox:e2e:{{if eq .CLI_ARGS "matrix"}}cli{{else}}default{{end}}
@@ -157,7 +157,7 @@ tasks:
     log:
       error: '`molecule test` finished with error(s)'
       start: This is a full E2E test and can take awhile..
-      success: 'Successfully completed the `molecule test`'
+      success: Successfully completed the `molecule test`
 
   vagrant:
     deps:

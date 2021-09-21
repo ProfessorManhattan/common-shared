@@ -104,8 +104,6 @@ tasks:
     vars:
       PREVIOUS_SLIM_SIZE:
         sh: jq -r '.blueprint.slim_size' package.json
-      SLUG:
-        sh: jq -r '.slug' .variables.json
       REGULAR_SIZE:
         sh:
           'docker manifest inspect -v "{{.DOCKERHUB_PROFILE}}/{{.SLUG}}:latest" | grep size | awk -F ":" "{sum+=$NF} END {print sum}"
@@ -114,6 +112,8 @@ tasks:
         sh:
           'docker manifest inspect -v "{{.DOCKERHUB_PROFILE}}/{{.SLUG}}:slim" | grep size | awk -F ":" "{sum+=$NF} END {print sum}"
           | awk "{$1=$1/(1024^2); print $1,\"MB\";}"'
+      SLUG:
+        sh: jq -r '.slug' .variables.json
     env:
       TMP:
         sh: mktemp
@@ -178,15 +178,15 @@ tasks:
           done
         fi
     log:
-      error: 'Encountered error while testing the test scenarios in the `slim_test/` folder'
-      success: 'The output from both the `latest` and `slim` container are the same for all the test scenarios in `slim_test/`'
+      error: Encountered error while testing the test scenarios in the `slim_test/` folder
+      success: The output from both the `latest` and `slim` container are the same for all the test scenarios in `slim_test/`
     status:
       - test ! -d slim_test
     preconditions:
       - sh: '[[ "$(docker images -q {{.DOCKERHUB_PROFILE}}/{{.SLUG}}:slim 2> /dev/null)" != "" ]]'
-        msg: 'The slim image has not been built yet. Try running `task build`.'
+        msg: The slim image has not been built yet. Try running `task build`.
       - sh: '[[ "$(docker images -q {{.DOCKERHUB_PROFILE}}/{{.SLUG}}:latest 2>/dev/null)" == "" ]]'
-        msg: 'The regular image has not been built yet. Try running `task build`.'
+        msg: The regular image has not been built yet. Try running `task build`.
 
   update:labels:
     deps:
@@ -203,11 +203,11 @@ tasks:
       - package.json
     preconditions:
       - sh: test -f Dockerfile
-        msg: 'A `Dockerfile` is not present in the root of this project!'
+        msg: A `Dockerfile` is not present in the root of this project!
       - sh: test -f .variables.json
-        msg: 'The `.variables.json` file is not present in the root of this project!'
+        msg: The `.variables.json` file is not present in the root of this project!
       - sh: test -f package.json
-        msg: 'The `package.json` file is not present in the root of this project!'
+        msg: The `package.json` file is not present in the root of this project!
 
   update:labels:add:
     vars:
@@ -253,12 +253,12 @@ tasks:
       DESCRIPTION:
         sh: jq -r '.description' package.json
     cmds:
-      # yamllint disable rule:line-length
+      # yYmllint disable rule:line-length
       # eslint-disable max-len
       - sed -i .bak "s^.*org.opencontainers.image.description.*^LABEL org.opencontainers.image.description=${DESCRIPTION}^g" Dockerfile && rm Dockerfile.bak
       - sed -i .bak "s^.*org.opencontainers.image.documentation.*^LABEL org.opencontainers.image.documentation=\"{{.GROUP_URL}}/{{.REPOSITORY_SUBTYPE}}/{{.SLUG}}/-/blob/master/README.md\"^g" Dockerfile && rm Dockerfile.bak
       - sed -i .bak "s^.*org.opencontainers.image.source.*^LABEL org.opencontainers.image.source=\"{{.GROUP_URL}}/{{.REPOSITORY_SUBTYPE}}/{{.SLUG}}.git\"^g" Dockerfile && rm Dockerfile.bak
-      # yamllint enable rule:line-length eslint-enable max-lens
+      # yYmllint enable rule:line-length eslint-enable max-lens
       # eslint-enable max-len
 
   update:labels:linux:
@@ -269,10 +269,10 @@ tasks:
       DESCRIPTION:
         sh: jq -r '.description' package.json
     cmds:
-      # yamllint disable rule:line-length
+      # yYmllint disable rule:line-length
       # eslint-disable max-len
       - sed -i "s^.*org.opencontainers.image.description.*^LABEL org.opencontainers.image.description=${DESCRIPTION}^g" Dockerfile
       - sed -i "s^.*org.opencontainers.image.documentation.*^LABEL org.opencontainers.image.documentation={{.GROUP_URL}}/{{.REPOSITORY_SUBTYPE}}/{{.SLUG}}/-/blob/master/README.md\"^g" Dockerfile
       - sed -i "s^.*org.opencontainers.image.source.\*^LABEL org.opencontainers.image.source={{.GROUP_URL}}/{{.REPOSITORY_SUBTYPE}}/{{.SLUG}}.git\"^g" Dockerfile
-      # yamllint enable rule:line-length
+      # yYmllint enable rule:line-length
       # eslint-enable max-len

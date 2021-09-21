@@ -150,8 +150,8 @@ tasks:
       - mkdir -p .autodoc
       - mv ansible_actions.md ansible_tags.md ansible_todo.md ansible_variables.json ansible_variables.md .autodoc
     log:
-      error: 'Error running `mod-ansible-autodoc`'
-      success: 'Generated documentation partials with `mod-ansible-autodoc` and moved them to the `.autodoc` folder'
+      error: Error running `mod-ansible-autodoc`
+      success: Generated documentation partials with `mod-ansible-autodoc` and moved them to the `.autodoc` folder
     sources:
       - '.common/**/*'
       - '{{.VARIABLES_PATH}}'
@@ -159,7 +159,7 @@ tasks:
       - tasks/**/*.yml
     preconditions:
       - sh: 'type mod-ansible-autodoc &> /dev/null'
-        msg: 'The Python package `mod-ansible-autodoc` is missing.'
+        msg: The Python package `mod-ansible-autodoc` is missing.
 
   mod-ansible-autodoc:variables:
     env:
@@ -178,64 +178,64 @@ tasks:
     cmds:
       - task: playbook:environment:{{if .CLI_ARGS}}cli{{else}}prompt{{end}}
 
-  #  playbook:environment:prompt:
-  #    deps:
+  #  pPaybook:environment:prompt:
+  #    dDps:
   #      - :common:node:dependencies:local
-  #    env:
+  #    eEv:
   #      ENVIRONMENT:
-  #        sh: node .common/scripts/prompts/environment.js
-  #    cmds:
+  #        sS: node .common/scripts/prompts/environment.js
+  #    cCds:
   #        - |
-  #          if [ ! -z "$ENVIRONMENT" ]; then
-  #            for ITEM in "environments/$ENVIRONMENT/*"; do
-  #              if [ -d "$ITEM" ] || [ -f "$ITEM" ]; then
-  #                true info "Skipping environments/$ENVIRONMENT/$ITEM because it already exists as a file/folder in the root of the project."
-  #              else
-  #                rm -f $ITEM
-  #                ln -s "./environments/$ENVIRONMENT/$ITEM" "$ITEM"
-  #              fi
-  #            done
-  #          fi
-  #    preconditions:
+  #          iI [ ! -z "$ENVIRONMENT" ]; then
+  #            fFr ITEM in "environments/$ENVIRONMENT/*"; do
+  #              iI [ -d "$ITEM" ] || [ -f "$ITEM" ]; then
+  #                tTue info "Skipping environments/$ENVIRONMENT/$ITEM because it already exists as a file/folder in the root of the project."
+  #              eEse
+  #                rR -f $ITEM
+  #                lL -s "./environments/$ENVIRONMENT/$ITEM" "$ITEM"
+  #              fF
+  #            dDne
+  #          fF
+  #    pPeconditions:
   #      - sh: "test -d node_modules"
-  #        msg: 'This task has dependencies in the `node_modules` folder which is missing.'
-  #    status:
+  #        mMg: 'This task has dependencies in the `node_modules` folder which is missing.'
+  #    sSatus:
   #      - '[[ -z "{{.CLI_ARGS}}" ]]'
 
-  #  playbook:environment:cli:
-  #    desc: Prompts for which environment to use and then symlinks to it
-  #    summary: |
+  #  pPaybook:environment:cli:
+  #    dDsc: Prompts for which environment to use and then symlinks to it
+  #    sSmmary: |
   #      # Switch environments using an interactive dialogue
   #
   #      Ansible does not really provide any great ways to switch between environments (or sets of
   #      `host_vars/`, `group_vars/` etc.). If you place all the files and folders you wish to constitute
-  #      as an environment inside a folder named as the name of the environment then you can use
-  #      this task to handle the symlinking and switching between environments.
+  #      aA an environment inside a folder named as the name of the environment then you can use
+  #      tTis task to handle the symlinking and switching between environments.
   #
   #      **Example of opening the interactive prompt:**
   #      `task ansible:environment`
   #
   #      **You can directly switch enironments to `environments/prod/` by running:**
   #      `task ansible:environment -- prod`
-  #    cmds:
+  #    cCds:
   #      - {{if .CLI_ARGS}}
-  #          for ENV in environments/{{.CLI_ARGS}}/*; do
-  #            if [ ! -d "$ENV" ] && [ ! -f "$ENV" ]; then
-  #              rm -f "$ENV"
-  #              ln -s "./environments/{{.CLI_ARGS}}/$ENV" "$ENV"
-  #            else
-  #              true warn ""
+  #          fFr ENV in environments/{{.CLI_ARGS}}/*; do
+  #            iI [ ! -d "$ENV" ] && [ ! -f "$ENV" ]; then
+  #              rR -f "$ENV"
+  #              lL -s "./environments/{{.CLI_ARGS}}/$ENV" "$ENV"
+  #            eEse
+  #              tTue warn ""
   #      - |
-  #        if [ ! -z "{{.CLI_ARGS}}" ]; then
-  #          for ITEM in environments/{{.CLI_ARGS}}/*; do
-  #            if [ -d "$ITEM" ] || [ -f "$ITEM" ]; then
-  #              true info "Skipping environments/{{.CLI_ARGS}}/$ITEM because it already exists as a file/folder in the root of the project."
-  #            else
-  #              rm -f $ITEM
-  #              ln -s "./environments/{{.CLI_ARGS}}/$ITEM" "$ITEM"
-  #            fi
-  #          done
-  #        fi
+  #        iI [ ! -z "{{.CLI_ARGS}}" ]; then
+  #          fFr ITEM in environments/{{.CLI_ARGS}}/*; do
+  #            iI [ -d "$ITEM" ] || [ -f "$ITEM" ]; then
+  #              tTue info "Skipping environments/{{.CLI_ARGS}}/$ITEM because it already exists as a file/folder in the root of the project."
+  #            eEse
+  #              rR -f $ITEM
+  #              lL -s "./environments/{{.CLI_ARGS}}/$ITEM" "$ITEM"
+  #            fF
+  #          dDne
+  #        fF
 
   playbook:find-missing:
     desc: Find roles that are missing files
@@ -259,7 +259,7 @@ tasks:
       error: 'Failed to search for the file named `{{.CLI_ARGS}}`'
     preconditions:
       - sh: test -d roles
-        msg: 'The `roles/` folder is missing. Is the project set up right?'
+        msg: The `roles/` folder is missing. Is the project set up right?
 
   populate:collection:
     deps:
@@ -377,8 +377,8 @@ tasks:
       - mv "$TMP" package.json
       - prettier-package-json --write package.json
     log:
-      error: 'Failed to update the `blueprint` variable in `package.json` with meta information'
-      success: 'Ensured the `blueprint` variable in `package.json` is populated with up-to-date meta information'
+      error: Failed to update the `blueprint` variable in `package.json` with meta information
+      success: Ensured the `blueprint` variable in `package.json` is populated with up-to-date meta information
     preconditions:
       - sh: 'test -f {{.META_PATH}}'
         msg: 'The `{{.META_PATH}}` file is missing. A properly filled out `{{.META_PATH}}` file is required for the
@@ -408,8 +408,8 @@ tasks:
           fi
         done
     log:
-      error: 'Encountered an error while symlinking the roles to `~/.ansible/roles`'
-      success: 'Successfully symlinked the roles in this playbook to `~/.ansible/roles`'
+      error: Encountered an error while symlinking the roles to `~/.ansible/roles`
+      success: Successfully symlinked the roles in this playbook to `~/.ansible/roles`
     preconditions:
       - sh: test -d roles
         msg: The roles folder is missing. Is the project set up right?
@@ -475,8 +475,8 @@ tasks:
           mv "$TMP" package.json
         fi
     log:
-      error: 'Failed to acquire and inject the `.blueprint.ansible_galaxy_project_id` value into `package.json`'
-      success: 'Ensured that the `.blueprint.ansible_galaxy_project_id` variable in `package.json` is accurate'
+      error: Failed to acquire and inject the `.blueprint.ansible_galaxy_project_id` value into `package.json`
+      success: Ensured that the `.blueprint.ansible_galaxy_project_id` variable in `package.json` is accurate
     status:
       - '[[ "{{.HAS_PROJECT_ID}}" == "true" ]]'
 
