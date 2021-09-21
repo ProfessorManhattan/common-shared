@@ -346,7 +346,7 @@ tasks:
     cmds:
       - echo hey
       - jq -S --arg blueprint "$BLUEPRINT_DATA" --arg encoded "$GITLAB_ENCODED_PATH" '. = . * ($blueprint | fromjson)
-          | .gitlab_encoded_path = $encoded' '{{.SHARED_JSON}}' > "$TMP"
+        | .gitlab_encoded_path = $encoded' '{{.SHARED_JSON}}' > "$TMP"
       - mv "$TMP" .variables.json
       - task: ':{{if eq .REPOSITORY_TYPE "packer"}}packer:update:variables{{else}}donothing{{end}}'
       - task: ':{{if eq .REPOSITORY_SUBTYPE "role"}}ansible:update:variables{{else}}donothing{{end}}'
