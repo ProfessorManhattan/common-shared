@@ -333,8 +333,7 @@ module.exports = {
         'sort-keys-fix/sort-keys-fix': 'warn',
         'tsdoc/syntax': 'error',
         'unused-imports/no-unused-imports': 'error'
-        /* "@typescript-eslint/tslint/config": [ // TODO: Make it so this works for both projects that do and do not have a tsconfig.json file
-          // TODO: Ensure these rules are working and eliminate rules that are duplicates of other rules
+        "@typescript-eslint/tslint/config": [
           "error",
           {
             rules: {
@@ -387,7 +386,7 @@ module.exports = {
               "unnecessary-else": true
             }
           }
-        ] */
+        ]
       }
     },
     {
