@@ -5,7 +5,7 @@ tasks:
   default:
     summary: Coming soon..
 
-  global:uninstall:
+  global:reset:
     cmds:
       - cmd: if type pip &> /dev/null; then pip uninstall -y -r <(pip freeze); fi
         ignore_error: true
