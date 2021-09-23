@@ -28,7 +28,7 @@ tasks:
 
   json:
     deps:
-      - :common:python:requirements
+      - :install:npm:eslint
     desc: Alphabetically sort JSON
     summary: |
       # Automatically alphabetize JSON
