@@ -217,6 +217,13 @@ tasks:
     status:
       - type virtualenv &> /dev/null
 
+  software:brew:
+    run: once
+    cmds:
+      - task: install-doctor
+        vars:
+          SOFTWARE: homebrew
+
   software:docker:
     run: once
     cmds:
@@ -330,6 +337,13 @@ tasks:
       - task: install-doctor
         vars:
           SOFTWARE: rsync
+
+  software:sshpass:
+    deps:
+      - software:brew
+    run: once
+    cmds:
+      - brew install esolitos/ipa/sshpass
 
   software:trivy:
     run: once

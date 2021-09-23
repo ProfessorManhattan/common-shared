@@ -36,6 +36,7 @@ tasks:
     deps:
       - :common:python:requirements
       - :install:software:docker
+      - :install:software:sshpass
     label: test:docker
     desc: Performs a full test, including a test for idempotency, on all available Linux systems using Docker
     summary: |
@@ -61,6 +62,10 @@ tasks:
       success: Docker Molecule testing of the Ansible play was successful!
 
   molecule:docker:matrix:
+    deps:
+      - :common:python:requirements
+      - :install:software:docker
+      - :install:software:sshpass
     vars:
       MOLECULE_DATE:
         sh: date '+%Y-%m-%d'
@@ -77,6 +82,8 @@ tasks:
   molecule:virtualbox:converge:
     deps:
       - :common:python:requirements
+      - :install:software:sshpass
+      - :install:software:vagrant
       - :install:software:virtualbox
     label: test:virtualbox
     desc: Provisions a desktop VirtualBox VM and then runs a Molecule test
@@ -117,6 +124,8 @@ tasks:
   molecule:virtualbox:
     deps:
       - :common:python:requirements
+      - :install:software:sshpass
+      - :install:software:vagrant
       - :install:software:virtualbox
     label: test:e2e
     desc: Runs a full E2E Molecule test for all supported operating systems
@@ -139,6 +148,11 @@ tasks:
       - molecule test
 
   molecule:virtualbox:matrix:
+    deps:
+      - :common:python:requirements
+      - :install:software:sshpass
+      - :install:software:vagrant
+      - :install:software:virtualbox
     vars:
       MOLECULE_DATE:
         sh: date '+%Y-%m-%d'
@@ -153,7 +167,9 @@ tasks:
   vagrant:
     deps:
       - :common:python:requirements
+      - :install:software:sshpass
       - :install:software:vagrant
+      - :install:software:virtualbox
     label: test:vagrant
     desc: Runs the playbook using Vagrant
     summary: |
@@ -193,14 +209,9 @@ tasks:
       success: The Vagrant box has been successfully provisioned with the Ansible play.
 
   vagrant:cli:
-    deps:
-      - :install:software:vagrant
     cmds:
       - vagrant up {{.CLI_ARGS}}
 
   vagrant:prompt:
-    deps:
-      - :install:software:node
-      - :install:software:vagrant
     cmds:
       - node .common/scripts/prompts/vagrant-up.js
