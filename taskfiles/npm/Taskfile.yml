@@ -21,6 +21,14 @@ tasks:
         done
         wait
 
+  inspect:
+    deps:
+      - :common:node:dependencies:local
+      - :install:npm:ts-node
+    desc: Inspect the app with Chrome DevTools
+    cmds:
+
+
   test:unit:
     deps:
       - :common:node:dependencies:local
