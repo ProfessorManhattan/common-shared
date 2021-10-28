@@ -27,7 +27,7 @@ tasks:
       - :install:npm:ndb
       - :install:npm:nodemon
       - :install:npm:ts-node
-    desc: Inspect the app with Chrome DevTools
+    desc: Inspect the app with ndb (with live reloading)
     cmds:
       - ndb nodemon
 
