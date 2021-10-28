@@ -26,4 +26,5 @@ tasks:
       - :common:node:dependencies:local
     desc: Run the build logic for an NPM project in watch mode
     cmds:
+      - task: :npm:clean
       - npm run build:watch

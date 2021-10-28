@@ -22,6 +22,13 @@ tasks:
     sources:
       - package.json
 
+  npm:ava:
+    run: once
+    cmds:
+      - task: npm:global
+        vars:
+          NPM_PACKAGE: ava
+
   npm:codecov:
     run: once
     cmds:

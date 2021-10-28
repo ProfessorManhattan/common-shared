@@ -24,6 +24,7 @@ tasks:
   test:unit:
     deps:
       - :common:node:dependencies:local
+      - :install:npm:ava
       - :install:npm:nyc
     desc: Run the unit tests for an NPM project
     cmds:
@@ -32,6 +33,7 @@ tasks:
   test:watch:
     deps:
       - :common:node:dependencies:local
+      - :install:npm:ava
       - :install:npm:nyc
     desc: Run the unit tests for an NPM project in watch mode
     cmds:
