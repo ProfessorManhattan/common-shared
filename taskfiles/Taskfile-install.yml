@@ -65,7 +65,6 @@ tasks:
           @typescript-eslint/parser
           eslint
           eslint-plugin-import
-          eslint-plugin-jsdoc
           eslint-plugin-prefer-arrow
           eslint-plugin-promise
           eslint-plugin-regexp
@@ -77,7 +76,15 @@ tasks:
           eslint-plugin-typescript-sort-keys
           eslint-plugin-unicorn
           eslint-plugin-unused-imports
+          esprint
           typescript
+
+  npm:esprint:
+    run: once
+    cmds:
+      - task: npm:global
+        vars:
+          NPM_PACKAGE: esprint
 
   npm:global:
     deps:

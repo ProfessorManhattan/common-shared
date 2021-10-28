@@ -110,7 +110,8 @@ tasks:
       This task will lint the project or a specific pattern of files with `eslint`. It is capable of
       linting JSON, YML, JS, TS, and HTML as long as the correct `package.json` dependencies are
       installed. By default, all projects have the libraries necessary for linting JSON and YML. In
-      order to lint JS and TS, first run `task install:npm:eslint:dev-dependencies`.
+      order to lint JS and TS, first run `task install:npm:eslint:dev-dependencies` if the JS/TS
+      `devDependencies` are not already installed. In most cases, you do not have to worry about it though.
 
       **Example linting entire project:**
       `task lint:eslint`
@@ -122,6 +123,42 @@ tasks:
       `task lint:eslint -- '**/*.js'`
     cmds:
       - eslint --format pretty {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
+
+  esprint:
+    deps:
+      - :common:node:dependencies:local
+      - :install:npm:esprint
+    desc: Lint with `eslint` across multiple threads
+    summary: |
+      # Lint with `eslint` across multiple threads
+
+      This task will lint the project using `esprint`. Using `esprint` allows you to run `eslint`
+      across multiple threads which improves performance in most cases (especially for larger
+      projects). It is capable of linting JSON, YML, JS, TS, and HTML as long as the correct
+      `package.json` dependencies are installed.
+
+      **Example usage:**
+      `task lint:esprint`
+    vars:
+      DOCKER_CONTAINER:
+        sh: echo $container
+    cmds:
+      - esprint{{if eq .DOCKER_CONTAINER "docker"}} check{{end}}
+
+  esprint:debug:
+    deps:
+      - :common:node:dependencies:local
+      - :install:npm:esprint
+    cmds:
+      - esprint --esprintDebug
+
+  esprint:stop:
+    deps:
+      - :common:node:dependencies:local
+      - :install:npm:esprint
+    desc: Stop the `esprint` process that is currently running
+    cmds:
+      - esprint stop
 
   js:
     deps:

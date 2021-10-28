@@ -25,22 +25,29 @@ const ansibleOrder = [
 ]
 
 const plugins = {
-  eslint: ['editorconfig'],
+  eslint: [
+    'editorconfig',
+    'no-secrets'
+  ],
   html: ['html'],
+  node: ['ava'],
   prettier: ['prettier'],
   typescript: [
     '@typescript-eslint',
     'eslint-plugin-prefer-arrow',
     'eslint-plugin-import',
-    'eslint-plugin-jsdoc',
     'eslint-plugin-tsdoc',
     'eslint-plugin-unicorn',
+    'immutable',
     'import',
-    'jsdoc',
+    'lodash',
+    'no-loops',
     'promise',
     'regexp',
     'rxjs',
+    'security',
     'simple-import-sort',
+    'sonarjs',
     'sort-class-members',
     'sort-keys-fix',
     'typescript-sort-keys',
@@ -50,18 +57,21 @@ const plugins = {
 
 const templates = {
   angular: ['plugin:compat/recommended'],
-  eslint: ['eslint:all', 'plugin:eslint-comments/recommended', 'plugin:editorconfig/all'],
-  json: ['plugin:jsonc/recommended-with-json', 'plugin:jsonc/prettier'],
+  eslint: ['eslint:all', 'plugin:eslint-comments/recommended', 'plugin:editorconfig/all', 'plugin:toml/standard'],
+  json: ['plugin:jsonc/recommended-with-json', 'plugin:json-schema-validator/recommended', 'plugin:jsonc/prettier'],
+  node: ['plugin:ava/recommended'],
   prettier: ['prettier', 'plugin:prettier/recommended'],
   typescript: [
     'plugin:import/recommended',
     'plugin:import/typescript',
+    'plugin:lodash/recommended',
     'plugin:regexp/recommended',
     'plugin:rxjs/recommended',
     'plugin:promise/recommended',
+    'plugin:security/recommended',
     'plugin:typescript-sort-keys/recommended',
     'plugin:unicorn/recommended',
-    'plugin:jsdoc/recommended'
+    'plugin:sonarjs/recommended'
   ],
   yml: ['plugin:yml/standard', 'plugin:yml/prettier']
 }
@@ -76,7 +86,7 @@ const getExtends = (type, subType) => {
         ...templates.json,
         ...templates.yml,
         ...templates.prettier
-      ]
+      ];
     case 'angular-website':
       return [
         ...templates.angular,
@@ -84,11 +94,23 @@ const getExtends = (type, subType) => {
         ...templates.typescript,
         ...templates.json,
         ...templates.prettier
-      ]
+      ];
     case 'npm-cli':
-      return [...templates.eslint, ...templates.typescript, ...templates.json, ...templates.prettier]
+      return [
+        ...templates.eslint,
+        ...templates.typescript,
+        ...templates.node,
+        ...templates.json,
+        ...templates.prettier
+      ];
     case 'npm-library':
-      return [...templates.eslint, ...templates.typescript, ...templates.json, ...templates.prettier]
+      return [
+        ...templates.eslint,
+        ...templates.typescript,
+        ...templates.node,
+        ...templates.json,
+        ...templates.prettier
+      ]
     default:
       return [...templates.eslint, ...templates.yml, ...templates.json, ...templates.prettier]
   }
@@ -116,11 +138,47 @@ const getPlugins = (type, subType) => {
     case 'angular-website':
       return [...plugins.eslint, ...plugins.html, ...plugins.prettier, ...plugins.typescript]
     case 'npm-cli':
-      return [...plugins.eslint, ...plugins.prettier, ...plugins.typescript]
+      return [...plugins.eslint, ...plugins.prettier, ...plugins.typescript, ...plugins.node]
     case 'npm-library':
-      return [...plugins.eslint, ...plugins.prettier, ...plugins.typescript]
+      return [...plugins.eslint, ...plugins.prettier, ...plugins.typescript, ...plugins.node]
     default:
       return [...plugins.eslint, ...plugins.prettier]
+  }
+}
+
+// Automatically uses https://www.schemastore.org/api/json/catalog.json in addition to the below configurations
+const schemaDefinitions = (type, subType) => {
+  const schemas = [
+    {
+      "fileMatch": [".commitlint.config.cjs"],
+      "schema": "https://json.schemastore.org/commitlintrc.json"
+    },
+    {
+      "fileMatch": [".eslintrc.cjs"],
+      "schema": "https://json.schemastore.org/eslintrc"
+    },
+    {
+      "fileMatch": [".stylelintrc.cjs"],
+      "schema": "https://json.schemastore.org/stylelintrc.json"
+    },
+    {
+      "fileMatch": ["Taskfile.yml", "Taskfile-*.yml"],
+      "schema": "https://json.schemastore.org/taskfile.json"
+    }
+    {
+      "fileMatch": ["tsconfig.json", "tsconfig.module.json"],
+      "schema": "https://json.schemastore.org/tsconfig.json"
+    },
+  ]
+  switch (type + '-' + subType) {
+    case 'angular-app':
+    case 'angular-website':
+    case 'ansible-playbook':
+    case 'ansible-role':
+    case 'npm-cli':
+    case 'npm-library':
+    default:
+      return [...schemas.general]
   }
 }
 
@@ -151,6 +209,10 @@ module.exports = {
           }
         ]
       }
+    },
+    {
+      files: ['*.toml'],
+      parser: 'toml-eslint-parser'
     },
     {
       files: ['*.ts', '*.js', '*.jsx'],
@@ -224,9 +286,13 @@ module.exports = {
             devDependencies: false
           }
         ],
-        'jsdoc/check-indentation': ['error'],
-        'jsdoc/check-line-alignment': ['error'],
-        'jsdoc/no-bad-blocks': ['error'],
+        "json-schema-validator/no-invalid": [
+          "error",
+          {
+            "schemas": schemaDefinitions(taskfile.vars.REPOSITORY_TYPE, taskfile.vars.REPOSITORY_SUBTYPE),
+            "useSchemastoreCatalog": true
+          }
+        ],
         'linebreak-style': ['error', 'unix'],
         'max-classes-per-file': ['error', 5],
         'max-len': [
@@ -265,6 +331,7 @@ module.exports = {
             ]
           }
         ],
+        'no-loops/no-loops': 2,
         'no-magic-numbers': [
           'error',
           {
@@ -277,6 +344,7 @@ module.exports = {
             max: 2
           }
         ],
+        'immutable/no-mutation': 2,
         'no-plusplus': [
           'error',
           {
@@ -303,6 +371,15 @@ module.exports = {
           }
         ],
         'quote-props': ['error', 'as-needed'],
+        "require-jsdoc": ["error", {
+          "require": {
+            "FunctionDeclaration": true,
+            "MethodDefinition": true,
+            "ClassDeclaration": true,
+            "ArrowFunctionExpression": true,
+            "FunctionExpression": true
+          }
+        }],
         semi: 'off',
         'simple-import-sort/imports': 'error',
         'simple-import-sort/exports': 'error',
@@ -532,6 +609,7 @@ module.exports = {
     }
   ],
   rules: {
-    'max-lines': ['error', 500]
+    'max-lines': ['error', 500],
+    'no-secrets/no-secrets': 'error'
   }
 }
