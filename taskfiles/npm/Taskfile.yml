@@ -24,10 +24,12 @@ tasks:
   inspect:
     deps:
       - :common:node:dependencies:local
+      - :install:npm:ndb
+      - :install:npm:nodemon
       - :install:npm:ts-node
     desc: Inspect the app with Chrome DevTools
     cmds:
-
+      - ndb nodemon
 
   test:unit:
     deps:
