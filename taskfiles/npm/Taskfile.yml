@@ -48,3 +48,10 @@ tasks:
     desc: Run the unit tests for an NPM project in watch mode
     cmds:
       - nyc --silent ava --watch
+
+  typesync:
+    deps:
+      - :install:npm:typesync
+    desc: Install missing type definitions
+    cmds:
+      - typesync

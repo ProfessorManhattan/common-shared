@@ -22,12 +22,26 @@ tasks:
     sources:
       - package.json
 
+  npm:autocannon:
+    run: once
+    cmds:
+      - task: npm:global
+        vars:
+          NPM_PACKAGE: autocannon
+
   npm:ava:
     run: once
     cmds:
       - task: npm:global
         vars:
           NPM_PACKAGE: ava
+
+  npm:clinic:
+    run: once
+    cmds:
+      - task: npm:global
+        vars:
+          NPM_PACKAGE: clinic
 
   npm:codecov:
     run: once
@@ -244,6 +258,13 @@ tasks:
       - task: npm:global
         vars:
           NPM_PACKAGE: typedoc
+
+  npm:typesync:
+    run: once
+    cmds:
+      - task: npm:global
+        vars:
+          NPM_PACKAGE: typesync
 
   python:virtualenv:
     deps:
