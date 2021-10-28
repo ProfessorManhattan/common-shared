@@ -2,27 +2,51 @@
 version: '3'
 
 tasks:
-  clean:
-    deps:
-      - :install:software:rsync
-    desc: Remove temporary folders that might conflicts with builds
-    vars:
-      RANDOM_STRING:
-        sh: openssl rand -hex 14
+  all:
     cmds:
-      - mkdir -p '/tmp/{{.RANDOM_STRING}}'
-      - mkdir -p '/tmp/{{.RANDOM_STRING}}-empty'
-      - |
-        for TMP_FILE in build test; do
-          if [ -d "$TMP_FILE" ]; then
-            mv "$TMP_FILE" "/tmp/{{.RANDOM_STRING}}/$TMP_FILE" 2> /dev/null
-            (rsync -a --delete '/tmp/{{.RANDOM_STRING}}-empty' "/tmp/{{.RANDOM_STRING}}/$TMP_FILE" && rm -rf "/tmp/{{.RANDOM_STRING}}-$TMP_FILE") &
-          fi
-        done
-        wait
+      - task: :npm:build:all
+      - task: :npm:test:unit
+      - task: report
 
-  test:unit:
+  check:
     deps:
       - :common:node:dependencies:local
+      - :install:npm:nyc
     cmds:
-      - npm run test:unit
+      - nyc report
+      - nyc check-coverage --lines 100 --functions 100 --branches 100
+
+  html:
+    deps:
+      - :common:node:dependencies:local
+      - :install:npm:nyc
+    cmds:
+      - nyc report --reporter=html
+
+  lcov:
+    deps:
+      - :common:node:dependencies:local
+      - :install:npm:nyc
+    cmds:
+      - nyc report --reporter=lcov
+
+  open:
+    deps:
+      - html
+      - :npm:install:open-cli
+    desc: Ensures the code coverage report is generated and opens it in a browser
+    cmds:
+      - open-cli coverage/index.html
+
+  report:
+    deps:
+      - html
+      - lcov
+
+  upload:
+    deps:
+      - lcov
+      - :install:npm:codecov
+    desc: Uploads code coverage report to `codecov.io`
+    cmds:
+      - codecov

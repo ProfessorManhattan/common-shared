@@ -2,17 +2,28 @@
 version: '3'
 
 tasks:
-  build:all:
+  all:
     deps:
       - build:main
       - build:module
 
-  build:main:
+  main:
+    deps:
+      - :common:node:dependencies:local
     desc: Build `main` using `tsconfig.json`
     cmds:
-      - tsc -p tsconfig.json
+      - npm run build:main
 
-  build:module:
+  module:
+    deps:
+      - :common:node:dependencies:local
     desc: Build `module` using `tsconfig.module.json`
     cmds:
-      - tsc -p tsconfig.module.json
+      - npm run build:module
+
+  watch:
+    deps:
+      - :common:node:dependencies:local
+    desc: Run the build logic for an NPM project in watch mode
+    cmds:
+      - npm run build:watch
