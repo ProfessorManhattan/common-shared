@@ -109,9 +109,7 @@ tasks:
 
       This task will lint the project or a specific pattern of files with `eslint`. It is capable of
       linting JSON, YML, JS, TS, and HTML as long as the correct `package.json` dependencies are
-      installed. By default, all projects have the libraries necessary for linting JSON and YML. In
-      order to lint JS and TS, first run `task install:npm:eslint:dev-dependencies` if the JS/TS
-      `devDependencies` are not already installed. In most cases, you do not have to worry about it though.
+      installed. By default, all projects have the libraries necessary for linting JSON, TOML, and YML.
 
       **Example linting entire project:**
       `task lint:eslint`

@@ -16,7 +16,7 @@ tasks:
     deps:
       - npm:{{.NPM_PROGRAM}}
     cmds:
-      - '{{.NPM_PROGRAM}} install'
+      - '{{.NPM_PROGRAM}} install --force'
       - cmd: '{{.NPM_PROGRAM}} audit fix{{if eq .NPM_PROGRAM "npm"}} --force{{end}} || true'
         ignore_error: true
     sources:
@@ -66,32 +66,6 @@ tasks:
       - task: npm:global
         vars:
           NPM_PACKAGE: eslint
-
-  npm:eslint:dev-dependencies:
-    deps:
-      - software:node
-    run: once
-    cmds:
-      - >
-        {{.NPM_PROGRAM}} install --save-dev
-          @typescript-eslint/eslint-plugin
-          @typescript-eslint/eslint-plugin-tslint
-          @typescript-eslint/parser
-          eslint
-          eslint-plugin-import
-          eslint-plugin-prefer-arrow
-          eslint-plugin-promise
-          eslint-plugin-regexp
-          eslint-plugin-rxjs
-          eslint-plugin-simple-import-sort
-          eslint-plugin-sort-class-members
-          eslint-plugin-sort-keys-fix
-          eslint-plugin-tsdoc
-          eslint-plugin-typescript-sort-keys
-          eslint-plugin-unicorn
-          eslint-plugin-unused-imports
-          esprint
-          typescript
 
   npm:esprint:
     run: once
