@@ -118,14 +118,6 @@ tasks:
         vars:
           FILE: .husky/prepare-commit-msg
 
-  man-page:
-    deps:
-      - :install:local:modules
-      - :install:npm:remark
-    desc: Build `man` page from the README.md file
-    cmds:
-      - remark
-
   node:dependencies:global:
     run: once
     cmds:

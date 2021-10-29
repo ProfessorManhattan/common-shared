@@ -13,6 +13,7 @@ tasks:
     cmds:
       - task: clean
       - nest build
+      - task: :common:update:man-page
 
   clean:
     deps:
