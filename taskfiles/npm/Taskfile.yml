@@ -2,7 +2,7 @@
 version: '3'
 
 vars:
-  BUILD_FOLDERS: coverage dist
+  BUILD_FOLDERS: build coverage dist
 
 tasks:
   build:
