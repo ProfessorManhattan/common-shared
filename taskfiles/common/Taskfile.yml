@@ -14,7 +14,7 @@ tasks:
       which will re-generate the project from scratch. Ideally, this task and the reset task
       should never be necessary. The `common:update` task should be used instead.
     vars:
-      CLEAN_TARGETS: .autodoc .task .venv build node_modules test
+      CLEAN_TARGETS: .autodoc .task .venv coverage dist node_modules
       RANDOM_STRING:
         sh: openssl rand -hex 14
     cmds:
@@ -119,9 +119,12 @@ tasks:
           FILE: .husky/prepare-commit-msg
 
   man-page:
+    deps:
+      - :install:local:modules
+      - :install:npm:remark
     desc: Build `man` page from the README.md file
     cmds:
-      - echo "See https://github.com/remarkjs/remark-man"
+      - remark
 
   node:dependencies:global:
     run: once

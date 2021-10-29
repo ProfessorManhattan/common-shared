@@ -29,13 +29,6 @@ tasks:
         vars:
           NPM_PACKAGE: autocannon
 
-  npm:ava:
-    run: once
-    cmds:
-      - task: npm:global
-        vars:
-          NPM_PACKAGE: ava
-
   npm:clinic:
     run: once
     cmds:
@@ -119,12 +112,26 @@ tasks:
         vars:
           NPM_PACKAGE: husky
 
+  npm:jest:
+    run: once
+    cmds:
+      - task: npm:global
+        vars:
+          NPM_PACKAGE: jest
+
   npm:lint-staged:
     run: once
     cmds:
       - task: npm:global
         vars:
           NPM_PACKAGE: lint-staged
+
+  npm:majestic:
+    run: once
+    cmds:
+      - task: npm:global
+        vars:
+          NPM_PACKAGE: majestic
 
   npm:markdown-link-check:
     run: once
@@ -140,6 +147,14 @@ tasks:
         vars:
           NPM_PACKAGE: ndb
 
+  npm:nest:
+    run: once
+    cmds:
+      - task: npm:global
+        vars:
+          NPM_PACKAGE: '@nestjs/cli'
+          NPM_PACKAGE_BIN: nest
+
   npm:nodemon:
     run: once
     cmds:
@@ -153,13 +168,6 @@ tasks:
       - task: npm:global
         vars:
           NPM_PACKAGE: npm
-
-  npm:nyc:
-    run: once
-    cmds:
-      - task: npm:global
-        vars:
-          NPM_PACKAGE: nyc
 
   npm:open-cli:
     run: once

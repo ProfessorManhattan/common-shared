@@ -1,7 +1,19 @@
 ---
 version: '3'
 
+vars:
+  BUILD_FOLDERS: coverage dist
+
 tasks:
+  build:
+    deps:
+      - :install:local:modules
+      - :install:npm:nest
+    desc: Build the application
+    cmds:
+      - task: clean
+      - nest build
+
   clean:
     deps:
       - :install:software:rsync
@@ -13,7 +25,7 @@ tasks:
       - mkdir -p '/tmp/{{.RANDOM_STRING}}'
       - mkdir -p '/tmp/{{.RANDOM_STRING}}-empty'
       - |
-        for TMP_FILE in build test; do
+        for TMP_FILE in {{.BUILD_FOLDERS}}; do
           if [ -d "$TMP_FILE" ]; then
             mv "$TMP_FILE" "/tmp/{{.RANDOM_STRING}}/$TMP_FILE" 2> /dev/null
             (rsync -a --delete '/tmp/{{.RANDOM_STRING}}-empty' "/tmp/{{.RANDOM_STRING}}/$TMP_FILE" && rm -rf "/tmp/{{.RANDOM_STRING}}-$TMP_FILE") &
@@ -21,33 +33,99 @@ tasks:
         done
         wait
 
-  inspect:
+  start:
     deps:
-      - :common:node:dependencies:local
+      - :install:local:modules
+      - :install:npm:nest
+    desc: Run the application
+    cmds:
+      - nest start
+
+  start:debug:
+    deps:
+      - :install:local:modules
+      - :install:npm:nest
+    cmds:
+      - nest start --watch
+
+  start:inspect:
+    deps:
+      - :install:local:modules
       - :install:npm:ndb
       - :install:npm:nodemon
       - :install:npm:ts-node
-    desc: Inspect the app with ndb (with live reloading)
+    desc: Run the application in `watch` mode and open DevTools
+    cmds:
+      - ndb nest start --watch
+
+  start:inspect:legacy:
+    deps:
+      - :install:local:modules
+      - :install:npm:nest
+    cmds:
+      - nest start --debug --watch
+
+  start:prod:
+    deps:
+      - :install:local:modules
+      - :install:npm:nest
+    desc: Run the application in `production` mode
+    cmds:
+      - task: build
+      - node dist/main
+
+  start:prod:inspect:
+    deps:
+      - :install:local:modules
+      - :install:npm:nest
+    desc: Run the application in `production` and `watch` mode and open DevTools
     cmds:
       - ndb nodemon
 
-  test:unit:
+  test:
     deps:
-      - :common:node:dependencies:local
-      - :install:npm:ava
-      - :install:npm:nyc
+      - :install:local:modules
+      - :install:npm:jest
     desc: Run the unit tests for an NPM project
     cmds:
-      - nyc --silent ava
+      - jest
 
-  test:watch:
+  test:coverage:
     deps:
-      - :common:node:dependencies:local
-      - :install:npm:ava
-      - :install:npm:nyc
-    desc: Run the unit tests for an NPM project in watch mode
+      - :install:local:modules
+      - :install:npm:jest
+    desc: Generate code coverage assets
     cmds:
-      - nyc --silent ava --watch
+      - jest --coverage
+
+  test:dashboard:
+    deps:
+      - :install:local:modules
+      - :install:npm:majestic
+    desc: Run and manage test cases from a web interface (powered by `majestic`)
+    cmds:
+      - majestic --debug
+
+  test:debug:
+    deps:
+      - :install:local:modules
+      - :install:npm:jest
+    desc: Debug tests in `watch` mode
+    cmds:
+      - jest --watch
+
+  test:e2e: true
+
+  test:inspect:
+    deps:
+      - :install:local:modules
+      - :install:npm:jest
+      - :install:npm:ndb
+      - :install:npm:nodemon
+      - :install:npm:ts-node
+    desc: Debug tests with DevTools in `watch` mode
+    cmds:
+      - ndb nodemon --config .common/nodemon-jest.json
 
   typesync:
     deps:
