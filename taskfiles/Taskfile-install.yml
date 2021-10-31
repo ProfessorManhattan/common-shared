@@ -432,6 +432,13 @@ tasks:
     cmds:
       - brew install esolitos/ipa/sshpass
 
+  software:tokei:
+    run: once
+    cmds:
+      - task: install-doctor
+        vars:
+          SOFTWARE: tokei
+
   software:trivy:
     run: once
     cmds:

@@ -1,0 +1,14 @@
+---
+version: '3'
+
+tasks:
+  count:
+    deps:
+      - :install:software:jq
+      - :install:software:tokei
+    desc: Display a chart detailing the lines of code for each language used
+    env:
+      SRC_PATHS:
+        sh: jq -r '.src_paths' package.json | sed 's/^null$/./'
+    cmds:
+      - tokei "$SRC_PATHS"
