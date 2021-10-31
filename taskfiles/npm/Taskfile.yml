@@ -14,6 +14,7 @@ tasks:
       - clean
     desc: Build the application
     cmds:
+      - task: depcheck:dependencies
       - mkdir -p dist
       - task: build:compile
 
@@ -43,6 +44,8 @@ tasks:
       - :install:npm:pkg
     cmds:
       - pkg package.json
+
+  build:release:
 
   build:esbuild:bundled:
     deps:
@@ -158,6 +161,14 @@ tasks:
           fi
         done
         wait
+
+  depcheck:dependencies:
+    deps:
+      - :install:npm:depcheck
+      - :install:software:jq
+    desc: Remove unused dependencies
+    cmds:
+      - depcheck --json | jq -r '.dependencies[]' | xargs -n1 npm uninstall --save
 
   start:
     deps:

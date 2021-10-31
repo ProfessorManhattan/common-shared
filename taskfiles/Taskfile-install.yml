@@ -67,6 +67,13 @@ tasks:
         vars:
           NPM_PACKAGE: cspell
 
+  npm:depcheck:
+    run: once
+    cmds:
+      - task: npm:global
+        vars:
+          NPM_PACKAGE: depcheck
+
   npm:esbuild:
     run: once
     cmds:
