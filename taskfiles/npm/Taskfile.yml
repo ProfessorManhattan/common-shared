@@ -19,8 +19,8 @@ tasks:
   build:compile:
     deps:
       - build:nest
-      - build:esbuild:bundled
-      - build:esbuild:minified
+      # - build:esbuild:bundled
+      # - build:esbuild:minified
 
   build:nest:
     deps:
@@ -28,7 +28,12 @@ tasks:
       - :install:npm:nest
     cmds:
       - nest build
-      - task: :common:update:man-page
+      - task: build:nest:after
+
+  build:nest:after:
+    deps:
+      - :common:update:man-page
+      - build:pkg
 
   build:pkg:
     deps:
@@ -43,7 +48,6 @@ tasks:
       - :install:npm:esbuild
     cmds:
       - node .common/esbuild.bundled.js
-      - task: build:pkg
 
   build:esbuild:minified:
     deps:
