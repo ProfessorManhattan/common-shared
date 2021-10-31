@@ -186,8 +186,6 @@ tasks:
       - .variables.json
       - dist/man
     preconditions:
-      - sh: 'test -f .common/docs/{{.README_TEMPLATE}}'
-        msg: 'The README.md template file is not present at `.common/docs/{{.README_TEMPLATE}}`.'
       - sh: test -f .variables.json
         msg: The `.variables.json` file is not present.
 

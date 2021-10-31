@@ -8,12 +8,49 @@ tasks:
   build:
     deps:
       - :install:local:modules
+      - :install:npm:esbuild
       - :install:npm:nest
+      - clean
     desc: Build the application
     cmds:
-      - task: clean
+      - mkdir -p dist
+      - task: build:compile
+
+  build:compile:
+    deps:
+      - build:nest
+      - build:esbuild:bundled
+      - build:esbuild:minified
+
+  build:nest:
+    deps:
+      - :install:local:modules
+      - :install:npm:nest
+    cmds:
       - nest build
       - task: :common:update:man-page
+
+  build:pkg:
+    deps:
+      - :install:local:modules
+      - :install:npm:pkg
+    cmds:
+      - pkg package.json
+
+  build:esbuild:bundled:
+    deps:
+      - :install:local:modules
+      - :install:npm:esbuild
+    cmds:
+      - node .common/esbuild.bundled.js
+      - task: build:pkg
+
+  build:esbuild:minified:
+    deps:
+      - :install:local:modules
+      - :install:npm:esbuild
+    cmds:
+      - node .common/esbuild.minified.js
 
   clean:
     deps:

@@ -67,6 +67,13 @@ tasks:
         vars:
           NPM_PACKAGE: cspell
 
+  npm:esbuild:
+    run: once
+    cmds:
+      - task: npm:global
+        vars:
+          NPM_PACKAGE: esbuild
+
   npm:eslint:
     run: once
     cmds:
@@ -175,6 +182,13 @@ tasks:
       - task: npm:global
         vars:
           NPM_PACKAGE: open-cli
+
+  npm:pkg:
+    run: once
+    cmds:
+      - task: npm:global
+        vars:
+          NPM_PACKAGE: pkg
 
   npm:pnpm:
     run: once
