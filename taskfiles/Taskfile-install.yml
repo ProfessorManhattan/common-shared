@@ -133,6 +133,13 @@ tasks:
         vars:
           NPM_PACKAGE: jest
 
+  npm:leasot:
+    run: once
+    cmds:
+      - task: npm:global
+        vars:
+          NPM_PACKAGE: leasot
+
   npm:lint-staged:
     run: once
     cmds:
