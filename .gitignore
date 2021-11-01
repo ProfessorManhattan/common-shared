@@ -18,6 +18,7 @@ __pycache__/
 .fuse_hidden*
 .git/
 .hypothesis/
+.jest-cache/
 .LSOverride
 .nfs*
 .nox/
@@ -44,9 +45,11 @@ __pycache__/
 *~
 *$py.class
 build/
+coverage/
 coverage.xml
 db.sqlite3
 db.sqlite3-journal
+dist/
 env.bak/
 env/
 ENV/
