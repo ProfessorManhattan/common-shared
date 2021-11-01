@@ -42,6 +42,7 @@ __pycache__/
 *.log
 *.retry
 *.so
+*.tsbuildinfo
 *~
 *$py.class
 build/
