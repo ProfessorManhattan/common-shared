@@ -20,9 +20,6 @@
     "fix": "",
     "lint": "",
     "lint:eslint": "eslint .",
-    "lint:prettier": "prettier .",
-    "lint:shellcheck": "shellcheck",
-    "lint:yamllint": "yamllint .",
     "test": "cd ../eslint && npm run test && cd ../shared && npm install --save-dev @megabytelabs/eslint-config && eslint ."
   },
   "config": {
