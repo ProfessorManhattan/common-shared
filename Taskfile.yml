@@ -1,0 +1,6 @@
+---
+version: '3'
+
+vars:
+  REPOSITORY_SUBTYPE: shared
+  REPOSITORY_TYPE: common

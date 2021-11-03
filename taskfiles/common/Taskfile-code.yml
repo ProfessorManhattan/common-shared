@@ -12,8 +12,8 @@ tasks:
   find:todo:
     deps:
       - :install:npm:leasot
+    desc: Scan code base for TODOs and FIXMEs
     vars:
       LEASOT_IGNORE: .common .modules .venv node_modules venv
-    desc: Scan code base for TODOs and FIXMEs
     cmds:
       - leasot --ignore {{.LEASOT_IGNORE}} {{.CLI_ARGS}}

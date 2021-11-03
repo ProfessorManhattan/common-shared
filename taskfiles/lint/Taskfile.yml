@@ -12,8 +12,8 @@ tasks:
     deps:
       - '{{.REPOSITORY_TYPE}}'
       - prettier
-      - markdown
-      - prose
+      - :lint:markdown:markdown
+      - :lint:prose:prose
       - shellcheck
       - yaml
     desc: Lint with all available linters
@@ -122,42 +122,6 @@ tasks:
     cmds:
       - eslint --format pretty {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
 
-  esprint:
-    deps:
-      - :common:node:dependencies:local
-      - :install:npm:esprint
-    desc: Lint with `eslint` across multiple threads
-    summary: |
-      # Lint with `eslint` across multiple threads
-
-      This task will lint the project using `esprint`. Using `esprint` allows you to run `eslint`
-      across multiple threads which improves performance in most cases (especially for larger
-      projects). It is capable of linting JSON, YML, JS, TS, and HTML as long as the correct
-      `package.json` dependencies are installed.
-
-      **Example usage:**
-      `task lint:esprint`
-    vars:
-      DOCKER_CONTAINER:
-        sh: echo $container
-    cmds:
-      - esprint{{if eq .DOCKER_CONTAINER "docker"}} check{{end}}
-
-  esprint:debug:
-    deps:
-      - :common:node:dependencies:local
-      - :install:npm:esprint
-    cmds:
-      - esprint --esprintDebug
-
-  esprint:stop:
-    deps:
-      - :common:node:dependencies:local
-      - :install:npm:esprint
-    desc: Stop the `esprint` process that is currently running
-    cmds:
-      - esprint stop
-
   js:
     deps:
       - :common:node:dependencies:local
@@ -172,58 +136,6 @@ tasks:
       - :common:python:requirements
     cmds:
       - lint-staged
-
-  markdown:
-    deps:
-      - :common:node:dependencies:local
-      - :install:npm:remark
-    desc: Lint markdown files
-    summary: |
-      # Lint markdown files
-
-      This task uses `remark-lint` under the hood to provide markdown style recommendations.
-
-      **Example scanning all markdown files:**
-      `task lint:markdown`
-
-      **Example scanning single markdown file:**
-      `task lint:markdown -- TEST.md`
-
-      For more information on `remark`, see the [GitHub page](https://github.com/remarkjs/remark).
-
-      For more information on `remark-lint`, see the [GitHub page](https://github.com/remarkjs/remark-lint).
-    cmds:
-      - |
-        {{if .CLI_ARGS}}
-          remark {{.CLI_ARGS}}
-        {{else}}
-          find . -type d \( {{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name '*.md' \) -print0 | xargs -0 -r -n1 remark
-        {{end}}
-
-  markdown:links:
-    deps:
-      - :install:npm:markdown-link-check
-    desc: Scan markdown files for broken links
-    summary: |
-      # Report any broken links in the files that end with .md
-
-      This task uses the npm package called `markdown-link-check` to scan all the links
-      and then report which ones are broken.
-
-      **Example scanning the whole project:**
-      `task lint:markdown-broken-links`
-
-      **Example scanning single file:**
-      `task lint:markdown-broken-links -- filename.md`
-
-      For more information on `markdown-link-check`, see their [GitHub page](https://github.com/tcort/markdown-link-check).
-    cmds:
-      - |
-        {{if .CLI_ARGS}}
-          markdown-link-check {{.CLI_ARGS}}
-        {{else}}
-          find . -type d \( {{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name '*.md' \) -print0 | xargs -0 -r -n1 markdown-link-check
-        {{end}}
 
   packer:
     deps:
@@ -271,51 +183,6 @@ tasks:
       For more information, see [Prettier's website](https://prettier.io/).
     cmds:
       - prettier --list-different {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
-
-  prose:
-    deps:
-      - :common:python:requirements
-    desc: Lint for English prose
-    summary: |
-      # Lint for English prose
-
-      This task uses Proselint to analyze markdown files for prose. It will generate recommendations
-      based on typography, grammar, and wording.
-
-      **Example scanning all markdown files:**
-      `task lint:prose`
-
-      **Example scanning specific file (markdown or not):**
-      `task lint:prose -- myfile.js`
-
-      For more information, see [Proselint's GitHub page](https://github.com/amperser/proselint).
-    cmds:
-      - task: prose:config
-      - |
-        {{if .CLI_ARGS}}
-          proselint {{.CLI_ARGS}}
-        {{else}}
-          find . -type d \( {{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name '*.md' \) -print0 | xargs -0 -r -n1 proselint
-        {{end}}
-      - task: prose:config:restore
-
-  prose:config:
-    cmds:
-      - |
-        if [ -f ~/.config/proselint/config ]; then
-          true info 'Backing up `proselint` from `~/.config/proselint/config` to `~/.config/proselint/config.backup`'
-          mv ~/.config/proselint/config ~/.config/proselint/config.backup
-        fi
-      - mkdir -p ~/.config/proselint
-      - cp .common/proselint.json ~/.config/proselint/config
-
-  prose:config:restore:
-    cmds:
-      - |
-        if [ -f ~/.config/proselint/config.backup ]; then
-          true info "Restoring original Proselint configuration"
-          mv ~/.config/proselint/config.backup ~/.config/proselint/config
-        fi
 
   python:
     deps:

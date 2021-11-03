@@ -1,7 +1,8 @@
-const esbuild = require('esbuild');
-const { nodeExternalsPlugin } = require('esbuild-node-externals');
+import * as esbuild from 'esbuild'
+import { nodeExternalsPlugin } from 'esbuild-node-externals'
 
 esbuild.build({
+  bundle: true,
   entryPoints: ['src/main.ts'],
   external: [
     '@nestjs/microservices',
@@ -10,9 +11,8 @@ esbuild.build({
     'class-transformer',
     'class-validator'
   ],
-  bundle: true,
   minify: true,
-  platform: 'node',
   outfile: 'dist/main.minified.js',
-  plugins: [nodeExternalsPlugin()],
-});
+  platform: 'node',
+  plugins: [nodeExternalsPlugin()]
+})

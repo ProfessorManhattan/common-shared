@@ -25,28 +25,6 @@ tasks:
       - build:esbuild:minified
       - build:fpm
 
-  build:nest:
-    deps:
-      - :install:local:modules
-      - :install:npm:nest
-    cmds:
-      - nest build
-      - task: build:nest:after
-
-  build:nest:after:
-    deps:
-      - :common:update:man-page
-      - build:pkg
-
-  build:pkg:
-    deps:
-      - :install:local:modules
-      - :install:npm:pkg
-    cmds:
-      - pkg package.json
-
-  build:release:
-
   build:esbuild:bundled:
     deps:
       - :install:local:modules
@@ -142,6 +120,28 @@ tasks:
       - fpm -s npm -t {{.FPM_TARGET}}
         -p {{.BINARY_BUILD_FOLDER}}/{{.NPM_PACKAGE_NAME}}-{{.NPM_PACKAGE_VERSION}}-{{.SYSTEM}}-{{.ARCHITECTURE}}.{{.FILE_EXTENSION}}
         --architecture {{.ARCHITECTURE}} .
+
+  build:nest:
+    deps:
+      - :install:local:modules
+      - :install:npm:nest
+    cmds:
+      - nest build
+      - task: build:nest:after
+
+  build:nest:after:
+    deps:
+      - :common:update:man-page
+      - build:pkg
+
+  build:pkg:
+    deps:
+      - :install:local:modules
+      - :install:npm:pkg
+    cmds:
+      - pkg package.json
+
+  build:release: 'true'
 
   clean:
     deps:
@@ -251,7 +251,7 @@ tasks:
     cmds:
       - jest --watch
 
-  test:e2e: true
+  test:e2e: 'true'
 
   test:inspect:
     deps:
