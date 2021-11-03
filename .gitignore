@@ -65,5 +65,6 @@ pip-delete-this-directory.txt
 pip-log.txt
 pytestdebug.log
 Temporary Items
+tsconfig.build.tsbuildinfo
 venv.bak/
 venv/
