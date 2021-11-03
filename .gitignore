@@ -34,7 +34,7 @@ __pycache__/
 .vagrant/
 .variables.json
 .vault_pass
-.venv
+.venv/
 .VolumeIcon.icns
 *.box
 *.code-workspace
@@ -45,6 +45,7 @@ __pycache__/
 *.tsbuildinfo
 *~
 *$py.class
+ansible_variables.json
 build/
 coverage/
 coverage.xml
