@@ -135,8 +135,8 @@ tasks:
     cmds:
       - |
         if [ "${container:=}" != "docker" ]; then
-          npm install --force
-          npm audit fix --force || true
+          {{.NPM_PROGRAM}} install --legacy-peer-deps --force
+          {{.NPM_PROGRAM}} audit fix --force || true
         fi
     sources:
       - package.json
