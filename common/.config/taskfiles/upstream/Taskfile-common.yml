@@ -44,6 +44,7 @@ tasks:
   merge:
     deps:
       - merge:package
+      - merge:variables
 
   merge:package:
     cmds:
@@ -69,6 +70,37 @@ tasks:
           if [ -f "project-$SUBTYPE/package.json.handlebars" ]; then
             mkdir -p "common-$SUBTYPE"
             jq -s '.[0] * .[1]' common/package.json.handlebars "project-$SUBTYPE/package.json.handlebars" > "common-$SUBTYPE/package.json.handlebars"
+          fi
+        done
+
+  merge:variables:
+    cmds:
+      - task: merge:variables:project
+      - task: merge:variables:project-subtype
+
+  merge:variables:project:
+    deps:
+      - :install:software:jq
+    cmds:
+      - |
+        if [ -f "project/.config/variables.json" ]; then
+          jq -s -S '.[0] * .[1]' "common/.config/docs/variables.json" "project/.config/variables.json" > "common/.config/variables.json"
+        fi
+
+  merge:variables:project-subtype:
+    deps:
+      - :install:software:jq
+    env:
+      TMP:
+        sh: mktemp
+    cmds:
+      - |
+        for FOLDER in project-*/; do
+          SUBTYPE="$(echo "$FOLDER" | sed 's/files-\(.*\)\//\1/')"
+          if [ -f "project-$SUBTYPE/.config/variables.json" ]; then
+            mkdir -p "common-$SUBTYPE/.config"
+            jq --arg subtype "$SUBTYPE" '.subgroup = $subtype' common/.config/variables.json > "$TMP"
+            jq -s -S '.[0] * .[1]' "$TMP" "project-$SUBTYPE/.config/variables.json" > "common-$SUBTYPE/.config/variables.json"
           fi
         done
 

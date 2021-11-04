@@ -7,71 +7,70 @@ vars:
 
 tasks:
   clone:
-    deps:
-      - clone:shared
-      - clone:docs
-
-  clone:docs:
-    cmds:
-      - git clone {{.DOCS_URL}}
-
-  clone:shared:
     cmds:
       - git clone {{.SHARED_COMMON_URL}} {{.SHARED_FOLDER}}
 
   copy:
-    deps:
-      - copy:common
-      - copy:project
-
-  copy:common:
     cmds:
       - cp -rT {{.SHARED_FOLDER}}/common .
+      - cp -rT {{.SHARED_FOLDER}}/common-{{.REPOSITORY_SUBTYPE}} .
       - task: :common:husky:permissions
 
-  copy:project:
-    cmds:
-      - cp -rT {{.SHARED_FOLDER}}/common common
-      - cp -rT project common
-
-  docs:
-
-
-  merge-and-template:
-    deps:
-      - merge
-      - template
-
   merge:
-    cmds:
-      - task: merge:package:project
-      - task: merge:package:project-subtype
+    deps:
+      - merge:package
 
-  merge:package:project:
+  merge:package:
+    cmds:
+      - task: merge:package:files
+      - task: merge:package:json-blueprint-overrides
+
+  merge:package:files:
     deps:
       - :install:software:jq
+    env:
+      TMP:
+        sh: mktemp
     cmds:
-      - |
-        if [ -f "project/package.json.handlebars" ]; then
-          jq -s '.[0] * .[1]' {{.SHARED_FOLDER}}/common/package.json.handlebars project/package.json.handlebars > common/package.json.handlebars
-        fi
+      - jq -s '.[0] * .[1]' package.json package.json.handlebars > "$TMP"
 
-  merge:package:project-subtype:
-    deps:
-      - :install:software:jq
+  merge:package:json-blueprint-overrides:
+    summary: |
+      # Merge data from package.json's '.blueprint.jsonOverrides' key
+
+      If you wanted to ensure that the project's package.json file always has its 'xyz' key
+      equal to 'abc' then you would add the following to the package.json file:
+
+      ```json
+      {
+        ...
+        "blueprint": {
+          "jsonOverrides": {
+            "package.json": {
+              "xyz": "abc"
+            }
+          }
+        }
+      }
+      ```
+
+      In the above example, you could also set the value of package.json equal to the path of some other
+      JSON file in the project that you would like to override.
+
+      This method is here in case there are any key/values that you would like to freeze.
     cmds:
       - |
-        for SUBTYPE in ./project-*/; do
-          if [ -f "project-$SUBTYPE/package.json.handlebars" ]; then
-            mkdir -p "common-$SUBTYPE"
-            jq -s '.[0] * .[1]' common/package.json.handlebars "project-$SUBTYPE/package.json.handlebars" > "common-$SUBTYPE/package.json.handlebars"
-          fi
+        jq -r '.blueprint.jsonOverrides | keys[]' package.json | while read FILE_PATH; do
+          VALUE="$(jq --arg filepath "$FILE_PATH" '.blueprint.jsonOverrides[$filepath]' "$FILE_PATH")"
+          TMP="$(mktemp)"
+          jq --arg value "$VALUE" -s '.[] + ($value | fromjson)' "$FILE_PATH" > "$TMP"
+          mv "$TMP" "$FILE_PATH"
         done
 
   template:
     deps:
       - :install:npm:hbs
     cmds:
-      - find . -type f -path ./common -prune -name '*.handlebars' | while read FILE; do
+      - find . -type f -path ./{{.SHARED_FOLDER}} -prune -name '*.handlebars' | while read FILE; do
           hbs --data variables.json --helper @budibase/handlebars-helpers "$FILE" --stdout > "${FILE%.*}"
         done

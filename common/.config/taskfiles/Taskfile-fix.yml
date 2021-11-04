@@ -16,7 +16,7 @@ tasks:
       DOCKER_CONTAINER:
         sh: echo $container
     cmds:
-      - esprint{{if eq .DOCKER_CONTAINER "container"}} check{{end}} --fix
+      - esprint{{if eq .DOCKER_CONTAINER "docker"}} check{{end}} --fix
 
   js:
     deps:
