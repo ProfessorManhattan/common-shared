@@ -1,0 +1,13 @@
+---
+version: '3'
+
+vars:
+  UPSTREAM_FILES: .editorconfig .config .github .gitignore .gitlab .vscode taskfiles
+
+tasks:
+  copy:common:
+    cmds:
+      - |
+        for file in {{.UPSTREAM_FILES}}; do
+          cp -rT "shared/$file" "$file"
+        done
