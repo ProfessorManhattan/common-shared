@@ -4,8 +4,13 @@ version: '3'
 output: interleaved
 
 vars:
+  GITHUB_ORG: ProfessorManhattan
+  GITHUB_USER: ProfessorManhattan
+  NPM_PROGRAM: pnpm
+  NPX_PACKAGE: pnpx
   REPOSITORY_SUBTYPE: {{subgroup}}
   REPOSITORY_TYPE: {{group}}
+  TIMEZONE: America/New_York
 
 includes:
   ansible: ./.config/taskfiles/ansible/Taskfile.yml
