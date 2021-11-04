@@ -36,6 +36,7 @@ tasks:
   copy:project:
     cmds:
       - cp -rT {{.SHARED_FOLDER}}/common common
+      - if [ ! -d project ]; then mkdir project; fi
       - cp -rT project common
 
   merge-and-template:
