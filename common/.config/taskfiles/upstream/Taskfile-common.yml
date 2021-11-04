@@ -2,37 +2,80 @@
 version: '3'
 
 vars:
+  DOCS_URL: https://gitlab.com/megabyte-labs/documentation/{{.REPOSITORY_SUBTYPE}}
   SHARED_COMMON_URL: https://gitlab.com/megabyte-labs/common/shared.git
+  SHARED_FOLDER: .shared
 
 tasks:
   clone:
+    deps:
+      - clone:common
+      - clone:docs
+
+  clone:common:
     cmds:
-      - git clone {{.SHARED_COMMON_URL}} shared
+      - git clone {{.SHARED_COMMON_URL}} {{.SHARED_FOLDER}}
+
+  clone:docs:
+    cmds:
+      - git clone {{.DOCS_URL}} common/.config/docs
+      - rm -rf common/.config/docs/.git
 
   copy:
     deps:
       - copy:common
       - copy:project
 
-  copy:common: cp -rT shared/common .
+  copy:common:
+    cmds:
+      - cp -rT {{.SHARED_FOLDER}}/common .
+      - task: :common:husky:permissions
 
   copy:project:
     cmds:
-      - cp -rT shared/common common
+      - cp -rT {{.SHARED_FOLDER}}/common common
       - cp -rT project common
+
+  merge-and-template:
+    deps:
+      - merge
+      - template
 
   merge:
     deps:
       - merge:package
 
   merge:package:
+    cmds:
+      - task: merge:package:project
+      - task: merge:package:project-subtype
+
+  merge:package:project:
     deps:
       - :install:software:jq
     cmds:
-      - jq -s '.[0] * .[1]' shared/common/package.json.handlebars project/package.{{.REPOSITORY_SUBTYPE}}.json.handlebars
+      - |
+        if [ -f "project/package.json.handlebars" ]; then
+          jq -s '.[0] * .[1]' {{.SHARED_FOLDER}}/common/package.json.handlebars project/package.json.handlebars > common/package.json.handlebars
+        fi
+
+  merge:package:project-subtype:
+    deps:
+      - :install:software:jq
+    cmds:
+      - |
+        for FOLDER in project-*/; do
+          SUBTYPE="$(echo "$FOLDER" | sed 's/files-\(.*\)\//\1/')"
+          if [ -f "project-$SUBTYPE/package.json.handlebars" ]; then
+            mkdir -p "common-$SUBTYPE"
+            jq -s '.[0] * .[1]' common/package.json.handlebars "project-$SUBTYPE/package.json.handlebars" > "common-$SUBTYPE/package.json.handlebars"
+          fi
+        done
 
   template:
+    deps:
+      - :install:npm:hbs
     cmds:
       - find . -type f -path ./common -prune -name '*.handlebars' | while read FILE; do
-          hbs --data .variables.json "$FILE" --stdout > "${FILE%.*}"
+          hbs --data variables.json --helper @budibase/handlebars-helpers "$FILE" --stdout > "${FILE%.*}"
         done

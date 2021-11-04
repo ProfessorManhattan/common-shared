@@ -1,1 +1,77 @@
+---
+version: '3'
 
+vars:
+  SHARED_COMMON_URL: https://gitlab.com/megabyte-labs/common/{{.REPOSITORY_TYPE}}.git
+  SHARED_FOLDER: .shared
+
+tasks:
+  clone:
+    deps:
+      - clone:shared
+      - clone:docs
+
+  clone:docs:
+    cmds:
+      - git clone {{.DOCS_URL}}
+
+  clone:shared:
+    cmds:
+      - git clone {{.SHARED_COMMON_URL}} {{.SHARED_FOLDER}}
+
+  copy:
+    deps:
+      - copy:common
+      - copy:project
+
+  copy:common:
+    cmds:
+      - cp -rT {{.SHARED_FOLDER}}/common .
+      - task: :common:husky:permissions
+
+  copy:project:
+    cmds:
+      - cp -rT {{.SHARED_FOLDER}}/common common
+      - cp -rT project common
+
+  docs:
+
+
+  merge-and-template:
+    deps:
+      - merge
+      - template
+
+  merge:
+    cmds:
+      - task: merge:package:project
+      - task: merge:package:project-subtype
+
+  merge:package:project:
+    deps:
+      - :install:software:jq
+    cmds:
+      - |
+        if [ -f "project/package.json.handlebars" ]; then
+          jq -s '.[0] * .[1]' {{.SHARED_FOLDER}}/common/package.json.handlebars project/package.json.handlebars > common/package.json.handlebars
+        fi
+
+  merge:package:project-subtype:
+    deps:
+      - :install:software:jq
+    cmds:
+      - |
+        for SUBTYPE in ./project-*/; do
+          if [ -f "project-$SUBTYPE/package.json.handlebars" ]; then
+            mkdir -p "common-$SUBTYPE"
+            jq -s '.[0] * .[1]' common/package.json.handlebars "project-$SUBTYPE/package.json.handlebars" > "common-$SUBTYPE/package.json.handlebars"
+          fi
+        done
+
+  template:
+    deps:
+      - :install:npm:hbs
+    cmds:
+      - find . -type f -path ./common -prune -name '*.handlebars' | while read FILE; do
+          hbs --data variables.json --helper @budibase/handlebars-helpers "$FILE" --stdout > "${FILE%.*}"
+        done

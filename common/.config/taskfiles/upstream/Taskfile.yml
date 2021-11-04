@@ -2,8 +2,12 @@
 version: '3'
 
 tasks:
-  update:common:
+  update-common:
     cmds:
       - task: :upstream:common:clone
       - task: :upstream:common:copy
-      - task: :upstream:common:merge
+      - task: :upstream:common:merge-and-template
+
+  update-project:
+    cmds:
+      - task: :upstream:project:clone

@@ -1,11 +1,40 @@
 ---
 version: '3'
 
+output: interleaved
+
 vars:
   REPOSITORY_SUBTYPE: shared
   REPOSITORY_TYPE: common
 
+includes:
+  ansible: ./.config/taskfiles/ansible/Taskfile.yml
+  ansible:ansibler: ./.config/taskfiles/ansible/Taskfile-ansibler.yml
+  ansible:test: ./.config/taskfiles/ansible/Taskfile-test.yml
+  common: ./.config/taskfiles/common/Taskfile.yml
+  common:code: ./.config/taskfiles/common/Taskfile-code.yml
+  common:update: ./.config/taskfiles/common/Taskfile-update.yml
+  docker: ./.config/taskfiles/Taskfile-docker.yml
+  fix: ./.config/taskfiles/Taskfile-fix.yml
+  git: ./.config/taskfiles/Taskfile-git.yml
+  image: ./.config/taskfiles/Taskfile-image.yml
+  install: ./.config/taskfiles/Taskfile-install.yml
+  lint: ./.config/taskfiles/lint/Taskfile.yml
+  lint:esprint: ./.config/taskfiles/lint/Taskfile-esprint.yml
+  lint:markdown: ./.config/taskfiles/lint/Taskfile-markdown.yml
+  lint:prose: ./.config/taskfiles/lint/Taskfile-prose.yml
+  nest: ./.config/taskfiles/nest/Taskfile.yml
+  npm: ./.config/taskfiles/npm/Taskfile.yml
+  npm:cov: ./.config/taskfiles/npm/Taskfile-cov.yml
+  npm:doc: ./.config/taskfiles/npm/Taskfile-doc.yml
+  packer: ./.config/taskfiles/Taskfile-packer.yml
+  python: ./.config/taskfiles/Taskfile-python.yml
+  security: ./.config/taskfiles/Taskfile-security.yml
+  upstream: ./.config/taskfiles/upstream/Taskfile.yml
+  upstream:common: ./.config/taskfiles/upstream/Taskfile-common.yml
+  upstream:docs: ./.config/taskfiles/upstream/Taskfile-docs.yml
+  upstream:project: ./.config/taskfiles/upstream/Taskfile-project.yml
+  vscode: ./.config/taskfiles/Taskfile-vscode.yml
+
 tasks:
-  update:
-    cmds:
-      - cp -rf common .
+  donothing: 'true'
