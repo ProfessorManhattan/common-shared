@@ -4,3 +4,8 @@ version: '3'
 vars:
   REPOSITORY_SUBTYPE: shared
   REPOSITORY_TYPE: common
+
+tasks:
+  update:
+    cmds:
+      - cp -rf common .

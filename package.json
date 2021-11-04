@@ -16,10 +16,9 @@
   },
   "type": "module",
   "scripts": {
-    "fix": "task fix",
     "help": "task --list",
-    "lint": "task lint",
-    "start": "bash .start.sh"
+    "start": "bash .start.sh",
+    "update": "task update"
   },
   "config": {
     "commitizen": {
