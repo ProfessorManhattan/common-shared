@@ -2,12 +2,37 @@
 version: '3'
 
 vars:
-  UPSTREAM_FILES: .editorconfig .config .github .gitignore .gitlab .vscode taskfiles
+  SHARED_COMMON_URL: https://gitlab.com/megabyte-labs/common/shared.git
 
 tasks:
-  copy:common:
+  clone:
     cmds:
-      - |
-        for file in {{.UPSTREAM_FILES}}; do
-          cp -rT "shared/$file" "$file"
+      - git clone {{.SHARED_COMMON_URL}} shared
+
+  copy:
+    deps:
+      - copy:common
+      - copy:project
+
+  copy:common: cp -rT shared/common .
+
+  copy:project:
+    cmds:
+      - cp -rT shared/common common
+      - cp -rT project common
+
+  merge:
+    deps:
+      - merge:package
+
+  merge:package:
+    deps:
+      - :install:software:jq
+    cmds:
+      - jq -s '.[0] * .[1]' shared/common/package.json.handlebars project/package.{{.REPOSITORY_SUBTYPE}}.json.handlebars
+
+  template:
+    cmds:
+      - find . -type f -path ./common -prune -name '*.handlebars' | while read FILE; do
+          hbs --data .variables.json "$FILE" --stdout > "${FILE%.*}"
         done

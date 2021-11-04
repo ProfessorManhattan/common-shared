@@ -53,7 +53,7 @@ tasks:
       using `git commit -m`. However, if you really need to, you can add the flag `--no-verify`
       to your regular `git commit -m` command to bypass the pre-commit hook.
     cmds:
-      - . ./.husky/pre-commit
+      - . ./.config/husky/pre-commit
       - true info "Initiating the commit dialog"
       - exec < /dev/tty && git cz --hook || true
 
@@ -81,7 +81,7 @@ tasks:
     cmds:
       - |
         if [ -d .git ] && [ "${container:=}" != 'docker' ]; then
-          husky install
+          husky install .config/husky
         else
           true warn 'Cannot run `husky install` because there is no `.git/` folder (or this is a Docker container)'
         fi
@@ -90,33 +90,21 @@ tasks:
 
   husky:permission:
     cmds:
-      - |
-        if [ -f "{{.FILE}}" ]; then
-          chmod +x "{{.FILE}}"
-        else
-          if [ -f ".common/files-{{.REPOSITORY_SUBTYPE}}/{{.FILE}}" ]; then
-            cp ".common/files-{{.REPOSITORY_SUBTYPE}}/{{.FILE}}" "{{.FILE}}"
-            chmod +x "{{.FILE}}"
-          else
-            true error 'The `{{.FILE}}` is missing from the `.common/files-{{.REPOSITORY_SUBTYPE}}/` folder'
-            exit 1
-          fi
-        fi
+      - chmod +x "{{.FILE}}"
     sources:
-      - '.common/files-{{.REPOSITORY_SUBTYPE}}/{{.FILE}}'
       - '{{.FILE}}'
 
   husky:permissions:
     cmds:
       - task: husky:permission
         vars:
-          FILE: .husky/commit-msg
+          FILE: .config/husky/commit-msg
       - task: husky:permission
         vars:
-          FILE: .husky/pre-commit
+          FILE: .config/husky/pre-commit
       - task: husky:permission
         vars:
-          FILE: .husky/prepare-commit-msg
+          FILE: .config/husky/prepare-commit-msg
 
   node:dependencies:global:
     run: once
