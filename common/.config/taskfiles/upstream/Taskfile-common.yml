@@ -8,9 +8,9 @@ vars:
 
 tasks:
   clone:
-    deps:
-      - clone:common
-      - clone:docs
+    cmds:
+      - task: clone:common
+      - task: clone:docs
 
   clone:common:
     cmds:
@@ -18,7 +18,8 @@ tasks:
 
   clone:docs:
     cmds:
-      - git clone {{.DOCS_URL}} common/.config/docs
+      - rm -rf common/.config/docs
+      - git clone {{.DOCS_URL}} .shared/common/.config/docs
       - rm -rf common/.config/docs/.git
 
   copy:
