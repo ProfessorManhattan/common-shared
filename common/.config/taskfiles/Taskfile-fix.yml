@@ -7,18 +7,7 @@ vars:
     -o -name venv
 
 tasks:
-  esprint:
-    deps:
-      - :common:node:dependencies:local
-      - :install:npm:esprint
-    desc: Fix the project using `esprint`
-    vars:
-      DOCKER_CONTAINER:
-        sh: echo $container
-    cmds:
-      - esprint{{if eq .DOCKER_CONTAINER "docker"}} check{{end}} --fix
-
-  js:
+  eslint:
     deps:
       - :common:node:dependencies:local
       - :install:npm:eslint
@@ -26,8 +15,9 @@ tasks:
     summary: |
       # Fix JavaScript/TypeScript errors automatically with `eslint`
 
-      This task is an `eslint` task that is configured to only run on JavaScript/TypeScript files. It will
-      attempt to automatically fix `eslint` issues and will also report any issues it finds.
+      This task is an [`eslint`](https://eslint.org/) task. It will attempt to automatically fix
+      `eslint` issues. It will report any issues it was unable to fix. The configuration found in
+      `package.json` includes logic for fixing/linting TypeScript, JavaScript, JSON, TOML, and YAML.
 
       **Example using `eslint` to fix a single JS/TS file:**
       `task fix:js -- single.ts`
@@ -35,7 +25,7 @@ tasks:
       **Example fixing all JS/TS files in a project:**
       `task fix:js`
     cmds:
-      - eslint --fix --format pretty --ext .js,.jsx,.ts {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
+      - eslint --fix {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
 
   json:
     deps:
