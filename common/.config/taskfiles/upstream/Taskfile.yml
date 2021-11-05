@@ -2,13 +2,13 @@
 version: '3'
 
 tasks:
-  update-common:
+  common:
     cmds:
       - task: :upstream:common:clone
       - task: :upstream:common:copy
       - task: :upstream:common:merge-and-template
       - task: :fix:eslint
 
-  update-project:
+  project:
     cmds:
       - task: :upstream:project:clone
