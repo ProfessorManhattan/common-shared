@@ -3,6 +3,8 @@ version: '3'
 
 tasks:
   beta:
+    deps:
+      - :install:software:fastlane
     desc: Publishes Android app to Firebase beta channel
 
   release:
