@@ -8,3 +8,16 @@ lane :deploy do
     supply(apk: ENV['CORDOVA_ANDROID_RELEASE_BUILD_PATH'])
 end
 
+
+
+lane :beta do
+gradle(
+    task: 'assemble',
+    build_type: 'Release'
+)
+
+firebase_app_distribution(
+    app: ENV["APP_ID"],
+#   groups: "qa-team, trusted-testers"
+)
+end
