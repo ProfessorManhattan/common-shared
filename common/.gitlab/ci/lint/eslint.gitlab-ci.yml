@@ -1,0 +1,11 @@
+---
+eslint:
+  stage: lint
+  image:
+    name: megabytelabs/eslint:slim
+    entrypoint: ['']
+  variables:
+    GIT_DEPTH: 1
+  script:
+    - set -eo pipefail
+    - eslint --format gitlab . # Requires eslint-formatter-gitlab
