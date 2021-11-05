@@ -6,4 +6,4 @@ tasks:
     desc: Publishes Android app to Firebase beta channel
 
   release:
-    desc: Publishes Android app to iTunes
+    desc: Publishes Android app to Google Play
