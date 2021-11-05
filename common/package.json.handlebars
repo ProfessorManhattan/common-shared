@@ -1,5 +1,5 @@
 {
-  "name": "@{{profile.npmjs_organization}}/{{repository.prefix.github}}{{slug}}",
+  "name": "{{#if customPackageName}}{{customPackageName}}{{else}}@{{profile.npmjs_organization}}/{{repository.prefix.github}}{{slug}}{{/if}}",
   "description": "{{description}}",
   "license": "{{license}}",
   "author": "{{author.name}} <{{author.email}}> ({{link.home}})",
@@ -19,6 +19,17 @@
     "prepare": "task common:husky",
     "start": "bash .start.sh"
   },
+  "blueprint": {
+    "description": "An NPM package that is part of the Megabyte Labs eco-system",
+    "name": "Name of Package",
+    "overview": "This text shows up at the top of the README.md.",
+    "repository": {
+      "github": "https://github.com/{{profile.github}}/{{repository.prefix.github}}{{slug}}",
+      "gitlab": "{{repository.gitlabBaseUrl}}/{{group}}/{{subgroup}}/{{slug}}"
+    },
+    "slug": "my-project",
+    "title": "README Long Title"
+  },
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog"
@@ -33,6 +44,7 @@
     "@megabytelabs/eslint-config": "^1.0.0",
     "@megabytelabs/jest-preset": "^1.0.0",
     "@megabytelabs/prettier-config": "^14.14.14",
+    "@typescript-eslint/eslint-plugin": "^5.2.0",
     "cz-conventional-changelog": "^3.3.0"
   },
   "engines": {
@@ -53,7 +65,9 @@
   ],
   "keywords": [
     "megabytelabs",
-    "professormanhattan"
+    "professormanhattan",
+    "npm",
+    "package"
   ],
   "lint-staged": {
     "**/*": [
@@ -69,7 +83,7 @@
     "**/*.json": [
       "task fix:json --"
     ],
-    "**/*.(js|jsx|ts)": [
+    "**/*.(js|jsx|ts|tsx)": [
       "task fix:js --",
       "task lint:js --"
     ],
@@ -94,9 +108,6 @@
     "logo.png": [
       "task image:resize -- 200 200",
       "task image:compress --"
-    ],
-    "requirements.txt": [
-      "requirements-txt-fixer"
     ]
   },
   "prettier": "@megabytelabs/prettier-config",
