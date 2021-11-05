@@ -61,8 +61,8 @@ tasks:
       - :install:software:jq
     cmds:
       - |
-        if [ -f "project/package.json.handlebars" ]; then
-          jq -s '.[0] * .[1]' {{.SHARED_FOLDER}}/common/package.json.handlebars project/package.json.handlebars > common/package.json.handlebars
+        if [ -f "project/package.hbs.json" ]; then
+          jq -s '.[0] * .[1]' {{.SHARED_FOLDER}}/common/package.hbs.json project/package.hbs.json > common/package.hbs.json
         fi
 
   merge:package:project-subtype:
@@ -72,9 +72,9 @@ tasks:
       - |
         for FOLDER in project-*/; do
           SUBTYPE="$(echo "$FOLDER" | sed 's/files-\(.*\)\//\1/')"
-          if [ -f "project-$SUBTYPE/package.json.handlebars" ]; then
+          if [ -f "project-$SUBTYPE/package.hbs.json" ]; then
             mkdir -p "common-$SUBTYPE"
-            jq -s '.[0] * .[1]' common/package.json.handlebars "project-$SUBTYPE/package.json.handlebars" > "common-$SUBTYPE/package.json.handlebars"
+            jq -s '.[0] * .[1]' common/package.hbs.json "project-$SUBTYPE/package.hbs.json" > "common-$SUBTYPE/package.hbs.json"
           fi
         done
 
@@ -100,20 +100,35 @@ tasks:
         sh: mktemp
     cmds:
       - |
+        GROUP="$(jq -r '.blueprint.subgroup' package.json)"
         for FOLDER in project-*/; do
           SUBTYPE="$(echo "$FOLDER" | sed 's/files-\(.*\)\//\1/')"
           if [ -f "project-$SUBTYPE/.config/variables.json" ]; then
             mkdir -p "common-$SUBTYPE/.config"
-            jq --arg subtype "$SUBTYPE" '.subgroup = $subtype' common/.config/variables.json > "$TMP"
+            jq --arg group "$GROUP" --arg subtype "$SUBTYPE" '.subgroup = $subtype | .group = $group' common/.config/variables.json > "$TMP"
             jq -s -S '.[0] * .[1]' "$TMP" "project-$SUBTYPE/.config/variables.json" > "common-$SUBTYPE/.config/variables.json"
           fi
         done
 
   template:
+    cmds:
+      - task: template:package
+      - task: template:files
+
+  template:files:
     deps:
       - :install:npm:hbs
     cmds:
       - |
-        find . -type f -path ./common -prune -name '*.handlebars' | while read FILE; do
-          hbs --data variables.json --helper @budibase/handlebars-helpers "$FILE" --stdout > "${FILE%.*}"
+        find . -type f -path ./common -prune -name '*.hbs.*' | while read FILE; do
+          hbs --data .variables.json --helper @budibase/handlebars-helpers "$FILE" --stdout > "${FILE//.hbs}"
         done
+
+  template:package:
+    deps:
+      - :install:software:jq
+    vars:
+      BLUEPRINT:
+        sh: jq -r '.blueprint' package.json
+    cmds:
+      - jq --arg blueprint "$BLUEPRINT" '. = (($testy | fromjson) * .)' common/.config/docs/variables.json > .variables.json

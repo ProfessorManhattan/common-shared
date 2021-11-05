@@ -32,7 +32,7 @@ tasks:
       TMP:
         sh: mktemp
     cmds:
-      - jq -s '.[0] * .[1]' package.json package.json.handlebars > "$TMP"
+      - jq -s '.[0] * .[1]' package.json package.hbs.json > "$TMP"
 
   merge:package:json-blueprint-overrides:
     summary: |
