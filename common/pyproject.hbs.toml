@@ -11,11 +11,19 @@ keywords = ["node", "python", "app"]
 include = ["CHANGELOG.md"]
 
 [tool.poetry.dependencies]
+{{#eq group 'ansible'}}
+python = "^3.9"
+ansible = "^4.8.0"
+docker = "^5.0.3"
+pywinrm = ">=0.3.0"
+python-vagrant = "^0.5.15"
+{{/if}}
 
 [tool.poetry.dev-dependencies]
+{{#eq group 'ansible'}}{{else}}
 python = "^3.9"
+{{/eq}}
 {{#eq group 'ansible'}}
-ansible = "^4.8.0"
 ansible-lint = "<5.0.0"
 ansibler = "^0.1.14"
 black = "^21.10b0"
@@ -23,15 +31,12 @@ black = "^21.10b0"
 blocklint = "^0.2.3"
 {{#eq group 'ansible'}}
 flake8 = "^4.0.1"
+mod-ansible-autodoc = "^0.5.7"
 molecule-docker = "^1.1.0"
 molecule-vagrant = "^0.6.3"
 {{/eq}}
 pre-commit-hooks = "^4.0.1"
 proselint = "^0.12.0"
-{{#eq group 'ansible'}}
-python-vagrant = "^0.5.15"
-pywinrm = ">=0.3.0"
-{{/eq}}
 yamllint = "^1.26.3"
 
 [tool.poetry.urls]
