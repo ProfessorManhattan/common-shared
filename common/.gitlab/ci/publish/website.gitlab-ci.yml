@@ -1,6 +1,6 @@
 ---
-pages:
-  stage: deploy
+website:
+  publish: deploy
   allow_failure: true
   variables:
     GIT_DEPTH: 1
