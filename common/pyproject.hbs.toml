@@ -35,6 +35,9 @@ mod-ansible-autodoc = "^0.5.7"
 molecule-docker = "^1.1.0"
 molecule-vagrant = "^0.6.3"
 {{/eq}}
+{{#eq group 'packer'}}
+latestos = "^0.5"
+{{/eq}}
 pre-commit-hooks = "^4.0.1"
 proselint = "^0.12.0"
 yamllint = "^1.26.3"
