@@ -48,8 +48,9 @@ tasks:
       - |
         for FOLDER in project-*/; do
           SUBTYPE="$(echo "$FOLDER" | sed 's/project-\(.*\)\//\1/')"
-          cp -rT "$FOLDER" "common-$SUBTYPE"
+          cp -rT "$FOLDER" "common-$SUBTYPE" &
         done
+        wait
 
   merge:
     deps:
