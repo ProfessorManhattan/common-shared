@@ -111,7 +111,6 @@ tasks:
           TMP="$(mktemp)"
           jq --arg keywords "$(jq '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = ($keywords | fromjson) | .' "$1" "$2" > "$TMP"
           mv "$TMP" "$3"
-          jq -r '.' "$3"
         }
 
         for FOLDER in project-*/; do
@@ -190,10 +189,6 @@ tasks:
       - |
         function handlebars() {
           FILE="$1"
-          echo "handlebars"
-          echo "${FILE%.*}"
-          echo $(test -d $FILE)
-          echo $(test -d ${FILE%.*})
           hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
           rm "$FILE"
         }
@@ -214,10 +209,6 @@ tasks:
       - |
         function handlebars() {
           FILE="$1"
-          echo "handlebars"
-          echo "${FILE%.*}"
-          echo $(test -d $FILE)
-          echo $(test -d ${FILE%.*})
           hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE%.*}"
           rm "$FILE"
         }
