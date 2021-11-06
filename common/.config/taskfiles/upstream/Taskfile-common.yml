@@ -17,7 +17,7 @@ tasks:
   clone:common:
     cmds:
       - rm -rf ./{{.SHARED_FOLDER}}
-      - git clone --depth=1 ./{{.SHARED_COMMON_URL}} ./{{.SHARED_FOLDER}}
+      - git clone --depth=1 {{.SHARED_COMMON_URL}} ./{{.SHARED_FOLDER}}
       - rm -rf ./{{.SHARED_FOLDER}}/.git
 
   clone:docs:
