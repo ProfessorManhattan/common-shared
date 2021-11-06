@@ -25,14 +25,14 @@
   },
   "blueprint": {
     "description": "An NPM package that is part of the Megabyte Labs eco-system",
-    "name": "Name of Package",
+    "name": "My Project Name",
     "overview": "This text shows up at the top of the README.md.",
     "repository": {
       "github": "https://github.com/{{profile.github}}/{{repository.prefix.github}}{{slug}}",
       "gitlab": "{{repository.gitlabBaseUrl}}/{{group}}/{{subgroup}}/{{slug}}"
     },
     "slug": "my-project",
-    "title": "README Long Title"
+    "title": "Title of the README.md"
   },
   "config": {
     "commitizen": {
