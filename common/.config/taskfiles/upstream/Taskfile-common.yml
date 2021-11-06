@@ -70,7 +70,7 @@ tasks:
           ensureKeywords "$2"
 
           # Merge the files
-          jq --arg keywords "$(jq '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = $keywords | .' "$1" "$2" > "$3"
+          jq --arg keywords "$(jq -r '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = $keywords | .' "$1" "$2" > "$3"
         }
 
         mergePackages "{{.SHARED_FOLDER}}/common/package.hbs.json" "project/package.hbs.json" "common/package.hbs.json"
@@ -93,7 +93,7 @@ tasks:
           ensureKeywords "$2"
 
           # Merge the files
-          jq --arg keywords "$(jq '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = $keywords | .' "$1" "$2" > "$3"
+          jq --arg keywords "$(jq -r '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = $keywords | .' "$1" "$2" > "$3"
         }
 
         for FOLDER in project-*/; do
