@@ -158,7 +158,7 @@ tasks:
           FOLDER="$1"
           SUBTYPE="$(echo "$FOLDER" | sed 's/project-\(.*\)\//\1/')"
           mkdir -p "{{.COMMON_FOLDER}}-$SUBTYPE/.config"
-          jq --arg group "$GROUP" --arg subtype "$SUBTYPE" '.subgroup = $subtype | .group = $group' {{.COMMON_FOLDER}}/.config/variables.json > "$TMP"
+          jq --arg group "$GROUP" --arg subtype "$SUBTYPE" '.subgroup = $subtype | .group = $group | .' {{.COMMON_FOLDER}}/.config/variables.json > "$TMP"
           if [ -f "project-$SUBTYPE/.config/variables.json" ]; then
             jq -s -S '.[0] * .[1]' "$TMP" "project-$SUBTYPE/.config/variables.json" > "{{.COMMON_FOLDER}}-$SUBTYPE/.config/variables.json"
           else
