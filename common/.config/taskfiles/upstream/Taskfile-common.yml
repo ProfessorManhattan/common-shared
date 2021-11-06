@@ -163,15 +163,15 @@ tasks:
     deps:
       - :install:npm:hbs
     cmds:
-      - if [ -f package.hbs.json ]; then mv package.hbs.json.tmp; fi
+      - if [ -f package.hbs.json ]; then mv tmp.package.hbs.json; fi
       - |
         find . -type f -not \( -path './common*' -o -path './project*' \) -prune -name '*.hbs.*' | while read FILE; do
           hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
           rm "$FILE"
         done
-      - jq -s '.[0] * .[1]' package.json package.json.tmp > "$TMP"
+      - jq -s '.[0] * .[1]' package.json tmp.package.json > "$TMP"
       - mv "$TMP" package.json
-      - rm package.json.tmp
+      - rm tmp.package.json
 
   template:files:handlebars:
     deps:
