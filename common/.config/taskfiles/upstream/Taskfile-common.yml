@@ -35,7 +35,7 @@ tasks:
 
   copy:common:
     cmds:
-      - cp -rT {{.SHARED_FOLDER}}/common .
+      - cp -rT {{.SHARED_FOLDER}}/common/ .
       - task: :common:husky:permissions
 
   copy:project:
