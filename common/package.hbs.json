@@ -11,11 +11,11 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+{{repository.github}}.git"
+    "url": "git+{{#if repository.github}}{{repository.github}}{{else}}https://github.com/{{profile.github}}/{{repository.prefix.github}}{{slug}}{{/if}}.git"
   },
   "bugs": {
     "email": "{{email.help}}",
-    "url": "{{repository.gitlab}}{{repository.location.issues.gitlab}}"
+    "url": "{{#if repository.gitlab}}{{repository.gitlab}}{{else}}{{repository.gitlabBaseUrl}}/{{group}}/{{subgroup}}/{{slug}}{{/if}}{{repository.location.issues.gitlab}}"
   },
   "version": "0.0.1",
   "scripts": {
@@ -28,8 +28,8 @@
     "name": "My Project Name",
     "overview": "This text shows up at the top of the README.md.",
     "repository": {
-      "github": "https://github.com/{{profile.github}}/{{repository.prefix.github}}{{slug}}",
-      "gitlab": "{{repository.gitlabBaseUrl}}/{{group}}/{{subgroup}}/{{slug}}"
+      "github": "{{#if repository.github}}{{repository.github}}{{else}}https://github.com/{{profile.github}}/{{repository.prefix.github}}{{slug}}{{/if}}",
+      "gitlab": "{{#if repository.gitlab}}{{repository.gitlab}}{{else}}{{repository.gitlabBaseUrl}}/{{group}}/{{subgroup}}/{{slug}}{{/if}}"
     },
     "slug": "my-project",
     "title": "Title of the README.md"
