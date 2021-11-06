@@ -60,13 +60,8 @@ tasks:
         function ensureKeywords() {
           if [ ! -f "$1" ]; then echo "{}" > "$1"; fi
           KEYWORDS="$(jq -r '.keywords' "$1")"
-          echo "---1 $1"
-          echo "$KEYWORDS"
           if [ "$KEYWORDS" == 'null' ] || [ "$KEYWORDS" == '' ]; then
             TMP="$(mktemp)" && jq -r '.keywords = [] | .' "$1" > "$TMP" && mv "$TMP" "$1"
-            KEYWORDS="$(jq -r '.keywords' "$1")"
-            echo "---2 $1"
-            echo "$KEYWORDS"
           fi
         }
 
@@ -76,7 +71,7 @@ tasks:
           ensureKeywords "$2"
 
           # Merge the files
-          jq --arg keywords "$(jq -r '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = $keywords | .' "$1" "$2" > "$3"
+          jq --arg keywords "$(jq '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = ($keywords | fromjson) | .' "$1" "$2" > "$3"
         }
 
         mergePackages "{{.SHARED_FOLDER}}/common/package.hbs.json" "project/package.hbs.json" "common/package.hbs.json"
@@ -89,13 +84,8 @@ tasks:
         function ensureKeywords() {
           if [ ! -f "$1" ]; then echo "{}" > "$1"; fi
           KEYWORDS="$(jq -r '.keywords' "$1")"
-          echo "---1 $1"
-          echo "$KEYWORDS"
           if [ "$KEYWORDS" == 'null' ] || [ "$KEYWORDS" == '' ]; then
             TMP="$(mktemp)" && jq -r '.keywords = [] | .' "$1" > "$TMP" && mv "$TMP" "$1"
-            KEYWORDS="$(jq -r '.keywords' "$1")"
-            echo "---2 $1"
-            echo "$KEYWORDS"
           fi
         }
 
@@ -105,17 +95,14 @@ tasks:
           ensureKeywords "$2"
 
           # Merge the files
-          echo "1111 $1"
-          echo "2222 $2"
-          KEYWORDS="$(jq -r '.keywords[]' "$1" "$2" | jq -s '. | unique')"
-          echo "$KEYWORDS"
-          jq --arg keywords "$(jq -r '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = $keywords | .' "$1" "$2" > "$3"
+          jq --arg keywords "$(jq '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = ($keywords | fromjson) | .' "$1" "$2" > "$3"
         }
 
         for FOLDER in project-*/; do
           SUBTYPE="$(echo "$FOLDER" | sed 's/project-\(.*\)\//\1/')"
-          mergePackages "common/package.hbs.json" "project-$SUBTYPE/package.hbs.json" "common-$SUBTYPE/package.hbs.json"
+          mergePackages "common/package.hbs.json" "project-$SUBTYPE/package.hbs.json" "common-$SUBTYPE/package.hbs.json" &
         done
+        wait
 
   merge:variables:
     deps:
@@ -152,7 +139,8 @@ tasks:
             echo "ERROR '.blueprint.subgroup' did not exist in the package.json and the fallback '.vars.REPOSITORY_SUBTYPE' did not exist in the Taskfile.yml"
           fi
         fi
-        for FOLDER in project-*/; do
+        function handleSubtype() {
+          FOLDER="$1"
           SUBTYPE="$(echo "$FOLDER" | sed 's/project-\(.*\)\//\1/')"
           mkdir -p "common-$SUBTYPE/.config"
           jq --arg group "$GROUP" --arg subtype "$SUBTYPE" '.subgroup = $subtype | .group = $group' common/.config/variables.json > "$TMP"
@@ -162,7 +150,11 @@ tasks:
           else
             mv "$TMP" "common-$SUBTYPE/.config/variables.json"
           fi
+        }
+        for FOLDER in project-*/; do
+          handleSubtype "$FOLDER" &
         done
+        wait
 
   template:
     cmds:
@@ -180,10 +172,15 @@ tasks:
     cmds:
       - if [ -f package.hbs.json ]; then mv tmp.package.hbs.json; fi
       - |
-        find . -type f -not \( -path './common*' -o -path './project*' \) -prune -name '*.hbs.*' | while read FILE; do
+        function handlebars() {
+          FILE="$1"
           hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
           rm "$FILE"
+        }
+        find . -type f -not \( -path './common*' -o -path './project*' \) -prune -name '*.hbs.*' | while read FILE; do
+          handlebars "$FILE" &
         done
+        wait
       - jq -s '.[0] * .[1]' package.json tmp.package.json > "$TMP"
       - mv "$TMP" package.json
       - rm tmp.package.json
@@ -193,9 +190,13 @@ tasks:
       - :install:npm:hbs
     cmds:
       - |
-        find . -type f -not \( -path './common*' -o -path './project*' \) -prune -name '*.handlebars' | while read FILE; do
+        function handlebars() {
+          FILE="$1"
           hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE%.*}"
           rm "$FILE"
+        }
+        find . -type f -not \( -path './common*' -o -path './project*' \) -prune -name '*.handlebars' | while read FILE; do
+          handlebars "$1"
         done
 
   template:variables:
