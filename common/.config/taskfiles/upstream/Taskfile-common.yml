@@ -110,6 +110,7 @@ tasks:
           TMP="$(mktemp)"
           jq --arg keywords "$(jq '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = ($keywords | fromjson) | .' "$1" "$2" > "$3"
           mv "$TMP" "$3"
+          cat "$3"
         }
 
         for FOLDER in project-*/; do
