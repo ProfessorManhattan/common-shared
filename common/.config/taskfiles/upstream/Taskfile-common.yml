@@ -157,7 +157,6 @@ tasks:
           mkdir -p "common-$SUBTYPE/.config"
           jq --arg group "$GROUP" --arg subtype "$SUBTYPE" '.subgroup = $subtype | .group = $group' common/.config/variables.json > "$TMP"
           if [ -f "project-$SUBTYPE/.config/variables.json" ]; then
-            jq -r '.keywords' common/package.hbs.json #DEBUG
             jq -s -S '.[0] * .[1]' "$TMP" "project-$SUBTYPE/.config/variables.json" > "common-$SUBTYPE/.config/variables.json"
           else
             mv "$TMP" "common-$SUBTYPE/.config/variables.json"
@@ -186,6 +185,10 @@ tasks:
       - |
         function handlebars() {
           FILE="$1"
+          echo "handlebars"
+          echo "${FILE%.*}"
+          echo $(test -d $FILE)
+          echo $(test -d ${FILE%.*})
           hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
           rm "$FILE"
         }
@@ -206,6 +209,10 @@ tasks:
       - |
         function handlebars() {
           FILE="$1"
+          echo "handlebars"
+          echo "${FILE%.*}"
+          echo $(test -d $FILE)
+          echo $(test -d ${FILE%.*})
           hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE%.*}"
           rm "$FILE"
         }
