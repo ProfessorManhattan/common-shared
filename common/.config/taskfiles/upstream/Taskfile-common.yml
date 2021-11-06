@@ -126,6 +126,7 @@ tasks:
       - |
         find . -type f -path ./common -prune -name '*.handlebars' | while read FILE; do
           hbs --data .variables.json --helper ./.config/hbs.js "$FILE" --stdout > "${FILE%.*}"
+        done
 
   template:package:
     deps:
