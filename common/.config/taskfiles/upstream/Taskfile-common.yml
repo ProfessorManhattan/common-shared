@@ -42,6 +42,14 @@ tasks:
       - if [ ! -d project ]; then mkdir project; fi
       - cp -rT project common
 
+  copy:project:subtype:
+    cmds:
+      - |
+        for FOLDER in project-*/; do
+          SUBTYPE="$(echo "$FOLDER" | sed 's/project-\(.*\)\//\1/')"
+          cp -rT "$FOLDER" "common-$SUBTYPE"
+        done
+
   merge:
     deps:
       - merge:package
@@ -50,7 +58,7 @@ tasks:
   merge:package:
     cmds:
       - task: merge:package:project
-      - task: merge:package:project-subtype
+      - task: merge:package:project:subtype
 
   merge:package:project:
     deps:
@@ -71,14 +79,12 @@ tasks:
           ensureKeywords "$2"
 
           # Merge the files
-          TMP="$(mktemp)"
-          jq --arg keywords "$(jq '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = ($keywords | fromjson) | .' "$1" "$2" > "$TMP"
-          mv "$TMP" "$3"
+          jq --arg keywords "$(jq '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = ($keywords | fromjson) | .' "$1" "$2" > "$3"
         }
 
-        mergePackages "common/package.hbs.json" "project/package.hbs.json" "common/package.hbs.json"
+        mergePackages "{{.SHARED_FOLDER}}/common/package.hbs.json" "project/package.hbs.json" "common/package.hbs.json"
 
-  merge:package:project-subtype:
+  merge:package:project:subtype:
     deps:
       - :install:software:jq
     cmds:
@@ -97,9 +103,7 @@ tasks:
           ensureKeywords "$2"
 
           # Merge the files
-          TMP="$(mktemp)"
-          jq --arg keywords "$(jq '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = ($keywords | fromjson) | .' "$1" "$2" > "$TMP"
-          mv "$TMP" "$3"
+          jq --arg keywords "$(jq '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = ($keywords | fromjson) | .' "$1" "$2" > "$3"
         }
 
         for FOLDER in project-*/; do
@@ -146,7 +150,6 @@ tasks:
         function handleSubtype() {
           FOLDER="$1"
           SUBTYPE="$(echo "$FOLDER" | sed 's/project-\(.*\)\//\1/')"
-          echo "common-"
           mkdir -p "common-$SUBTYPE/.config"
           jq --arg group "$GROUP" --arg subtype "$SUBTYPE" '.subgroup = $subtype | .group = $group' common/.config/variables.json > "$TMP"
           if [ -f "project-$SUBTYPE/.config/variables.json" ]; then
@@ -175,7 +178,7 @@ tasks:
     deps:
       - :install:npm:hbs
     cmds:
-      - if [ -f package.hbs.json ]; then mv tmp.package.hbs.json; fi
+      - if [ -f "package.hbs.json" ]; then mv package.hbs.json tmp.package.hbs.json; fi
       - |
         function handlebars() {
           FILE="$1"
@@ -186,8 +189,10 @@ tasks:
           handlebars "$FILE" &
         done
         wait
-      - jq -s '.[0] * .[1]' package.json tmp.package.json > "$TMP"
-      - mv "$TMP" package.json
+      - |
+        TMP="$(mktemp)"
+        jq -s '.[0] * .[1]' "package.json" tmp.package.json > "$TMP"
+        mv "$TMP" package.json
       - rm tmp.package.json
 
   template:files:handlebars:
@@ -201,9 +206,8 @@ tasks:
           rm "$FILE"
         }
         find . -type f -not \( -path './common*' -o -path './project*' \) -prune -name '*.handlebars' | while read FILE; do
-          handlebars "$FILE" &
+          handlebars "$1"
         done
-        wait
 
   template:variables:
     deps:
