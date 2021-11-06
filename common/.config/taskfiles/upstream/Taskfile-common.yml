@@ -59,9 +59,8 @@ tasks:
       - |
         function ensureKeywords() {
           if [ ! -f "$1" ]; then echo "{}" > "$1"; fi
-          echo "FILENAME - $1"
-          jq -r '.keywords' $1
-          if [ "$(jq -r '.keywords' "$1")" == 'null' ]; then
+          KEYWORDS="$(jq -r '.keywords' "$1")"
+          if [ "$KEYWORDS" == 'null' ] || [ "$KEYWORDS" == '' ]; then
             TMP="$(mktemp)" && jq -r '.keywords = [] | .' "$1" > "$TMP" && mv "$TMP" "$1"
           fi
         }
@@ -84,9 +83,8 @@ tasks:
       - |
         function ensureKeywords() {
           if [ ! -f "$1" ]; then echo "{}" > "$1"; fi
-          echo "FILENAME - $1"
-          jq -r '.keywords' $1
-          if [ "$(jq -r '.keywords' "$1")" == 'null' ]; then
+          KEYWORDS="$(jq -r '.keywords' "$1")"
+          if [ "$KEYWORDS" == 'null' ] || [ "$KEYWORDS" == '' ]; then
             TMP="$(mktemp)" && jq -r '.keywords = [] | .' "$1" > "$TMP" && mv "$TMP" "$1"
           fi
         }
