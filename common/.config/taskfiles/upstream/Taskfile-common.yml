@@ -70,7 +70,7 @@ tasks:
           ensureKeywords "$2"
 
           # Merge the files
-          jq --arg keywords "$(jq '.keywords[]' "$1" "2" | jq -s '. | unique')" \
+          jq --arg keywords "$(jq '.keywords[]' "$1" "$2" | jq -s '. | unique')" \
           -s -S '.[0] * .[1] | .keywords = $keywords | .' "$1" "$2" > "$3"
         }
 
@@ -94,7 +94,7 @@ tasks:
           ensureKeywords "$2"
 
           # Merge the files
-          jq --arg keywords "$(jq '.keywords[]' "$1" "2" | jq -s '. | unique')" \
+          jq --arg keywords "$(jq '.keywords[]' "$1" "$2" | jq -s '. | unique')" \
           -s -S '.[0] * .[1] | .keywords = $keywords | .' "$1" "$2" > "$3"
         }
 
