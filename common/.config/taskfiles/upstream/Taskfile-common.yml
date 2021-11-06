@@ -59,7 +59,7 @@ tasks:
       - |
         function ensureKeywords() {
           if [ ! -f "$1" ]; then echo "{}" > "$1"; fi
-          if [ "$(jq -r '.keywords' "$1"" == 'null' ]; then
+          if [ "$(jq -r '.keywords' "$1")" == 'null' ]; then
             TMP="$(mktemp)" && jq -r '.keywords = [] | .' "$1" > "$TMP" && mv "$TMP" "$1"
           fi
         }
@@ -70,7 +70,7 @@ tasks:
           ensureKeywords "$2"
 
           # Merge the files
-          jq --arg keywords "$(jq '.keywords[]' "$1" "2" | jq -s '. | unique')"
+          jq --arg keywords "$(jq '.keywords[]' "$1" "2" | jq -s '. | unique')" \
           -s -S '.[0] * .[1] | .keywords = $keywords | .' "$1" "$2" > "$3"
         }
 
@@ -83,7 +83,7 @@ tasks:
       - |
         function ensureKeywords() {
           if [ ! -f "$1" ]; then echo "{}" > "$1"; fi
-          if [ "$(jq -r '.keywords' "$1"" == 'null' ]; then
+          if [ "$(jq -r '.keywords' "$1")" == 'null' ]; then
             TMP="$(mktemp)" && jq -r '.keywords = [] | .' "$1" > "$TMP" && mv "$TMP" "$1"
           fi
         }
@@ -94,7 +94,7 @@ tasks:
           ensureKeywords "$2"
 
           # Merge the files
-          jq --arg keywords "$(jq '.keywords[]' "$1" "2" | jq -s '. | unique')"
+          jq --arg keywords "$(jq '.keywords[]' "$1" "2" | jq -s '. | unique')" \
           -s -S '.[0] * .[1] | .keywords = $keywords | .' "$1" "$2" > "$3"
         }
 
