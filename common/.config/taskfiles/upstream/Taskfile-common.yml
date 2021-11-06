@@ -134,4 +134,4 @@ tasks:
       BLUEPRINT:
         sh: jq -r '.blueprint' package.json
     cmds:
-      - jq --arg blueprint "$BLUEPRINT" '. = (($testy | fromjson) * .)' common/.config/docs/variables.json > .variables.json
+      - jq --arg blueprint "$BLUEPRINT" '. = (($blueprint | fromjson) * .)' common/.config/docs/variables.json > .variables.json
