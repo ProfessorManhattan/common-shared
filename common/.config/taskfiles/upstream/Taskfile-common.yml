@@ -30,7 +30,7 @@ tasks:
     deps:
       - copy:common
       - copy:project
-      - copy:subtype
+      - copy:project:subtype
 
   copy:common:
     cmds:
