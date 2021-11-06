@@ -114,7 +114,6 @@ tasks:
         }
 
         for FOLDER in project-*/; do
-          echo "$FOLDER"
           SUBTYPE="$(echo "$FOLDER" | sed 's/project-\(.*\)\//\1/')"
           mergePackages "{{.COMMON_FOLDER}}/package.hbs.json" "project-$SUBTYPE/package.hbs.json" "{{.COMMON_FOLDER}}-$SUBTYPE/package.hbs.json" &
         done
