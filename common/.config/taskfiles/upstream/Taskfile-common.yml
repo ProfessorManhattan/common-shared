@@ -72,7 +72,7 @@ tasks:
     cmds:
       - |
         for FOLDER in project-*/; do
-          SUBTYPE="$(echo "$FOLDER" | sed 's/files-\(.*\)\//\1/')"
+          SUBTYPE="$(echo "$FOLDER" | sed 's/project-\(.*\)\//\1/')"
           if [ -f "project-$SUBTYPE/package.hbs.json" ]; then
             mkdir -p "common-$SUBTYPE"
             jq -s -S '.[0] * .[1]' common/package.hbs.json "project-$SUBTYPE/package.hbs.json" > "common-$SUBTYPE/package.hbs.json"
@@ -80,11 +80,22 @@ tasks:
         done
 
   merge:variables:
+    deps:
+      - merge:variables:common
+      - merge:variables:project
+
+  merge:variables:common:
+    deps:
+      - :install:software:jq
     cmds:
-      - task: merge:variables:project
-      - task: merge:variables:project-subtype
+      - jq --arg blueprint "$(jq -r '.blueprint' package.json)" -S '. = (($blueprint | fromjson) * .)' common/.config/docs/variables.json > .variables.json
 
   merge:variables:project:
+    cmds:
+      - task: merge:variables:project:project
+      - task: merge:variables:project:subtype
+
+  merge:variables:project:project:
     deps:
       - :install:software:jq
     cmds:
@@ -93,7 +104,7 @@ tasks:
           jq -s -S '.[0] * .[1]' "common/.config/docs/variables.json" "project/.config/variables.json" > "common/.config/variables.json"
         fi
 
-  merge:variables:project-subtype:
+  merge:variables:project:subtype:
     deps:
       - :install:software:jq
     env:
@@ -113,7 +124,6 @@ tasks:
 
   template:
     cmds:
-      - task: template:package
       - task: template:files
 
   template:files:
@@ -121,16 +131,10 @@ tasks:
       - :install:npm:hbs
     cmds:
       - |
-        find . -type f -path ./common -prune -name '*.hbs.*' | while read FILE; do
+        find . -type f -not -path './common/*' -prune -name '*.hbs.*' | while read FILE; do
           hbs --data .variables.json --helper ./.config/hbs.js "$FILE" --stdout > "${FILE//.hbs}"
         done
       - |
-        find . -type f -path ./common -prune -name '*.handlebars' | while read FILE; do
+        find . -type f -name '*.handlebars' -not -path './common/*' | while read FILE; do
           hbs --data .variables.json --helper ./.config/hbs.js "$FILE" --stdout > "${FILE%.*}"
         done
-
-  template:package:
-    deps:
-      - :install:software:jq
-    cmds:
-      - jq --arg blueprint "$(jq -r '.blueprint' package.json)" -S '. = (($blueprint | fromjson) * .)' common/.config/docs/variables.json > .variables.json
