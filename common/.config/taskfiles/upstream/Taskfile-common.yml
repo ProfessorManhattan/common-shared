@@ -146,4 +146,4 @@ tasks:
     deps:
       - :install:software:jq
     cmds:
-      - jq --arg blueprint "$(jq -r '.blueprint' package.json)" -S '. = (($blueprint | fromjson) * .)' common/.config/docs/variables.json > .variables.json
+      - jq --arg blueprint "$(jq -r '.blueprint' package.json)" -S '. = (. * ($blueprint | fromjson))' common/.config/docs/variables.json > .variables.json
