@@ -1,0 +1,136 @@
+---
+version: '3'
+
+vars:
+  DOCS_URL: https://gitlab.com/megabyte-labs/documentation/{{.REPOSITORY_SUBTYPE}}
+  SHARED_COMMON_URL: https://gitlab.com/megabyte-labs/common/shared.git
+  SHARED_FOLDER: .shared
+
+tasks:
+  clean: rm -rf .shared
+  clone:
+    cmds:
+      - task: clone:common
+      - task: clone:docs
+
+  clone:common:
+    cmds:
+      - rm -rf {{.SHARED_FOLDER}}
+      - git clone --depth=1 {{.SHARED_COMMON_URL}} {{.SHARED_FOLDER}}
+      - rm -rf {{.SHARED_FOLDER}}/.git
+
+  clone:docs:
+    cmds:
+      - rm -rf common/.config/docs
+      - mkdir -p {{.SHARED_FOLDER}}/common/.config
+      - git clone --depth=1 {{.DOCS_URL}} {{.SHARED_FOLDER}}/common/.config/docs
+      - rm -rf {{.SHARED_FOLDER}}/common/.config/docs/.git
+
+  copy:
+    deps:
+      - copy:common
+      - copy:project
+
+  copy:common:
+    cmds:
+      - cp -rT {{.SHARED_FOLDER}}/common .
+      - task: :common:husky:permissions
+
+  copy:project:
+    cmds:
+      - cp -rT {{.SHARED_FOLDER}}/common common
+      - if [ ! -d project ]; then mkdir project; fi
+      - cp -rT project common
+
+  merge-and-template:
+    deps:
+      - merge
+      - template
+
+  merge:
+    deps:
+      - merge:package
+      - merge:variables
+
+  merge:package:
+    cmds:
+      - task: merge:package:project
+      - task: merge:package:project-subtype
+
+  merge:package:project:
+    deps:
+      - :install:software:jq
+    cmds:
+      - |
+        if [ -f "project/package.hbs.json" ]; then
+          jq -s -S '.[0] * .[1]' {{.SHARED_FOLDER}}/common/package.hbs.json project/package.hbs.json > common/package.hbs.json
+        fi
+
+  merge:package:project-subtype:
+    deps:
+      - :install:software:jq
+    cmds:
+      - |
+        for FOLDER in project-*/; do
+          SUBTYPE="$(echo "$FOLDER" | sed 's/files-\(.*\)\//\1/')"
+          if [ -f "project-$SUBTYPE/package.hbs.json" ]; then
+            mkdir -p "common-$SUBTYPE"
+            jq -s -S '.[0] * .[1]' common/package.hbs.json "project-$SUBTYPE/package.hbs.json" > "common-$SUBTYPE/package.hbs.json"
+          fi
+        done
+
+  merge:variables:
+    cmds:
+      - task: merge:variables:project
+      - task: merge:variables:project-subtype
+
+  merge:variables:project:
+    deps:
+      - :install:software:jq
+    cmds:
+      - |
+        if [ -f "project/.config/variables.json" ]; then
+          jq -s -S '.[0] * .[1]' "common/.config/docs/variables.json" "project/.config/variables.json" > "common/.config/variables.json"
+        fi
+
+  merge:variables:project-subtype:
+    deps:
+      - :install:software:jq
+    env:
+      TMP:
+        sh: mktemp
+    cmds:
+      - |
+        GROUP="$(jq -r '.blueprint.subgroup' package.json)"
+        for FOLDER in project-*/; do
+          SUBTYPE="$(echo "$FOLDER" | sed 's/files-\(.*\)\//\1/')"
+          if [ -f "project-$SUBTYPE/.config/variables.json" ]; then
+            mkdir -p "common-$SUBTYPE/.config"
+            jq --arg group "$GROUP" --arg subtype "$SUBTYPE" '.subgroup = $subtype | .group = $group' common/.config/variables.json > "$TMP"
+            jq -s -S '.[0] * .[1]' "$TMP" "project-$SUBTYPE/.config/variables.json" > "common-$SUBTYPE/.config/variables.json"
+          fi
+        done
+
+  template:
+    cmds:
+      - task: template:package
+      - task: template:files
+
+  template:files:
+    deps:
+      - :install:npm:hbs
+    cmds:
+      - |
+        find . -type f -path ./common -prune -name '*.hbs.*' | while read FILE; do
+          hbs --data .variables.json --helper ./.config/hbs.js "$FILE" --stdout > "${FILE//.hbs}"
+        done
+      - |
+        find . -type f -path ./common -prune -name '*.handlebars' | while read FILE; do
+          hbs --data .variables.json --helper ./.config/hbs.js "$FILE" --stdout > "${FILE%.*}"
+        done
+
+  template:package:
+    deps:
+      - :install:software:jq
+    cmds:
+      - jq --arg blueprint "$(jq -r '.blueprint' package.json)" -S '. = (($blueprint | fromjson) * .)' common/.config/docs/variables.json > .variables.json

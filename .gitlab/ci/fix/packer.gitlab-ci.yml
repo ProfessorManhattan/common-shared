@@ -1,0 +1,26 @@
+---
+packer-fix:
+  stage: lint
+  image:
+    name: megabytelabs/packer:slim
+    entrypoint: ['']
+  rules:
+    - if: $CI_COMMIT_TITLE =~ /^automation\(.*/
+      when: never
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+  variables:
+    GIT_DEPTH: 1
+    GIT_SUBMODULE_STRATEGY: recursive
+  before_script:
+    - git config pull.ff only
+    - git remote set-url origin "https://root:$GROUP_ACCESS_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git"
+    - git config user.email "$GITLAB_CI_EMAIL"
+    - git config user.name "$GITLAB_CI_NAME"
+    - git pull
+  script:
+    - set -eo pipefail
+    # - for TEMPLATE in *template.json; do packer fix $TEMPLATE > __$TEMPLATE; echo "" > __$TEMPLATE; mv __$TEMPLATE $TEMPLATE; done
+    # - git add --all
+    # - git diff --cached *
+    # - if [[ `git status --porcelain` ]]; then git commit -m "automation(packer-fix) Fixed issues with Packer template(s) on GitLab CI."; git push origin "$CI_COMMIT_REF_NAME; curl -o cancel-pipeline.sh https://gitlab.com/megabyte-labs/ci/gitlab-ci-templates/-/raw/master/scripts/cancel-pipeline.sh; bash cancel-pipeline.sh; fi
+    - echo "Not in use due to conflicts with Prettier autoformatting"

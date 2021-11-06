@@ -1,0 +1,13 @@
+[
+  {
+    "description": "Double quote to prevent globbing and word splitting.",
+    "severity": "info",
+    "fingerprint": "./test.sh.4.6.11.2086",
+    "location": {
+      "path": "./test.sh",
+      "lines": {
+        "begin": 4
+      }
+    }
+  }
+]

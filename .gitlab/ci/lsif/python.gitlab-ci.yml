@@ -1,0 +1,11 @@
+---
+code-intelligence:
+  stage: lsif
+  image: megabytelabs/lsif-python:latest
+  needs: []
+  allow_failure: true
+  script:
+    - lsif-py .
+  artifacts:
+    reports:
+      lsif: dump.lsif
