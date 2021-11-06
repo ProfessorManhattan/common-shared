@@ -6,7 +6,8 @@ tasks:
     cmds:
       - task: :upstream:common:clone
       - task: :upstream:common:copy
-      - task: :upstream:common:merge-and-template
+      - task: :upstream:common:merge
+      - task: :upstream:common:template
       - task: :upstream:common:clean
       - task: :fix:eslint
 

@@ -42,11 +42,6 @@ tasks:
       - if [ ! -d project ]; then mkdir project; fi
       - cp -rT project common
 
-  merge-and-template:
-    deps:
-      - merge
-      - template
-
   merge:
     deps:
       - merge:package
@@ -102,6 +97,8 @@ tasks:
       - |
         if [ -f "project/.config/variables.json" ]; then
           jq -s -S '.[0] * .[1]' "common/.config/docs/variables.json" "project/.config/variables.json" > "common/.config/variables.json"
+        else
+          cp common/.config/docs/variables.json common/.config/variables.json
         fi
 
   merge:variables:project:subtype:
@@ -115,10 +112,12 @@ tasks:
         GROUP="$(jq -r '.blueprint.subgroup' package.json)"
         for FOLDER in project-*/; do
           SUBTYPE="$(echo "$FOLDER" | sed 's/files-\(.*\)\//\1/')"
+          mkdir -p "common-$SUBTYPE/.config"
+          jq --arg group "$GROUP" --arg subtype "$SUBTYPE" '.subgroup = $subtype | .group = $group' common/.config/variables.json > "$TMP"
           if [ -f "project-$SUBTYPE/.config/variables.json" ]; then
-            mkdir -p "common-$SUBTYPE/.config"
-            jq --arg group "$GROUP" --arg subtype "$SUBTYPE" '.subgroup = $subtype | .group = $group' common/.config/variables.json > "$TMP"
             jq -s -S '.[0] * .[1]' "$TMP" "project-$SUBTYPE/.config/variables.json" > "common-$SUBTYPE/.config/variables.json"
+          else
+            mv "$TMP" "common-$SUBTYPE/.config/variables.json"
           fi
         done
 
@@ -128,13 +127,23 @@ tasks:
 
   template:files:
     deps:
+      - template:files:handlebars
+      - template:files:hbs
+
+  template:files:hbs:
+    deps:
       - :install:npm:hbs
     cmds:
       - |
-        find . -type f -not -path './common/*' -prune -name '*.hbs.*' | while read FILE; do
+        find . -type f -not \( -path './common*' -o -path './project*' \) -prune -name '*.hbs.*'| while read FILE; do
           hbs --data .variables.json --helper ./.config/hbs.js "$FILE" --stdout > "${FILE//.hbs}"
         done
+
+  template:files:handlebars:
+    deps:
+      - :install:npm:hbs
+    cmds:
       - |
-        find . -type f -name '*.handlebars' -not -path './common/*' | while read FILE; do
+        find . -type f -not \( -path './common*' -o -path './project*' \) -prune -name '*.handlebars' | while read FILE; do
           hbs --data .variables.json --helper ./.config/hbs.js "$FILE" --stdout > "${FILE%.*}"
         done
