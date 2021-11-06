@@ -76,14 +76,7 @@ tasks:
 
   merge:variables:
     deps:
-      - merge:variables:common
       - merge:variables:project
-
-  merge:variables:common:
-    deps:
-      - :install:software:jq
-    cmds:
-      - jq --arg blueprint "$(jq -r '.blueprint' package.json)" -S '. = (($blueprint | fromjson) * .)' common/.config/docs/variables.json > .variables.json
 
   merge:variables:project:
     cmds:
@@ -123,6 +116,7 @@ tasks:
 
   template:
     cmds:
+      - task: template:variables
       - task: template:files
 
   template:files:
@@ -147,3 +141,9 @@ tasks:
         find . -type f -not \( -path './common*' -o -path './project*' \) -prune -name '*.handlebars' | while read FILE; do
           hbs --data .variables.json --helper ./.config/hbs.js "$FILE" --stdout > "${FILE%.*}"
         done
+
+  template:variables:
+    deps:
+      - :install:software:jq
+    cmds:
+      - jq --arg blueprint "$(jq -r '.blueprint' package.json)" -S '. = (($blueprint | fromjson) * .)' common/.config/docs/variables.json > .variables.json
