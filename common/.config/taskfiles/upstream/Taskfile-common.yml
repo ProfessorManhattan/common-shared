@@ -7,7 +7,7 @@ vars:
   SHARED_FOLDER: .shared
 
 tasks:
-  clean: rm -rf .shared
+  clean: rm -rf {{.SHARED_FOLDER}}
   clone:
     cmds:
       - task: clone:common
@@ -86,7 +86,7 @@ tasks:
           mv "$TMP" "$3"
         }
 
-        mergePackages "common/package.hbs.json" "project/package.hbs.json" "common/package.hbs.json"
+        mergePackages "{{.SHARED_FOLDER}}/common/package.hbs.json" "project/package.hbs.json" "common/package.hbs.json"
 
   merge:package:project:subtype:
     deps:
