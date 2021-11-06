@@ -108,12 +108,13 @@ tasks:
 
           # Merge the files
           TMP="$(mktemp)"
-          jq --arg keywords "$(jq '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = ($keywords | fromjson) | .' "$1" "$2" > "$3"
+          jq --arg keywords "$(jq '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = ($keywords | fromjson) | .' "$1" "$2" > "$TMP"
           mv "$TMP" "$3"
-          cat "$3"
+          jq -r '.' "$3"
         }
 
         for FOLDER in project-*/; do
+          echo "$FOLDER"
           SUBTYPE="$(echo "$FOLDER" | sed 's/project-\(.*\)\//\1/')"
           mergePackages "common/package.hbs.json" "project-$SUBTYPE/package.hbs.json" "common-$SUBTYPE/package.hbs.json" &
         done
