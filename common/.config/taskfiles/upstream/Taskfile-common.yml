@@ -79,10 +79,12 @@ tasks:
           ensureKeywords "$2"
 
           # Merge the files
-          jq --arg keywords "$(jq '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = ($keywords | fromjson) | .' "$1" "$2" > "$3"
+          TMP="$(mktemp)"
+          jq --arg keywords "$(jq '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = ($keywords | fromjson) | .' "$1" "$2" > "$TMP"
+          mv "$TMP" "$3"
         }
 
-        mergePackages "{{.SHARED_FOLDER}}/common/package.hbs.json" "project/package.hbs.json" "common/package.hbs.json"
+        mergePackages "common/package.hbs.json" "project/package.hbs.json" "common/package.hbs.json"
 
   merge:package:project:subtype:
     deps:
@@ -103,7 +105,9 @@ tasks:
           ensureKeywords "$2"
 
           # Merge the files
+          TMP="$(mktemp)"
           jq --arg keywords "$(jq '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = ($keywords | fromjson) | .' "$1" "$2" > "$3"
+          mv "$TMP" "$3"
         }
 
         for FOLDER in project-*/; do
