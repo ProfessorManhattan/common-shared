@@ -59,6 +59,8 @@ tasks:
       - |
         function ensureKeywords() {
           if [ ! -f "$1" ]; then echo "{}" > "$1"; fi
+          echo "FILENAME - $1"
+          jq -r '.keywords' $1
           if [ "$(jq -r '.keywords' "$1")" == 'null' ]; then
             TMP="$(mktemp)" && jq -r '.keywords = [] | .' "$1" > "$TMP" && mv "$TMP" "$1"
           fi
@@ -82,6 +84,8 @@ tasks:
       - |
         function ensureKeywords() {
           if [ ! -f "$1" ]; then echo "{}" > "$1"; fi
+          echo "FILENAME - $1"
+          jq -r '.keywords' $1
           if [ "$(jq -r '.keywords' "$1")" == 'null' ]; then
             TMP="$(mktemp)" && jq -r '.keywords = [] | .' "$1" > "$TMP" && mv "$TMP" "$1"
           fi
@@ -141,6 +145,7 @@ tasks:
           mkdir -p "common-$SUBTYPE/.config"
           jq --arg group "$GROUP" --arg subtype "$SUBTYPE" '.subgroup = $subtype | .group = $group' common/.config/variables.json > "$TMP"
           if [ -f "project-$SUBTYPE/.config/variables.json" ]; then
+            jq -r '.keywords' common/package.hbs.json #DEBUG
             jq -s -S '.[0] * .[1]' "$TMP" "project-$SUBTYPE/.config/variables.json" > "common-$SUBTYPE/.config/variables.json"
           else
             mv "$TMP" "common-$SUBTYPE/.config/variables.json"
