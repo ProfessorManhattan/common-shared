@@ -121,8 +121,11 @@ tasks:
     cmds:
       - |
         find . -type f -path ./common -prune -name '*.hbs.*' | while read FILE; do
-          hbs --data .variables.json --helper @budibase/handlebars-helpers "$FILE" --stdout > "${FILE//.hbs}"
+          hbs --data .variables.json --helper ./.config/hbs.js "$FILE" --stdout > "${FILE//.hbs}"
         done
+      - |
+        find . -type f -path ./common -prune -name '*.handlebars' | while read FILE; do
+          hbs --data .variables.json --helper ./.config/hbs.js "$FILE" --stdout > "${FILE%.*}"
 
   template:package:
     deps:
