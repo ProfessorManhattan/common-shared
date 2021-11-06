@@ -14,8 +14,8 @@ vars:
   GITHUB_USER: ProfessorManhattan
   NPM_PROGRAM: npm
   NPX_PACKAGE: npx
-  REPOSITORY_SUBTYPE: '{{subgroup}}'
-  REPOSITORY_TYPE: '{{group}}'
+  REPOSITORY_SUBTYPE: {{subgroup}}
+  REPOSITORY_TYPE: {{group}}
   TIMEZONE: America/New_York
 
 includes:
@@ -37,4 +37,4 @@ tasks:
       **Example usage:**
       `task start`
     cmds:
-      - task: '{{#eq group "common"}}upstream:common{{else}}common:update:update{{/eq}}
+      - task: {{#eq group "common"}}upstream:common{{else}}common:update:update{{/eq}}
