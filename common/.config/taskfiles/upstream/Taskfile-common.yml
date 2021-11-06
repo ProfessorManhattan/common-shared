@@ -142,6 +142,7 @@ tasks:
         function handleSubtype() {
           FOLDER="$1"
           SUBTYPE="$(echo "$FOLDER" | sed 's/project-\(.*\)\//\1/')"
+          echo "common-"
           mkdir -p "common-$SUBTYPE/.config"
           jq --arg group "$GROUP" --arg subtype "$SUBTYPE" '.subgroup = $subtype | .group = $group' common/.config/variables.json > "$TMP"
           if [ -f "project-$SUBTYPE/.config/variables.json" ]; then
@@ -196,8 +197,9 @@ tasks:
           rm "$FILE"
         }
         find . -type f -not \( -path './common*' -o -path './project*' \) -prune -name '*.handlebars' | while read FILE; do
-          handlebars "$1"
+          handlebars "$1" &
         done
+        wait
 
   template:variables:
     deps:
