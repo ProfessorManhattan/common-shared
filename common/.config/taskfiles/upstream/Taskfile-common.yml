@@ -57,21 +57,50 @@ tasks:
       - :install:software:jq
     cmds:
       - |
-        if [ -f "project/package.hbs.json" ]; then
-          jq -s -S '.[0] * .[1]' {{.SHARED_FOLDER}}/common/package.hbs.json project/package.hbs.json > common/package.hbs.json
-        fi
+        function ensureKeywords() {
+          if [ ! -f "$1" ]; then echo "{}" > "$1"; fi
+          if [ "$(jq -r '.keywords' "$1"" == 'null' ]; then
+            TMP="$(mktemp)" && jq -r '.keywords = [] | .' "$1" > "$TMP" && mv "$TMP" "$1"
+          fi
+        }
+
+        function mergePackages() {
+          # Ensure array exists in both JSON files
+          ensureKeywords "$1"
+          ensureKeywords "$2"
+
+          # Merge the files
+          jq --arg keywords "$(jq '.keywords[]' "$1" "2" | jq -s '. | unique')"
+          -s -S '.[0] * .[1] | .keywords = $keywords | .' "$1" "$2" > "$3"
+        }
+
+        mergePackages "{{.SHARED_FOLDER}}/common/package.hbs.json" "project/package.hbs.json" "common/package.hbs.json"
 
   merge:package:project-subtype:
     deps:
       - :install:software:jq
     cmds:
       - |
+        function ensureKeywords() {
+          if [ ! -f "$1" ]; then echo "{}" > "$1"; fi
+          if [ "$(jq -r '.keywords' "$1"" == 'null' ]; then
+            TMP="$(mktemp)" && jq -r '.keywords = [] | .' "$1" > "$TMP" && mv "$TMP" "$1"
+          fi
+        }
+
+        function mergePackages() {
+          # Ensure array exists in both JSON files
+          ensureKeywords "$1"
+          ensureKeywords "$2"
+
+          # Merge the files
+          jq --arg keywords "$(jq '.keywords[]' "$1" "2" | jq -s '. | unique')"
+          -s -S '.[0] * .[1] | .keywords = $keywords | .' "$1" "$2" > "$3"
+        }
+
         for FOLDER in project-*/; do
           SUBTYPE="$(echo "$FOLDER" | sed 's/project-\(.*\)\//\1/')"
-          if [ -f "project-$SUBTYPE/package.hbs.json" ]; then
-            mkdir -p "common-$SUBTYPE"
-            jq -s -S '.[0] * .[1]' common/package.hbs.json "project-$SUBTYPE/package.hbs.json" > "common-$SUBTYPE/package.hbs.json"
-          fi
+          mergePackages "common/package.hbs.json" "project-$SUBTYPE/package.hbs.json" "common-$SUBTYPE/package.hbs.json"
         done
 
   merge:variables:
@@ -103,8 +132,14 @@ tasks:
     cmds:
       - |
         GROUP="$(jq -r '.blueprint.subgroup' package.json)"
+        if [ "$GROUP" == 'null' ]; then
+          GROUP="$(yq e '.vars.REPOSITORY_SUBTYPE' Taskfile.yml)"
+          if [ "$GROUP" == 'null' ]; then
+            echo "ERROR '.blueprint.subgroup' did not exist in the package.json and the fallback '.vars.REPOSITORY_SUBTYPE' did not exist in the Taskfile.yml"
+          fi
+        fi
         for FOLDER in project-*/; do
-          SUBTYPE="$(echo "$FOLDER" | sed 's/files-\(.*\)\//\1/')"
+          SUBTYPE="$(echo "$FOLDER" | sed 's/project-\(.*\)\//\1/')"
           mkdir -p "common-$SUBTYPE/.config"
           jq --arg group "$GROUP" --arg subtype "$SUBTYPE" '.subgroup = $subtype | .group = $group' common/.config/variables.json > "$TMP"
           if [ -f "project-$SUBTYPE/.config/variables.json" ]; then
@@ -128,10 +163,15 @@ tasks:
     deps:
       - :install:npm:hbs
     cmds:
+      - if [ -f package.hbs.json ]; then mv package.hbs.json.tmp; fi
       - |
         find . -type f -not \( -path './common*' -o -path './project*' \) -prune -name '*.hbs.*'| while read FILE; do
           hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
+          rm "$FILE"
         done
+      - jq -s '.[0] * .[1]' package.json package.json.tmp > "$TMP"
+      - mv "$TMP" package.json
+      - rm package.json.tmp
 
   template:files:handlebars:
     deps:
@@ -140,10 +180,13 @@ tasks:
       - |
         find . -type f -not \( -path './common*' -o -path './project*' \) -prune -name '*.handlebars' | while read FILE; do
           hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE%.*}"
+          rm "$FILE"
         done
 
   template:variables:
     deps:
       - :install:software:jq
     cmds:
-      - jq --arg blueprint "$(jq -r '.blueprint' package.json)" -S '. = (. * ($blueprint | fromjson))' common/.config/docs/variables.json > .variables.json
+      - jq --arg blueprint "$(jq -r '.blueprint' package.json | sed 's/^null$/{}/')"
+        --arg version "$(jq -r '.version' package.json | sed 's/^null$/0.0.1/')"
+        -S '. = (. * ($blueprint | fromjson))' common/.config/docs/variables.json > .variables.json
