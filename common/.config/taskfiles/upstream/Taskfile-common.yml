@@ -62,7 +62,7 @@ tasks:
     cmds:
       - |
         if [ -f "project/package.hbs.json" ]; then
-          jq -s '.[0] * .[1]' {{.SHARED_FOLDER}}/common/package.hbs.json project/package.hbs.json > common/package.hbs.json
+          jq -s -S '.[0] * .[1]' {{.SHARED_FOLDER}}/common/package.hbs.json project/package.hbs.json > common/package.hbs.json
         fi
 
   merge:package:project-subtype:
@@ -74,7 +74,7 @@ tasks:
           SUBTYPE="$(echo "$FOLDER" | sed 's/files-\(.*\)\//\1/')"
           if [ -f "project-$SUBTYPE/package.hbs.json" ]; then
             mkdir -p "common-$SUBTYPE"
-            jq -s '.[0] * .[1]' common/package.hbs.json "project-$SUBTYPE/package.hbs.json" > "common-$SUBTYPE/package.hbs.json"
+            jq -s -S '.[0] * .[1]' common/package.hbs.json "project-$SUBTYPE/package.hbs.json" > "common-$SUBTYPE/package.hbs.json"
           fi
         done
 
@@ -130,8 +130,5 @@ tasks:
   template:package:
     deps:
       - :install:software:jq
-    vars:
-      BLUEPRINT:
-        sh: jq -r '.blueprint' package.json
     cmds:
-      - jq --arg blueprint "$BLUEPRINT" '. = (($blueprint | fromjson) * .)' common/.config/docs/variables.json > .variables.json
+      - jq --arg blueprint "$(jq -r '.blueprint' package.json)" -S '. = (($blueprint | fromjson) * .)' common/.config/docs/variables.json > .variables.json
