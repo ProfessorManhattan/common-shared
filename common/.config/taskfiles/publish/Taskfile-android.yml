@@ -5,7 +5,7 @@ tasks:
   beta:
     deps:
     desc: Publishes Android app to Firebase beta channel
-    cmds: 
+    cmds:
       - fastlane add_plugin firebase_app_distribution
       - fastlane run firebase_app_distribution_login
       - fastlane beta
@@ -13,6 +13,6 @@ tasks:
   release:
     deps:
     desc: Publishes Android app to Google Play
-    cmds: 
+    cmds:
       - fastlane add_plugin ionic
       - fastlane deploy
