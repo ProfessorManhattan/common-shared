@@ -212,6 +212,7 @@ tasks:
         find . -type f -not \( -path './common*' -o -path './project*' \) -prune -name '*.handlebars' | while read FILE; do
           handlebars "$1"
         done
+        wait
 
   template:variables:
     deps:
