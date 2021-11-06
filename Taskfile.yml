@@ -1,12 +1,6 @@
 ---
 version: '3'
 
-output: interleaved
-
-vars:
-  REPOSITORY_SUBTYPE: shared
-  REPOSITORY_TYPE: common
-
 includes:
   ansible: ./.config/taskfiles/ansible/Taskfile.yml
   ansible:ansibler: ./.config/taskfiles/ansible/Taskfile-ansibler.yml
@@ -35,6 +29,12 @@ includes:
   upstream:docs: ./.config/taskfiles/upstream/Taskfile-docs.yml
   upstream:project: ./.config/taskfiles/upstream/Taskfile-project.yml
   vscode: ./.config/taskfiles/Taskfile-vscode.yml
+
+output: interleaved
+
+vars:
+  REPOSITORY_SUBTYPE: shared
+  REPOSITORY_TYPE: common
 
 tasks:
   donothing: 'true'

@@ -1,28 +1,5 @@
 {
-  "private": false,
-  "publishConfig": {
-    "access": "public"
-  },
-  "name": "{{#if customPackageName}}{{customPackageName}}{{else}}@{{profile.npmjs_organization}}/{{repository.prefix.github}}{{slug}}{{/if}}",
-  "description": "{{description}}",
-  "license": "{{license}}",
   "author": "{{author.name}} <{{author.email}}> ({{link.home}})",
-  "homepage": "{{link.home}}",
-  "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "git+{{repository.github}}.git"
-  },
-  "bugs": {
-    "email": "{{email.help}}",
-    "url": "{{repository.gitlab}}{{repository.location.issues.gitlab}}"
-  },
-  "version": "0.0.1",
-  "scripts": {
-    "help": "task --list",
-    "prepare": "task common:husky",
-    "start": "bash .config/start.sh"
-  },
   "blueprint": {
     "description": "An NPM package that is part of the Megabyte Labs eco-system",
     "name": "Name of Package",
@@ -34,6 +11,10 @@
     "slug": "my-project",
     "title": "README Long Title"
   },
+  "bugs": {
+    "email": "{{email.help}}",
+    "url": "{{repository.gitlab}}{{repository.location.issues.gitlab}}"
+  },
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog"
@@ -42,6 +23,7 @@
   "dependencies": {
     "tslib": "^2.3.1"
   },
+  "description": "{{description}}",
   "devDependencies": {
     "@budibase/handlebars-helpers": "^0.11.7",
     "@commitlint/config-conventional": "^13.1.0",
@@ -67,12 +49,9 @@
       "url": "{{profile_link.patreon}}/{{profile.patreon}}"
     }
   ],
-  "keywords": [
-    "megabytelabs",
-    "professormanhattan",
-    "npm",
-    "package"
-  ],
+  "homepage": "{{link.home}}",
+  "keywords": ["megabytelabs", "professormanhattan", "npm", "package"],
+  "license": "{{license}}",
   "lint-staged": {
     "**/*": [
       "blocklint --wordlist blacklist,slave,whitelist",
@@ -81,43 +60,36 @@
       "check-symlinks",
       "destroyed-symlinks"
     ],
-    "**/*.(css|html|less|md|mjml|php|scss|sh|xml)": [
-      "task fix:prettier --"
-    ],
-    "**/*.json": [
-      "task fix:json --"
-    ],
-    "**/*.(js|jsx|ts|tsx)": [
-      "task fix:js --",
-      "task lint:js --"
-    ],
-    "**/*.sh": [
-      "task fix:shell --",
-      "task lint:shell --"
-    ],
-    "**/*.toml": [
-      "task lint:toml --"
-    ],
-    "**/*.xml": [
-      "task fix:xml --",
-      "task lint:xml --"
-    ],
-    "**/*.yml": [
-      "task fix:yaml --",
-      "task lint:yaml --"
-    ],
-    "**/*.(jpg|png)": [
-      "task image:compress --"
-    ],
-    "logo.png": [
-      "task image:resize -- 200 200",
-      "task image:compress --"
-    ]
+    "**/*.(css|html|less|md|mjml|php|scss|sh|xml)": ["task fix:prettier --"],
+    "**/*.(jpg|png)": ["task image:compress --"],
+    "**/*.(js|jsx|ts|tsx)": ["task fix:js --", "task lint:js --"],
+    "**/*.json": ["task fix:json --"],
+    "**/*.sh": ["task fix:shell --", "task lint:shell --"],
+    "**/*.toml": ["task lint:toml --"],
+    "**/*.xml": ["task fix:xml --", "task lint:xml --"],
+    "**/*.yml": ["task fix:yaml --", "task lint:yaml --"],
+    "logo.png": ["task image:resize -- 200 200", "task image:compress --"]
   },
+  "name": "{{#if customPackageName}}{{customPackageName}}{{else}}@{{profile.npmjs_organization}}/{{repository.prefix.github}}{{slug}}{{/if}}",
   "prettier": "@megabytelabs/prettier-config",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+{{repository.github}}.git"
+  },
+  "scripts": {
+    "help": "task --list",
+    "prepare": "task common:husky",
+    "start": "bash .config/start.sh"
+  },
   "standard-version": {
     "scripts": {
       "prerelease": "git add --all"
     }
-  }
+  },
+  "type": "module",
+  "version": "0.0.1"
 }
