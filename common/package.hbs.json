@@ -55,11 +55,7 @@
     "node": ">=14"
   },
   "eslintConfig": {
-    "extends": "@megabytelabs/eslint-config",
-    "rules": {
-      "import/no-extraneous-dependencies": "off",
-      "import/no-unresolved": "off"
-    }
+    "extends": "@megabytelabs/eslint-config"
   },
   "funding": [
     {
