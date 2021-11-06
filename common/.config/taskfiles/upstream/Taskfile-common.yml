@@ -130,7 +130,7 @@ tasks:
     cmds:
       - |
         find . -type f -not \( -path './common*' -o -path './project*' \) -prune -name '*.hbs.*'| while read FILE; do
-          hbs --data .variables.json --helper ./.config/hbs.js "$FILE" --stdout > "${FILE//.hbs}"
+          hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
         done
 
   template:files:handlebars:
@@ -139,7 +139,7 @@ tasks:
     cmds:
       - |
         find . -type f -not \( -path './common*' -o -path './project*' \) -prune -name '*.handlebars' | while read FILE; do
-          hbs --data .variables.json --helper ./.config/hbs.js "$FILE" --stdout > "${FILE%.*}"
+          hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE%.*}"
         done
 
   template:variables:
