@@ -1,4 +1,5 @@
 const glob = require("glob")
+
 module.exports.register = function (Handlebars) {
   /**
    * Import [handlebars-helpers](https://github.com/helpers/handlebars-helpers)
