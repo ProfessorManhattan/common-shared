@@ -187,15 +187,15 @@ tasks:
 
   template:files:hbs:
     cmds:
+      - if [ -f "package.hbs.json" ]; then mv package.hbs.json tmp.package.hbs.json; fi
       - |
-        if [ -f "package.hbs.json" ]; then mv package.hbs.json tmp.package.hbs.json; fi
         function handlebars() {
           FILE="$1"
           echo "Processing $FILE"
           hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
           rm "$FILE"
         }
-        find . -type f -not \( -path './{{.COMMON_FOLDER}}*' -o -path './project*' \) -prune -name '*.hbs.*' | while read FILE; do
+        find . -type f -not \( -path './{{.COMMON_FOLDER}}*' -o -path './project*' -o -path './package.hbs.json' \) -prune -name '*.hbs.*' | while read FILE; do
           handlebars "$FILE" &
         done
         wait
