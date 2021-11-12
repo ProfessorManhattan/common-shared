@@ -209,6 +209,7 @@ tasks:
       - |
         function handlebars() {
           FILE="$1"
+          echo "Processing $FILE"
           hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE%.*}"
           rm "$FILE"
         }
