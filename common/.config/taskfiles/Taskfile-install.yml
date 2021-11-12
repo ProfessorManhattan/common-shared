@@ -16,7 +16,7 @@ tasks:
     deps:
       - npm:{{.NPM_PROGRAM}}
     cmds:
-      - '{{.NPM_PROGRAM}} install --force'
+      - '{{.NPM_PROGRAM}} install'
       - cmd: '{{.NPM_PROGRAM}} audit fix || true'
         ignore_error: true
     sources:
