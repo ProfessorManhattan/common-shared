@@ -191,7 +191,6 @@ tasks:
           hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
           rm "$FILE"
         }
-        find . -type f -not \( -path './{{.COMMON_FOLDER}}*' -o -path './project*' \) -prune -name '*.hbs.*'
         find . -type f -not \( -path './{{.COMMON_FOLDER}}*' -o -path './project*' \) -prune -name '*.hbs.*' | while read FILE; do
           handlebars "$FILE" &
         done
@@ -212,7 +211,6 @@ tasks:
           hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE%.*}"
           rm "$FILE"
         }
-        find . -type f -not \( -path './{{.COMMON_FOLDER}}*' -o -path './project*' \) -prune -name '*.handlebars'
         find . -type f -not \( -path './{{.COMMON_FOLDER}}*' -o -path './project*' \) -prune -name '*.handlebars' | while read FILE; do
           handlebars "$FILE" &
         done
