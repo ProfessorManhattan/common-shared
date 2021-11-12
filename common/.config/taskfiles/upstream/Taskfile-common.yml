@@ -185,7 +185,7 @@ tasks:
 
   template:files:hbs:
     cmds:
-      - if [ -f "package.hbs.json" ]; then mv package.hbs.json tmp.package.hbs.json; fi
+      - if [ -f "package.hbs.json" ]; then cp package.hbs.json tmp.package.hbs.json; rm package.hbs.json; fi
       - |
         function handlebars() {
           FILE="$1"
