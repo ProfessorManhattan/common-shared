@@ -72,7 +72,9 @@ tasks:
           if [ ! -f "$1" ]; then echo "{}" > "$1"; fi
           KEYWORDS="$(jq -r '.keywords' "$1")"
           if [ "$KEYWORDS" == 'null' ] || [ "$KEYWORDS" == '' ]; then
-            TMP="$(mktemp)" && jq -r '.keywords = [] | .' "$1" > "$TMP" && mv "$TMP" "$1"
+            TMP="$(mktemp)"
+            jq -r '.keywords = [] | .' "$1" > "$TMP"
+            mv "$TMP" "$1"
           fi
         }
 
@@ -98,7 +100,9 @@ tasks:
           if [ ! -f "$1" ]; then echo "{}" > "$1"; fi
           KEYWORDS="$(jq -r '.keywords' "$1")"
           if [ "$KEYWORDS" == 'null' ] || [ "$KEYWORDS" == '' ]; then
-            TMP="$(mktemp)" && jq -r '.keywords = [] | .' "$1" > "$TMP" && mv "$TMP" "$1"
+            TMP="$(mktemp)"
+            jq -r '.keywords = [] | .' "$1" > "$TMP"
+            mv "$TMP" "$1"
           fi
         }
 
@@ -142,9 +146,6 @@ tasks:
   merge:variables:project:subtype:
     deps:
       - :install:software:jq
-    env:
-      TMP:
-        sh: mktemp
     cmds:
       - |
         GROUP="$(jq -r '.blueprint.subgroup' package.json)"
@@ -158,6 +159,7 @@ tasks:
           FOLDER="$1"
           SUBTYPE="$(echo "$FOLDER" | sed 's/project-\(.*\)\//\1/')"
           mkdir -p "./{{.COMMON_FOLDER}}-$SUBTYPE/.config"
+          TMP="$(mktemp)"
           jq --arg group "$GROUP" --arg subtype "$SUBTYPE" '.subgroup = $subtype | .group = $group | .' ./{{.COMMON_FOLDER}}/.config/variables.json > "$TMP"
           if [ -f "project-$SUBTYPE/.config/variables.json" ]; then
             jq -s -S '.[0] * .[1]' "$TMP" "project-$SUBTYPE/.config/variables.json" > "./{{.COMMON_FOLDER}}-$SUBTYPE/.config/variables.json"
