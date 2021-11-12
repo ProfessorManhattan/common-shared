@@ -25,6 +25,7 @@ __pycache__/
 .npm/
 .nyc_output/
 .pytest_cache/
+.shared/
 .Spotlight-V100
 .task/
 .TemporaryItems
