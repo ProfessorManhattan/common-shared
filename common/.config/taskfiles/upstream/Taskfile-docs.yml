@@ -23,7 +23,7 @@ tasks:
       - clone:shared
 
   clone:common:
-    deps:
+    cmds:
       - rm -rf {{.COMMON_FOLDER}}
       - git clone --depth=1 {{.COMMON_FILES_URL}} {{.COMMON_FOLDER}}
       - rm -rf {{.COMMON_FOLDER}}/.git
