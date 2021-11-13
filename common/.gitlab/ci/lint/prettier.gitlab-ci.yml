@@ -1,6 +1,7 @@
 ---
 prettier:
   stage: lint
+  allow_failure: true
   image:
     name: megabytelabs/prettier-write:slim
     entrypoint: ['']
