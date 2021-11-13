@@ -60,21 +60,6 @@ tasks:
       **Example applying fixes to all files:**
       `task fix:misc`
 
-      _Note: The example above ignores files in the following folders:_
-
-      * `.autodoc/`
-      * `.cache/`
-      * `.common/`
-      * `.git/`
-      * `.husky/`
-      * `.modules/`
-      * `.npm/`
-      * `.task/`
-      * `.venv/`
-      * `.vscode/`
-      * `node_modules/`
-      * `venv/`
-
       **Example applying fixes to single file:**
       `task fix:misc -- singlefile.js`
     cmds:
@@ -157,21 +142,8 @@ tasks:
       # Automatically format Python files using Black
 
       Black is the defacto standard when it comes to autoformatting Python files. This task will
-      automatically format files that end with the `.py` extension. It currently excludes `.py` files
-      that are in the folders with the following names:
-
-      * `.autodoc/`
-      * `.cache/`
-      * `.common/`
-      * `.git/`
-      * `.husky/`
-      * `.modules/`
-      * `.npm/`
-      * `.task/`
-      * `.venv/`
-      * `.vscode/`
-      * `node_modules/`
-      * `venv/`
+      automatically format files that end with the `.py` extension. It ignores `.py` files that are
+      in any of the locations specified in the `IGNORED_FOLDERS` variable in `Taskfile.yml`.
 
       **Example applying fixes to all Python files:**
       `task fix:python`
@@ -201,21 +173,8 @@ tasks:
       # Automatically apply fixes to shell scripts using Shellcheck
 
       Shellcheck is generally used to lint shell scripts. This task uses Shellcheck and `git apply`
-      to automatically apply Shellcheck's recommendations. It only runs on files that are not in
-      the following folders:
-
-      * `.autodoc/`
-      * `.cache/`
-      * `.common/`
-      * `.git/`
-      * `.husky/`
-      * `.modules/`
-      * `.npm/`
-      * `.task/`
-      * `.venv/`
-      * `.vscode/`
-      * `node_modules/`
-      * `venv/`
+      to automatically apply Shellcheck's recommendations. It only runs on files that are not in the
+      `IGNORED_FOLDERS` variable in `Taskfile.yml`.
 
       This task is experimental. It may work to get rid of the Shellcheck lintrue errors but the code
       should still be tested since it might break things. Ideally, you should apply Shellcheck's
