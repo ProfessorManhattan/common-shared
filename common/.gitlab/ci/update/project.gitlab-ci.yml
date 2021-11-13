@@ -19,5 +19,6 @@ update:
     - task ci:before
   script:
     - task ci:submodules
+    - task upstream:project
     - task start
     - task ci:commit

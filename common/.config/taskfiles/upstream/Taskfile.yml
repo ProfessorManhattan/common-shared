@@ -20,6 +20,7 @@ tasks:
       - task: :upstream:docs:clean
       - task: :upstream:docs:template
       - task: :vscode:tasks:generate
+      - task: :fix:eslint
 
   project:
     cmds:

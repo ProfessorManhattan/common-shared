@@ -18,4 +18,5 @@ update:
   before_script:
     - task ci:before
   script:
-    - curl -sS https://gitlab.com/megabyte-labs/ci/gitlab-ci-templates/-/raw/master/scripts/update-docs.sh | bash
+    - task start
+    - task ci:commit

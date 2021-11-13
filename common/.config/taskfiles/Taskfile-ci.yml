@@ -21,6 +21,18 @@ tasks:
       - sh: '[[ -z "$GITLAB_CI_NAME" ]]'
         msg: 'The `GITLAB_CI_NAME` GitLab CI variable must be set to the name you would like associated with automated commits (e.g. "CI Automation").'
 
+  commit:
+    deps:
+      - :install:software:git
+    cmds:
+      - git add --all
+      - git diff --cached "*"
+      - |
+        if [[ $(git status --porcelain) ]]; then
+          git commit -m "automation(upstream-sync) Applying changes from upstream repository."
+          git push origin "$CI_COMMIT_REF_NAME"
+        fi
+
   submodules:
     deps:
       - :install:software:git

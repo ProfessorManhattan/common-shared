@@ -13,8 +13,8 @@ vars:
   GITHUB_ORG: ProfessorManhattan
   GITHUB_USER: ProfessorManhattan
   IGNORE_FOLDERS: -name .autodoc -o -name .cache -o -name .common -o -name .git -o -name .husky
-    -o -name .modules -o -name .npm -o -name .shared -o -name .task -o -name .venv -o -name .vscode -o -name node_modules
-    -o -name venv -o -path './.common*'
+    -o -name .modules -o -name .npm -o -name .pnpm-store -o -name .shared -o -name .task -o -name .venv
+    -o -name .vscode -o -name node_modules -o -name venv -o -path './.common*'
   NPM_PROGRAM: npm
   NPX_HANDLE: ''
   NPX_PACKAGE: npx
@@ -41,4 +41,4 @@ tasks:
       **Example usage:**
       `task start`
     cmds:
-      - task: {{#eq group "common"}}upstream:{{#eq subgroup "shared"}}shared{{else}}common{{/eq}}{{else}}common:update:update{{/eq}}
+      - task: {{#eq group "common"}}upstream:{{#eq subgroup "shared"}}shared{{else}}common{{/eq}}{{else}}{{#eq group "documentation"}}upstream:docs{{else}}common:update:update{{/eq}}{{/eq}}
