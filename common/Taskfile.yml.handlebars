@@ -43,4 +43,4 @@ tasks:
       **Example usage:**
       `task start`
     cmds:
-      - task: {{#eq group "common"}}upstream:{{#eq subgroup "shared"}}shared{{else}}common{{/eq}}{{else}}{{#eq group "documentation"}}upstream:{{#eq subgroup "shared"}}commondocs{{else}}docs{{/eq}}{{else}}common:update:update{{/eq}}{{/eq}}
+      - task: {{#eq group "common"}}upstream:{{#eq subgroup "shared"}}shared{{else}}common{{/eq}}{{else}}{{#eq group "documentation"}}upstream:{{#eq subgroup "shared"}}commondocs{{else}}docs{{/eq}}{{else}}upstream:project{{/eq}}{{/eq}}

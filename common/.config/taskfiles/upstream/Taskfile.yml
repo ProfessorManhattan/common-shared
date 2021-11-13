@@ -40,6 +40,7 @@ tasks:
       - task: :upstream:project:clean
       - task: :vscode:generate
       - task: :upstream:project:merge:package:json-blueprint-overrides
+      - task: :common:update:update
       - task: :fix:eslint
 
   shared:
