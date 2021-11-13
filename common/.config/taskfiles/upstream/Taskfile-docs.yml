@@ -39,7 +39,7 @@ tasks:
       - copy:common
       - copy:shared
     cmds:
-      - mv {{.SHARED_FOLDER}}/docs-gitlab-ci.yml .gitlab-ci.yml
+      - cp {{.SHARED_FOLDER}}/.gitlab-ci.yml .gitlab-ci.yml
 
   copy:common:
     cmds:
