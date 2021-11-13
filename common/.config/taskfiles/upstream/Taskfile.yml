@@ -9,7 +9,7 @@ tasks:
       - task: :upstream:common:merge
       - task: :upstream:common:clean
       - task: :upstream:common:template
-      - task: :vscode:tasks:generate
+      - task: :vscode:generate
       - task: :fix:eslint
 
   commondocs:
@@ -19,7 +19,7 @@ tasks:
       - task: :upstream:commondocs:merge
       - task: :upstream:commondocs:clean
       - task: :upstream:commondocs:template
-      - task: :vscode:tasks:generate
+      - task: :vscode:generate
       - task: :fix:eslint
 
   docs:
@@ -29,7 +29,7 @@ tasks:
       - task: :upstream:docs:merge
       - task: :upstream:docs:clean
       - task: :upstream:docs:template
-      - task: :vscode:tasks:generate
+      - task: :vscode:generate
       - task: :fix:eslint
 
   project:
@@ -38,7 +38,7 @@ tasks:
       - task: :upstream:project:copy
       - task: :upstream:project:merge
       - task: :upstream:project:clean
-      - task: :vscode:tasks:generate
+      - task: :vscode:generate
       - task: :upstream:project:merge:package:json-blueprint-overrides
       - task: :fix:eslint
 
@@ -47,5 +47,5 @@ tasks:
       - task: :upstream:shared:copy
       - task: :upstream:shared:prepare
       - task: :upstream:shared:template
-      - task: :vscode:tasks:generate
+      - task: :vscode:generate
       - task: :fix:eslint

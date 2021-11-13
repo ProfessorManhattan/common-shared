@@ -2,12 +2,28 @@
 version: '3'
 
 vars:
+  EXTENSIONS_FILE: .vscode/extensions.json
+  EXTENSIONS_URL: https://gitlab.com/ProfessorManhattan/Playbooks/-/raw/master/environments/prod/group_vars/desktop/vscode-extensions.yml
   TASKS_FILE: .vscode/tasks.json
 
 tasks:
-  tasks:generate:
+  extensions:
     deps:
-      
+      - :install:npm:prettier
+      - :install:software:jq
+      - :install:software:yq
+    cmds:
+      - >
+        curl -s "{{.EXTENSIONS_URL}}" | yq e '.vscode_extensions[].name' - | jq -cRrs 'split("\n") | "{ \"recommendations\": \(.) }"'
+        | jq '.recommendations = ([ .recommendations[] | select(length > 0) ])' > {{.EXTENSIONS_FILE}}
+
+  generate:
+    deps:
+      - extensions
+      - tasks
+
+  tasks:
+    deps:
       - :install:npm:prettier
       - :install:software:jq
     env:
