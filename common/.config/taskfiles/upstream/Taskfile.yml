@@ -4,6 +4,7 @@ version: '3'
 tasks:
   common:
     cmds:
+      - task: prune
       - task: :upstream:common:clone
       - task: :upstream:common:copy
       - task: :upstream:common:merge
@@ -14,6 +15,7 @@ tasks:
 
   commondocs:
     cmds:
+      - task: prune
       - task: :upstream:commondocs:clone
       - task: :upstream:commondocs:copy
       - task: :upstream:commondocs:merge
@@ -24,6 +26,7 @@ tasks:
 
   docs:
     cmds:
+      - task: prune
       - task: :upstream:docs:clone
       - task: :upstream:docs:copy
       - task: :upstream:docs:merge
@@ -34,6 +37,7 @@ tasks:
 
   project:
     cmds:
+      - task: prune
       - task: :upstream:project:clone
       - task: :upstream:project:copy
       - task: :upstream:project:merge
@@ -43,8 +47,14 @@ tasks:
       - task: :common:update:update
       - task: :fix:eslint
 
+  prune:
+    cmds:
+      - rm -rf .config/flake8
+      - rm -rf .config/taskfiles/Taskfile-install.yml
+
   shared:
     cmds:
+      - task: prune
       - task: :upstream:shared:copy
       - task: :upstream:shared:prepare
       - task: :upstream:shared:template
