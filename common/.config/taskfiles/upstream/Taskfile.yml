@@ -51,6 +51,7 @@ tasks:
     cmds:
       - rm -rf .config/flake8
       - rm -rf .config/taskfiles/Taskfile-install.yml
+      - npm install -g eslint
 
   shared:
     cmds:
