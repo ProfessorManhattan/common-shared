@@ -1,6 +1,7 @@
 ---
 eslint:
   stage: lint
+  allow_failure: true
   image:
     name: megabytelabs/eslint:slim
     entrypoint: ['']
