@@ -81,7 +81,7 @@ tasks:
     cmds:
       - |
         if [ -d .git ] && [ "${container:=}" != 'docker' ]; then
-          {{.NPM_BINARY_HANDLE}}husky install .config/husky
+          {{.NPX_HANDLE}}husky install .config/husky
         else
           true warn 'Cannot run `husky install` because there is no `.git/` folder (or this is a Docker container)'
         fi
@@ -167,7 +167,7 @@ tasks:
     cmds:
       - task: update
       - task: :lint:all
-      - '{{.NPM_BINARY_HANDLE}}standard-version --no-verify'
+      - '{{.NPX_HANDLE}}standard-version --no-verify'
 
   python:requirements:
     deps:

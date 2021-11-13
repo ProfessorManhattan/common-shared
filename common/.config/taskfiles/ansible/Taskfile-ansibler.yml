@@ -41,7 +41,7 @@ tasks:
     cmds:
       - ansibler --populate-platforms --json-file '{{.VARIABLES_PATH}}'
       - >
-        {{.NPM_BINARY_HANDLE}}prettier --write '{{.META_PATH}}'
+        {{.NPX_HANDLE}}prettier --write '{{.META_PATH}}'
     log:
       error: 'Error populating the `{{.META_PATH}}` platforms variable with `ansibler.'
       success: 'Populated the platforms variable in `{{.META_PATH}}` using data from `{{.MOLECULE_RESULTS_PATH}}`'

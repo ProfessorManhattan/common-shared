@@ -48,7 +48,7 @@ tasks:
       - |
         function handlebars() {
           FILE="$1"
-          {{.NPM_BINARY_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
+          {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
           rm "$FILE"
         }
         find . -type f -not \( -path './{{.COMMON_FOLDER}}*' -o -path './deprecated*' -o {{.IGNORE_FOLDERS}} \) -prune -name '*.hbs.*' | while read FILE; do
@@ -61,7 +61,7 @@ tasks:
       - |
         function handlebars() {
           FILE="$1"
-          {{.NPM_BINARY_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE%.*}"
+          {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE%.*}"
           rm "$FILE"
         }
         find . -type f -not \( -path './{{.COMMON_FOLDER}}*' -o -path './deprecated*' -o {{.IGNORE_FOLDERS}} \) -prune -name '*.handlebars' | while read FILE; do

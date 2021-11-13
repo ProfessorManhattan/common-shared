@@ -41,9 +41,9 @@ tasks:
               true log '`'"$1"'` has already been compressed by TinyPNG'
             else
               if [ -f ~/.tinypng ]; then
-                {{.NPM_BINARY_HANDLE}}tinypng "$1"
+                {{.NPX_HANDLE}}tinypng "$1"
               else
-                {{.NPM_BINARY_HANDLE}}tinypng -k "{{.TINYPNG_API_KEY}}" "$1"
+                {{.NPX_HANDLE}}tinypng -k "{{.TINYPNG_API_KEY}}" "$1"
               fi
               exiftool -comment="tinypng-compressed" "$1"
             fi
@@ -62,9 +62,9 @@ tasks:
               true log '`'"$1"'` has already been compressed by TinyPNG'
             else
               if [ -f ~/.tinypng ]; then
-                {{.NPM_BINARY_HANDLE}}tinypng "$1"
+                {{.NPX_HANDLE}}tinypng "$1"
               else
-                {{.NPM_BINARY_HANDLE}}tinypng -k "{{.TINYPNG_API_KEY}}" "$1"
+                {{.NPX_HANDLE}}tinypng -k "{{.TINYPNG_API_KEY}}" "$1"
               fi
               exiftool -comment="tinypng-compressed" "$1"
             fi
@@ -105,7 +105,7 @@ tasks:
     cmds:
       - |
         if ! exiftool "${ARGS_ARRAY[3]}" | grep "Image Size" | grep "${ARGS_ARRAY[1]}x${ARGS_ARRAY[2]}; then
-          {{.NPM_BINARY_HANDLE}}sharp -i "${ARGS_ARRAY[3]}" -o "${ARGS_ARRAY[3]}.resized" resize "${ARGS_ARRAY[1]}" "${ARGS_ARRAY[2]}"
+          {{.NPX_HANDLE}}sharp -i "${ARGS_ARRAY[3]}" -o "${ARGS_ARRAY[3]}.resized" resize "${ARGS_ARRAY[1]}" "${ARGS_ARRAY[2]}"
           mv "${ARGS_ARRAY[3]}.resized" "${ARGS_ARRAY[3]}"
         fi
     status:

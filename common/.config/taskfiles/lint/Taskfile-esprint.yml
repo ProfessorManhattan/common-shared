@@ -21,14 +21,14 @@ tasks:
       DOCKER_CONTAINER:
         sh: echo $container
     cmds:
-      - '{{.NPM_BINARY_HANDLE}}esprint{{if eq .DOCKER_CONTAINER "docker"}} check{{end}}'
+      - '{{.NPX_HANDLE}}esprint{{if eq .DOCKER_CONTAINER "docker"}} check{{end}}'
 
   esprint:debug:
     deps:
       - :common:node:dependencies:local
       - :install:npm:esprint
     cmds:
-      - '{{.NPM_BINARY_HANDLE}}esprint --esprintDebug'
+      - '{{.NPX_HANDLE}}esprint --esprintDebug'
 
   esprint:stop:
     deps:
@@ -36,4 +36,4 @@ tasks:
       - :install:npm:esprint
     desc: Stop the `esprint` process that is currently running
     cmds:
-      - '{{.NPM_BINARY_HANDLE}}esprint stop'
+      - '{{.NPX_HANDLE}}esprint stop'

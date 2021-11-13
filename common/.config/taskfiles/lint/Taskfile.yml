@@ -122,14 +122,14 @@ tasks:
       **Example linting specific pattern of files:**
       `task lint:eslint -- '**/*.js'`
     cmds:
-      - '{{.NPM_BINARY_HANDLE}}eslint --format pretty {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}'
+      - '{{.NPX_HANDLE}}eslint --format pretty {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}'
 
   js:
     deps:
       - :common:node:dependencies:local
       - :install:npm:eslint
     cmds:
-      - '{{.NPM_BINARY_HANDLE}}eslint --format pretty --ext .js,.jsx,.ts {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}'
+      - '{{.NPX_HANDLE}}eslint --format pretty --ext .js,.jsx,.ts {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}'
 
   lint-staged:
     deps:
@@ -137,7 +137,7 @@ tasks:
       - :common:node:dependencies:local
       - :common:python:requirements
     cmds:
-      - '{{.NPM_BINARY_HANDLE}}lint-staged'
+      - '{{.NPX_HANDLE}}lint-staged'
 
   packer:
     deps:
@@ -185,7 +185,7 @@ tasks:
 
       For more information, see [Prettier's website](https://prettier.io/).
     cmds:
-      - '{{.NPM_BINARY_HANDLE}}prettier --ignore-path {{.PRETTIERIGNORE_CONFIG}} --list-different {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}'
+      - '{{.NPX_HANDLE}}prettier --ignore-path {{.PRETTIERIGNORE_CONFIG}} --list-different {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}'
 
   python:
     deps:
@@ -252,9 +252,9 @@ tasks:
     cmds:
       - |
         {{if .CLI_ARGS}}
-          {{.NPM_BINARY_HANDLE}}shellcheck {{.CLI_ARGS}}
+          {{.NPX_HANDLE}}shellcheck {{.CLI_ARGS}}
         {{else}}
-          find . -type d \( {{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name '*.sh' -o -name '*.sh.j2' \) -print0 | xargs -0 -r -n1 {{.NPM_BINARY_HANDLE}}shellcheck
+          find . -type d \( {{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name '*.sh' -o -name '*.sh.j2' \) -print0 | xargs -0 -r -n1 {{.NPX_HANDLE}}shellcheck
         {{end}}
 
   spelling:
@@ -283,7 +283,7 @@ tasks:
 
   spelling:cli:
     cmds:
-      - cmd: '{{.NPM_BINARY_HANDLE}}cspell --no-progress --show-context --no-must-find-files --config {{.CSPELL_CONFIG}} {{.CLI_ARGS}}'
+      - cmd: '{{.NPX_HANDLE}}cspell --no-progress --show-context --no-must-find-files --config {{.CSPELL_CONFIG}} {{.CLI_ARGS}}'
         ignore_errors: true
 
   spelling:staged:
@@ -295,7 +295,7 @@ tasks:
     cmds:
       - cmd: |
           if [ '{{.STAGED_FILES}}' ]; then
-            {{.NPM_BINARY_HANDLE}}cspell --no-summary --no-progress --show-context --no-must-find-files --config {{.CSPELL_CONFIG}} "$STAGED_FILES"
+            {{.NPX_HANDLE}}cspell --no-summary --no-progress --show-context --no-must-find-files --config {{.CSPELL_CONFIG}} "$STAGED_FILES"
           fi
         ignore_errors: true
 

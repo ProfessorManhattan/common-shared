@@ -124,11 +124,11 @@ tasks:
         fi
         jq -r --argjson result "$MERGED_TAGS" '.keywords = $result' package.json > "$TMP"
         mv "$TMP" package.json
-        {{.NPM_BINARY_HANDLE}}prettier --write package.json
+        {{.NPX_HANDLE}}prettier --write package.json
         mkdir -p .cache/megabytelabs
         jq -n --argjson result "$RESULT" --argjson gi "$GALAXY_INFO" '$gi | .galaxy_info.galaxy_tags = $result' > .cache/megabytelabs/galaxy-meta.json
         yq eval -P .cache/megabytelabs/galaxy-meta.json > meta/main.yml
-      - '{{.NPM_BINARY_HANDLE}}prettier --write meta/main.yml'
+      - '{{.NPX_HANDLE}}prettier --write meta/main.yml'
       - task fix:yaml:dashes -- meta/main.yml
 
   mod-ansible-autodoc:
@@ -374,7 +374,7 @@ tasks:
     cmds:
       - jq --arg a '{{.DESCRIPTION}}' --arg b '{{.GALAXY_ROLE_NAME}}' '.blueprint.description = $a | .blueprint.slug = $b' package.json > "$TMP"
       - mv "$TMP" package.json
-      - '{{.NPM_BINARY_HANDLE}}prettier --write package.json'
+      - '{{.NPX_HANDLE}}prettier --write package.json'
     log:
       error: Failed to update the `blueprint` variable in `package.json` with meta information
       success: Ensured the `blueprint` variable in `package.json` is populated with up-to-date meta information

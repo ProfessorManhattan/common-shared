@@ -16,4 +16,4 @@ tasks:
     vars:
       LEASOT_IGNORE: .common .modules .venv node_modules venv
     cmds:
-      - '{{.NPM_BINARY_HANDLE}}leasot --ignore {{.LEASOT_IGNORE}} {{.CLI_ARGS}}'
+      - '{{.NPX_HANDLE}}leasot --ignore {{.LEASOT_IGNORE}} {{.CLI_ARGS}}'

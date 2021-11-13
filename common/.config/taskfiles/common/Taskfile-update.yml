@@ -29,12 +29,12 @@ tasks:
       CONTRIB_TEMPLATE: .config/docs/blueprint-contributing.md
     cmds:
       - >
-        {{.NPM_BINARY_HANDLE}}readme generate --silent --headingPrefix '{}' --config .variables.json
+        {{.NPX_HANDLE}}readme generate --silent --headingPrefix '{}' --config .variables.json
         --input "{{.CONTRIB_TEMPLATE}}" --output CONTRIBUTING.md
       - task: markdown:scrub
         vars:
           SCRUB_FILE: CONTRIBUTING.md
-      - '{{.NPM_BINARY_HANDLE}}prettier --write CONTRIBUTING.md'
+      - '{{.NPX_HANDLE}}prettier --write CONTRIBUTING.md'
     log:
       error: Failed to generate CONTRIBUTING.md
       start: Generating CONTRIBUTING.md
@@ -88,10 +88,10 @@ tasks:
     cmds:
       - |
         if test -f ".config/docs/{{.MAN_TEMPLATE}}"; then
-          {{.NPM_BINARY_HANDLE}}readme generate --headingPrefix '{}' --silent --config .variables.json --input ".config/docs/{{.MAN_TEMPLATE}}" --output MAN.md
-          {{.NPM_BINARY_HANDLE}}prettier --write MAN.md
+          {{.NPX_HANDLE}}readme generate --headingPrefix '{}' --silent --config .variables.json --input ".config/docs/{{.MAN_TEMPLATE}}" --output MAN.md
+          {{.NPX_HANDLE}}prettier --write MAN.md
           mkdir -p dist
-          {{.NPM_BINARY_HANDLE}}remark --use man MAN.md --output dist/man
+          {{.NPX_HANDLE}}remark --use man MAN.md --output dist/man
           rm MAN.md
         fi
     log:
@@ -161,13 +161,13 @@ tasks:
       README_TEMPLATE: blueprint-readme-{{.REPOSITORY_SUBTYPE}}.md
     cmds:
       - >
-        {{.NPM_BINARY_HANDLE}}readme generate --headingPrefix '{}' --silent --config .variables.json
+        {{.NPX_HANDLE}}readme generate --headingPrefix '{}' --silent --config .variables.json
         --input ".config/docs/{{.README_TEMPLATE}}"
       - task: markdown:scrub
         vars:
           SCRUB_FILE: README.md
       - task: ':{{if eq .REPOSITORY_TYPE "packer"}}packer:update:readme{{else}}donothing{{end}}'
-      - '{{.NPM_BINARY_HANDLE}}prettier --write README.md'
+      - '{{.NPX_HANDLE}}prettier --write README.md'
     log:
       error: Failed to generate README.md
       start: Generating README.md

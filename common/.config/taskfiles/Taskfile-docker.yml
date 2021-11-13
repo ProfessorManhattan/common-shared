@@ -89,7 +89,7 @@ tasks:
     deps:
       - :install:npm:prettier
     cmds:
-      - '{{.NPM_BINARY_HANDLE}}prettier --write slim.report.json'
+      - '{{.NPX_HANDLE}}prettier --write slim.report.json'
     sources:
       - slim.report.json
 

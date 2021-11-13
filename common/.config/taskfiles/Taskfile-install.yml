@@ -104,7 +104,7 @@ tasks:
           if [ '{{.FORCE_INSTALL}}' ]; then
             {{.NPM_PROGRAM}} install -g {{.NPM_PACKAGE}}@latest --force
           else
-            {{if eq .NPM_BINARY_HANDLE "npx "}}
+            {{if eq .NPX_HANDLE "npx "}}
               {{.NPX_PROGRAM}} -y {{.NPM_PACKAGE}}
             {{else}}
               {{.NPM_PROGRAM}} install -g {{.NPM_PACKAGE}}@latest

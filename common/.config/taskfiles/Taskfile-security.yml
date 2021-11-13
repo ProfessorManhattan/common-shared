@@ -110,11 +110,11 @@ tasks:
       - task: snyk:login
       - |
         {{if .CLI_ARGS}}
-          {{.NPM_BINARY_HANDLE}}snyk test --docker {{.CLI_ARGS}}
+          {{.NPX_HANDLE}}snyk test --docker {{.CLI_ARGS}}
         {{else}}
           for TAG in {{.TAGS}}; do
             DOCKER_IMAGE="$(jq -r '.slug' .variables.json)"
-            {{.NPM_BINARY_HANDLE}}snyk test --docker {{.DOCKERHUB_PROFILE}}/${DOCKER_IMAGE}:${TAG} --file=Dockerfile
+            {{.NPX_HANDLE}}snyk test --docker {{.DOCKERHUB_PROFILE}}/${DOCKER_IMAGE}:${TAG} --file=Dockerfile
           done
         {{end}}
 
@@ -123,7 +123,7 @@ tasks:
       SNYK_API_TOKEN:
         sh: snyk config get api
     cmds:
-      - '{{.NPM_BINARY_HANDLE}}snyk auth'
+      - '{{.NPX_HANDLE}}snyk auth'
     status:
       - '[ ! -z "$SNYK_API_TOKEN" ]'
 
