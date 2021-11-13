@@ -84,11 +84,7 @@ tasks:
           if [ '{{.FORCE_INSTALL}}' ]; then
             {{.NPM_PROGRAM}} install -g {{.NPM_PACKAGE}}@latest --force
           else
-            {{if eq .NPX_HANDLE ""}}
-              {{.NPM_PROGRAM}} install -g {{.NPM_PACKAGE}}@latest
-            {{else}}
-              {{.NPX_PROGRAM}} -y {{.NPM_PACKAGE}}
-            {{end}}
+            {{if eq .NPX_HANDLE ""}}{{.NPM_PROGRAM}} install -g {{.NPM_PACKAGE}}@latest{{else}}{{.NPX_PROGRAM}} -y {{.NPM_PACKAGE}}{{end}}
           fi
           true success 'The npm `{{.NPM_PACKAGE}}` package is installed'
         fi
