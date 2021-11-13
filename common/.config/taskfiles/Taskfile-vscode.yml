@@ -7,6 +7,7 @@ vars:
 tasks:
   tasks:generate:
     deps:
+      
       - :install:npm:prettier
       - :install:software:jq
     env:
@@ -26,7 +27,7 @@ tasks:
             TASK_DESC=$(echo "$LINE" | sed 's/^\*.\([^\ ]*\):\(.*\)$/\2/g' | xargs)
             LABEL="($TASK_NAME): $TASK_DESC"
             TYPE="shell"
-            COMMAND="bash .common/scripts/init.sh && task $TASK_NAME"
+            COMMAND="bash .config/scripts/vscode.sh && task $TASK_NAME"
             TASKS+="{\"label\": \"$LABEL\", \"type\": \"$TYPE\", \"command\": \"$COMMAND\"},"
           fi
         done <<< "$TASK_LIST"

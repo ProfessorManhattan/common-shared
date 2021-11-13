@@ -389,6 +389,13 @@ tasks:
       - type {{.NPM_PROGRAM}} &> /dev/null
       - type {{.NPX_PACKAGE}} &> /dev/null
 
+  software:poetry:
+    run: once
+    cmds:
+      - task: install-doctor
+        vars:
+          SOFTWARE: poetry
+
   software:python:
     run: once
     cmds:

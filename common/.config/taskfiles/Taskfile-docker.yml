@@ -56,11 +56,6 @@ tasks:
       removed.
 
       For more information, see [DockerSlim's GitHub page](https://github.com/docker-slim/docker-slim).
-    vars:
-      SLIM_COMMAND:
-        sh: jq -r '.blueprint.dockerslim_command' package.json
-      VERSION:
-        sh: jq -r '.version' package.json
     cmds:
       - task: build:fat
       - task: build:slim:command
@@ -71,6 +66,8 @@ tasks:
 
   build:slim:command:
     vars:
+      SLIM_COMMAND:
+        sh: jq -r '.blueprint.dockerslim_command' package.json
       SLUG:
         sh: jq -r '.blueprint.slug' package.json
     cmds:
@@ -111,8 +108,6 @@ tasks:
         sh:
           'docker manifest inspect -v "{{.DOCKERHUB_PROFILE}}/{{.SLUG}}:slim" | grep size | awk -F ":" "{sum+=$NF} END {print sum}"
           | awk "{$1=$1/(1024^2); print $1,\"MB\";}"'
-      SLUG:
-        sh: jq -r '.slug' .variables.json
     env:
       TMP:
         sh: mktemp
@@ -264,6 +259,8 @@ tasks:
     vars:
       GROUP_URL:
         sh: jq -r '.repository.group.dockerfile' .variables.json
+      SLUG:
+        sh: jq -r '.blueprint.slug' package.json
     env:
       DESCRIPTION:
         sh: jq -r '.description' package.json

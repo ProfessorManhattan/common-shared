@@ -30,14 +30,14 @@ tasks:
       - :install:local:modules
       - :install:npm:esbuild
     cmds:
-      - node .common/esbuild.bundled.js
+      - node .config/esbuild/bundled.js
 
   build:esbuild:minified:
     deps:
       - :install:local:modules
       - :install:npm:esbuild
     cmds:
-      - node .common/esbuild.minified.js
+      - node .config/esbuild/minified.js
 
   build:fpm:
     deps:
@@ -50,6 +50,7 @@ tasks:
     cmds:
       - task: build:fpm-build
         vars:
+          NPM_PACKAGE_NAME: '{{.NPM_PACKAGE_NAME}}'
           NPM_PACKAGE_VERSION: '{{.NPM_PACKAGE_VERSION}}'
 
   build:fpm:build:

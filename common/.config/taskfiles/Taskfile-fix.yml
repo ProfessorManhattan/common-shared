@@ -1,6 +1,9 @@
 ---
 version: '3'
 
+vars:
+  PRETTIERIGNORE_CONFIG: .config/prettierignore
+
 tasks:
   eslint:
     deps:
@@ -24,6 +27,7 @@ tasks:
 
   json:
     deps:
+      - :common:node:dependencies:local
       - :install:npm:eslint
     desc: Alphabetically sort JSON
     summary: |
@@ -143,7 +147,7 @@ tasks:
 
       For more information, see [Prettier's website](https://prettier.io/).
     cmds:
-      - '{{.NPM_BINARY_HANDLE}}prettier --write {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}'
+      - '{{.NPM_BINARY_HANDLE}}prettier --ignore-path {{.PRETTIERIGNORE_CONFIG}} --write {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}'
 
   python:
     deps:

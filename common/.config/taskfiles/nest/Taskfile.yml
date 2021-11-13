@@ -20,4 +20,4 @@ tasks:
       **Example with custom endpoint:**
       `task npm:benchmark -- /custom/endpoint`
     cmds:
-      - '{{.NPM_BINARY_HANDLE}}clinic doctor --autocannon [ {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}/{{end}} --method POST ] -- node ./build/main/main.js'
+      - '{{.NPM_BINARY_HANDLE}}clinic doctor --autocannon [ {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}/{{end}} --method POST ] -- node ./dist/main.js'

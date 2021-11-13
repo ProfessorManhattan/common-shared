@@ -5,6 +5,9 @@ vars:
   ANSIBLE_LINT_CONFIG: .config/ansible-lint.yml
   COMMITLINT_CONFIG: .config/commitlint.config.cjs
   CSPELL_CONFIG: .config/.cspell.json
+  FLAKE8_CONFIG: .config/flake8.toml
+  PRETTIERIGNORE_CONFIG: .config/prettierignore
+  YAMLLINT_CONFIG: .config/yamllint.yml
 
 tasks:
   all:
@@ -166,6 +169,7 @@ tasks:
 
   prettier:
     deps:
+      - :common:node:dependencies:local
       - :install:npm:prettier
     desc: Lint formatting using Prettier
     summary: |
@@ -181,7 +185,7 @@ tasks:
 
       For more information, see [Prettier's website](https://prettier.io/).
     cmds:
-      - '{{.NPM_BINARY_HANDLE}}prettier --list-different {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}'
+      - '{{.NPM_BINARY_HANDLE}}prettier --ignore-path {{.PRETTIERIGNORE_CONFIG}} --list-different {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}'
 
   python:
     deps:
@@ -213,9 +217,9 @@ tasks:
     cmds:
       - |
         {{if .CLI_ARGS}}
-          flake8 --config .config/{{.CLI_ARGS}}
+          flake8 --config {{.FLAKE8_CONFIG}} {{.CLI_ARGS}}
         {{else}}
-          flake8 .
+          flake8 --config {{.FLAKE8_CONFIG}} .
         {{end}}
 
   shell:
@@ -371,4 +375,4 @@ tasks:
 
       For more information, see the [YAML Lint GitHub page](https://github.com/adrienverge/yamllint).
     cmds:
-      - yamllint -s {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
+      - yamllint -c {{.YAMLLINT_CONFIG}} -s {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}

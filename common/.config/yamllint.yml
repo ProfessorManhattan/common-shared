@@ -3,15 +3,22 @@ ignore: |
   .autodoc/
   .cache/
   .common/
+  .config/
   .git/
   .github/
   .gitlab/
   .husky/
   .modules/
+  .npm/
+  .pnpm-store/
+  .shared/
   .task/
   .venv/
+  .vscode/
   .tox
   .travis.yml
+  build/
+  dist/
   node_modules/
   pnpm-lock.yaml
   roles/
