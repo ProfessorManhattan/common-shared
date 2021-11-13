@@ -51,7 +51,8 @@ tasks:
           {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
           rm "$FILE"
         }
-        find . -type f -not \( -path './{{.SHARED_COMMON_FOLDER}}*' -o -path './deprecated*' -o {{.IGNORE_FOLDERS}} \) -prune -name '*.hbs.*' | while read FILE; do
+        find . -type f -not \( -path './{{.SHARED_COMMON_FOLDER}}*' -o -path './deprecated*' -o {{.IGNORE_FOLDERS}} \) \
+        -prune -name '*.hbs.*' | while read FILE; do
           handlebars "$FILE" &
         done
         wait
@@ -64,7 +65,8 @@ tasks:
           {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE%.*}"
           rm "$FILE"
         }
-        find . -type f -not \( -path './{{.SHARED_COMMON_FOLDER}}*' -o -path './deprecated*' -o {{.IGNORE_FOLDERS}} \) -prune -name '*.handlebars' | while read FILE; do
+        find . -type f -not \( -path './{{.SHARED_COMMON_FOLDER}}*' -o -path './deprecated*' -o {{.IGNORE_FOLDERS}} \) \
+        -prune -name '*.handlebars' | while read FILE; do
           handlebars "$FILE" &
         done
         wait

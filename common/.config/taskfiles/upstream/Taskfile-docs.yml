@@ -85,4 +85,3 @@ tasks:
         --arg poetry "$(jq -r '.keywords | join("\", \"")' package.json | sed 's/$/"/' | sed 's/^/"/')"
         -S '. = (. * ($blueprint | fromjson)) | .version = $version | .poetryKeywords = $poetry'
         variables.json > ./.variables.json
-
