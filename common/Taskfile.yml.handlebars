@@ -12,10 +12,11 @@ vars:
 {{/eq}}{{/eq}}
   GITHUB_ORG: ProfessorManhattan
   GITHUB_USER: ProfessorManhattan
-  IGNORE_FOLDERS: -name .autodoc -o -name .cache -o -name .common -o -name .config -o -name .git -o -name .github
-    -o -name .gitlab -o -name .husky -o -name .modules -o -name .npm -o -name .pnpm-store -o -name .shared
-    -o -name .task -o -name .venv -o -name .vscode -o -name build -o -name dist -o -name node_modules -o -name venv
-    -o -path './.common*' -o -name pnpm-lock.yaml
+  IGNORE_FOLDERS: -path './.autodoc/*' -o -path './.cache/*' -o -path './.common*' -o -path './.config/*' -o -path './.git/*'
+    -o -path './.github/*' -o -path './.gitlab/*' -o -path './.husky/*' -o -path './.modules/*' -o -path './.npm/*'
+    -o -path './.pnpm-store/*' -o -path './.shared/*' -o -path './.task/*' -o -path './.venv/*' -o -path './.vscode/*'
+    -o -path './build/*' -o -path './dist/*' -o -path './node_modules/*' -o -path './venv/*' -o -name pnpm-lock.yaml
+    -o -name package-lock.json -o -name poetry.lock -o -name '.variables.json'
   NPM_PROGRAM: npm
   NPX_HANDLE: ''
   NPX_PACKAGE: npx
@@ -42,4 +43,4 @@ tasks:
       **Example usage:**
       `task start`
     cmds:
-      - task: {{#eq group "common"}}upstream:{{#eq subgroup "shared"}}shared{{else}}common{{/eq}}{{else}}{{#eq group "documentation"}}upstream:{{#eq subgroup "shared"}}commondocs{{else}}docs{{/eq}}{{else}}common:update:update{{/eq}}{{/eq}}
+      - task: {{#eq group "common"}}upstream:{{#eq subgroup "shared"}}shared{{else}}common{{/eq}}{{else}}{{#eq group "documentation"}}upstream:docs{{else}}common:update:update{{/eq}}{{/eq}}
