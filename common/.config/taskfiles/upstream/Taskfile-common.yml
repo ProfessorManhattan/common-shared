@@ -9,6 +9,7 @@ vars:
 
 tasks:
   clean: rm -rf {{.SHARED_FOLDER}}
+
   clone:
     cmds:
       - task: clone:common
