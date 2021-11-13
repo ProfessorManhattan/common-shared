@@ -12,6 +12,16 @@ tasks:
       - task: :vscode:tasks:generate
       - task: :fix:eslint
 
+  commondocs:
+    cmds:
+      - task: :upstream:commondocs:clone
+      - task: :upstream:commondocs:copy
+      - task: :upstream:commondocs:merge
+      - task: :upstream:commondocs:clean
+      - task: :upstream:commondocs:template
+      - task: :vscode:tasks:generate
+      - task: :fix:eslint
+
   docs:
     cmds:
       - task: :upstream:docs:clone

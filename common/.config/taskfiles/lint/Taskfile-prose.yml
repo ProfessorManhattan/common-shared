@@ -37,7 +37,7 @@ tasks:
           mv ~/.config/proselint/config ~/.config/proselint/config.backup
         fi
       - mkdir -p ~/.config/proselint
-      - cp .common/proselint.json ~/.config/proselint/config
+      - cp .config/proselint.json ~/.config/proselint/config
 
   prose:config:restore:
     cmds:

@@ -174,9 +174,7 @@ tasks:
       - :install:software:python
     run: once
     cmds:
-      - task: python:requirements:venv
-      - task: python:requirements:venv:activate
-      - task: python:requirements:pip
+      - task: python:requirements:poetry
       - task: :{{if eq .REPOSITORY_TYPE "ansible"}}common:python:requirements:ansible{{else}}donothing{{end}}
     status:
       - '[[ "${container:=}" == "docker" ]]'
@@ -185,44 +183,26 @@ tasks:
     cmds:
       - task: :ansible:galaxy:requirements
 
-  python:requirements:pip:
-    run: once
-    cmds:
-      - pip3 install -r requirements.txt
-    sources:
-      - requirements.txt
-    preconditions:
-      - sh: test -f requirements.txt
-        msg: The requirements.txt file is missing!
-
-  python:requirements:venv:
+  python:requirements:poetry:
     deps:
-      - :install:python:virtualenv
-      - :install:software:rsync
-    vars:
-      RANDOM_STRING:
-        sh: openssl rand -hex 14
+      - :install:software:poetry
     run: once
     cmds:
-      - |
-        if [ -d .venv ] && [ ! -f .venv/bin/activate ]; then
-          mv .venv /tmp/{{.RANDOM_STRING}}-venv2 2> /dev/null
-          mkdir -p /tmp/{{.RANDOM_STRING}}-empty
-          rsync -a --delete /tmp/{{.RANDOM_STRING}}-empty /tmp/{{.RANDOM_STRING}}-venv2 &
-        fi
-      - virtualenv .venv
-    status:
-      - test -f .venv/bin/activate
-
-  python:requirements:venv:activate:
-    cmds:
-      - cmd: . .venv/bin/activate
-        ignore_error: true
-    status:
-      - 'true'
+      - poetry install
+    sources:
+      - pyproject.toml
     preconditions:
-      - sh: test -f .venv/bin/activate
-        msg: '`.venv/bin/activate` is missing!'
+      - sh: test -f pyproject.toml
+        msg: The `pyproject.toml` file is missing!
+
+  # The venv activation is not currently working so global install is used in the task above
+  python:requirements:poetry:venv:activate:
+    run: once
+    vars:
+      VENV_PATH:
+        sh: poetry env info --path
+    cmds:
+      - source "$VENV_PATH/bin/activate"
 
   requirements:
     deps:
@@ -271,7 +251,7 @@ tasks:
       - git clean -fxd :/
       - git checkout master
       - git pull origin master --no-rebase
-      - bash .start.sh
+      - bash .config/start.sh
 
   shell:
     deps:
@@ -309,7 +289,7 @@ tasks:
         {{if .CLI_ARGS}}
           docker run --cap-drop=ALL -it -v "$PWD:/{{.WORKDIR}}" -w /{{.WORKDIR}} --rm megabytelabs/ansible-molecule-{{.CLI_ARGS}}:latest /bin/bash
         {{else}}
-          node .common/scripts/prompts/shell.js
+          node .config/scripts/prompts/shell.js
         {{end}}
     preconditions:
       - sh: 'type docker &> /dev/null'

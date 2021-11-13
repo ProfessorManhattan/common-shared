@@ -21,26 +21,12 @@ tasks:
       - :ansible:populate:meta
       - :ansible:update:galaxy-id
 
-  common:
-    deps:
-      - :install:software:git
-    cmds:
-      - |
-        if [[ '{{.PRODUCTION_MODE}}' == 'true' ]]; then
-          cd .common
-          git reset --hard HEAD
-          git pull origin master --no-rebase || true
-          cd ..
-        fi
-    status:
-      - '[[ "{{.PRODUCTION_MODE}}" != "true" ]]'
-
   contributing:
     deps:
       - :install:npm:prettier
       - :install:npm:readme
     vars:
-      CONTRIB_TEMPLATE: .common/docs/blueprint-contributing.md
+      CONTRIB_TEMPLATE: .config/docs/blueprint-contributing.md
     cmds:
       - >
         {{.NPM_BINARY_HANDLE}}readme generate --silent --headingPrefix '{}' --config .variables.json
@@ -55,99 +41,31 @@ tasks:
       success: Generated CONTRIBUTING.md
     sources:
       - CONTRIBUTING.md
-      - .common/docs/**/*
+      - .config/docs/**/*
       - .variables.json
     preconditions:
-      - sh: test -f .common/docs/blueprint-contributing.md
-        msg: The CONTRIBUTING.md template file is not present at `.common/docs/blueprint-contributing.md`
+      - sh: test -f .config/docs/blueprint-contributing.md
+        msg: The CONTRIBUTING.md template file is not present at `.config/docs/blueprint-contributing.md`
       - sh: test -f .variables.json
         msg: The `.variables.json` file is not present.
       - sh: type readme &> /dev/null
         msg: '`@appnest/readme` is not installed globally.'
 
   files:
-    deps:
-      - :install:npm:prettier
-      - :install:software:git
-      - :install:software:jq
-      - :install:software:rsync
     vars:
       CONTAINER:
         sh: if [[ "${container:=}" == "docker" ]]; then echo "docker"; fi
       FIRST_LINE:
         sh: if [ -f Dockerfile ]; then head -n 1 Dockerfile; fi
-      PKG_VERSION:
-        sh: jq -r '.version' package.json
-    env:
-      PKG_BLUEPRINT:
-        sh: jq -r '.blueprint' package.json | sed 's/^null$/{}/'
-      PKG_DEPS:
-        sh: jq -r '.dependencies' package.json | sed 's/^null$/{}/'
-      PKG_DEV_DEPS:
-        sh: jq -r '.devDependencies' package.json | sed 's/^null$/{}/'
-      PKG_KEYWORDS:
-        sh: jq -r '.keywords' package.json | sed 's/^null$/[]/'
-      PKG_SCRIPTS:
-        sh: jq -r '.scripts' package.json | sed 's/^null$/{}/'
-      TMP:
-        sh: mktemp
     cmds:
-      - task: files:handlebars
-      - find '.common/files-{{.REPOSITORY_SUBTYPE}}' -type f -name '*.handlebars' -delete
       - |
         {{if eq .REPOSITORY_SUBTYPE "ci-pipeline"}}
           if [[ "{{.FIRST_LINE}}" == *"debian"* ]] || [[ "{{.FIRST_LINE}}" == *"ubuntu"* ]]; then
-            cp .common/initctl initctl
+            cp .config/initctl initctl
           fi
         {{end}}
-      - rsync -aPq ".common/files-{{.REPOSITORY_SUBTYPE}}/" ./
       - task: :common:{{if eq .CONTAINER "docker"}}husky:ci{{else}}husky{{end}}
-      - task: sort
-      - jq --arg blueprint "$PKG_BLUEPRINT" --arg deps "$PKG_DEPS" --arg devDeps "$PKG_DEV_DEPS" --arg keywords "$PKG_KEYWORDS" --arg scripts
-        "$PKG_SCRIPTS" --arg version "{{.PKG_VERSION}}" '.dependencies = (($deps | fromjson) * .dependencies) |
-        .devDependencies = (($devDeps | fromjson) * .devDependencies) | .keywords = .keywords + ($keywords | fromjson) |
-        .keywords = (.keywords | sort | unique) | .scripts = (($scripts | fromjson) * .scripts) | .blueprint = ($blueprint | fromjson) |
-        .version = $version' package.json > "$TMP"
-      - '{{.NPM_PROGRAM}} install --ignore-scripts'
-      - mv "$TMP" package.json
-      - '{{.NPM_BINARY_HANDLE}}prettier --write package.json'
-      - |
-        if [[ '{{.PRODUCTION_MODE}}' == 'true' ]]; then
-          cd .common && git reset --hard HEAD
-          git clean -fd
-          cd ..
-        else
-          cd .common
-          git checkout -- files-{{.REPOSITORY_SUBTYPE}}/package.json.handlebars
-        fi
       - task: :{{if eq .REPOSITORY_SUBTYPE "role"}}ansible:keywords:sync{{else}}donothing{{end}}
-    sources:
-      - Dockerfile
-      - package.json
-      - .variables.json
-    preconditions:
-      - sh: 'type rsync &> /dev/null'
-        msg: '`rsync` is not installed!'
-
-  files:handlebars:
-    deps:
-      - :install:npm:hbs
-    env:
-      TMP_BASENAME:
-        sh: mktemp
-      TMP_DIRNAME:
-        sh: mktemp
-    cmds:
-      - |
-        find ./.common/files-{{.REPOSITORY_SUBTYPE}} -type f -name '*.handlebars' | while read FILE; do
-          {{.NPM_BINARY_HANDLE}}hbs --data .variables.json "$FILE" --stdout > "${FILE%.*}"
-        done
-    sources:
-      - .common/**/*.handlebars
-      - .variables.json
-    preconditions:
-      - sh: 'type hbs &> /dev/null'
-        msg: '`hbs-cli` is not installed globally.'
 
   init:
     cmds:
@@ -169,8 +87,8 @@ tasks:
       MAN_TEMPLATE: '{{.REPOSITORY_SUBTYPE}}-blueprint-man.md'
     cmds:
       - |
-        if test -f ".common/docs/{{.MAN_TEMPLATE}}"; then
-          {{.NPM_BINARY_HANDLE}}readme generate --headingPrefix '{}' --silent --config .variables.json --input ".common/docs/{{.MAN_TEMPLATE}}" --output CONTRIBUTING.md
+        if test -f ".config/docs/{{.MAN_TEMPLATE}}"; then
+          {{.NPM_BINARY_HANDLE}}readme generate --headingPrefix '{}' --silent --config .variables.json --input ".config/docs/{{.MAN_TEMPLATE}}" --output MAN.md
           {{.NPM_BINARY_HANDLE}}prettier --write MAN.md
           mkdir -p dist
           {{.NPM_BINARY_HANDLE}}remark --use man MAN.md --output dist/man
@@ -179,7 +97,7 @@ tasks:
     log:
       error: Failed to generate MAN.md
     sources:
-      - .common/docs/**/*
+      - .config/docs/**/*
       - .variables.json
       - dist/man
     preconditions:
@@ -244,7 +162,7 @@ tasks:
     cmds:
       - >
         {{.NPM_BINARY_HANDLE}}readme generate --headingPrefix '{}' --silent --config .variables.json
-        --input ".common/docs/{{.README_TEMPLATE}}"
+        --input ".config/docs/{{.README_TEMPLATE}}"
       - task: markdown:scrub
         vars:
           SCRUB_FILE: README.md
@@ -256,18 +174,17 @@ tasks:
       success: Generated README.md
     sources:
       - .autodoc/*
-      - .common/docs/**/*
+      - .config/docs/**/*
       - .variables.json
       - README.md
     preconditions:
-      - sh: 'test -f .common/docs/{{.README_TEMPLATE}}'
-        msg: 'The README.md template file is not present at `.common/docs/{{.README_TEMPLATE}}`.'
+      - sh: 'test -f .config/docs/{{.README_TEMPLATE}}'
+        msg: 'The README.md template file is not present at `.config/docs/{{.README_TEMPLATE}}`.'
       - sh: test -f .variables.json
         msg: The `.variables.json` file is not present.
 
   repositories:
     cmds:
-      - task: common
       - task: modules
       - task: project
 
@@ -292,26 +209,10 @@ tasks:
       - :git:gitlab:update
       - :git:github:update
 
-  sort:
-    cmds:
-      - if [ -f paths.txt ]; then sort paths.txt -o paths.txt; fi
-    sources:
-      - paths.txt
-
   start:
     deps:
       - :common:requirements
-      - taskfile
       - variables
-
-  taskfile:
-    cmds:
-      - |
-        if [[ '{{.PRODUCTION_MODE}}' == 'true' ]]; then
-          cp .common/files-{{.REPOSITORY_SUBTYPE}}/Taskfile.yml Taskfile.yml
-        fi
-    sources:
-      - .common/files-{{.REPOSITORY_SUBTYPE}}/Taskfile.yml
 
   update:
     deps:
@@ -355,26 +256,10 @@ tasks:
   variables:
     deps:
       - :install:software:jq
-    vars:
-      SHARED_JSON: '.common/variables.{{.REPOSITORY_SUBTYPE}}.json'
-    env:
-      BLUEPRINT_DATA:
-        sh: jq -r '.blueprint' package.json
-      GITLAB_ENCODED_PATH:
-        sh: jq -r '.blueprint.repository.gitlab' package.json | sed 's/https:\/\/gitlab.com\///' | sed 's/\//%252F/g'
-      TMP:
-        sh: mktemp
     cmds:
-      - jq -S --arg blueprint "$BLUEPRINT_DATA" --arg encoded "$GITLAB_ENCODED_PATH" '. = . * ($blueprint | fromjson)
-        | .gitlab_encoded_path = $encoded' '{{.SHARED_JSON}}' > "$TMP"
-      - mv "$TMP" .variables.json
+      - task: :upstream:project:template:variables
       - task: ':{{if eq .REPOSITORY_TYPE "packer"}}packer:update:variables{{else}}donothing{{end}}'
       - task: ':{{if eq .REPOSITORY_SUBTYPE "role"}}ansible:update:variables{{else}}donothing{{end}}'
     sources:
-      - '{{.SHARED_JSON}}'
+      - .config/variables.json
       - package.json
-    preconditions:
-      - sh: 'type jq &> /dev/null'
-        msg: jq is not installed.
-      - sh: 'type yq &> /dev/null'
-        msg: yq is not installed.

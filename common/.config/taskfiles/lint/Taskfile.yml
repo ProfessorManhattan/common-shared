@@ -2,7 +2,9 @@
 version: '3'
 
 vars:
-  CSPELL_CONFIG: .common/.cspell.json
+  ANSIBLE_LINT_CONFIG: .config/ansible-lint.yml
+  COMMITLINT_CONFIG: .config/commitlint.config.cjs
+  CSPELL_CONFIG: .config/.cspell.json
 
 tasks:
   all:
@@ -33,7 +35,7 @@ tasks:
 
       For more information, see [Ansible Lint's GitHub page](https://github.com/ansible-community/ansible-lint).
     cmds:
-      - ansible-lint
+      - ansible-lint -c {{.ANSIBLE_LINT_CONFIG}}
 
   commit:
     deps:
@@ -48,7 +50,7 @@ tasks:
       **Example:**
       `task lint:commit -- 'My commit message'`
     cmds:
-      - if [ ! -z '{{.CLI_ARGS}}' ]; then commitlint -e '{{.CLI_ARGS}}' --config .common/commitlint.config.cjs; fi
+      - if [ ! -z '{{.CLI_ARGS}}' ]; then commitlint -e '{{.CLI_ARGS}}' --config {{.COMMITLINT_CONFIG}}; fi
     status:
       - '[[ -z "{{.CLI_ARGS}}" ]]'
     preconditions:
@@ -211,7 +213,7 @@ tasks:
     cmds:
       - |
         {{if .CLI_ARGS}}
-          flake8 {{.CLI_ARGS}}
+          flake8 --config .config/{{.CLI_ARGS}}
         {{else}}
           flake8 .
         {{end}}
