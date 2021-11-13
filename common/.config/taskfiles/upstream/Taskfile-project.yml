@@ -6,14 +6,20 @@ vars:
   SHARED_FOLDER: .shared
 
 tasks:
+  clean:
+    cmds:
+      - rm -rf {{.SHARED_FOLDER}}
+
   clone:
     cmds:
-      - git clone {{.SHARED_COMMON_URL}} {{.SHARED_FOLDER}}
+      - rm -rf {{.SHARED_FOLDER}}
+      - git clone --depth=1 {{.SHARED_COMMON_URL}} {{.SHARED_FOLDER}}
+      - rm -rf ./{{.SHARED_FOLDER}}/.git
 
   copy:
     cmds:
-      - cp -rT {{.SHARED_FOLDER}}/common .
-      - cp -rT {{.SHARED_FOLDER}}/common-{{.REPOSITORY_SUBTYPE}} .
+      - cp -rT {{.SHARED_FOLDER}}/.common .
+      - cp -rT {{.SHARED_FOLDER}}/.common-{{.REPOSITORY_SUBTYPE}} .
       - task: :common:husky:permissions
 
   merge:
@@ -22,17 +28,34 @@ tasks:
 
   merge:package:
     cmds:
+      - task: save:common:keywords
       - task: merge:package:files
-      - task: merge:package:json-blueprint-overrides
 
   merge:package:files:
     deps:
       - :install:software:jq
     env:
+      BLUEPRINT:
+        sh: jq -r '.blueprint' package.json
       TMP:
         sh: mktemp
     cmds:
-      - jq -s '.[0] * .[1]' package.json package.hbs.json > "$TMP"
+      - |
+        function ensureKeywords() {
+          if [ ! -f "$1" ]; then echo "{}" > "$1"; fi
+          KEYWORDS="$(jq -r '.keywords' "$1")"
+          if [ "$KEYWORDS" == 'null' ] || [ "$KEYWORDS" == '' ]; then
+            TMP="$(mktemp)"
+            jq -r '.keywords = [] | .' "$1" > "$TMP"
+            mv "$TMP" "$1"
+          fi
+        }
+
+        ensureKeywords package.json
+      - jq --arg blueprint "$BLUEPRINT" --arg keywords "$(jq '.keywords[]' package.json package.hbs.json | jq -s '. | unique')"
+        -s -S '.[0] * .[1] | .keywords = ($keywords | fromjson) | .blueprint = ($blueprint | fromjson) | .' package.json
+        package.hbs.json > "$TMP"
+      - mv "$TMP" package.hbs.json
 
   merge:package:json-blueprint-overrides:
     summary: |
@@ -67,10 +90,58 @@ tasks:
           mv "$TMP" "$FILE_PATH"
         done
 
+  save:common:keywords:
+    env:
+      KEYWORDS:
+        sh: jq -r '.keywords' package.hbs.json
+    cmds:
+      - jq -n --arg keywords "$KEYWORDS" '.keywords = ($keywords | fromjson | unique)' > .config/common-keywords.json
+
   template:
     deps:
+      - :install:local:modules
       - :install:npm:hbs
     cmds:
-      - find . -type f -path ./{{.SHARED_FOLDER}} -prune -name '*.handlebars' | while read FILE; do
-          hbs --data variables.json --helper @budibase/handlebars-helpers "$FILE" --stdout > "${FILE%.*}"
+      - task: template:variables
+      - task: template:files
+
+  template:files:
+    deps:
+      - template:files:handlebars
+      - template:files:hbs
+
+  template:files:hbs:
+    cmds:
+      - |
+        function handlebars() {
+          FILE="$1"
+          {{.NPM_BINARY_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
+          rm "$FILE"
+        }
+        find . -type f -not \( {{.IGNORE_FOLDERS}} \) -prune -name '*.hbs.*' | while read FILE; do
+          handlebars "$FILE" &
         done
+        wait
+
+  template:files:handlebars:
+    cmds:
+      - |
+        function handlebars() {
+          FILE="$1"
+          {{.NPM_BINARY_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE%.*}"
+          rm "$FILE"
+        }
+        find . -type f -not \( {{.IGNORE_FOLDERS}} \) -prune -name '*.handlebars' | while read FILE; do
+          handlebars "$FILE" &
+        done
+        wait
+
+  template:variables:
+    deps:
+      - :install:software:jq
+    cmds:
+      - jq --arg blueprint "$(jq -r '.blueprint' package.json | sed 's/^null$/{}/')"
+        --arg version "$(jq -r '.version' package.json | sed 's/^null$/0.0.1/')"
+        --arg poetry "$(jq -r '.keywords | join("\", \"")' package.json | sed 's/$/"/' | sed 's/^/"/')"
+        -S '. = (. * ($blueprint | fromjson)) | .version = $version | .poetryKeywords = $poetry'
+        .config/variables.json > ./.variables.json

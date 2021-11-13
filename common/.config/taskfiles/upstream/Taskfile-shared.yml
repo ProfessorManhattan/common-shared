@@ -1,0 +1,82 @@
+---
+version: '3'
+
+vars:
+  COMMON_FOLDER: common
+  VARIABLES_URL: https://gitlab.com/megabyte-labs/documentation/shared/-/raw/master/common.json
+
+tasks:
+  copy:
+    cmds:
+      - mv .gitlab-ci.yml .gitlab-ci.yml.bak
+      - cp -rT ./{{.COMMON_FOLDER}}/ .
+      - mv .gitlab-ci.yml.bak .gitlab-ci.yml
+      - task: :common:husky:permissions
+
+  merge:
+    deps:
+      - :install:software:jq
+    env:
+      BLUEPRINT:
+        sh: jq -r '.blueprint' package.json | sed 's/^null$/{}/'
+      TMP:
+        sh: mktemp
+    cmds:
+      - jq --arg blueprint "$BLUEPRINT" -s '.[0] * .[1] | .blueprint = (.blueprint * ($blueprint | fromjson))'
+        package.json package.hbs.json > "$TMP"
+      - mv "$TMP" package.hbs.json
+
+  prepare:
+    deps:
+      - merge
+      - variables
+
+  template:
+    deps:
+      - :install:local:modules
+      - :install:npm:hbs
+    cmds:
+      - task: template:files
+
+  template:files:
+    deps:
+      - template:files:handlebars
+      - template:files:hbs
+
+  template:files:hbs:
+    cmds:
+      - |
+        function handlebars() {
+          FILE="$1"
+          {{.NPM_BINARY_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
+          rm "$FILE"
+        }
+        find . -type f -not \( -path './{{.COMMON_FOLDER}}*' -o -path './deprecated*' -o {{.IGNORE_FOLDERS}} \) -prune -name '*.hbs.*' | while read FILE; do
+          handlebars "$FILE" &
+        done
+        wait
+
+  template:files:handlebars:
+    cmds:
+      - |
+        function handlebars() {
+          FILE="$1"
+          {{.NPM_BINARY_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE%.*}"
+          rm "$FILE"
+        }
+        find . -type f -not \( -path './{{.COMMON_FOLDER}}*' -o -path './deprecated*' -o {{.IGNORE_FOLDERS}} \) -prune -name '*.handlebars' | while read FILE; do
+          handlebars "$FILE" &
+        done
+        wait
+
+  variables:
+    env:
+      TMP:
+        sh: mktemp
+    cmds:
+      - wget {{.VARIABLES_URL}} .variables.json
+      - jq --arg blueprint "$(jq -r '.blueprint' package.json | sed 's/^null$/{}/')"
+        --arg version "$(jq -r '.version' package.json | sed 's/^null$/0.0.1/')"
+        --arg poetry "$(jq -r '.keywords | join("\", \"")' package.json | sed 's/$/"/' | sed 's/^/"/')"
+        -S '. = (. * ($blueprint | fromjson)) | .version = $version | .poetryKeywords = $poetry' .variables.json > "$TMP"
+      - mv "$TMP" .variables.json

@@ -117,16 +117,16 @@ tasks:
     deps:
       - :install:software:fpm
     cmds:
-      - fpm -s npm -t {{.FPM_TARGET}}
+      - '{{.NPM_BINARY_HANDLE}}fpm -s npm -t {{.FPM_TARGET}}
         -p {{.BINARY_BUILD_FOLDER}}/{{.NPM_PACKAGE_NAME}}-{{.NPM_PACKAGE_VERSION}}-{{.SYSTEM}}-{{.ARCHITECTURE}}.{{.FILE_EXTENSION}}
-        --architecture {{.ARCHITECTURE}} .
+        --architecture {{.ARCHITECTURE}} .'
 
   build:nest:
     deps:
       - :install:local:modules
       - :install:npm:nest
     cmds:
-      - nest build
+      - '{{.NPM_BINARY_HANDLE}}nest build'
       - task: build:nest:after
 
   build:nest:after:
@@ -139,7 +139,7 @@ tasks:
       - :install:local:modules
       - :install:npm:pkg
     cmds:
-      - pkg package.json
+      - '{{.NPM_BINARY_HANDLE}}pkg package.json'
 
   build:release: 'true'
 
@@ -168,7 +168,7 @@ tasks:
       - :install:software:jq
     desc: Remove unused dependencies
     cmds:
-      - depcheck --json | jq -r '.dependencies[]' | xargs -n1 npm uninstall --save
+      - "{{.NPM_BINARY_HANDLE}}depcheck --json | jq -r '.dependencies[]' | xargs -n1 npm uninstall --save"
 
   start:
     deps:
@@ -176,14 +176,14 @@ tasks:
       - :install:npm:nest
     desc: Run the application
     cmds:
-      - nest start
+      - '{{.NPM_BINARY_HANDLE}}nest start'
 
   start:debug:
     deps:
       - :install:local:modules
       - :install:npm:nest
     cmds:
-      - nest start --watch
+      - '{{.NPM_BINARY_HANDLE}}nest start --watch'
 
   start:inspect:
     deps:
@@ -193,14 +193,14 @@ tasks:
       - :install:npm:ts-node
     desc: Run the application in `watch` mode and open DevTools
     cmds:
-      - ndb nest start --watch
+      - '{{.NPM_BINARY_HANDLE}}ndb nest start --watch'
 
   start:inspect:legacy:
     deps:
       - :install:local:modules
       - :install:npm:nest
     cmds:
-      - nest start --debug --watch
+      - '{{.NPM_BINARY_HANDLE}}nest start --debug --watch'
 
   start:prod:
     deps:
@@ -217,7 +217,7 @@ tasks:
       - :install:npm:nest
     desc: Run the application in `production` and `watch` mode and open DevTools
     cmds:
-      - ndb nodemon
+      - '{{.NPM_BINARY_HANDLE}}ndb nodemon'
 
   test:
     deps:
@@ -225,7 +225,7 @@ tasks:
       - :install:npm:jest
     desc: Run the unit tests for an NPM project
     cmds:
-      - jest
+      - '{{.NPM_BINARY_HANDLE}}jest'
 
   test:coverage:
     deps:
@@ -233,7 +233,7 @@ tasks:
       - :install:npm:jest
     desc: Generate code coverage assets
     cmds:
-      - jest --coverage
+      - '{{.NPM_BINARY_HANDLE}}jest --coverage'
 
   test:dashboard:
     deps:
@@ -241,7 +241,7 @@ tasks:
       - :install:npm:majestic
     desc: Run and manage test cases from a web interface (powered by `majestic`)
     cmds:
-      - majestic --debug
+      - '{{.NPM_BINARY_HANDLE}}majestic --debug'
 
   test:debug:
     deps:
@@ -249,7 +249,7 @@ tasks:
       - :install:npm:jest
     desc: Debug tests in `watch` mode
     cmds:
-      - jest --watch
+      - '{{.NPM_BINARY_HANDLE}}jest --watch'
 
   test:e2e: 'true'
 
@@ -262,11 +262,11 @@ tasks:
       - :install:npm:ts-node
     desc: Debug tests with DevTools in `watch` mode
     cmds:
-      - ndb nodemon --config .common/nodemon-jest.json
+      - '{{.NPM_BINARY_HANDLE}}ndb nodemon --config .common/nodemon-jest.json'
 
   typesync:
     deps:
       - :install:npm:typesync
     desc: Install missing type definitions
     cmds:
-      - typesync
+      - '{{.NPM_BINARY_HANDLE}}typesync'

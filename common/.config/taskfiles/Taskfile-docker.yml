@@ -44,7 +44,6 @@ tasks:
 
   build:slim:
     deps:
-      - :common:npm-prettier
       - :install:software:docker
       - :install:software:dockerslim
     desc: Build a slim version of the Docker image
@@ -93,7 +92,7 @@ tasks:
     deps:
       - :install:npm:prettier
     cmds:
-      - prettier --write slim.report.json
+      - '{{.NPM_BINARY_HANDLE}}prettier --write slim.report.json'
     sources:
       - slim.report.json
 

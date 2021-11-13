@@ -9,8 +9,32 @@ tasks:
       - task: :upstream:common:merge
       - task: :upstream:common:clean
       - task: :upstream:common:template
+      - task: :vscode:tasks:generate
       - task: :fix:eslint
+
+  docs:
+    cmds:
+      - task: :upstream:docs:clone
+      - task: :upstream:docs:copy
+      - task: :upstream:docs:merge
+      - task: :upstream:docs:clean
+      - task: :upstream:docs:template
+      - task: :vscode:tasks:generate
 
   project:
     cmds:
       - task: :upstream:project:clone
+      - task: :upstream:project:copy
+      - task: :upstream:project:merge
+      - task: :upstream:project:clean
+      - task: :vscode:tasks:generate
+      - task: :upstream:project:merge:package:json-blueprint-overrides
+      - task: :fix:eslint
+
+  shared:
+    cmds:
+      - task: :upstream:shared:copy
+      - task: :upstream:shared:prepare
+      - task: :upstream:shared:template
+      - task: :vscode:tasks:generate
+      - task: :fix:eslint

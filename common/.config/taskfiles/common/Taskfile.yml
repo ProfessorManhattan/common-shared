@@ -81,7 +81,7 @@ tasks:
     cmds:
       - |
         if [ -d .git ] && [ "${container:=}" != 'docker' ]; then
-          husky install .config/husky
+          {{.NPM_BINARY_HANDLE}}husky install .config/husky
         else
           true warn 'Cannot run `husky install` because there is no `.git/` folder (or this is a Docker container)'
         fi
@@ -135,8 +135,8 @@ tasks:
     cmds:
       - |
         if [ "${container:=}" != "docker" ]; then
-          {{.NPM_PROGRAM}} install --legacy-peer-deps --force
-          {{.NPM_PROGRAM}} audit fix --force || true
+          {{.NPM_PROGRAM}} install
+          {{.NPM_PROGRAM}} audit fix || true
         fi
     sources:
       - package.json
@@ -167,7 +167,7 @@ tasks:
     cmds:
       - task: update
       - task: :lint:all
-      - standard-version --no-verify
+      - '{{.NPM_BINARY_HANDLE}}standard-version --no-verify'
 
   python:requirements:
     deps:

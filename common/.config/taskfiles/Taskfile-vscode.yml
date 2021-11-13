@@ -31,4 +31,5 @@ tasks:
           fi
         done <<< "$TASK_LIST"
         jq --arg tasks "${TASKS%?}]" '.tasks = ($tasks | fromjson)' "$TMP" > '{{.TASKS_FILE}}'
-      - prettier --write '{{.TASKS_FILE}}'
+      - >
+        {{.NPM_BINARY_HANDLE}}prettier --write '{{.TASKS_FILE}}'

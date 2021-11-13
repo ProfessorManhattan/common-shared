@@ -33,6 +33,7 @@ includes:
 output: interleaved
 
 vars:
+  NPX_HANDLE: ''
   REPOSITORY_SUBTYPE: shared
   REPOSITORY_TYPE: common
 

@@ -1,19 +1,15 @@
 #!/usr/bin/env bash
 
-# @file .start.sh
+# @file .config/start.sh
 # @brief Ensures the project is up-to-date with the latest upstream changes
 # @description
-#   This script performs maintenance on this repository. It ensures the `.common` submodule is
-#   cloned and up-to-date. The `.common` submodule contains files that are shared between projects
-#   that are similar to this one. It also ensures the repository contains the latest code. This
-#   script also ensures that our custom version of Task is installed and that its' location is
-#   referenced by the PATH environment variable. `bash .start.sh` is the first command you should
-#   run when working with this project.
+#   This script helps by ensuring our custom version of Task is installed
+#   and that the project is up-to-date and initialized by running the `task start`
+#   command which grabs the latest upstream changes, adds boilerplate code if there
+#   is no custom code present in the repository, and ensures software dependencies
+#   are installed.
 
 set -eo pipefail
-
-export REPO_TYPE="{{group}}"
-export REPO_SUBTYPE="{{subgroup}}"
 
 # @description Set the `BASH_PROFILE` variable to the location of the bash initialization script and
 # set the `SYSTEM` variable equal to a value indicating the type of system we are on.
@@ -85,17 +81,6 @@ if [ -d .git ]; then
   git submodule update --init --recursive
 fi
 
-if [ "$REPO_TYPE" != 'common' ]; then
-  if [ ! -d .common ]; then
-    git submodule add -b master "https://gitlab.com/megabyte-space/common/$REPO_TYPE.git" ".common"
-  else
-    cd .common
-    git checkout master && git pull origin master --ff-only
-    cd ..
-  fi
-  cp ".common/files-$REPO_SUBTYPE/Taskfile.yml" Taskfile.yml
-fi
-
 if ! type task &> /dev/null; then
   echo "Installing Task and ensuring ~/.local/bin is in the PATH environment variable"
   installTask &
@@ -105,7 +90,3 @@ fi
 
 rm -rf .task
 task start
-
-if [ "$REPO_TYPE" != 'common' ]; then
-  cp ".common/files-$REPO_SUBTYPE/.start.sh" .start.sh &
-fi

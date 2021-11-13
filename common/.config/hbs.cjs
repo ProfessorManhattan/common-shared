@@ -16,4 +16,21 @@ module.exports.register = function (Handlebars) {
 
     return files
   })
+
+  Handlebars.registerHelper('taskfileSort', function(taskfiles, options) {
+    const sorted = taskfiles.sort((a, b) => {
+      const trim = (str) => str.replace('./.config/taskfiles/', '').replace('/Taskfile-', ':').replace('/Taskfile.yml', '').replace('Taskfile-', '').replace('.yml', '')
+      const x = trim(a)
+      const y = trim(b)
+      if (x < y) {
+        return -1
+      } else if (x > y) {
+        return 1
+      } else {
+        return 0
+      }
+    })
+
+    return sorted
+  })
 }

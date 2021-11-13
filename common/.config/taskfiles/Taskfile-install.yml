@@ -104,9 +104,13 @@ tasks:
           if [ '{{.FORCE_INSTALL}}' ]; then
             {{.NPM_PROGRAM}} install -g {{.NPM_PACKAGE}}@latest --force
           else
-            {{.NPM_PROGRAM}} install -g {{.NPM_PACKAGE}}@latest
+            {{if eq .NPM_BINARY_HANDLE "npx "}}
+              {{.NPX_PROGRAM}} -y {{.NPM_PACKAGE}}
+            {{else}}
+              {{.NPM_PROGRAM}} install -g {{.NPM_PACKAGE}}@latest
+            {{end}}
           fi
-          true success 'The npm `{{.NPM_PACKAGE}}` package is globally installed'
+          true success 'The npm `{{.NPM_PACKAGE}}` package is installed'
         fi
     status:
       - type {{if .NPM_PACKAGE_BIN}}{{.NPM_PACKAGE_BIN}}{{else}}{{.NPM_PACKAGE}}{{end}} &> /dev/null

@@ -42,11 +42,13 @@ tasks:
     vars:
       CONTRIB_TEMPLATE: .common/docs/blueprint-contributing.md
     cmds:
-      - readme generate --silent --headingPrefix '{}' --config .variables.json --input "{{.CONTRIB_TEMPLATE}}" --output CONTRIBUTING.md
+      - >
+        {{.NPM_BINARY_HANDLE}}readme generate --silent --headingPrefix '{}' --config .variables.json
+        --input "{{.CONTRIB_TEMPLATE}}" --output CONTRIBUTING.md
       - task: markdown:scrub
         vars:
           SCRUB_FILE: CONTRIBUTING.md
-      - prettier --write CONTRIBUTING.md
+      - '{{.NPM_BINARY_HANDLE}}prettier --write CONTRIBUTING.md'
     log:
       error: Failed to generate CONTRIBUTING.md
       start: Generating CONTRIBUTING.md
@@ -108,7 +110,7 @@ tasks:
         .version = $version' package.json > "$TMP"
       - '{{.NPM_PROGRAM}} install --ignore-scripts'
       - mv "$TMP" package.json
-      - prettier --write package.json
+      - '{{.NPM_BINARY_HANDLE}}prettier --write package.json'
       - |
         if [[ '{{.PRODUCTION_MODE}}' == 'true' ]]; then
           cd .common && git reset --hard HEAD
@@ -138,7 +140,7 @@ tasks:
     cmds:
       - |
         find ./.common/files-{{.REPOSITORY_SUBTYPE}} -type f -name '*.handlebars' | while read FILE; do
-          hbs --data .variables.json "$FILE" --stdout > "${FILE%.*}"
+          {{.NPM_BINARY_HANDLE}}hbs --data .variables.json "$FILE" --stdout > "${FILE%.*}"
         done
     sources:
       - .common/**/*.handlebars
@@ -153,13 +155,8 @@ tasks:
         if ! test -f package.json; then
           echo '{"blueprint": {}}' > package.json
         fi
-      - |
-        if ! test -f requirements.txt; then
-          echo '' > requirements.txt
-        fi
     status:
       - test -f package.json
-      - test -f requirements.txt
 
   man-page:
     deps:
@@ -173,10 +170,10 @@ tasks:
     cmds:
       - |
         if test -f ".common/docs/{{.MAN_TEMPLATE}}"; then
-          readme generate --headingPrefix '{}' --silent --config .variables.json --input ".common/docs/{{.MAN_TEMPLATE}}" --output CONTRIBUTING.md
-          prettier --write MAN.md
+          {{.NPM_BINARY_HANDLE}}readme generate --headingPrefix '{}' --silent --config .variables.json --input ".common/docs/{{.MAN_TEMPLATE}}" --output CONTRIBUTING.md
+          {{.NPM_BINARY_HANDLE}}prettier --write MAN.md
           mkdir -p dist
-          remark --use man MAN.md --output dist/man
+          {{.NPM_BINARY_HANDLE}}remark --use man MAN.md --output dist/man
           rm MAN.md
         fi
     log:
@@ -245,12 +242,14 @@ tasks:
     vars:
       README_TEMPLATE: blueprint-readme-{{.REPOSITORY_SUBTYPE}}.md
     cmds:
-      - readme generate --headingPrefix '{}' --silent --config .variables.json --input ".common/docs/{{.README_TEMPLATE}}"
+      - >
+        {{.NPM_BINARY_HANDLE}}readme generate --headingPrefix '{}' --silent --config .variables.json
+        --input ".common/docs/{{.README_TEMPLATE}}"
       - task: markdown:scrub
         vars:
           SCRUB_FILE: README.md
       - task: ':{{if eq .REPOSITORY_TYPE "packer"}}packer:update:readme{{else}}donothing{{end}}'
-      - prettier --write README.md
+      - '{{.NPM_BINARY_HANDLE}}prettier --write README.md'
     log:
       error: Failed to generate README.md
       start: Generating README.md
@@ -292,13 +291,12 @@ tasks:
     deps:
       - :git:gitlab:update
       - :git:github:update
+
   sort:
     cmds:
       - if [ -f paths.txt ]; then sort paths.txt -o paths.txt; fi
-      - if [ -f requirements.txt ]; then sort requirements.txt -o requirements.txt; fi
     sources:
       - paths.txt
-      - requirements.txt
 
   start:
     deps:
@@ -367,7 +365,6 @@ tasks:
       TMP:
         sh: mktemp
     cmds:
-      - echo hey
       - jq -S --arg blueprint "$BLUEPRINT_DATA" --arg encoded "$GITLAB_ENCODED_PATH" '. = . * ($blueprint | fromjson)
         | .gitlab_encoded_path = $encoded' '{{.SHARED_JSON}}' > "$TMP"
       - mv "$TMP" .variables.json

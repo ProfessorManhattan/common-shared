@@ -3,9 +3,6 @@ version: '3'
 
 vars:
   CSPELL_CONFIG: .common/.cspell.json
-  IGNORE_FOLDERS: -name .autodoc -o -name .cache -o -name .common -o -name .git -o -name .husky
-    -o -name .modules -o -name .npm -o -name .task -o -name .venv -o -name .vscode -o -name node_modules
-    -o -name venv
 
 tasks:
   all:
@@ -120,14 +117,14 @@ tasks:
       **Example linting specific pattern of files:**
       `task lint:eslint -- '**/*.js'`
     cmds:
-      - eslint --format pretty {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
+      - '{{.NPM_BINARY_HANDLE}}eslint --format pretty {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}'
 
   js:
     deps:
       - :common:node:dependencies:local
       - :install:npm:eslint
     cmds:
-      - eslint --format pretty --ext .js,.jsx,.ts {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
+      - '{{.NPM_BINARY_HANDLE}}eslint --format pretty --ext .js,.jsx,.ts {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}'
 
   lint-staged:
     deps:
@@ -135,7 +132,7 @@ tasks:
       - :common:node:dependencies:local
       - :common:python:requirements
     cmds:
-      - lint-staged
+      - '{{.NPM_BINARY_HANDLE}}lint-staged'
 
   packer:
     deps:
@@ -182,7 +179,7 @@ tasks:
 
       For more information, see [Prettier's website](https://prettier.io/).
     cmds:
-      - prettier --list-different {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
+      - '{{.NPM_BINARY_HANDLE}}prettier --list-different {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}'
 
   python:
     deps:
@@ -249,9 +246,9 @@ tasks:
     cmds:
       - |
         {{if .CLI_ARGS}}
-          shellcheck {{.CLI_ARGS}}
+          {{.NPM_BINARY_HANDLE}}shellcheck {{.CLI_ARGS}}
         {{else}}
-          find . -type d \( {{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name '*.sh' -o -name '*.sh.j2' \) -print0 | xargs -0 -r -n1 shellcheck
+          find . -type d \( {{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name '*.sh' -o -name '*.sh.j2' \) -print0 | xargs -0 -r -n1 {{.NPM_BINARY_HANDLE}}shellcheck
         {{end}}
 
   spelling:
@@ -280,7 +277,7 @@ tasks:
 
   spelling:cli:
     cmds:
-      - cmd: cspell --no-progress --show-context --no-must-find-files --config {{.CSPELL_CONFIG}} {{.CLI_ARGS}}
+      - cmd: '{{.NPM_BINARY_HANDLE}}cspell --no-progress --show-context --no-must-find-files --config {{.CSPELL_CONFIG}} {{.CLI_ARGS}}'
         ignore_errors: true
 
   spelling:staged:
@@ -292,7 +289,7 @@ tasks:
     cmds:
       - cmd: |
           if [ '{{.STAGED_FILES}}' ]; then
-            cspell --no-summary --no-progress --show-context --no-must-find-files --config {{.CSPELL_CONFIG}} "$STAGED_FILES"
+            {{.NPM_BINARY_HANDLE}}cspell --no-summary --no-progress --show-context --no-must-find-files --config {{.CSPELL_CONFIG}} "$STAGED_FILES"
           fi
         ignore_errors: true
 

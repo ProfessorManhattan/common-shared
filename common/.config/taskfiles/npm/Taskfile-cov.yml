@@ -13,22 +13,22 @@ tasks:
       - :common:node:dependencies:local
       - :install:npm:nyc
     cmds:
-      - nyc report
-      - nyc check-coverage --lines 100 --functions 100 --branches 100
+      - '{{.NPM_BINARY_HANDLE}}nyc report'
+      - '{{.NPM_BINARY_HANDLE}}nyc check-coverage --lines 100 --functions 100 --branches 100'
 
   html:
     deps:
       - :common:node:dependencies:local
       - :install:npm:nyc
     cmds:
-      - nyc report --reporter=html
+      - '{{.NPM_BINARY_HANDLE}}nyc report --reporter=html'
 
   lcov:
     deps:
       - :common:node:dependencies:local
       - :install:npm:nyc
     cmds:
-      - nyc report --reporter=lcov
+      - '{{.NPM_BINARY_HANDLE}}nyc report --reporter=lcov'
 
   open:
     deps:
@@ -36,7 +36,7 @@ tasks:
       - :npm:install:open-cli
     desc: Ensures the code coverage report is generated and opens it in a browser
     cmds:
-      - open-cli coverage/index.html
+      - '{{.NPM_BINARY_HANDLE}}open-cli coverage/index.html'
 
   report:
     deps:
@@ -49,4 +49,4 @@ tasks:
       - :install:npm:codecov
     desc: Uploads code coverage report to `codecov.io`
     cmds:
-      - codecov
+      - '{{.NPM_BINARY_HANDLE}}codecov'

@@ -7,18 +7,18 @@ tasks:
       - :npm:install:typedoc
     desc: Generate TypeDoc HTML documentation
     cmds:
-      - typedoc src/ --exclude "**/*.spec.ts" --out build/docs
+      - '{{.NPM_BINARY_HANDLE}}typedoc src/ --exclude "**/*.spec.ts" --out build/docs'
 
   json:
     deps:
       - :npm:install:typedoc
     desc: Generate TypeDoc JSON documentation
     cmds:
-      - typedoc src/ --exclude "**/*.spec.ts" --json build/docs/typedoc.json
+      - '{{.NPM_BINARY_HANDLE}}typedoc src/ --exclude "**/*.spec.ts" --json build/docs/typedoc.json'
 
   open:
     deps:
       - html
       - :npm:install:open-cli
     cmds:
-      - open-cli build/docs/index.html
+      - '{{.NPM_BINARY_HANDLE}}open-cli build/docs/index.html'
