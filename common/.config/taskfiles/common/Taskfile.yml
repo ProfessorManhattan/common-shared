@@ -35,9 +35,9 @@ tasks:
 
   commit:
     deps:
+      - :install:local:modules
       - :install:npm:commitizen
       - :install:npm:commitlint
-      - node:dependencies:local
       - python:requirements
     desc: Lint staged files, report spelling errors, and open a _required_ commit dialoge
     summary: |
@@ -59,10 +59,10 @@ tasks:
 
   husky:
     deps:
+      - :install:local:modules
       - :install:npm:commitizen
       - :install:npm:commitlint
       - :install:npm:husky
-      - node:dependencies:local
     cmds:
       - task: husky:install
       - task: husky:permissions
@@ -124,26 +124,6 @@ tasks:
     status:
       - '[[ "${container:=}" == "docker" ]]'
 
-  node:dependencies:local:
-    run: once
-    cmds:
-      - task: :install:local:modules
-
-  node:dependencies:local:install:
-    deps:
-      - :install:software:node
-    cmds:
-      - |
-        if [ "${container:=}" != "docker" ]; then
-          {{.NPM_PROGRAM}} install
-          {{.NPM_PROGRAM}} audit fix || true
-        fi
-    sources:
-      - package.json
-    preconditions:
-      - sh: test -f package.json
-        msg: The package.json file appears to be missing!
-
   precommit:
     deps:
       - :fix:json
@@ -169,44 +149,9 @@ tasks:
       - task: :lint:all
       - '{{.NPX_HANDLE}}standard-version --no-verify'
 
-  python:requirements:
-    deps:
-      - :install:software:python
-    run: once
-    cmds:
-      - task: python:requirements:poetry
-      - task: :{{if eq .REPOSITORY_TYPE "ansible"}}common:python:requirements:ansible{{else}}donothing{{end}}
-    status:
-      - '[[ "${container:=}" == "docker" ]]'
-
-  python:requirements:ansible:
-    cmds:
-      - task: :ansible:galaxy:requirements
-
-  python:requirements:poetry:
-    deps:
-      - :install:software:poetry
-    run: once
-    cmds:
-      - poetry install
-    sources:
-      - pyproject.toml
-    preconditions:
-      - sh: test -f pyproject.toml
-        msg: The `pyproject.toml` file is missing!
-
-  # The venv activation is not currently working so global install is used in the task above
-  python:requirements:poetry:venv:activate:
-    run: once
-    vars:
-      VENV_PATH:
-        sh: poetry env info --path
-    cmds:
-      - source "$VENV_PATH/bin/activate"
-
   requirements:
     deps:
-      - node:dependencies:local
+      - :install:local:modules
       - node:dependencies:global
       - python:requirements
     desc: Ensure all the dependencies are installed (Node.js, Python, etc.)

@@ -9,7 +9,7 @@ vars:
 tasks:
   eslint:
     deps:
-      - :common:node:dependencies:local
+      - :install:local:modules
       - :install:npm:eslint
     desc: Fix JavaScript/TypeScript errors automatically
     summary: |
@@ -127,7 +127,7 @@ tasks:
 
   prettier:
     deps:
-      - :common:node:dependencies:local
+      - :install:local:modules
       - :install:npm:prettier
     desc: Automatically format most files using Prettier
     summary: |
@@ -316,7 +316,7 @@ tasks:
 
   yaml:order:
     deps:
-      - :common:node:dependencies:local
+      - :install:local:modules
       - :install:npm:eslint
     summary: |
       # Ensure YML files are sorted properly

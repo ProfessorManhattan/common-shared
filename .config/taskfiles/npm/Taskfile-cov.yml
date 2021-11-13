@@ -10,7 +10,7 @@ tasks:
 
   check:
     deps:
-      - :common:node:dependencies:local
+      - :install:local:modules
       - :install:npm:nyc
     cmds:
       - nyc report
@@ -18,14 +18,14 @@ tasks:
 
   html:
     deps:
-      - :common:node:dependencies:local
+      - :install:local:modules
       - :install:npm:nyc
     cmds:
       - nyc report --reporter=html
 
   lcov:
     deps:
-      - :common:node:dependencies:local
+      - :install:local:modules
       - :install:npm:nyc
     cmds:
       - nyc report --reporter=lcov

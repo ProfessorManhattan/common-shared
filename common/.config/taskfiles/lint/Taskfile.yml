@@ -42,7 +42,7 @@ tasks:
 
   commit:
     deps:
-      - :common:node:dependencies:local
+      - :install:local:modules
       - :install:npm:commitlint
     summary: |
       # Lint a commit message
@@ -103,7 +103,7 @@ tasks:
 
   eslint:
     deps:
-      - :common:node:dependencies:local
+      - :install:local:modules
       - :install:npm:eslint
     desc: Lint with `eslint`
     summary: |
@@ -126,7 +126,7 @@ tasks:
 
   js:
     deps:
-      - :common:node:dependencies:local
+      - :install:local:modules
       - :install:npm:eslint
     cmds:
       - '{{.NPX_HANDLE}}eslint --format pretty --ext .js,.jsx,.ts {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}'
@@ -134,7 +134,7 @@ tasks:
   lint-staged:
     deps:
       - :common:node:dependencies:global
-      - :common:node:dependencies:local
+      - :install:local:modules
       - :common:python:requirements
     cmds:
       - '{{.NPX_HANDLE}}lint-staged'
@@ -169,7 +169,7 @@ tasks:
 
   prettier:
     deps:
-      - :common:node:dependencies:local
+      - :install:local:modules
       - :install:npm:prettier
     desc: Lint formatting using Prettier
     summary: |

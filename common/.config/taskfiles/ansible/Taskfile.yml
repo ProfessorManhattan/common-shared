@@ -211,7 +211,7 @@ tasks:
 
   playbook:environment:prompt:
     deps:
-      - :common:node:dependencies:local
+      - :install:local:modules
     env:
       ENVIRONMENT:
         sh: node .common/scripts/prompts/environment.js

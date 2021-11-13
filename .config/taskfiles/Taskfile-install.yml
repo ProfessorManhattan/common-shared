@@ -302,15 +302,6 @@ tasks:
         vars:
           NPM_PACKAGE: typesync
 
-  python:virtualenv:
-    deps:
-      - software:python
-    run: once
-    cmds:
-      - pip3 install virtualenv
-    status:
-      - type virtualenv &> /dev/null
-
   software:brew:
     run: once
     cmds:

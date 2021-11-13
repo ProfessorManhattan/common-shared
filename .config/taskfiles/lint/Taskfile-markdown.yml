@@ -9,7 +9,7 @@ vars:
 tasks:
   markdown:
     deps:
-      - :common:node:dependencies:local
+      - :install:local:modules
       - :install:npm:remark
     desc: Lint markdown files
     summary: |
