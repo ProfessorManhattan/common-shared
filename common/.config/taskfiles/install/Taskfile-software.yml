@@ -23,7 +23,9 @@ tasks:
   brew:darwin:
     cmds:
       - |
-        if ! type brew &> /dev/null; then
+        if [ -f "~/.local/homebrew/bin/brew" ] && ! type brew &> /dev/null; then
+          eval "$(~/.local/homebrew/bin/brew shellenv)"
+        elif ! type brew &> /dev/null; then
           rm -rf ~/.local/homebrew
           mkdir -p ~/.local/homebrew
           git clone https://github.com/Homebrew/brew ~/.local/homebrew
@@ -45,14 +47,23 @@ tasks:
     run: once
     cmds:
       - |
-        if ! type brew &> /dev/null; then
+        function ensureSource() {
+          if ! (cat "$1" | grep "/bin/brew shellenv" &> /dev/null); then
+            echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> "$1"
+          fi
+        }
+        if [ -f "~/.local/homebrew/bin/brew" ] && ! type brew &> /dev/null; then
+          eval "$(~/.local/homebrew/bin/brew shellenv)"
+          ensureSource "~/.bash_profile"
+          ensureSource "~/.profile"
+        elif ! type brew &> /dev/null; then
           rm -rf ~/.local/homebrew
           mkdir -p ~/.local/homebrew
           git clone https://github.com/Homebrew/brew ~/.local/homebrew
           eval "$(~/.local/homebrew/bin/brew shellenv)"
           brew update --force --quiet
-          test -r ~/.bash_profile && echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >>~/.bash_profile
-          echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >>~/.profile
+          ensureSource "~/.bash_profile"
+          ensureSource "~/.profile"
         fi
 
   brew:windows:
