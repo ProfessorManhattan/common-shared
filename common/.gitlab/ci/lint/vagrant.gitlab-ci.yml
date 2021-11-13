@@ -9,4 +9,5 @@ vagrant-validate:
     GIT_DEPTH: 1
   script:
     - set -eo pipefail
-    - find . -type f -name 'Vagrantfile' -exec bash -c 'INITIAL_DIR=$PWD; VAGRANTFILE_PATH=$1; cd $(dirname $VAGRANTFILE_PATH); vagrant validate; cd $INITIAL_DIR' _ {} \;
+    - find . -type f -name 'Vagrantfile' -exec bash -c 'INITIAL_DIR=$PWD; VAGRANTFILE_PATH=$1;
+      cd $(dirname $VAGRANTFILE_PATH); vagrant validate; cd $INITIAL_DIR' _ {} \;
