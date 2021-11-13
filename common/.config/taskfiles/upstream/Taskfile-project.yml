@@ -3,7 +3,7 @@ version: '3'
 
 vars:
   PROJECT_COMMON_URL: https://gitlab.com/megabyte-labs/common/{{.REPOSITORY_TYPE}}.git
-  SHARED_FOLDER: .shared
+  SHARED_FOLDER: '.shared'
 
 tasks:
   clean:

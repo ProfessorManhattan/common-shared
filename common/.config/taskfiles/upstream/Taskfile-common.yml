@@ -2,10 +2,10 @@
 version: '3'
 
 vars:
-  COMMON_FOLDER: .common
+  COMMON_FOLDER: '.common'
   DOCS_URL: https://gitlab.com/megabyte-labs/documentation/{{.REPOSITORY_SUBTYPE}}
   SHARED_COMMON_URL: https://gitlab.com/megabyte-labs/common/shared.git
-  SHARED_FOLDER: .shared
+  SHARED_FOLDER: '.shared'
 
 tasks:
   clean: rm -rf {{.SHARED_FOLDER}}
