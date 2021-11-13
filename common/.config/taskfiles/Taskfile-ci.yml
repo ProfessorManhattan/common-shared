@@ -14,12 +14,12 @@ tasks:
       - git pull origin "$CI_COMMIT_REF_NAME"
       - npm ci --cache .npm --ignore-scripts --prefer-offline
     preconditions:
-      - sh: '[[ -z "$GROUP_ACCESS_TOKEN" ]]'
+      - sh: '[[ ! -z "$GROUP_ACCESS_TOKEN" ]]'
         msg: 'The `GROUP_ACCESS_TOKEN` GitLab CI variable must be set to an API key with priviledges to read/write to repositories.'
-      - sh: '[[ -z "$GITLAB_CI_EMAIL" ]]'
+      - sh: '[[ ! -z "$GITLAB_CI_EMAIL" ]]'
         msg: 'The `GITLAB_CI_EMAIL` GitLab CI variable must be set to the e-mail address you would like associated with
           automated commits (e.g. "help@mydomain.com").'
-      - sh: '[[ -z "$GITLAB_CI_NAME" ]]'
+      - sh: '[[ ! -z "$GITLAB_CI_NAME" ]]'
         msg: 'The `GITLAB_CI_NAME` GitLab CI variable must be set to the name you would like associated with automated commits
           (e.g. "CI Automation").'
 
