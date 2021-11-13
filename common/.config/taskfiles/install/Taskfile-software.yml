@@ -24,6 +24,7 @@ tasks:
     cmds:
       - |
         if ! type brew &> /dev/null; then
+          rm -rf ~/.local/homebrew
           mkdir -p ~/.local/homebrew
           git clone https://github.com/Homebrew/brew ~/.local/homebrew
           eval "$(~/.local/homebrew/bin/brew shellenv)"
@@ -45,6 +46,7 @@ tasks:
     cmds:
       - |
         if ! type brew &> /dev/null; then
+          rm -rf ~/.local/homebrew
           mkdir -p ~/.local/homebrew
           git clone https://github.com/Homebrew/brew ~/.local/homebrew
           eval "$(~/.local/homebrew/bin/brew shellenv)"
