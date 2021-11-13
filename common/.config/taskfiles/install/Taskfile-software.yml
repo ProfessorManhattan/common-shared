@@ -129,8 +129,8 @@ tasks:
 
   common:linux:unknown:
     cmds:
-      - true warn "You are using an operating system that we do not directly support. Please make sure
-        the equivalent of `build-essential`, `curl`, `file`, `git`, and `procps` are installed."
+      - true warn 'You are using an operating system that we do not directly support. Please make sure
+        the equivalent of `build-essential`, `curl`, `file`, `git`, and `procps` are installed.'
 
   common:windows:
     cmds:
