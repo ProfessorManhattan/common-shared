@@ -37,7 +37,7 @@ tasks:
     env:
       BLUEPRINT:
         sh: jq -r '.blueprint' package.json
-      TMP:
+      PKG_TMP:
         sh: mktemp
     cmds:
       - |
@@ -54,8 +54,8 @@ tasks:
         ensureKeywords package.json
       - jq --arg blueprint "$BLUEPRINT" --arg keywords "$(jq '.keywords[]' package.json package.hbs.json | jq -s '. | unique')"
         -s -S '.[0] * .[1] | .keywords = ($keywords | fromjson) | .blueprint = ($blueprint | fromjson) | .' package.json
-        package.hbs.json > "$TMP"
-      - mv "$TMP" package.hbs.json
+        package.hbs.json > "$PKG_TMP"
+      - mv "$PKG_TMP" package.hbs.json
 
   merge:package:json-blueprint-overrides:
     summary: |
