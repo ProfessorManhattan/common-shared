@@ -74,5 +74,5 @@ tasks:
         --arg poetry "$(jq -r '.keywords | join("\", \"")' package.json | sed 's/$/"/' | sed 's/^/"/')"
         --arg encoded "$(jq -r '.blueprint.repository.gitlab' package.json | sed 's/https:\/\/gitlab.com\///' | sed 's/\//%252F/g')"
         -S '. = (. * ($blueprint | fromjson)) | .version = $version | .poetryKeywords = $poetry | .gitlab_encoded_path = $encoded'
-         '{{.INPUT_FILE}}' > "$TMP"
+        '{{.INPUT_FILE}}' > "$TMP"
       - mv "$TMP" {{.OUTPUT_FILE}}

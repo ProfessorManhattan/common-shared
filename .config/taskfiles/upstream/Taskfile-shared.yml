@@ -18,9 +18,9 @@ tasks:
       - task: :upstream:project:merge:package:files
 
   prepare:
-    deps:
-      - merge
-      - variables
+    cmds:
+      - task: merge
+      - task: variables
 
   template:
     deps:
@@ -64,6 +64,7 @@ tasks:
 
   variables:
     cmds:
+      - curl -s {{.VARIABLES_URL}} > .variables.json
       - task: :upstream:variables
         vars:
           INPUT_FILE: .variables.json
