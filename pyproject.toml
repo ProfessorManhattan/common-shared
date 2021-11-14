@@ -7,7 +7,7 @@ license = "MIT"
 readme = "README.md"
 homepage = "https://megabyte.space"
 documentation = "https://megabyte.space/docs/common/shared"
-keywords = ["megabytelabs", "common", "shared", "files", "configurations", "taskfiles", "gitlab-ci", "package", "professormanhattan"]
+keywords = ["common", "configurations", "files", "gitlab-ci", "megabytelabs", "npm", "package", "professormanhattan", "shared", "taskfiles"]
 include = ["CHANGELOG.md", "LICENSE"]
 
 [tool.poetry.dependencies]
