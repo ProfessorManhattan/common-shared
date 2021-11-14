@@ -233,12 +233,11 @@ tasks:
             mv "$TMP" "$1"
           fi
         }
-
         ensureKeywords package.json
       - jq --arg blueprint "$BLUEPRINT" --arg keywords "$(jq '.keywords[]' package.json tmp.package.json | jq -s '. | unique')"
         -s -S '.[0] * .[1] | .keywords = ($keywords | fromjson) | .blueprint = ($blueprint | fromjson) | .' package.json
         tmp.package.json > "$TMP"
-        mv "$TMP" package.json
+      - mv "$TMP" package.json
       - rm tmp.package.json
 
   template:variables:
