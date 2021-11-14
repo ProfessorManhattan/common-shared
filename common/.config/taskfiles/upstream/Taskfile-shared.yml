@@ -14,17 +14,8 @@ tasks:
       - task: :common:husky:permissions
 
   merge:
-    deps:
-      - :install:software:jq
-    env:
-      BLUEPRINT:
-        sh: jq -r '.blueprint' package.json | sed 's/^null$/{}/'
-      TMP:
-        sh: mktemp
     cmds:
-      - jq --arg blueprint "$BLUEPRINT" -s '.[0] * .[1] | .blueprint = (.blueprint * ($blueprint | fromjson))'
-        package.json package.hbs.json > "$TMP"
-      - mv "$TMP" package.hbs.json
+      - task: :upstream:project:merge:package:files
 
   prepare:
     deps:
@@ -72,13 +63,8 @@ tasks:
         wait
 
   variables:
-    env:
-      TMP:
-        sh: mktemp
     cmds:
-      - curl -s {{.VARIABLES_URL}} > .variables.json
-      - jq --arg blueprint "$(jq -r '.blueprint' package.json | sed 's/^null$/{}/')"
-        --arg version "$(jq -r '.version' package.json | sed 's/^null$/0.0.1/')"
-        --arg poetry "$(jq -r '.keywords | join("\", \"")' package.json | sed 's/$/"/' | sed 's/^/"/')"
-        -S '. = (. * ($blueprint | fromjson)) | .version = $version | .poetryKeywords = $poetry' .variables.json > "$TMP"
-      - mv "$TMP" .variables.json
+      - task: :upstream:variables
+        vars:
+          INPUT_FILE: .variables.json
+          OUTPUT_FILE: .variables.json
