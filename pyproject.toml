@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "common-shared"
-version = "1.0.0"
+version = "0.0.1"
 description = "Includes common files used across different types of common file repositories (e.g. Go, Python, etc.)"
 authors = ["Brian Zalewski <brian@megabyte.space>"]
 license = "MIT"
 readme = "README.md"
 homepage = "https://megabyte.space"
 documentation = "https://megabyte.space/docs/common/shared"
-keywords = ["shared", "common", "files", "generic", "configs"]
+keywords = ["megabytelabs", "common", "shared", "files", "configurations", "taskfiles", "gitlab-ci", "package", "professormanhattan"]
 include = ["CHANGELOG.md", "LICENSE"]
 
 [tool.poetry.dependencies]
