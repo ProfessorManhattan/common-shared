@@ -19,7 +19,7 @@ prettier-fix:
   variables:
     GIT_DEPTH: 1
     NODE_MODULES_PATH: /usr/local/lib/node_modules
-    PRETTIER_CONFIG: '@megabytelabs/prettier-config'
+    PRETTIER_CONFIG: '@mblabs/prettier-config'
   before_script:
     - git config pull.ff only
     - git remote set-url origin "https://root:$GROUP_ACCESS_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git"

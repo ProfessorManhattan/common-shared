@@ -1,6 +1,6 @@
 {
   "private": false,
-  "name": "@megabytelabs/shared-common-files",
+  "name": "@mblabs/shared-common-files",
   "version": "1.0.0",
   "description": "Includes common files used across different types of common file repositories (e.g. Go, Python, etc.)",
   "license": "MIT",

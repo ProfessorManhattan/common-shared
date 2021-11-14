@@ -8,7 +8,7 @@ prettier:
   variables:
     GIT_DEPTH: 1
     NODE_MODULES_PATH: /usr/local/lib/node_modules
-    PRETTIER_CONFIG: '@megabytelabs/prettier-config'
+    PRETTIER_CONFIG: '@mblabs/prettier-config'
   before_script:
     - git config pull.ff only
     - git checkout "$CI_COMMIT_REF_NAME"
