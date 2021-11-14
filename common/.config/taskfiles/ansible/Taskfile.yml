@@ -33,9 +33,9 @@ tasks:
     cmds:
       - jq --arg collections "$COLLECTIONS" '.{{.COLLECTION_DEPS}} = ($collections | fromjson)' '{{.VARIABLES_PATH}}' > "$TMP"
       - mv "$TMP" '{{.VARIABLES_PATH}}'
-    log:
-      error: 'Failed to populate the `{{.COLLECTION_DEPS}}` variable in `{{.VARIABLES_PATH}}`'
-      success: 'Populated the `{{.COLLECTION_DEPS}}` variable in `{{.VARIABLES_PATH}}`'
+    # log:
+    #   error: 'Failed to populate the `{{.COLLECTION_DEPS}}` variable in `{{.VARIABLES_PATH}}`'
+    #   success: 'Populated the `{{.COLLECTION_DEPS}}` variable in `{{.VARIABLES_PATH}}`'
     sources:
       - '{{.VARIABLES_PATH}}'
       - '{{.REQUIREMENTS_PATH}}'
@@ -63,9 +63,9 @@ tasks:
         {{else}}
           echo "$MULTIPLE_COLLECTION_TEXT" > '{{.FILE_PATH}}'
         {{end}}
-    log:
-      error: 'Failed to create `{{.FILE_PATH}}`'
-      success: 'Generated `{{.FILE_PATH}}`'
+    # log:
+    #   error: 'Failed to create `{{.FILE_PATH}}`'
+    #   success: 'Generated `{{.FILE_PATH}}`'
     sources:
       - '{{.FILE_PATH}}'
       - '{{.VARIABLES_PATH}}'
@@ -152,9 +152,9 @@ tasks:
       - task: mod-ansible-autodoc:variables
       - mkdir -p .autodoc
       - mv ansible_actions.md ansible_tags.md ansible_todo.md ansible_variables.json ansible_variables.md .autodoc
-    log:
-      error: Error running `mod-ansible-autodoc`
-      success: Generated documentation partials with `mod-ansible-autodoc` and moved them to the `.autodoc` folder
+    # log:
+    #   error: Error running `mod-ansible-autodoc`
+    #   success: Generated documentation partials with `mod-ansible-autodoc` and moved them to the `.autodoc` folder
     sources:
       - '{{.VARIABLES_PATH}}'
       - defaults/**/*.yml
@@ -173,9 +173,9 @@ tasks:
     cmds:
       - jq --arg vars "$ROLE_VARIABLES" '.role_variables = ($vars | fromjson)' '{{.VARIABLES_PATH}}' > "$TMP"
       - mv "$TMP" '{{.VARIABLES_PATH}}'
-    log:
-      error: 'Failed to inject `{{.VARIABLES_PATH}}` with the `role_variables` stored in `ansible_variables.json`'
-      success: 'Injected `{{.VARIABLES_PATH}}` with the `role_variables` from `ansible_variables.json`'
+    # log:
+    #   error: 'Failed to inject `{{.VARIABLES_PATH}}` with the `role_variables` stored in `ansible_variables.json`'
+    #   success: 'Injected `{{.VARIABLES_PATH}}` with the `role_variables` from `ansible_variables.json`'
 
   playbook:environment:
     cmds:
@@ -252,8 +252,8 @@ tasks:
         FILES=$(find ./roles -mindepth 2 -maxdepth 2 -type d '!' -exec test -e "{}/{{.CLI_ARGS}}" ';' -print)
         true log info 'Found '"$(echo "$FILES" | wc -l | xargs)"' roles missing {{.CLI_ARGS}}'
         echo "$FILES"
-    log:
-      error: 'Failed to search for the file named `{{.CLI_ARGS}}`'
+    # log:
+    #   error: 'Failed to search for the file named `{{.CLI_ARGS}}`'
     preconditions:
       - sh: test -d roles
         msg: The `roles/` folder is missing. Is the project set up right?
@@ -274,9 +274,9 @@ tasks:
       - task: :fix:yaml:dashes
         vars:
           CLI_ARGS: '{{.REQUIREMENTS_PATH}}'
-    log:
-      error: 'Failed to populate and/or format the `{{.REQUIREMENTS_PATH}}` with the `{{.KEY}}` collection'
-      success: 'Ensured that `{{.REQUIREMENTS_PATH}}` includes the `{{.KEY}}` collection'
+    # log:
+    #   error: 'Failed to populate and/or format the `{{.REQUIREMENTS_PATH}}` with the `{{.KEY}}` collection'
+    #   success: 'Ensured that `{{.REQUIREMENTS_PATH}}` includes the `{{.KEY}}` collection'
     status:
       - '[[ "$COLLECTIONS" =~ "{{.KEY}}" ]] || [ ! "$REFERENCES" ]'
 
@@ -353,9 +353,9 @@ tasks:
       - task: :fix:yaml:dashes
         vars:
           CLI_ARGS: '{{ .META_PATH }}'
-    log:
-      error: 'Failed to ensure `{{.ROLE}}` is included in the `{{.META_PATH}}` `dependencies`'
-      success: 'Ensured `{{.ROLE}}` is included in the `{{.META_PATH}}` `dependencies`'
+    # log:
+    #   error: 'Failed to ensure `{{.ROLE}}` is included in the `{{.META_PATH}}` `dependencies`'
+    #   success: 'Ensured `{{.ROLE}}` is included in the `{{.META_PATH}}` `dependencies`'
     status:
       - '[[ "$DEPENDENCIES" =~ "{{.ROLE}}" ]] || [ ! "$REFERENCES" ]'
 
@@ -375,9 +375,9 @@ tasks:
       - jq --arg a '{{.DESCRIPTION}}' --arg b '{{.GALAXY_ROLE_NAME}}' '.blueprint.description = $a | .blueprint.slug = $b' package.json > "$TMP"
       - mv "$TMP" package.json
       - '{{.NPX_HANDLE}}prettier --write package.json'
-    log:
-      error: Failed to update the `blueprint` variable in `package.json` with meta information
-      success: Ensured the `blueprint` variable in `package.json` is populated with up-to-date meta information
+    # log:
+    #   error: Failed to update the `blueprint` variable in `package.json` with meta information
+    #   success: Ensured the `blueprint` variable in `package.json` is populated with up-to-date meta information
     sources:
       - meta/main.yml
       - package.json
@@ -409,9 +409,9 @@ tasks:
       - task: :fix:yaml:dashes
         vars:
           CLI_ARGS: '{{.REQUIREMENTS_PATH}}'
-    log:
-      error: 'Failed to sync requirements from `{{.META_PATH}}` to `{{.REQUIREMENTS_PATH}}`'
-      success: 'Successfully synchronized requirements from `{{.META_PATH}}` to `{{.REQUIREMENTS_PATH}}`'
+    # log:
+    #   error: 'Failed to sync requirements from `{{.META_PATH}}` to `{{.REQUIREMENTS_PATH}}`'
+    #   success: 'Successfully synchronized requirements from `{{.META_PATH}}` to `{{.REQUIREMENTS_PATH}}`'
 
   update:galaxy-id:
     vars:
@@ -428,9 +428,9 @@ tasks:
           jq --arg a "${PROJECT_ID}" '.blueprint.ansible_galaxy_project_id = $a' package.json > "$TMP"
           mv "$TMP" package.json
         fi
-    log:
-      error: Failed to acquire and inject the `.blueprint.ansible_galaxy_project_id` value into `package.json`
-      success: Ensured that the `.blueprint.ansible_galaxy_project_id` variable in `package.json` is accurate
+    # log:
+    #   error: Failed to acquire and inject the `.blueprint.ansible_galaxy_project_id` value into `package.json`
+    #   success: Ensured that the `.blueprint.ansible_galaxy_project_id` variable in `package.json` is accurate
     status:
       - '[[ "{{.HAS_PROJECT_ID}}" == "true" ]]'
 
@@ -460,9 +460,9 @@ tasks:
       - jq -S --arg alt "$ALT" --arg galaxyinfo "$GALAXY_INFO" --arg subheader "$SUBHEADER" '.alternative_description = $alt |
         .galaxy_info = ($galaxyinfo | fromjson) | .subheader_description = $subheader' '{{.VARIABLES_PATH}}' > "$TMP"
       - mv "$TMP" '{{.VARIABLES_PATH}}'
-    log:
-      error: 'Failed to inject `{{.VARIABLES_PATH}}` with alternative descriptions'
-      success: 'Ensured `{{.VARIABLES_PATH}}` has alternative descriptions'
+    # log:
+    #   error: 'Failed to inject `{{.VARIABLES_PATH}}` with alternative descriptions'
+    #   success: 'Ensured `{{.VARIABLES_PATH}}` has alternative descriptions'
     sources:
       - '.common/variables.{{.REPOSITORY_SUBTYPE}}.json'
       - '{{.META_PATH}}'

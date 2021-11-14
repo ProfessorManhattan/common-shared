@@ -35,10 +35,10 @@ tasks:
         vars:
           SCRUB_FILE: CONTRIBUTING.md
       - '{{.NPX_HANDLE}}prettier --write CONTRIBUTING.md'
-    log:
-      error: Failed to generate CONTRIBUTING.md
-      start: Generating CONTRIBUTING.md
-      success: Generated CONTRIBUTING.md
+    # log:
+    #   error: Failed to generate CONTRIBUTING.md
+    #   start: Generating CONTRIBUTING.md
+    #   success: Generated CONTRIBUTING.md
     sources:
       - CONTRIBUTING.md
       - .config/docs/**/*
@@ -94,8 +94,8 @@ tasks:
           {{.NPX_HANDLE}}remark --use man MAN.md --output dist/man
           rm MAN.md
         fi
-    log:
-      error: Failed to generate MAN.md
+    # log:
+    #   error: Failed to generate MAN.md
     sources:
       - .config/docs/**/*
       - .variables.json
@@ -168,10 +168,10 @@ tasks:
           SCRUB_FILE: README.md
       - task: ':{{if eq .REPOSITORY_TYPE "packer"}}packer:update:readme{{else}}donothing{{end}}'
       - '{{.NPX_HANDLE}}prettier --write README.md'
-    log:
-      error: Failed to generate README.md
-      start: Generating README.md
-      success: Generated README.md
+    # log:
+    #   error: Failed to generate README.md
+    #   start: Generating README.md
+    #   success: Generated README.md
     sources:
       - .autodoc/*
       - .config/docs/**/*
@@ -239,8 +239,8 @@ tasks:
       - task: all
       - task: ':{{if eq .REPOSITORY_TYPE "docker"}}docker:update-labels{{else}}donothing{{end}}'
       - task: update:git
-    log:
-      success: Successfully updated the project with the latest upstream changes
+    # log:
+    #   success: Successfully updated the project with the latest upstream changes
 
   update:git:
     cmds:
