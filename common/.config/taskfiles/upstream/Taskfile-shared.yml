@@ -64,6 +64,7 @@ tasks:
 
   variables:
     cmds:
+      - curl -s {{.VARIABLES_URL}} > .variables.json
       - task: :upstream:variables
         vars:
           INPUT_FILE: .variables.json
