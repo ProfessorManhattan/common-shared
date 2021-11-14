@@ -173,9 +173,6 @@ tasks:
     cmds:
       - jq --arg vars "$ROLE_VARIABLES" '.role_variables = ($vars | fromjson)' '{{.VARIABLES_PATH}}' > "$TMP"
       - mv "$TMP" '{{.VARIABLES_PATH}}'
-    # log:
-    #   error: 'Failed to inject `{{.VARIABLES_PATH}}` with the `role_variables` stored in `ansible_variables.json`'
-    #   success: 'Injected `{{.VARIABLES_PATH}}` with the `role_variables` from `ansible_variables.json`'
 
   playbook:environment:
     cmds:
@@ -409,9 +406,6 @@ tasks:
       - task: :fix:yaml:dashes
         vars:
           CLI_ARGS: '{{.REQUIREMENTS_PATH}}'
-    # log:
-    #   error: 'Failed to sync requirements from `{{.META_PATH}}` to `{{.REQUIREMENTS_PATH}}`'
-    #   success: 'Successfully synchronized requirements from `{{.META_PATH}}` to `{{.REQUIREMENTS_PATH}}`'
 
   update:galaxy-id:
     vars:
