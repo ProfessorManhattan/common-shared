@@ -96,10 +96,6 @@
     "**/*.(jpg|png)": [
       "task image:compress --"
     ],
-    "**/*.(js|jsx|ts)": [
-      "task fix:js --",
-      "task lint:js --"
-    ],
     "**/*.(js|jsx|ts|tsx)": [
       "task fix:js --",
       "task lint:js --"
