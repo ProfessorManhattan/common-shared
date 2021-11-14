@@ -3,7 +3,7 @@ version: '3'
 
 vars:
   PROJECT_COMMON_URL: https://gitlab.com/megabyte-labs/common/{{.REPOSITORY_TYPE}}.git
-  SHARED_FOLDER: '.shared'
+  SHARED_FOLDER: .shared
 
 tasks:
   clean:
@@ -110,19 +110,6 @@ tasks:
       - template:files:handlebars
       - template:files:hbs
 
-  template:files:hbs:
-    cmds:
-      - |
-        function handlebars() {
-          FILE="$1"
-          {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
-          rm "$FILE"
-        }
-        find . -type f -not \( {{.IGNORE_FOLDERS}} \) -prune -name '*.hbs.*' | while read FILE; do
-          handlebars "$FILE" &
-        done
-        wait
-
   template:files:handlebars:
     cmds:
       - |
@@ -132,6 +119,19 @@ tasks:
           rm "$FILE"
         }
         find . -type f -not \( {{.IGNORE_FOLDERS}} \) -prune -name '*.handlebars' | while read FILE; do
+          handlebars "$FILE" &
+        done
+        wait
+
+  template:files:hbs:
+    cmds:
+      - |
+        function handlebars() {
+          FILE="$1"
+          {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
+          rm "$FILE"
+        }
+        find . -type f -not \( {{.IGNORE_FOLDERS}} \) -prune -name '*.hbs.*' | while read FILE; do
           handlebars "$FILE" &
         done
         wait

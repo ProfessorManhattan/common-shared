@@ -1,5 +1,5 @@
 ---
-molecule-test:
+molecule:
   stage: test
   image: megabytelabs/molecule:latest
   rules:
@@ -15,9 +15,8 @@ molecule-test:
   variables:
     DOCKER_HOST: tcp://docker:2376
     DOCKER_TLS_CERTDIR: /certs
-    DOCKER_CERT_PATH: '$DOCKER_TLS_CERTDIR/client'
+    DOCKER_CERT_PATH: $DOCKER_TLS_CERTDIR/client
     DOCKER_TLS_VERIFY: 1
     GIT_DEPTH: 1
   script:
     - set -eo pipefail
-    - bash molecule.sh

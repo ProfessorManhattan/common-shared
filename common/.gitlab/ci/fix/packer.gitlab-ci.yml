@@ -1,6 +1,6 @@
 ---
 packer-fix:
-  stage: lint
+  stage: fix
   image:
     name: megabytelabs/packer:slim
     entrypoint: ['']

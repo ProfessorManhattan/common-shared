@@ -22,7 +22,7 @@ dockerhub-publish:
     DOCKER_CERT_PATH: $DOCKER_TLS_CERTDIR/client
     DOCKER_TLS_VERIFY: 1
     GIT_DEPTH: 1
-    PIP_CACHE_DIR: '$CI_PROJECT_DIR/.cache/pip'
+    PIP_CACHE_DIR: $CI_PROJECT_DIR/.cache/pip
   cache:
     key: megabytelabs
     paths:

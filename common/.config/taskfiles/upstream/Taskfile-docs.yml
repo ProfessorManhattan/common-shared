@@ -3,9 +3,9 @@ version: '3'
 
 vars:
   COMMON_FILES_URL: https://gitlab.com/megabyte-labs/common/shared.git
-  COMMON_FOLDER: '.common'
+  COMMON_FOLDER: .common
   SHARED_DOCS_URL: https://gitlab.com/megabyte-labs/documentation/shared.git
-  SHARED_FOLDER: '.shared'
+  SHARED_FOLDER: .shared
 
 tasks:
   clean:

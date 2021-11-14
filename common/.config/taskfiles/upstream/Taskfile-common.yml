@@ -2,10 +2,10 @@
 version: '3'
 
 vars:
-  COMMON_FOLDER: '.common'
+  COMMON_FOLDER: .common
   DOCS_URL: https://gitlab.com/megabyte-labs/documentation/{{.REPOSITORY_SUBTYPE}}
   SHARED_COMMON_URL: https://gitlab.com/megabyte-labs/common/shared.git
-  SHARED_FOLDER: '.shared'
+  SHARED_FOLDER: .shared
 
 tasks:
   clean: rm -rf {{.SHARED_FOLDER}}
@@ -188,6 +188,21 @@ tasks:
       - template:files:handlebars
       - template:files:hbs
 
+  template:files:handlebars:
+    vars:
+      IGNORES: -o -path './project*' -o -path './deprecated*' -o
+    cmds:
+      - |
+        function handlebars() {
+          FILE="$1"
+          {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE%.*}"
+          rm "$FILE"
+        }
+        find . -type f -not \( -path './{{.COMMON_FOLDER}}*' {{.IGNORES}} {{.IGNORE_FOLDERS}} \) -prune -name '*.handlebars' | while read FILE; do
+          handlebars "$FILE" &
+        done
+        wait
+
   template:files:hbs:
     vars:
       IGNORES: -o -path './project*' -o -path './deprecated*' -o
@@ -209,21 +224,6 @@ tasks:
         jq --arg blueprint "$BLUEPRINT" -s '.[0] * .[1] | .blueprint = (.blueprint * ($blueprint | fromjson))' "package.json" tmp.package.json > "$TMP"
         mv "$TMP" package.json
       - rm tmp.package.json
-
-  template:files:handlebars:
-    vars:
-      IGNORES: -o -path './project*' -o -path './deprecated*' -o
-    cmds:
-      - |
-        function handlebars() {
-          FILE="$1"
-          {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE%.*}"
-          rm "$FILE"
-        }
-        find . -type f -not \( -path './{{.COMMON_FOLDER}}*' {{.IGNORES}} {{.IGNORE_FOLDERS}} \) -prune -name '*.handlebars' | while read FILE; do
-          handlebars "$FILE" &
-        done
-        wait
 
   template:variables:
     deps:

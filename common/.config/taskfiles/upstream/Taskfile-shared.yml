@@ -43,20 +43,6 @@ tasks:
       - template:files:handlebars
       - template:files:hbs
 
-  template:files:hbs:
-    cmds:
-      - |
-        function handlebars() {
-          FILE="$1"
-          {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
-          rm "$FILE"
-        }
-        find . -type f -not \( -path './{{.SHARED_COMMON_FOLDER}}*' -o -path './deprecated*' -o {{.IGNORE_FOLDERS}} \) \
-        -prune -name '*.hbs.*' | while read FILE; do
-          handlebars "$FILE" &
-        done
-        wait
-
   template:files:handlebars:
     cmds:
       - |
@@ -67,6 +53,20 @@ tasks:
         }
         find . -type f -not \( -path './{{.SHARED_COMMON_FOLDER}}*' -o -path './deprecated*' -o {{.IGNORE_FOLDERS}} \) \
         -prune -name '*.handlebars' | while read FILE; do
+          handlebars "$FILE" &
+        done
+        wait
+
+  template:files:hbs:
+    cmds:
+      - |
+        function handlebars() {
+          FILE="$1"
+          {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
+          rm "$FILE"
+        }
+        find . -type f -not \( -path './{{.SHARED_COMMON_FOLDER}}*' -o -path './deprecated*' -o {{.IGNORE_FOLDERS}} \) \
+        -prune -name '*.hbs.*' | while read FILE; do
           handlebars "$FILE" &
         done
         wait
