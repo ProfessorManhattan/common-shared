@@ -2,8 +2,8 @@
 code-intelligence:
   stage: lsif
   image: megabytelabs/lsif-python:latest
-  needs: []
   allow_failure: true
+  needs: []
   script:
     - lsif-py .
   artifacts:

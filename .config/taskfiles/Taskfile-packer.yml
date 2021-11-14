@@ -221,8 +221,7 @@ tasks:
       - '{{.VARIABLES_PATH}}'
     preconditions:
       - sh: test -f template.json
-        msg:
-          'A `template.json` file is not present. This project uses values stored in `template.json` to generate certain
+        msg: 'A `template.json` file is not present. This project uses values stored in `template.json` to generate certain
           meta artifacts. Please add a `template.json`. You can find an example of one in
           [this repository](https://gitlab.com/megabyte-labs/packer/ubuntu-desktop)'
       - sh: test -f '{{.VARIABLES_PATH}}'

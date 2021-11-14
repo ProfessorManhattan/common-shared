@@ -101,12 +101,10 @@ tasks:
       PREVIOUS_SLIM_SIZE:
         sh: jq -r '.blueprint.slim_size' package.json
       REGULAR_SIZE:
-        sh:
-          'docker manifest inspect -v "{{.DOCKERHUB_PROFILE}}/{{.SLUG}}:latest" | grep size | awk -F ":" "{sum+=$NF} END {print sum}"
+        sh: 'docker manifest inspect -v "{{.DOCKERHUB_PROFILE}}/{{.SLUG}}:latest" | grep size | awk -F ":" "{sum+=$NF} END {print sum}"
           | awk "{$1=$1/(1024^2); print $1,\"MB\";}"'
       SLIM_SIZE:
-        sh:
-          'docker manifest inspect -v "{{.DOCKERHUB_PROFILE}}/{{.SLUG}}:slim" | grep size | awk -F ":" "{sum+=$NF} END {print sum}"
+        sh: 'docker manifest inspect -v "{{.DOCKERHUB_PROFILE}}/{{.SLUG}}:slim" | grep size | awk -F ":" "{sum+=$NF} END {print sum}"
           | awk "{$1=$1/(1024^2); print $1,\"MB\";}"'
     env:
       TMP:

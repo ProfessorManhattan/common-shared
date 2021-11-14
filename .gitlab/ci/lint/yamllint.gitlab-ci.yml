@@ -8,4 +8,4 @@ yamllint:
     GIT_DEPTH: 1
   script:
     - set -eo pipefail
-    - yamllint -s .
+    - yamllint -c .config/yamllint.yml -s .

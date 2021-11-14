@@ -1,28 +1,5 @@
 {
-  "private": false,
-  "publishConfig": {
-    "access": "public"
-  },
-  "name": "{{#if customPackageName}}{{customPackageName}}{{else}}@{{profile.npmjs_organization}}/{{repository.prefix.github}}{{slug}}{{/if}}",
-  "description": "{{description}}",
-  "license": "{{license}}",
   "author": "{{author.name}} <{{author.email}}> ({{link.home}})",
-  "homepage": "{{link.home}}",
-  "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "git+{{#if repository.github}}{{repository.github}}{{else}}https://github.com/{{profile.github}}/{{repository.prefix.github}}{{slug}}{{/if}}.git"
-  },
-  "bugs": {
-    "email": "{{email.help}}",
-    "url": "{{#if repository.gitlab}}{{repository.gitlab}}{{else}}{{repository.gitlabBaseUrl}}/{{group}}/{{subgroup}}/{{slug}}{{/if}}{{repository.location.issues.gitlab}}"
-  },
-  "version": "0.0.1",
-  "scripts": {
-    "help": "task --list",
-    "prepare": "task common:husky",
-    "start": "bash .config/start.sh"
-  },
   "blueprint": {
     "description": "An NPM package that is part of the Megabyte Labs eco-system",
     "name": "My Project Name",
@@ -34,6 +11,10 @@
     "slug": "my-project",
     "title": "Title of the README.md"
   },
+  "bugs": {
+    "email": "{{email.help}}",
+    "url": "{{#if repository.gitlab}}{{repository.gitlab}}{{else}}{{repository.gitlabBaseUrl}}/{{group}}/{{subgroup}}/{{slug}}{{/if}}{{repository.location.issues.gitlab}}"
+  },
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog"
@@ -42,6 +23,7 @@
   "dependencies": {
     "tslib": "^2.3.1"
   },
+  "description": "{{description}}",
   "devDependencies": {
     "@commitlint/config-conventional": "^13.1.0",
     "@mblabs/eslint-config": "^1.0.0",
@@ -52,6 +34,12 @@
   },
   "engines": {
     "node": ">=14"
+  },
+  "license": "{{license}}",
+  "name": "{{#if customPackageName}}{{customPackageName}}{{else}}@{{profile.npmjs_organization}}/{{repository.prefix.github}}{{slug}}{{/if}}",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
   },
   "eslintConfig": {
     "extends": "@mblabs/eslint-config"
@@ -66,12 +54,19 @@
       "url": "{{profile_link.patreon}}/{{profile.patreon}}"
     }
   ],
-  "keywords": [
-    "megabytelabs",
-    "professormanhattan",
-    "npm",
-    "package"
-  ],
+  "homepage": "{{link.home}}",
+  "keywords": ["megabytelabs", "professormanhattan", "npm", "package"],
+  "repository": {
+    "type": "git",
+    "url": "git+{{#if repository.github}}{{repository.github}}{{else}}https://github.com/{{profile.github}}/{{repository.prefix.github}}{{slug}}{{/if}}.git"
+  },
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "help": "task --list",
+    "prepare": "task common:husky",
+    "start": "bash .config/start.sh"
+  },
   "lint-staged": {
     "**/*": [
       "blocklint --wordlist blacklist,slave,whitelist",
@@ -80,38 +75,15 @@
       "check-symlinks",
       "destroyed-symlinks"
     ],
-    "**/*.(css|html|less|md|mjml|php|scss|sh|xml)": [
-      "task fix:prettier --"
-    ],
-    "**/*.json": [
-      "task fix:json --"
-    ],
-    "**/*.(js|jsx|ts|tsx)": [
-      "task fix:js --",
-      "task lint:js --"
-    ],
-    "**/*.sh": [
-      "task fix:shell --",
-      "task lint:shell --"
-    ],
-    "**/*.toml": [
-      "task lint:toml --"
-    ],
-    "**/*.xml": [
-      "task fix:xml --",
-      "task lint:xml --"
-    ],
-    "**/*.yml": [
-      "task fix:yaml --",
-      "task lint:yaml --"
-    ],
-    "**/*.(jpg|png)": [
-      "task image:compress --"
-    ],
-    "logo.png": [
-      "task image:resize -- 200 200",
-      "task image:compress --"
-    ]
+    "**/*.(css|html|less|md|mjml|php|scss|sh|xml)": ["task fix:prettier --"],
+    "**/*.(jpg|png)": ["task image:compress --"],
+    "**/*.(js|jsx|ts|tsx)": ["task fix:js --", "task lint:js --"],
+    "**/*.json": ["task fix:json --"],
+    "**/*.sh": ["task fix:shell --", "task lint:shell --"],
+    "**/*.toml": ["task lint:toml --"],
+    "**/*.xml": ["task fix:xml --", "task lint:xml --"],
+    "**/*.yml": ["task fix:yaml --", "task lint:yaml --"],
+    "logo.png": ["task image:resize -- 200 200", "task image:compress --"]
   },
   "prettier": "@mblabs/prettier-config",
   "standard-version": {

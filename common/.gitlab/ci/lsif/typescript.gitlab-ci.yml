@@ -2,8 +2,8 @@
 code-intelligence:
   stage: lsif
   image: sourcegraph/lsif-node:latest
-  needs: []
   allow_failure: true
+  needs: []
   script:
     - lsif-tsc -p .
   artifacts:

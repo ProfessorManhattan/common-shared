@@ -1,10 +1,10 @@
 ---
 prettier:
   stage: lint
-  allow_failure: true
   image:
     name: megabytelabs/prettier-write:slim
     entrypoint: ['']
+  allow_failure: true
   variables:
     GIT_DEPTH: 1
     NODE_MODULES_PATH: /usr/local/lib/node_modules
