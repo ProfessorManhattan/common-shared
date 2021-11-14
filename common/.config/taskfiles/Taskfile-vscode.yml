@@ -48,5 +48,6 @@ tasks:
           fi
         done <<< "$TASK_LIST"
         jq --arg tasks "${TASKS%?}]" '.tasks = ($tasks | fromjson)' "$TMP" > '{{.TASKS_FILE}}'
-      - >
-        {{.NPX_HANDLE}}prettier --write '{{.TASKS_FILE}}'
+      - task: :fix:prettier
+        vars:
+          CLI_ARGS: '{{.TASKS_FILE}}'
