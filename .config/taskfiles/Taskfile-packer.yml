@@ -3,7 +3,7 @@ version: '3'
 
 vars:
   TEMPLATE_FILE:
-    sh: if [ ! -z "{{.CLI_ARGS}}" ]; then echo "{{.CLI_ARGS}}"; else echo "template.json"; fi
+    sh: if [ ! -z "{{.CLI_ARGS}}" ]; then echo "{{.CLI_ARGS}}"; else echo "template.packer.json"; fi
   VARIABLES_PATH: .variables.json
 
 tasks:
@@ -162,7 +162,7 @@ tasks:
         sh: jq -r '.version_description' '{{.VARIABLES_PATH}}'
     cmds:
       - jq --arg a "$DESCRIPTION_TEMPLATE" --arg b "$VERSION_DESCRIPTION" '.variables.description = $a | .variables.version_description = $b'
-        template.json > "$TMP"
+        template.packer.json > "$TMP"
       - mv "$TMP" template.json
     sources:
       - template.json
@@ -191,7 +191,7 @@ tasks:
       - task: update:readme:platform:{{OS}}
     status:
       - |
-        ! grep -q '"type": "{{.TYPE}}"' template.json
+        ! grep -q '"type": "{{.TYPE}}"' template.packer.json
 
   update:readme:platform:darwin: sed -i .bak '/SUPPORTED_OS_{{.TYPE}}/d' README.md && rm README.md.bak
 
@@ -202,7 +202,7 @@ tasks:
       - :install:software:jq
     vars:
       ISO_VERSION:
-        sh: jq -r '.variables.iso_version' template.json
+        sh: jq -r '.variables.iso_version' template.packer.json
       MAJOR_VERSION:
         sh: cut -d '.' -f 1 <<< {{.ISO_VERSION}}
       MINOR_VERSION:

@@ -1,11 +1,6 @@
 ---
 version: '3'
 
-vars:
-  IGNORE_FOLDERS: -name .autodoc -o -name .cache -o -name .common -o -name .git -o -name .husky
-    -o -name .modules -o -name .npm -o -name .task -o -name .venv -o -name .vscode -o -name node_modules
-    -o -name venv
-
 tasks:
   prose:
     deps:
@@ -28,9 +23,9 @@ tasks:
       - task: prose:config
       - |
         {{if .CLI_ARGS}}
-          proselint {{.CLI_ARGS}}
+          {{.NPX_HANDLE}}proselint {{.CLI_ARGS}}
         {{else}}
-          find . -type d \( {{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name '*.md' \) -print0 | xargs -0 -r -n1 proselint
+          find . -type d \( {{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name '*.md' \) -print0 | xargs -0 -r -n1 {{.NPX_HANDLE}}proselint
         {{end}}
       - task: prose:config:restore
 
@@ -42,7 +37,7 @@ tasks:
           mv ~/.config/proselint/config ~/.config/proselint/config.backup
         fi
       - mkdir -p ~/.config/proselint
-      - cp .common/proselint.json ~/.config/proselint/config
+      - cp .config/proselint.json ~/.config/proselint/config
 
   prose:config:restore:
     cmds:

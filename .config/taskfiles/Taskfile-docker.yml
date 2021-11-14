@@ -34,17 +34,16 @@ tasks:
     cmds:
       - docker build --build-arg BUILD_DATE="{{.BUILD_DATE}}" --build-arg REVISION="{{.REVISION}}" --build-arg VERSION="{{.VERSION}}"
         --tag {{.DOCKERHUB_PROFILE}}/{{.SLUG}}:latest --tag {{.DOCKERHUB_PROFILE}}/{{.SLUG}}:{{.VERSION}} .
-    log:
-      error: Failed to build "fat" image
-      start: 'Building regular image named `{{.DOCKERHUB_PROFILE}}/{{.SLUG}}`'
-      success: Successfully built "fat" image
+    # log:
+    #   error: Failed to build "fat" image
+    #   start: 'Building regular image named `{{.DOCKERHUB_PROFILE}}/{{.SLUG}}`'
+    #   success: Successfully built "fat" image
     sources:
       - Dockerfile
       - package.json
 
   build:slim:
     deps:
-      - :common:npm-prettier
       - :install:software:docker
       - :install:software:dockerslim
     desc: Build a slim version of the Docker image
@@ -57,11 +56,6 @@ tasks:
       removed.
 
       For more information, see [DockerSlim's GitHub page](https://github.com/docker-slim/docker-slim).
-    vars:
-      SLIM_COMMAND:
-        sh: jq -r '.blueprint.dockerslim_command' package.json
-      VERSION:
-        sh: jq -r '.version' package.json
     cmds:
       - task: build:fat
       - task: build:slim:command
@@ -72,14 +66,16 @@ tasks:
 
   build:slim:command:
     vars:
+      SLIM_COMMAND:
+        sh: jq -r '.blueprint.dockerslim_command' package.json
       SLUG:
         sh: jq -r '.blueprint.slug' package.json
     cmds:
       - docker-slim build --tag '{{.DOCKERHUB_PROFILE}}/{{.SLUG}}:slim' {{.SLIM_COMMAND}} '{{.DOCKERHUB_PROFILE}}/{{.SLUG}}:latest'
-    log:
-      error: 'Failed to build `{{.DOCKERHUB_PROFILE}}/{{.SLUG}}:slim`'
-      start: 'Building slim image named `{{.DOCKERHUB_PROFILE}}/{{.SLUG}}:slim`'
-      success: 'Successfully built `{{.DOCKERHUB_PROFILE}}/{{.SLUG}}:slim`'
+    # log:
+    #   error: 'Failed to build `{{.DOCKERHUB_PROFILE}}/{{.SLUG}}:slim`'
+    #   start: 'Building slim image named `{{.DOCKERHUB_PROFILE}}/{{.SLUG}}:slim`'
+    #   success: 'Successfully built `{{.DOCKERHUB_PROFILE}}/{{.SLUG}}:slim`'
     sources:
       - Dockerfile
       - package.json
@@ -93,7 +89,7 @@ tasks:
     deps:
       - :install:npm:prettier
     cmds:
-      - prettier --write slim.report.json
+      - '{{.NPX_HANDLE}}prettier --write slim.report.json'
     sources:
       - slim.report.json
 
@@ -112,8 +108,6 @@ tasks:
         sh:
           'docker manifest inspect -v "{{.DOCKERHUB_PROFILE}}/{{.SLUG}}:slim" | grep size | awk -F ":" "{sum+=$NF} END {print sum}"
           | awk "{$1=$1/(1024^2); print $1,\"MB\";}"'
-      SLUG:
-        sh: jq -r '.slug' .variables.json
     env:
       TMP:
         sh: mktemp
@@ -121,8 +115,8 @@ tasks:
       - jq --arg a "{{.SLIM_SIZE}}" '.blueprint.slim_size = $a' package.json > "$TMP"
       - mv "$TMP" package.json
       - task: :common:update:update
-    log:
-      success: 'The slim build was compressed to `{{.SLIM_SIZE}}` (from `{{.REGULAR_SIZE}}` originally).'
+    # log:
+    #   success: 'The slim build was compressed to `{{.SLIM_SIZE}}` (from `{{.REGULAR_SIZE}}` originally).'
     status:
       - '[[ "{{.PREVIOUS_SLIM_SIZE}}" == "{{.SLIM_SIZE}}" ]]'
 
@@ -177,9 +171,9 @@ tasks:
             fi
           done
         fi
-    log:
-      error: Encountered error while testing the test scenarios in the `slim_test/` folder
-      success: The output from both the `latest` and `slim` container are the same for all the test scenarios in `slim_test/`
+    # log:
+    #   error: Encountered error while testing the test scenarios in the `slim_test/` folder
+    #   success: The output from both the `latest` and `slim` container are the same for all the test scenarios in `slim_test/`
     status:
       - test ! -d slim_test
     preconditions:
@@ -265,6 +259,8 @@ tasks:
     vars:
       GROUP_URL:
         sh: jq -r '.repository.group.dockerfile' .variables.json
+      SLUG:
+        sh: jq -r '.blueprint.slug' package.json
     env:
       DESCRIPTION:
         sh: jq -r '.description' package.json

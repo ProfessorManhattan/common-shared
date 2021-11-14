@@ -1,11 +1,6 @@
 ---
 version: '3'
 
-vars:
-  IGNORE_FOLDERS: -name .autodoc -o -name .cache -o -name .common -o -name .git -o -name .husky
-    -o -name .modules -o -name .npm -o -name .task -o -name .venv -o -name .vscode -o -name node_modules
-    -o -name venv
-
 tasks:
   markdown:
     deps:
@@ -29,9 +24,9 @@ tasks:
     cmds:
       - |
         {{if .CLI_ARGS}}
-          remark {{.CLI_ARGS}}
+          {{.NPX_HANDLE}}remark {{.CLI_ARGS}}
         {{else}}
-          find . -type d \( {{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name '*.md' \) -print0 | xargs -0 -r -n1 remark
+          find . -type d \( {{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name '*.md' \) -print0 | xargs -0 -r -n1 {{.NPX_HANDLE}}remark
         {{end}}
 
   markdown:links:
@@ -54,7 +49,7 @@ tasks:
     cmds:
       - |
         {{if .CLI_ARGS}}
-          markdown-link-check {{.CLI_ARGS}}
+          {{.NPX_HANDLE}}markdown-link-check {{.CLI_ARGS}}
         {{else}}
-          find . -type d \( {{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name '*.md' \) -print0 | xargs -0 -r -n1 markdown-link-check
+          find . -type d \( {{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name '*.md' \) -print0 | xargs -0 -r -n1 {{.NPX_HANDLE}}markdown-link-check
         {{end}}

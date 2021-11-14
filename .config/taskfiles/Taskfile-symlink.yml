@@ -19,9 +19,9 @@ tasks:
             ln -sf "$PWD/$ROLE_PATH" "~/.ansible/roles/$ROLE_FOLDER"
           fi
         done
-    log:
-      error: Encountered an error while symlinking the roles to `~/.ansible/roles`
-      success: Successfully symlinked the roles in this playbook to `~/.ansible/roles`
+    # log:
+    #   error: Encountered an error while symlinking the roles to `~/.ansible/roles`
+    #   success: Successfully symlinked the roles in this playbook to `~/.ansible/roles`
     preconditions:
       - sh: test -d roles
         msg: The roles folder is missing. Is the project set up right?
@@ -43,9 +43,9 @@ tasks:
       - mkdir -p "$HOME/.ansible/roles"
       - rm -f "$HOME/.ansible/roles/{{.ROLE_NAME}}"
       - ln -s "$PWD" '~/.ansible/roles/{{.ROLE_NAME}}'
-    log:
-      error: 'Failed to symlink `{{.ROLE_NAME}}` to `~/.ansible/roles/{{.ROLE_NAME}}`'
-      success: 'Symlinked `{{.ROLE_NAME}}` to `~/.ansible/roles/{{.ROLE_NAME}}`'
+    # log:
+    #   error: 'Failed to symlink `{{.ROLE_NAME}}` to `~/.ansible/roles/{{.ROLE_NAME}}`'
+    #   success: 'Symlinked `{{.ROLE_NAME}}` to `~/.ansible/roles/{{.ROLE_NAME}}`'
     status:
       - test -d "$HOME/.ansible/roles/{{.ROLE_NAME}}"
       - '[[ "{{.SYMLINK}}" == "$PWD" ]]'

@@ -96,7 +96,7 @@ tasks:
         sh: jq -r '.private' package.json | sed 's/null/false/'
     env:
       OPTIONAL_TAGS:
-        sh: jq '.keywords' .common/files-{{.REPOSITORY_SUBTYPE}}/package.json.handlebars
+        sh: jq '.keywords' .config/common-keywords.json
       TOPICS:
         sh: jq '.keywords' package.json | sed 's/null/[]/'
       TOPICS_LENGTH:
@@ -126,7 +126,7 @@ tasks:
           true warn 'The `GITHUB_TOKEN` environment variable is not set so the GitHub repository cannot be updated via the API.'
         fi
     sources:
-      - .common-{{.REPOSITORY_SUBTYPE}}/package.json.handlebars
+      - .config/common-keywords.json
       - package.json
     preconditions:
       - sh: '[ "{{.DESCRIPTION}}" != "null" ]'

@@ -13,22 +13,22 @@ tasks:
       - :install:local:modules
       - :install:npm:nyc
     cmds:
-      - nyc report
-      - nyc check-coverage --lines 100 --functions 100 --branches 100
+      - '{{.NPX_HANDLE}}nyc report'
+      - '{{.NPX_HANDLE}}nyc check-coverage --lines 100 --functions 100 --branches 100'
 
   html:
     deps:
       - :install:local:modules
       - :install:npm:nyc
     cmds:
-      - nyc report --reporter=html
+      - '{{.NPX_HANDLE}}nyc report --reporter=html'
 
   lcov:
     deps:
       - :install:local:modules
       - :install:npm:nyc
     cmds:
-      - nyc report --reporter=lcov
+      - '{{.NPX_HANDLE}}nyc report --reporter=lcov'
 
   open:
     deps:
@@ -36,7 +36,7 @@ tasks:
       - :npm:install:open-cli
     desc: Ensures the code coverage report is generated and opens it in a browser
     cmds:
-      - open-cli coverage/index.html
+      - '{{.NPX_HANDLE}}open-cli coverage/index.html'
 
   report:
     deps:
@@ -49,4 +49,4 @@ tasks:
       - :install:npm:codecov
     desc: Uploads code coverage report to `codecov.io`
     cmds:
-      - codecov
+      - '{{.NPX_HANDLE}}codecov'

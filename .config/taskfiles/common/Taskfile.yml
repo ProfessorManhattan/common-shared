@@ -28,10 +28,10 @@ tasks:
           fi
         done
         wait
-    log:
-      error: Error encountered while cleaning up the optional folders
-      start: Cleaning up the project by removing caches etc.
-      success: Finished cleaning up optional folders
+    # log:
+    #   error: Error encountered while cleaning up the optional folders
+    #   start: Cleaning up the project by removing caches etc.
+    #   success: Finished cleaning up optional folders
 
   commit:
     deps:
@@ -81,7 +81,7 @@ tasks:
     cmds:
       - |
         if [ -d .git ] && [ "${container:=}" != 'docker' ]; then
-          husky install .config/husky
+          {{.NPX_HANDLE}}husky install .config/husky
         else
           true warn 'Cannot run `husky install` because there is no `.git/` folder (or this is a Docker container)'
         fi
@@ -147,61 +147,7 @@ tasks:
     cmds:
       - task: update
       - task: :lint:all
-      - standard-version --no-verify
-
-  python:requirements:
-    deps:
-      - :install:software:python
-    run: once
-    cmds:
-      - task: python:requirements:venv
-      - task: python:requirements:venv:activate
-      - task: python:requirements:pip
-      - task: :{{if eq .REPOSITORY_TYPE "ansible"}}common:python:requirements:ansible{{else}}donothing{{end}}
-    status:
-      - '[[ "${container:=}" == "docker" ]]'
-
-  python:requirements:ansible:
-    cmds:
-      - task: :ansible:galaxy:requirements
-
-  python:requirements:pip:
-    run: once
-    cmds:
-      - pip3 install -r requirements.txt
-    sources:
-      - requirements.txt
-    preconditions:
-      - sh: test -f requirements.txt
-        msg: The requirements.txt file is missing!
-
-  python:requirements:venv:
-    deps:
-      - :install:software:rsync
-    vars:
-      RANDOM_STRING:
-        sh: openssl rand -hex 14
-    run: once
-    cmds:
-      - |
-        if [ -d .venv ] && [ ! -f .venv/bin/activate ]; then
-          mv .venv /tmp/{{.RANDOM_STRING}}-venv2 2> /dev/null
-          mkdir -p /tmp/{{.RANDOM_STRING}}-empty
-          rsync -a --delete /tmp/{{.RANDOM_STRING}}-empty /tmp/{{.RANDOM_STRING}}-venv2 &
-        fi
-      - virtualenv .venv
-    status:
-      - test -f .venv/bin/activate
-
-  python:requirements:venv:activate:
-    cmds:
-      - cmd: . .venv/bin/activate
-        ignore_error: true
-    status:
-      - 'true'
-    preconditions:
-      - sh: test -f .venv/bin/activate
-        msg: '`.venv/bin/activate` is missing!'
+      - '{{.NPX_HANDLE}}standard-version --no-verify'
 
   requirements:
     deps:
@@ -250,7 +196,7 @@ tasks:
       - git clean -fxd :/
       - git checkout master
       - git pull origin master --no-rebase
-      - bash .start.sh
+      - bash .config/start.sh
 
   shell:
     deps:
@@ -288,7 +234,7 @@ tasks:
         {{if .CLI_ARGS}}
           docker run --cap-drop=ALL -it -v "$PWD:/{{.WORKDIR}}" -w /{{.WORKDIR}} --rm megabytelabs/ansible-molecule-{{.CLI_ARGS}}:latest /bin/bash
         {{else}}
-          node .common/scripts/prompts/shell.js
+          node .config/scripts/prompts/shell.js
         {{end}}
     preconditions:
       - sh: 'type docker &> /dev/null'
