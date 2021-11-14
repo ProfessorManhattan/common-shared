@@ -44,8 +44,8 @@
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^13.1.0",
-    "@megabytelabs/eslint-config": "^1.0.0",
-    "@megabytelabs/prettier-config": "^14.14.14",
+    "@mblabs/eslint-config": "^1.0.0",
+    "@mblabs/prettier-config": "^14.14.14",
     "@typescript-eslint/eslint-plugin": "^5.2.0",
     "cz-conventional-changelog": "^3.3.0",
     "handlebars-helpers": "^0.10.0"
@@ -54,7 +54,7 @@
     "node": ">=14"
   },
   "eslintConfig": {
-    "extends": "@megabytelabs/eslint-config"
+    "extends": "@mblabs/eslint-config"
   },
   "funding": [
     {
@@ -113,7 +113,7 @@
       "task image:compress --"
     ]
   },
-  "prettier": "@megabytelabs/prettier-config",
+  "prettier": "@mblabs/prettier-config",
   "standard-version": {
     "scripts": {
       "prerelease": "git add --all"
