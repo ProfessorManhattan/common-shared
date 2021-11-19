@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# @file .config/start.sh
+# @file .config/scripts/start.sh
 # @brief Ensures Task is installed and up-to-date and then runs `task start`
 # @description
 #   This script will ensure [Task](https://github.com/go-task/task) is up-to-date
@@ -14,8 +14,8 @@ set -eo pipefail
 # @description Detect script paths
 BASH_SRC="$(dirname "${BASH_SOURCE[0]}")"
 SOURCE_PATH="$(cd "$BASH_SRC"; pwd -P)"
-PROJECT_BASE_DIR="$SOURCE_PATH/.."
-INSTALL_TASK_SCRIPT="$SOURCE_PATH/../.config/scripts/lib/task.sh"
+PROJECT_BASE_DIR="$SOURCE_PATH/../.."
+INSTALL_TASK_SCRIPT="$SOURCE_PATH/lib/task.sh"
 
 # @description Attempts to pull the latest changes if the folder is a git repository
 cd "$PROJECT_BASE_DIR" || exit
