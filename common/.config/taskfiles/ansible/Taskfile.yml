@@ -211,7 +211,7 @@ tasks:
         sh: mktemp
     cmds:
       - |
-        PROJECT_ID="$(ansible-galaxy info '{{.GALAXY_NAMESPACE}}.{{.GALAXY_ROLE_NAME}}' 2> /dev/null | grep -E 'id: [0-9]' | cut -d ' ' -f2)"
+        PROJECT_ID="$(ansible-galaxy info '{{.ROLE_NAME}}' 2> /dev/null | grep -E 'id: [0-9]' | cut -d ' ' -f2)"
         if [ "$PROJECT_ID" ]; then
           jq --arg a "$PROJECT_ID" '.blueprint.ansible_galaxy_project_id = $a' package.json > "$TMP"
           mv "$TMP" package.json
