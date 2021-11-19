@@ -203,9 +203,6 @@ tasks:
           CLI_ARGS: '{{.REQUIREMENTS_PATH}}'
 
   update:galaxy-id:
-    vars:
-      HAS_PROJECT_ID:
-        sh: jq -e 'has("blueprint.ansible_galaxy_project_id")' package.json
     env:
       TMP:
         sh: mktemp
@@ -217,7 +214,7 @@ tasks:
           mv "$TMP" package.json
         fi
     status:
-      - '[[ "{{.HAS_PROJECT_ID}}" == "true" ]]'
+      - jq -e 'has("blueprint.ansible_galaxy_project_id")' package.json
 
   update:variables:
     deps:
