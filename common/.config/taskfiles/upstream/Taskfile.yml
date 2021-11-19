@@ -64,6 +64,7 @@ tasks:
       - |
         function handlebars() {
           FILE="$1"
+          echo "Processing $FILE with hbs"
           {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE%.*}"
           rm "$FILE"
         }
@@ -84,6 +85,7 @@ tasks:
       - |
         function handlebars() {
           FILE="$1"
+          echo "Processing $FILE with hbs"
           {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
           rm "$FILE"
         }
