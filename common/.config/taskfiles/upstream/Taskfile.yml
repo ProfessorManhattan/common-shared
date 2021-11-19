@@ -64,8 +64,9 @@ tasks:
       - |
         function handlebars() {
           FILE="$1"
-          echo "Processing $FILE with hbs"
-          {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE%.*}"
+          TMP="$(mktemp)"
+          {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "$TMP"
+          mv "$TMP" "${FILE%.*}"
           rm "$FILE"
         }
         find . -type f -not \( {{.ADDITIONAL_IGNORE_FOLDERS}} {{.IGNORE_FOLDERS}} \) -prune -name '*.handlebars' | while read FILE; do
@@ -85,8 +86,9 @@ tasks:
       - |
         function handlebars() {
           FILE="$1"
-          echo "Processing $FILE with hbs"
-          {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
+          TMP="$(mktemp)"
+          {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "$TMP"
+          mv "$TMP" "${FILE//.hbs}"
           rm "$FILE"
         }
         find . -type f -not \( {{.ADDITIONAL_IGNORE_FOLDERS}} {{.IGNORE_FOLDERS}} \) -prune -name '*.hbs.*' | while read FILE; do
