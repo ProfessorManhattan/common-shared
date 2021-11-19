@@ -23,6 +23,7 @@ yamllint = "^1.26.3"
 "Bug Tracker" = "{{repository.gitlab}}{{repository.location.issues.gitlab}}"
 "GitHub" = "{{repository.github}}"
 "GitLab" = "{{repository.gitlab}}"
+"Give Directly" = "https://givedirectly.org"
 "Open Collective" = "{{profile_link.opencollective}}/{{profile.opencollective}}"
 "Patreon" = "{{profile_link.patreon}}/{{profile.patreon}}"
 
