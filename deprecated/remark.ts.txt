@@ -47,6 +47,7 @@ import torchlight from 'remark-torchlight'
 // https://github.com/retextjs/retext-contractions
 // https://github.com/dunckr/retext-cliches
 // https://github.com/davidhund/retext-assuming
+// https://github.com/remarkjs/remark-lint/tree/main/packages/remark-preset-lint-markdown-style-guide
 const convertToHTML = unified()
   .use(remarkParse)
   .use(remarkGfm)
