@@ -23,4 +23,4 @@ windows:
         - requirements.yml
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == 'master'
   script:
-    - ./tests/windows/test.ps1
+    - ./test/windows/test.ps1
