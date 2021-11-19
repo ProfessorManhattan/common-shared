@@ -1,0 +1,98 @@
+import {unified} from 'unified'
+import {read, write} from 'to-vfile'
+import {reporter} from 'vfile-reporter'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import rehypeDocument from 'rehype-document'
+import rehypeFormat from 'rehype-format'
+import rehypeStringify from 'rehype-stringify'
+import rehypeRaw from 'rehype-raw'
+import rehypeSanitize from 'rehype-sanitize'
+import remarkDirective from 'remark-directive'
+import remarkGfm from 'remark-gfm'
+import {visit} from 'unist-util-visit'
+import removeComments from 'remark-remove-comments'
+import remarkContributors from 'remark-contributors'
+import remarkCodeImport from 'remark-code-import'
+import remarkMan from 'remark-man'
+import rehypeHighlight from 'rehype-highlight'
+import torchlight from 'remark-torchlight'
+// https://github.com/kamranayub/remark-typedoc-symbol-links
+// https://github.com/torchlight-api/remark-torchlight
+// https://github.com/craftzdog/remark-strip-html
+// https://github.com/remarkjs/remark-man
+// https://github.com/rehypejs/rehype-autolink-headings
+// https://github.com/rehypejs/rehype-slug
+// https://github.com/jackycute/remark-gemoji-to-emoji
+// https://github.com/andrewbranch/gatsby-remark-vscode
+// https://github.com/unlight/remark-package-dependencies
+// https://github.com/freesewing/freesewing/tree/develop/packages/remark-jargon
+// https://github.com/rehypejs/awesome-rehype
+// https://github.com/mrzmmr/rehype-partials
+// https://github.com/rehypejs/rehype-meta
+// https://github.com/marko-knoebl/rehype-inline
+// https://github.com/retextjs/retext-spell
+// https://github.com/retextjs/retext-smartypants
+// https://github.com/retextjs/retext-sentence-spacing
+// https://github.com/retextjs/retext-repeated-words
+// https://github.com/retextjs/retext-readability
+// https://github.com/retextjs/retext-profanities
+// https://github.com/retextjs/retext-passive
+// https://github.com/dunckr/retext-overuse
+// https://github.com/retextjs/retext-intensify
+// https://github.com/retextjs/retext-indefinite-article
+// https://github.com/retextjs/retext-equality
+// https://github.com/retextjs/retext-emoji
+// https://github.com/retextjs/retext-diacritics
+// https://github.com/retextjs/retext-contractions
+// https://github.com/dunckr/retext-cliches
+// https://github.com/davidhund/retext-assuming
+const convertToHTML = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkContributors)
+  .use(remarkCodeImport as any)
+  .use(remarkDirective)
+  .use(myRemarkPlugin)
+  .use(remarkRehype, { allowDangerousHtml: true })
+  .use(rehypeRaw)
+  .use(rehypeSanitize)
+  .use(rehypeHighlight)
+  .use(rehypeDocument, {title: 'Contents'})
+  .use(rehypeFormat)
+  .use(rehypeStringify)
+  .use(removeComments)
+
+const convertToMan = unified()
+  .use(remarkParse)
+  .use(remarkMan, {
+    name: 'title of page',
+    description: 'description of page',
+    version: 'version',
+    manual: 'unknown'
+  })
+
+async function run() {
+  await convertToHTML
+    .process(await read('README.md'))
+    .then((file) => {
+      console.error(reporter(file))
+      console.log(String(file))
+    })
+
+  const man = await convertToMan
+    .process(await read('README.md'))
+
+  man.extname = '.1'
+  await write(man)
+}
+
+run();
+
+export default function myRemarkPlugin(): any {
+  return (tree) => {
+    visit(tree, (node) => {
+      // `node` can now be one of the nodes for directives.
+    })
+  }
+}
