@@ -146,10 +146,10 @@ tasks:
   molecule:virtualbox:converge:prompt:
     interactive: true
     deps:
-      - :install:npm:inquirer
+      - :install:modules:prompt
     cmds:
       - |
-        CHOICE="$(inquirer --script .config/scripts/prompts/molecule-desktop.js)"
+        CHOICE="$(node .config/scripts/prompts/molecule-desktop.js)"
         SCENARIO="$CHOICE-desktop"
         if test -d "molecule/$SCENARIO"; then
           molecule converge -s "$SCENARIO"
@@ -216,6 +216,8 @@ tasks:
       - vagrant up {{.CLI_ARGS}}
 
   vagrant:prompt:
+    deps:
+      - :install:modules:prompt
     interactive: true
     cmds:
       - |
