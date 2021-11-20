@@ -2,6 +2,7 @@
 molecule-osx:
   stage: test
   image: megabytelabs/molecule:latest
+  allow_failure: true
   services:
     - docker:dind
   rules:

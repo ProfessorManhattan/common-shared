@@ -6,6 +6,7 @@ import { execSync } from 'child_process'
 import { readdirSync } from 'fs'
 import inquirer from 'inquirer'
 import signale from 'signale'
+import { decorateSystem } from './lib/decorate-system'
 
 signale.info(
   'Use the following prompts to select the type of operating system and the virtualization platform you wish to use with Vagrant.'
@@ -16,15 +17,17 @@ signale.info(
  * Ansible play against.
  */
 async function promptForDesktop() {
+  const choices = ['Archlinux', 'CentOS', 'Debian', 'Fedora', 'macOS', 'Ubuntu', 'Windows']
+  const choicesDecorated = choices.map(choice => decorateSystem(choice))
   const response = await inquirer.prompt([
     {
       type: 'list',
       name: 'operatingSystem',
       message: 'Which desktop operating system would you like to provision?',
-      choices: ['Archlinux', 'CentOS', 'Debian', 'Fedora', 'macOS', 'Ubuntu', 'Windows']
+      choices:
     }
   ])
-  return response.operatingSystem.toLowerCase()
+  return response.operatingSystem.replace('● ', '').toLowerCase()
 }
 
 /**

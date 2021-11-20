@@ -179,6 +179,7 @@ tasks:
   shell:
     deps:
       - :install:software:docker
+    interactive: true
     desc: Start a terminal session using Docker with any Linux operating system
     summary: |
       # Start a Docker terminal session
@@ -212,7 +213,8 @@ tasks:
         {{if .CLI_ARGS}}
           docker run --cap-drop=ALL -it -v "$PWD:/{{.WORKDIR}}" -w /{{.WORKDIR}} --rm megabytelabs/ansible-molecule-{{.CLI_ARGS}}:latest /bin/bash
         {{else}}
-          node .config/scripts/prompts/shell.js
+          CHOICE="$(node .config/scripts/prompts/shell.js)"
+          docker run --cap-drop=ALL -it -v "$PWD:/{{.WORKDIR}}" -w /{{.WORKDIR}} --rm "megabytelabs/ansible-molecule-$CHOICE:latest" /bin/bash
         {{end}}
     preconditions:
       - sh: 'type docker &> /dev/null'
