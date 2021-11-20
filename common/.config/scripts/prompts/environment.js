@@ -34,7 +34,11 @@ async function promptForEnv() {
           signale.error(
             'The `' +
               element +
-              '` target in your project root is not a symbolic link. If you plan on using this feature then you should store any folders/files you wish to be considered part of an environment in the `environments/{{ environment_name }}/` folder. You can then use this script to handle creating the symbolic links for you. We are skipping the creation of the symlink to `environments/' +
+              '` target in your project root is not a symbolic link. If you plan on using this' +
+              ' feature then you should store any folders/files you wish to be considered part' +
+              ' of an environment in the `environments/{{ environment_name }}/` folder. You can' +
+              ' then use this script to handle creating the symbolic links for you. We are skipping' +
+              ' the creation of the symlink to `environments/' +
               env +
               '/' +
               element +
