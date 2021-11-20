@@ -1,6 +1,6 @@
 'use strict'
 
-/* eslint-disable import/no-extraneous-dependencies, import/no-unresolved, node/no-missing-import */
+/* eslint-disable */
 
 import chalk from 'chalk'
 
