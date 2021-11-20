@@ -11,7 +11,7 @@ TMP="$(mktemp)"
 jq 'del(."standard-version")' package.json > "$TMP"
 mv "$TMP" package.json
 TMP="$(mktemp)"
-jq 'del(."lint-staged")' > "$TMP"
+jq 'del(."lint-staged")' package.json > "$TMP"
 mv "$TMP" package.json
 mkdir -p docs
 mv CODE_OF_CONDUCT.md docs || true
