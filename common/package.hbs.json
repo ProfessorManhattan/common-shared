@@ -58,7 +58,7 @@
     }
   ],
   "homepage": "{{link.home}}",
-  "keywords": ["megabytelabs", "professormanhattan", "npm", "package"],
+  "keywords": ["mblabs", "megabytelabs", "professormanhattan"],
   "license": "{{license}}",
   "lint-staged": {
     "**/*": [

@@ -123,10 +123,5 @@
       "task image:compress --"
     ]
   },
-  "prettier": "@mblabs/prettier-config",
-  "standard-version": {
-    "scripts": {
-      "prerelease": "git add --all"
-    }
-  }
+  "prettier": "@mblabs/prettier-config"
 }
