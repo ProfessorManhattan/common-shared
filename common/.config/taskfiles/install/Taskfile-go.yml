@@ -18,4 +18,3 @@ tasks:
         vars:
           BIN: gotestsum
           PACKAGE: gotest.tools/gotestsum
-
