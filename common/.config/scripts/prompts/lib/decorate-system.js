@@ -1,7 +1,13 @@
 'use strict'
 
+/* eslint-disable import/no-extraneous-dependencies, import/no-unresolved, node/no-missing-import */
+
 import chalk from 'chalk'
 
+/**
+ * Styles prompt choices for operating systems by
+ * adding a colored dot next to the OS entry.
+ */
 export function decorateSystem(name) {
   const lower = name.toLowerCase();
   if (lower.includes('archlinux')) {

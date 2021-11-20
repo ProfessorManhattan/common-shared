@@ -1,15 +1,10 @@
 'use strict'
 
-/* eslint-disable space-before-function-paren */
+/* eslint-disable import/no-extraneous-dependencies, import/no-unresolved, node/no-missing-import, no-console */
 
 import inquirer from 'inquirer'
 import signale from 'signale'
 import { decorateSystem } from './lib/decorate-system'
-
-signale.info(
-  'Open a shell session quickly, safely, and easily using Docker. Select an option from the prompt below to download and shell into a Docker environment.'
-)
-promptForShell()
 
 /**
  * Prompts the user for the operating system they wish to launch a shell session with.
@@ -37,5 +32,20 @@ async function promptForShell() {
     }
   ])
   const choice = response.operatingSystem.replace('● ', '').toLowerCase().replace(' ', '-')
+
+  return choice
+}
+
+/**
+ * Main script logic
+ */
+async function run() {
+  signale.info(
+    'Open a shell session quickly, safely, and easily using Docker.' +
+    'Select an option from the prompt below to download and shell into a Docker environment.'
+  )
+  const choice = await promptForShell()
   console.log(choice)
 }
+
+run()

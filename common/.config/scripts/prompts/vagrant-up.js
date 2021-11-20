@@ -1,16 +1,12 @@
 'use strict'
 
-/* eslint-disable space-before-function-paren */
+/* eslint-disable import/no-extraneous-dependencies, import/no-unresolved, node/no-missing-import, no-console */
 
 import { execSync } from 'child_process'
 import { readdirSync } from 'fs'
 import inquirer from 'inquirer'
 import signale from 'signale'
 import { decorateSystem } from './lib/decorate-system'
-
-signale.info(
-  'Use the following prompts to select the type of operating system and the virtualization platform you wish to use with Vagrant.'
-)
 
 /**
  * Prompts the user for the operating system they wish to launch and test the
@@ -24,7 +20,7 @@ async function promptForDesktop() {
       type: 'list',
       name: 'operatingSystem',
       message: 'Which desktop operating system would you like to provision?',
-      choices:
+      choices: choicesDecorated
     }
   ])
   return response.operatingSystem.replace('● ', '').toLowerCase()
@@ -44,12 +40,20 @@ async function promptForPlatform() {
     'VMWare Fusion': 'vmware_fusion',
     'VMWare Workstation': 'vmware_workstation'
   }
+
   // Source: https://github.com/zacanger/is-program-installed/blob/master/index.js
   const opts = {
     stdio: 'ignore'
   }
 
   const exec = (cmd) => execSync(cmd, opts)
+
+  const optsPowerShell = {
+    shell: 'powershell.exe',
+    stdio: 'ignore'
+  }
+
+  const execPowerShell = (cmd) => execSync(cmd, optsPowerShell)
 
   const isUnixInstalled = (program) => {
     try {
@@ -118,8 +122,10 @@ async function promptForPlatform() {
     [isUnixInstalled, isMacInstalled, isWindowsInstalled, isDotDesktopInstalled].some((f) => f(program))
   const choices = []
   if (process.platform === 'win32') {
-    // TODO: Check if Hyper-V is enabled instead of just assuming that all Windows computers have Hyper-V enabled
-    choices.push('Hyper-V')
+    try {
+      execPowerShell('$hyperv = Get-WindowsOptionalFeature -FeatureName Microsoft-Hyper-V-All -Online; $hyperv.State -eq "Enabled"')
+      choices.push('Hyper-V')
+    } catch {}
   }
   if ((process.platform === 'darwin' || process.platform === 'linux') && isInstalled('kvm')) {
     choices.push('KVM')
@@ -147,7 +153,13 @@ async function promptForPlatform() {
   return platformMap[response.virtualizationPlatform]
 }
 
+/**
+ * Main script logic
+ */
 async function run() {
+  signale.info(
+    'Use the following prompts to select the type of operating system and the virtualization platform you wish to use with Vagrant.'
+  )
   const operatingSystem = await promptForDesktop()
   const virtualizationPlatform = await promptForPlatform()
   console.log('--provider=' + virtualizationPlatform + ' ' + operatingSystem)
