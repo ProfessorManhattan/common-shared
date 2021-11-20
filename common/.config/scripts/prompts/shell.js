@@ -42,6 +42,7 @@ async function run() {
       'Select an option from the prompt below to download and shell into a Docker environment.'
   )
   const choice = await promptForShell()
+  // eslint-disable-next-line no-console
   console.log(choice)
 }
 

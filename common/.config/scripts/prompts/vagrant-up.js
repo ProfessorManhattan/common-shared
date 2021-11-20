@@ -186,6 +186,7 @@ async function run() {
   )
   const operatingSystem = await promptForDesktop()
   const virtualizationPlatform = await promptForPlatform()
+  // eslint-disable-next-line no-console
   console.log(`--provider=${virtualizationPlatform} ${operatingSystem}`)
 }
 

@@ -16,3 +16,4 @@ mv "$TMP" package.json
 mkdir -p docs
 mv CODE_OF_CONDUCT.md docs || true
 mv CONTRIBUTING.md docs || true
+npm install --save-optional chalk inquirer signale

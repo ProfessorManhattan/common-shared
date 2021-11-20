@@ -36,6 +36,7 @@ async function run() {
       ' be the latest version.'
   )
   const environment = await promptForDesktop()
+  // eslint-disable-next-line no-console
   console.log(environment)
 }
 
