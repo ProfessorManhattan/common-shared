@@ -229,6 +229,13 @@ tasks:
         vars:
           FORMULAE: glab
 
+  go:
+    run: once
+    cmds:
+      - task: brew:formulae
+        vars:
+          FORMULAE: go
+
   jq:
     run: once
     cmds:

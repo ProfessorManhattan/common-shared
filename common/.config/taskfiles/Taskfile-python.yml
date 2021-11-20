@@ -53,6 +53,16 @@ tasks:
       - task: :lint:python
       - task: test:pytest
 
+  test:ci:
+    deps:
+      - :install:python:pytest
+      - :install:software:poetry
+    cmds:
+      # TODO: https://docs.gitlab.com/ee/user/project/merge_requests/test_coverage_visualization.html#python-example
+      - poetry config virtualenvs.create false
+      - poetry install --no-dev
+      - poetry run pytest --junitxml=report.xml
+
   test:pytest:
     deps:
       - :install:python:requirements

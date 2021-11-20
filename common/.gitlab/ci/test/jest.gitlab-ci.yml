@@ -1,7 +1,7 @@
 ---
 npm-test:
   stage: test
-  image: node:slim
+  image: megabytelabs/jest:slim
   needs: []
   variables:
     GIT_DEPTH: 1
@@ -10,8 +10,12 @@ npm-test:
     paths:
       - node_modules/
   before_script:
-    - npm ci --cache .npm --ignore-scripts --prefer-offline
-    - npm install shellcheck
+    - task ci:before:npm
   script:
-    - set -eo pipefail
-    - task test:all
+    - task npm:test:ci
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - junit.xml
+      cobertura: coverage/cobertura-coverage.xml

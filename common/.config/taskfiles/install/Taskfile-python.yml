@@ -2,6 +2,22 @@
 version: '3'
 
 tasks:
+  pip:
+    deps:
+      - :install:software:python
+    run: when_changed
+    cmds:
+      - pip3 install {{.PACKAGE}}
+    status:
+      - type {{.PACKAGE}} &> /dev/null
+
+  pytest:
+    run: once
+    cmds:
+      - task: pip
+        vars:
+          PACKAGE: pytest
+
   requirements:
     deps:
       - :install:software:python
