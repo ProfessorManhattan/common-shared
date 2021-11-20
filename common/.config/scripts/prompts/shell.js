@@ -1,13 +1,11 @@
-'use strict'
-
-/* eslint-disable */
-
 import inquirer from 'inquirer'
 import signale from 'signale'
 import { decorateSystem } from './lib/decorate-system'
 
 /**
  * Prompts the user for the operating system they wish to launch a shell session with.
+ *
+ * @returns {string} The selected operating system, lowercased, in the format the Taskfile is expecting
  */
 async function promptForShell() {
   const choices = [
@@ -22,18 +20,17 @@ async function promptForShell() {
     'Ubuntu 20.04',
     'Ubuntu 21.04'
   ]
-  const choicesDecorated = choices.map(choice => decorateSystem(choice))
+  const choicesDecorated = choices.map((choice) => decorateSystem(choice))
   const response = await inquirer.prompt([
     {
-      type: 'list',
-      name: 'operatingSystem',
+      choices: choicesDecorated,
       message: 'Which operating system would you like to open up a terminal session with?',
-      choices: choicesDecorated
+      name: 'operatingSystem',
+      type: 'list'
     }
   ])
-  const choice = response.operatingSystem.replace('● ', '').toLowerCase().replace(' ', '-')
 
-  return choice
+  return response.operatingSystem.replace('● ', '').toLowerCase().replace(' ', '-')
 }
 
 /**
@@ -42,7 +39,7 @@ async function promptForShell() {
 async function run() {
   signale.info(
     'Open a shell session quickly, safely, and easily using Docker.' +
-    'Select an option from the prompt below to download and shell into a Docker environment.'
+      'Select an option from the prompt below to download and shell into a Docker environment.'
   )
   const choice = await promptForShell()
   console.log(choice)
