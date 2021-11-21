@@ -133,7 +133,6 @@ tasks:
       - task: merge:variables:project
       - task: merge:variables:subtype
 
-
   merge:variables:project:
     deps:
       - :install:software:jq

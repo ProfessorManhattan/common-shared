@@ -300,7 +300,7 @@ tasks:
     vars:
       DESCRIPTION:
         sh: jq -r '.description' package.json
-      ISSUES_TEMPLATE: ## Summary\r\n\r\n(Summarize the bug encountered concisely)\r\n\r\n##
+      ISSUES_TEMPLATE: # # Summary\r\n\r\n(Summarize the bug encountered concisely)\r\n\r\n##
         Steps to reproduce\r\n\r\n(How one can reproduce the issue - this is very important)\r\n\r\n##
         Example Project\r\n\r\n(If possible, please create an example project here on GitLab.com that
         exhibits the problematic\r\nbehavior, and link to it here in the bug report.\r\nIf you are using

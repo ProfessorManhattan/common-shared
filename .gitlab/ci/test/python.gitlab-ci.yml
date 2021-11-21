@@ -14,7 +14,7 @@ python:
   script:
     - task python:test:ci
   artifacts:
-    when: always
     reports:
-      junit: report.xml
       cobertura: coverage.xml
+      junit: report.xml
+    when: always

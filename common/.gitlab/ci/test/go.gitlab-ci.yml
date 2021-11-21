@@ -8,6 +8,6 @@ gotest:
   script:
     - task go:test:ci
   artifacts:
-    when: always
     reports:
       junit: report.xml
+    when: always

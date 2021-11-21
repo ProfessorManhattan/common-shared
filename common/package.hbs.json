@@ -34,11 +34,6 @@
     "handlebars-helpers": "^0.10.0",
     "semantic-release": "^18.0.0"
   },
-  "optionalDependencies": {
-    "chalk": "^4.1.2",
-    "inquirer": "^8.2.0",
-    "signale": "^1.4.0"
-  },
   "engines": {
     "node": ">=14.18.0"
   },
@@ -77,6 +72,11 @@
     "logo.png": ["task image:resize -- 200 200", "task image:compress --"]
   },
   "name": "{{#if customPackageName}}{{customPackageName}}{{else}}@{{profile.npmjs_organization}}/{{repository.prefix.github}}{{slug}}{{/if}}",
+  "optionalDependencies": {
+    "chalk": "^4.1.2",
+    "inquirer": "^8.2.0",
+    "signale": "^1.4.0"
+  },
   "prettier": "@mblabs/prettier-config",
   "private": true,
   "publishConfig": {

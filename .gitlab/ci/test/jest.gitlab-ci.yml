@@ -16,13 +16,15 @@ jest:
   artifacts:
     paths:
       - coverage/
-    when: always
     reports:
-      junit: junit.xml
       cobertura: coverage/cobertura-coverage.xml
 
+      junit: junit.xml
+    when: always
 pages:
   stage: deploy
+  only:
+    - master
   dependencies:
     - jest
   script:
@@ -32,5 +34,3 @@ pages:
   artifacts:
     paths:
       - public
-  only:
-    - master
