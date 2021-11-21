@@ -6,6 +6,26 @@ vars:
   SHARED_FOLDER: .shared
 
 tasks:
+  boilerplate:
+    cmds:
+      - |
+        if [ "$(jq -r '.blueprint.boilerplate' package.json)" == 'true' ]; then
+          for ENTITY in .boilerplate/*; do
+            rm -rf "${ENTITY/#.boilerplate\/}"
+          done
+        fi
+        GREP=""
+        for ENTITY in .boilerplate/*; do
+          GREP="${ENTITY/#.boilerplate\/}"\\\|"${GREP}"
+        done
+        GREP="${GREP/%\\\|}"
+        if ! ls -la | grep "$GREP" &> /dev/null; then
+          true info "Adding boilerplate code since there are no overlapping files"
+          cp -rT .boilerplate .
+          true success "Added boilerplate code"
+        fi
+      - rm -rf .boilerplate
+
   clean:
     cmds:
       - rm -rf {{.SHARED_FOLDER}}
@@ -13,7 +33,7 @@ tasks:
   clone:
     cmds:
       - rm -rf {{.SHARED_FOLDER}}
-      - git clone --depth=1 {{.SHARED_COMMON_URL}} {{.SHARED_FOLDER}}
+      - git clone --depth=1 {{.PROJECT_COMMON_URL}} {{.SHARED_FOLDER}}
       - rm -rf ./{{.SHARED_FOLDER}}/.git
 
   copy:
@@ -21,43 +41,9 @@ tasks:
       - cp -rT {{.SHARED_FOLDER}}/.common .
       - cp -rT {{.SHARED_FOLDER}}/.common-{{.REPOSITORY_SUBTYPE}} .
       - task: :common:husky:permissions
-
-  merge:
-    deps:
-      - merge:package
-
-  merge:package:
-    cmds:
       - task: save:common:keywords
-      - task: merge:package:files
 
-  merge:package:files:
-    deps:
-      - :install:software:jq
-    env:
-      BLUEPRINT:
-        sh: jq -r '.blueprint' package.json
-      PKG_TMP:
-        sh: mktemp
-    cmds:
-      - |
-        function ensureKeywords() {
-          if [ ! -f "$1" ]; then echo "{}" > "$1"; fi
-          KEYWORDS="$(jq -r '.keywords' "$1")"
-          if [ "$KEYWORDS" == 'null' ] || [ "$KEYWORDS" == '' ]; then
-            TMP="$(mktemp)"
-            jq -r '.keywords = [] | .' "$1" > "$TMP"
-            mv "$TMP" "$1"
-          fi
-        }
-
-        ensureKeywords package.json
-      - jq --arg blueprint "$BLUEPRINT" --arg keywords "$(jq '.keywords[]' package.json package.hbs.json | jq -s '. | unique')"
-        -s -S '.[0] * .[1] | .keywords = ($keywords | fromjson) | .blueprint = ($blueprint | fromjson) | .' package.json
-        package.hbs.json > "$PKG_TMP"
-      - mv "$PKG_TMP" package.hbs.json
-
-  merge:package:json-blueprint-overrides:
+  merge:package:overrides:
     summary: |
       # Merge data from package.json's '.blueprint.jsonOverrides' key
 
@@ -83,62 +69,26 @@ tasks:
       This method is here in case there are any key/values that you would like to freeze.
     cmds:
       - |
-        jq -r '.blueprint.jsonOverrides | keys[]' package.json | while read FILE_PATH; do
-          VALUE="$(jq --arg filepath "$FILE_PATH" '.blueprint.jsonOverrides[$filepath]' "$FILE_PATH")"
-          TMP="$(mktemp)"
-          jq --arg value "$VALUE" -s '.[] + ($value | fromjson)' "$FILE_PATH" > "$TMP"
-          mv "$TMP" "$FILE_PATH"
-        done
+        if [ "$(jq -r '.blueprint.jsonOverrides' package.json)" != 'null' ]; then
+          jq -r '.blueprint.jsonOverrides | keys[]' package.json | while read FILE_PATH; do
+            VALUE="$(jq --arg filepath "$FILE_PATH" '.blueprint.jsonOverrides[$filepath]' "$FILE_PATH")"
+            TMP="$(mktemp)"
+            jq --arg value "$VALUE" -s '.[] + ($value | fromjson)' "$FILE_PATH" > "$TMP"
+            mv "$TMP" "$FILE_PATH"
+          done
+        fi
 
   save:common:keywords:
     env:
       KEYWORDS:
         sh: jq -r '.keywords' package.hbs.json
     cmds:
-      - jq -n --arg keywords "$KEYWORDS" '.keywords = ($keywords | fromjson | unique)' > .config/common-keywords.json
+      - jq -n --arg keywords "$KEYWORDS" '.keywords = ($keywords | fromjson | unique)' > .config/common-keywords.hbs.json
 
   template:
-    deps:
-      - :install:modules:local
-      - :install:npm:hbs
-    cmds:
-      - task: template:variables
-      - task: template:files
-
-  template:files:
-    deps:
-      - template:files:handlebars
-      - template:files:hbs
-
-  template:files:handlebars:
-    cmds:
-      - |
-        function handlebars() {
-          FILE="$1"
-          {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE%.*}"
-          rm "$FILE"
-        }
-        find . -type f -not \( {{.IGNORE_FOLDERS}} \) -prune -name '*.handlebars' | while read FILE; do
-          handlebars "$FILE" &
-        done
-        wait
-
-  template:files:hbs:
-    cmds:
-      - |
-        function handlebars() {
-          FILE="$1"
-          {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
-          rm "$FILE"
-        }
-        find . -type f -not \( {{.IGNORE_FOLDERS}} \) -prune -name '*.hbs.*' | while read FILE; do
-          handlebars "$FILE" &
-        done
-        wait
-
-  template:variables:
     cmds:
       - task: :upstream:variables
         vars:
           INPUT_FILE: .config/variables.json
-          OUTPUT_FILE: ./.variables.json
+          OUTPUT_FILE: .variables.json
+      - task: :upstream:template

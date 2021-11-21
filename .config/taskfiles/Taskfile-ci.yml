@@ -5,14 +5,13 @@ tasks:
   before:
     deps:
       - :install:software:git
-      - :install:software:node
     cmds:
       - git remote set-url origin "https://root:$GROUP_ACCESS_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git"
       - git config user.email "$GITLAB_CI_EMAIL"
       - git config user.name "$GITLAB_CI_NAME"
       - git checkout "$CI_COMMIT_REF_NAME"
       - git pull origin "$CI_COMMIT_REF_NAME"
-      - npm ci --cache .npm --ignore-scripts --prefer-offline
+      - task: before:npm
     preconditions:
       - sh: '[[ ! -z "$GROUP_ACCESS_TOKEN" ]]'
         msg: The `GROUP_ACCESS_TOKEN` GitLab CI variable must be set to an API key with priviledges to read/write to repositories.
@@ -22,6 +21,12 @@ tasks:
       - sh: '[[ ! -z "$GITLAB_CI_NAME" ]]'
         msg: 'The `GITLAB_CI_NAME` GitLab CI variable must be set to the name you would like associated with automated commits
           (e.g. "CI Automation").'
+
+  before:npm:
+    deps:
+      - :install:software:node
+    cmds:
+      - npm ci --cache .npm --ignore-scripts --prefer-offline
 
   commit:
     deps:
