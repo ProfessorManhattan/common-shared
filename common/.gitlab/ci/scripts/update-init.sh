@@ -25,5 +25,8 @@ if test -d .config/docs; then
   cd ../..
 fi
 if [ -n "$GITLAB_CI" ]; then
+  git remote set-url origin "https://root:$GROUP_ACCESS_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git"
+  git config user.email "$GITLAB_CI_EMAIL"
+  git config user.name "$GITLAB_CI_NAME"
   task ci:commit
 fi
