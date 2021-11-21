@@ -7,8 +7,7 @@ tasks:
       - :install:software:git
     cmds:
       - task: commit:config
-      - git checkout "$CI_COMMIT_REF_NAME"
-      - git pull origin "$CI_COMMIT_REF_NAME"
+      - task: checkout
       - task: before:npm
 
   before:npm:
@@ -16,6 +15,11 @@ tasks:
       - :install:software:node
     cmds:
       - npm ci --cache .npm --ignore-scripts --prefer-offline
+
+  checkout:
+    cmds:
+      - git checkout "$CI_COMMIT_REF_NAME"
+      - git pull origin "$CI_COMMIT_REF_NAME"
 
   commit:
     deps:
