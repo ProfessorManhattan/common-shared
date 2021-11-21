@@ -17,3 +17,8 @@ mkdir -p docs
 mv CODE_OF_CONDUCT.md docs || true
 mv CONTRIBUTING.md docs || true
 npm install --save-optional chalk inquirer signale
+rm -rf .config/esbuild
+cd .config/docs
+rm -rf .git .config .github .gitlab .vscode .editorconfig .gitignore .gitlab-ci.yml
+rm -rf LICENSE Taskfile.yml package-lock.json package.json poetry.lock pyproject.toml
+cd ../..

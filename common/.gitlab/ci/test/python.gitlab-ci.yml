@@ -17,3 +17,4 @@ python:
     when: always
     reports:
       junit: report.xml
+      cobertura: coverage.xml

@@ -233,7 +233,6 @@ tasks:
       - :install:modules:local
       - :install:npm:jest
     cmds:
-      # TODO: https://gist.github.com/rishitells/3c4536131819cff4eba2c8ab5bbb4570
       - '{{.NPX_HANDLE}}jest --collectCoverage --ci --reporters=default --reporters=jest-junit'
 
   test:coverage:

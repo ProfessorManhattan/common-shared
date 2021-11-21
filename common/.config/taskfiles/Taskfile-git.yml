@@ -314,6 +314,8 @@ tasks:
         sh: jq -r '.blueprint.name' package.json
       PROJECT_TYPE:
         sh: if [[ $(jq -r '.private' package.json) == 'true' ]]; then echo 'private'; else echo 'public'; fi
+      TEST_COVERAGE_REGEX:
+        sh: jq -r '.build_coverage_regex' .variables.json | sed 's/^null$//'
     env:
       KEYWORDS:
         sh: jq -r '.keywords | tostring' package.json | sed 's/\[//' | sed 's/\]//' | sed 's/"//g'
@@ -321,9 +323,10 @@ tasks:
       - |
         if [ ! -z "$GITLAB_TOKEN" ]; then
           curl -s -H 'Content-Type: application/json' -H "Authorization: Bearer $GITLAB_TOKEN" -X PUT --data \
-          '{"description": "{{.DESCRIPTION}}", "issues_template": "{{.ISSUES_TEMPLATE}}", "name": "{{.NAME}}"}' https://gitlab.com/api/v4/projects/31472271
-          glab api projects/:fullpath -X PUT  -f wiki_enabled={{.GITLAB_WIKI}} -f visibility="{{.PROJECT_TYPE}}" \
-          -f topics="$KEYWORDS" --silent
+          '{"description": "{{.DESCRIPTION}}", "issues_template": "{{.ISSUES_TEMPLATE}}", "name": "{{.NAME}}"}' \
+          https://gitlab.com/api/v4/projects/31472271
+          glab api projects/:fullpath -X PUT -f build_coverage_regex="{{.TEST_COVERAGE_REGEX}}" -f wiki_enabled={{.GITLAB_WIKI}} \
+          -f visibility="{{.PROJECT_TYPE}}" -f topics="$KEYWORDS" --silent
         else
           true warn 'The `GITLAB_TOKEN` environment variable is not set so the GitLab repository cannot be updated via the API.'
         fi

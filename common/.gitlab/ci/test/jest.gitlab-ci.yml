@@ -16,6 +16,5 @@ npm-test:
   artifacts:
     when: always
     reports:
-      junit:
-        - junit.xml
+      junit: junit.xml
       cobertura: coverage/cobertura-coverage.xml
