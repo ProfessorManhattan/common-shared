@@ -31,7 +31,7 @@ if test -d .config/docs; then
   rm -rf LICENSE Taskfile.yml package-lock.json package.json poetry.lock pyproject.toml
   cd ../..
 fi
+curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/common/.config/taskfiles/upstream/Taskfile-common.yml > .config/taskfiles/upstream/Taskfile-common.yml
 if [ -n "$GITLAB_CI" ]; then
   task ci:commit
 fi
-curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/common/.config/taskfiles/upstream/Taskfile-common.yml > .config/taskfiles/upstream/Taskfile-common.yml
