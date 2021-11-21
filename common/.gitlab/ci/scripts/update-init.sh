@@ -24,6 +24,6 @@ if test -d .config/docs; then
   rm -rf LICENSE Taskfile.yml package-lock.json package.json poetry.lock pyproject.toml
   cd ../..
 fi
-if [ ! -z "$GITLAB_CI" ]; then
+if [ -n "$GITLAB_CI" ]; then
   task ci:commit
 fi
