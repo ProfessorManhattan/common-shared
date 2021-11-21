@@ -326,7 +326,7 @@ tasks:
           -f wiki_enabled={{.GITLAB_WIKI}} -f visibility="{{.PROJECT_TYPE}}" -f topics="$KEYWORDS" | jq '.id')"
           curl -s -H 'Content-Type: application/json' -H "Authorization: Bearer $GITLAB_TOKEN" -X PUT --data \
           '{"description": "{{.DESCRIPTION}}", "issues_template": "{{.ISSUES_TEMPLATE}}", "name": "{{.NAME}}"}' \
-          "https://gitlab.com/api/v4/projects/$PROJECT_ID"
+          "https://gitlab.com/api/v4/projects/$PROJECT_ID" > /dev/null
         else
           true warn 'The `GITLAB_TOKEN` environment variable is not set so the GitLab repository cannot be updated via the API.'
         fi
