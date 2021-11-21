@@ -51,7 +51,7 @@ tasks:
       - |
         TMP="$(mktemp)"
         jq -s -S '.[0] + .[1]' '{{.VARIABLES_PATH}}' .cache/platforms.json > "$TMP"
-        mv "$TMP_POP" '{{.VARIABLES_PATH}}'
+        mv "$TMP" '{{.VARIABLES_PATH}}'
 
   populate-platforms:generate:
     deps:
