@@ -22,3 +22,4 @@ cd .config/docs
 rm -rf .git .config .github .gitlab .vscode .editorconfig .gitignore .gitlab-ci.yml
 rm -rf LICENSE Taskfile.yml package-lock.json package.json poetry.lock pyproject.toml
 cd ../..
+task ci:commit
