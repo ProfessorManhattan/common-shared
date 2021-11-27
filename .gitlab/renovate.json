@@ -1,0 +1,14 @@
+{
+  "extends": [
+    "config:base"
+  ],
+  "major": {
+    "dependencyDashboardApproval": true
+  },
+  "packageRules": [
+    {
+      "matchPaths": ["package.json", "package.hbs.json"]
+    }
+  ],
+  "pinDigests": true
+}
