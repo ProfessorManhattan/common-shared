@@ -4,7 +4,7 @@ mypy:
   image:
     name: megabytelabs/yamllint:slim
     entrypoint: ['']
-  when:
+  rules:
     - exists:
         - '**/*.py'
   variables:

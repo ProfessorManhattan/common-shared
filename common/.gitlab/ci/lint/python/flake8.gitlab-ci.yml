@@ -4,7 +4,7 @@ flake8:
   image:
     name: megabytelabs/flake8:slim
     entrypoint: ['']
-  when:
+  rules:
     - exists:
         - '**/*.py'
   variables:
