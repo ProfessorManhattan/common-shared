@@ -11,3 +11,4 @@ include:
   - local: .gitlab/ci/lint/yamllint.gitlab-ci.yml
   - local: .gitlab/ci/propagate/projects.gitlab-ci.yml
   - local: .gitlab/ci/update/common.gitlab-ci.yml
+  - local: .gitlab/ci/update/renovate.gitlab-ci.yml
