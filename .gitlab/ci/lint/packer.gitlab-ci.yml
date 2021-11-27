@@ -4,10 +4,10 @@ packer-validate:
   image:
     name: megabytelabs/packer:slim
     entrypoint: ['']
+  allow_failure: true
   rules:
     - exists:
         - '*template.json'
-  allow_failure: true
   variables:
     GIT_DEPTH: 1
     GIT_SUBMODULE_STRATEGY: recursive
