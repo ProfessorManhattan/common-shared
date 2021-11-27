@@ -4,6 +4,9 @@ packer-validate:
   image:
     name: megabytelabs/packer:slim
     entrypoint: ['']
+  rules:
+    - exists:
+        - '*template.json'
   allow_failure: true
   variables:
     GIT_DEPTH: 1

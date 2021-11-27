@@ -4,6 +4,9 @@ eslint:
   image:
     name: megabytelabs/yamllint:slim
     entrypoint: ['']
+  rules:
+    - exists:
+        - '**/*.{js,jsx,json,json.handlebars,toml,ts,tsx,yml}'
   allow_failure: true
   variables:
     GIT_DEPTH: 1
