@@ -14,6 +14,16 @@ if [ -n "$GITLAB_CI" ]; then
   git pull origin "$CI_COMMIT_REF_NAME"
 fi
 npm install --save-dev @mblabs/eslint-config@latest
+rm -f .config/taskfiles/Taskfile-ci.yml
+rm -f .config/taskfiles/Taskfile-docker.yml
+rm -f .config/taskfiles/Taskfile-fix.yml
+rm -f .config/taskfiles/Taskfile-git.yml
+rm -f .config/taskfiles/Taskfile-image.yml
+rm -f .config/taskfiles/Taskfile-packer.yml
+rm -f .config/taskfiles/Taskfile-python.yml
+rm -f .config/taskfiles/Taskfile-security.yml
+rm -f .config/taskfiles/Taskfile-symlink.yml
+rm -f .config/taskfiles/Taskfile-vscode.yml
 TMP="$(mktemp)"
 jq 'del(."standard-version")' package.json > "$TMP"
 mv "$TMP" package.json
