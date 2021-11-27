@@ -44,6 +44,11 @@ if test -d .config/docs; then
 fi
 curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/common/.config/taskfiles/upstream/Taskfile-common.yml > .config/taskfiles/upstream/Taskfile-common.yml
 curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/common/.config/taskfiles/upstream/Taskfile-project.yml > .config/taskfiles/upstream/Taskfile-project.yml
+curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/common/Taskfile.yml > Taskfile-shared.yml
+TMP="$(mktemp)"
+yq eval-all 'select(fileIndex==0).includes = select(fileIndex==1).includes | select(fileIndex==0)' Taskfile.yml Taskfile-shared.yml > "$TMP"
+mv "$TMP" Taskfile.yml
+rm Taskfile-shared.yml
 if [ -n "$GITLAB_CI" ]; then
   task ci:commit
 fi
