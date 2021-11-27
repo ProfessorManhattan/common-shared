@@ -2,7 +2,7 @@
 markdown-lint:
   stage: lint
   image: pipelinecomponents/markdownlint
-  when:
+  rules:
     - exists:
         - '**/*.md'
   variables:

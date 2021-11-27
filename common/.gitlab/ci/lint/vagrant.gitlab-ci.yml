@@ -5,7 +5,7 @@ vagrant-validate:
     name: megabytelabs/vagrant:slim
     entrypoint: ['']
   allow_failure: true
-  when:
+  rules:
     - exists:
         - '**/Vagrantfile'
   variables:

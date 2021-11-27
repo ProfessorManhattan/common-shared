@@ -4,7 +4,7 @@ shellcheck-fix:
   image:
     name: megabytelabs/yamllint:slim
     entrypoint: ['']
-  when:
+  rules:
     - exists:
         - '**/*.{sh,sh.j2}'
   variables:

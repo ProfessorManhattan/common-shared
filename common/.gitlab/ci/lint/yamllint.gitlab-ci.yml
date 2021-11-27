@@ -4,7 +4,7 @@ yamllint:
   image:
     name: megabytelabs/yamllint:slim
     entrypoint: ['']
-  when:
+  rules:
     - exists:
         - '**/*.{yaml,yml}'
   variables:

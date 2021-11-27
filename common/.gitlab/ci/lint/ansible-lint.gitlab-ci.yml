@@ -4,7 +4,7 @@ ansible-lint:
   image:
     name: megabytelabs/ansible-lint:slim
     entrypoint: ['']
-  when:
+  rules:
     - exists:
         - ansible.cfg
         - meta/main.yml

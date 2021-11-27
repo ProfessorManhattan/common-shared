@@ -4,7 +4,7 @@ eslint-fix:
   image:
     name: megabytelabs/yamllint:slim
     entrypoint: ['']
-  when:
+  rules:
     - exists:
         - '**/*.{js,jsx,json,json.handlebars,toml,ts,tsx,yml}'
   variables:

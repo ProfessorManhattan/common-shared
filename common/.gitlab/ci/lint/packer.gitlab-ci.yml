@@ -4,7 +4,7 @@ packer-validate:
   image:
     name: megabytelabs/packer:slim
     entrypoint: ['']
-  when:
+  rules:
     - exists:
         - '*template.json'
   allow_failure: true

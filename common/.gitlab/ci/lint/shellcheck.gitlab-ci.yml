@@ -4,7 +4,7 @@ shellcheck:
   image:
     name: megabytelabs/shellcheck:slim
     entrypoint: ['']
-  when:
+  rules:
     - exists:
         - '**/*.{sh,sh.j2}'
   variables:

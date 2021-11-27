@@ -4,7 +4,7 @@ gitlab-ci-lint:
   image:
     name: megabytelabs/gitlab-ci-lint:slim
     entrypoint: ['']
-  when:
+  rules:
     - exists:
         - '**/*gitlab-ci.yml'
   variables:

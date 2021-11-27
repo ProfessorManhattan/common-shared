@@ -4,7 +4,7 @@ standard:
   image:
     name: megabytelabs/standard:slim
     entrypoint: ['']
-  when:
+  rules:
     - exists:
         - '**/*.js'
   variables:

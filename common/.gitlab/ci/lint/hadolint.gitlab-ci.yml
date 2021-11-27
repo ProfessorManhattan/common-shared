@@ -4,7 +4,7 @@ hadolint:
   image:
     name: megabytelabs/hadolint:slim
     entrypoint: ['']
-  when:
+  rules:
     - exists:
         - '**/*Dockerfile*'
   variables:
