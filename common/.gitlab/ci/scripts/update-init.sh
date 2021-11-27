@@ -14,6 +14,7 @@ if [ -n "$GITLAB_CI" ]; then
   git pull origin "$CI_COMMIT_REF_NAME"
 fi
 npm install --save-dev @mblabs/eslint-config@latest
+
 rm -f .config/taskfiles/Taskfile-ci.yml
 rm -f .config/taskfiles/Taskfile-docker.yml
 rm -f .config/taskfiles/Taskfile-fix.yml
