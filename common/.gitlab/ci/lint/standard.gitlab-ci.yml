@@ -4,6 +4,9 @@ standard:
   image:
     name: megabytelabs/standard:slim
     entrypoint: ['']
+  when:
+    - exists:
+        - '**/*.js'
   variables:
     GIT_DEPTH: 1
   before_script:
