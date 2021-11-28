@@ -21,6 +21,7 @@ else
 fi
 
 # @description Clone shared files repository
+rm -rf common-shared
 git clone https://gitlab.com/megabyte-labs/common/shared.git common-shared
 
 # @description Refresh taskfiles and GitLab CI files
