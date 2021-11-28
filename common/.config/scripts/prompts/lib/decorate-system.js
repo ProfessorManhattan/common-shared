@@ -18,7 +18,7 @@ export function decorateSystem(name) {
   } else if (lower.includes('fedora')) {
     return `${chalk.blue('●')} ${name}`
   } else if (lower.includes('ubuntu')) {
-    return `${chalk.orange('●')} ${name}`
+    return `${chalk.yellow('●')} ${name}`
   } else if (lower.includes('mac')) {
     return `${chalk.white('●')} ${name}`
   } else if (lower.includes('windows')) {
