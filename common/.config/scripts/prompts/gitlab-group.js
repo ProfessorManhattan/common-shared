@@ -1,6 +1,6 @@
 import inquirer from 'inquirer'
 import { execSync } from 'node:child_process'
-import { writeFileSync } from 'node:fs'
+import { existsSync, writeFileSync } from 'node:fs'
 import { logInstructions } from './lib/log.js'
 
 /**
@@ -18,6 +18,23 @@ async function promptForGroup() {
   ])
 
   return response.groupURL.replace('https://gitlab.com/', '').replace('gitlab.com/', '')
+}
+
+/**
+ * If a script was already created, ask if the user would like to re-use it
+ *
+ * @returns {string} A boolean answer, true if they want to re-use the script
+ */
+async function promptForRecycle() {
+  const response = await inquirer.prompt([
+    {
+      message: 'You already created a script (located in .config/gitlab-group-script.sh). Would you like to re-use it?',
+      name: 'reuseScript',
+      type: 'confirm'
+    }
+  ])
+
+  return response.reuseScript
 }
 
 /**
@@ -48,11 +65,17 @@ async function run() {
       ' write/paste a bash script.'
   )
   const choice = await promptForGroup()
-  const script = await promptForScript()
-  writeFileSync('.cache/gitlab-group-script.sh', script)
-  execSync(`task git:gitlab:group:exec:cli -- ${choice} ---- 'bash ${process.cwd()}/.cache/gitlab-group-script.sh'`, {
-    stdio: 'inherit'
-  })
+  if (existsSync('.cache/gitlab-group-script.sh')) {
+    const reuse = await promptForRecycle()
+    if (!reuse) {
+      const script = await promptForScript()
+      writeFileSync('.cache/gitlab-group-script.sh', script)
+    }
+  } else {
+    const script = await promptForScript()
+    writeFileSync('.cache/gitlab-group-script.sh', script)
+  }
+  execSync('task git:gitlab:group:exec:cli -- ' + choice + ' ---- \'bash ' + process.cwd() + '/.cache/gitlab-group-script.sh\'', {stdio: 'inherit'})
 }
 
 run()
