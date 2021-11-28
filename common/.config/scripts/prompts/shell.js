@@ -41,11 +41,11 @@ async function run() {
   logInstructions(
     'Launch Docker Shell Environment',
     'Open a shell session quickly, safely, and easily using Docker.' +
-    'Select an option from the prompt below to download and shell into a Docker environment.' +
-    ' The environment will be automatically deleted after you exit the terminal session.'
+      'Select an option from the prompt below to download and shell into a Docker environment.' +
+      ' The environment will be automatically deleted after you exit the terminal session.'
   )
   const choice = await promptForShell()
-  execSync('task common:shell:cli -- ' + choice, {stdio: 'inherit'})
+  execSync(`task common:shell:cli -- ${choice}`, { stdio: 'inherit' })
 }
 
 run()

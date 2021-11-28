@@ -1,7 +1,7 @@
 import inquirer from 'inquirer'
 import { execSync } from 'node:child_process'
-import { logInstructions } from './lib/log.js'
 import { decorateSystem } from './lib/decorate-system.js'
+import { logInstructions } from './lib/log.js'
 
 /**
  * Prompts the user for the operating system they wish to launch and test the
@@ -38,7 +38,7 @@ async function run() {
       ' be the latest version.'
   )
   const environment = await promptForDesktop()
-  execSync('task ansible:test:molecule:virtualbox:converge:cli -- ' + environment, {stdio: 'inherit'})
+  execSync(`task ansible:test:molecule:virtualbox:converge:cli -- ${environment}`, { stdio: 'inherit' })
 }
 
 run()

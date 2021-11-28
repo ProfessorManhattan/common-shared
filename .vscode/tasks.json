@@ -167,6 +167,11 @@
       "command": "bash .config/scripts/vscode.sh && task fix:yaml"
     },
     {
+      "label": "(git:gitlab:group:exec): Execute a shell script across all repositories in a group and commit the changes",
+      "type": "shell",
+      "command": "bash .config/scripts/vscode.sh && task git:gitlab:group:exec"
+    },
+    {
       "label": "(git:remotes): Configure the git remote `origin` to point to GitLab and the git remote `all` to point to GitLab and GitHub",
       "type": "shell",
       "command": "bash .config/scripts/vscode.sh && task git:remotes"
@@ -455,6 +460,11 @@
       "label": "(python:publish): Publish the project to PyPi.org",
       "type": "shell",
       "command": "bash .config/scripts/vscode.sh && task python:publish"
+    },
+    {
+      "label": "(python:requirementstxt): Generate the requirements.txt fallback file",
+      "type": "shell",
+      "command": "bash .config/scripts/vscode.sh && task python:requirementstxt"
     },
     {
       "label": "(python:run): Runs the project by calling `run.py`",

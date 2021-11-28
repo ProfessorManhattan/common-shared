@@ -3,8 +3,8 @@
 import inquirer from 'inquirer'
 import { execSync } from 'node:child_process'
 import { readdirSync } from 'node:fs'
-import { logInstructions } from './lib/log.js'
 import { decorateSystem } from './lib/decorate-system.js'
+import { logInstructions } from './lib/log.js'
 
 const platformMap = {
   'Hyper-V': 'hyperv',
@@ -188,7 +188,9 @@ async function run() {
   )
   const operatingSystem = await promptForDesktop()
   const virtualizationPlatform = await promptForPlatform()
-  execSync('task ansible:test:vagrant:cli -- ' + `--provider=${virtualizationPlatform} ${operatingSystem}`, {stdio: 'inherit'})
+  execSync(`task ansible:test:vagrant:cli -- --provider=${virtualizationPlatform} ${operatingSystem}`, {
+    stdio: 'inherit'
+  })
 }
 
 run()
