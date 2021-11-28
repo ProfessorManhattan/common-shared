@@ -33,7 +33,6 @@ async function promptForShell() {
 
   const DECORATION_LENGTH = 2
 
-  // eslint-disable-next-line no-control-regex, security/detect-unsafe-regex
   return response.operatingSystem
     .replace(LOG_DECORATOR_REGEX, '')
     .toLowerCase()

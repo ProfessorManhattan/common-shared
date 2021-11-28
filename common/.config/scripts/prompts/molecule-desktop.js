@@ -23,10 +23,7 @@ async function promptForDesktop() {
 
   const DECORATION_LENGTH = 2
 
-  return response.operatingSystem
-    .replace(LOG_DECORATOR_REGEX, '')
-    .toLowerCase()
-    .slice(DECORATION_LENGTH)
+  return response.operatingSystem.replace(LOG_DECORATOR_REGEX, '').toLowerCase().slice(DECORATION_LENGTH)
 }
 
 /**
