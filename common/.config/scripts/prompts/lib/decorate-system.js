@@ -12,7 +12,7 @@ export function decorateSystem(name) {
   if (lower.includes('archlinux')) {
     return `${chalk.cyan('●')} ${name}`
   } else if (lower.includes('centos')) {
-    return `${chalk.purple('●')} ${name}`
+    return `${chalk.magenta('●')} ${name}`
   } else if (lower.includes('debian')) {
     return `${chalk.red('●')} ${name}`
   } else if (lower.includes('fedora')) {
