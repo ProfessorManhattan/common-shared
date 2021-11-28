@@ -128,7 +128,10 @@ async function promptForDesktop() {
     }
   ])
 
-  return response.operatingSystem.replace('● ', '').toLowerCase()
+  return response.operatingSystem
+    .replace(/[\u001B\u009B][#();?[]*(?:\d{1,4}(?:;\d{0,4})*)?[\d<=>A-ORZcf-nqry]/g, '')
+    .toLowerCase()
+    .slice(2)
 }
 
 /**

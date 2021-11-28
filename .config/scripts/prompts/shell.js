@@ -30,10 +30,9 @@ async function promptForShell() {
       type: 'list'
     }
   ])
-  console.log(response.operatingSystem)
 
   return response.operatingSystem
-    .replace(/[\u001B\u009B][#();?[]*(?:\d{1,4}(?:;\d{0,4})*)?[\d<=>A-ORZcf-nqry]/g, '')
+    .replace(/[\u001B\u009B][#();?[]*(?:\d{1,4}(?:;\d{0,4})*)?[\d<=>A-ORZcf-nqry]/gu, '')
     .toLowerCase()
     .slice(2)
     .replace(' ', '-')

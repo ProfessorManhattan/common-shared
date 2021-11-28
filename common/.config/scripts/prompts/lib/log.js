@@ -4,6 +4,9 @@ import stringBreak from 'string-break'
 
 const MESSAGE_MAX_WIDTH = 80
 
+// eslint-disable-next-line no-control-regex, security/detect-unsafe-regex
+export const LOG_DECORATOR_REGEX = /[\u001B\u009B][#();?[]*(?:\d{1,4}(?:;\d{0,4})*)?[\d<=>A-ORZcf-nqry]/gu
+
 /**
  * Logs an informational message with pleasent styling
  *
