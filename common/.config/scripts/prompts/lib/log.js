@@ -1,6 +1,6 @@
 /* eslint-disable no-console, sonarjs/no-nested-template-literals */
 import chalk from 'chalk'
-import * as stringBreak from 'string-break'
+import stringBreak from 'string-break'
 
 const MESSAGE_MAX_WIDTH = 80
 
