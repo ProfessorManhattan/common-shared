@@ -3,6 +3,8 @@ import { execSync } from 'node:child_process'
 import { existsSync, writeFileSync } from 'node:fs'
 import { logInstructions } from './lib/log.js'
 
+const userScript = '.cache/gitlab-group-script.sh'
+
 /**
  * Prompts the user for the GitLab group they wish to run bulk commands on.
  *
@@ -55,6 +57,15 @@ async function promptForScript() {
 }
 
 /**
+ * Opens the default editor and then saves the file
+ * to .cache/gitlab-group-script.sh
+ */
+async function scriptPrompt() {
+  const script = await promptForScript()
+  writeFileSync(userScript, script)
+}
+
+/**
  * Main script logic
  */
 async function run() {
@@ -65,17 +76,18 @@ async function run() {
       ' write/paste a bash script.'
   )
   const choice = await promptForGroup()
-  if (existsSync('.cache/gitlab-group-script.sh')) {
+
+  if (existsSync(userScript)) {
     const reuse = await promptForRecycle()
     if (!reuse) {
-      const script = await promptForScript()
-      writeFileSync('.cache/gitlab-group-script.sh', script)
+      await scriptPrompt()
     }
   } else {
-    const script = await promptForScript()
-    writeFileSync('.cache/gitlab-group-script.sh', script)
+    await scriptPrompt()
   }
-  execSync('task git:gitlab:group:exec:cli -- ' + choice + ' ---- \'bash ' + process.cwd() + '/.cache/gitlab-group-script.sh\'', {stdio: 'inherit'})
+  execSync(`task git:gitlab:group:exec:cli -- ${choice} ---- 'bash ${process.cwd()}/.cache/gitlab-group-script.sh'`, {
+    stdio: 'inherit'
+  })
 }
 
 run()
