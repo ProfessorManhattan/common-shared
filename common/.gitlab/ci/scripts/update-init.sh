@@ -56,7 +56,7 @@ if test -d .config/docs; then
   rm -rf LICENSE Taskfile.yml package-lock.json package.json poetry.lock pyproject.toml
   cd ../..
 fi
-
+ls -la
 # @description Ensure documentation is in appropriate location
 if test -f CODE_OF_CONDUCT.md; then
   mkdir -p docs
