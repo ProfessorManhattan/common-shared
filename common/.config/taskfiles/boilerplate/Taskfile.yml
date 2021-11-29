@@ -16,7 +16,6 @@ tasks:
           if [ "$VALUE" == 'null' ]; then
             echo "$ITEM blueprint data not already present"
             ALREADY_PRESENT=$ALREADY_PRESENT:$ITEM
-            break
           fi
         done
         GITHUB="$(jq -r '.blueprint.repository.github' package.json)"
