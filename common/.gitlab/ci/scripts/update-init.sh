@@ -35,6 +35,10 @@ cp -rT common-shared/common/.gitlab/ci .gitlab/ci
 npm install --save-dev @mblabs/eslint-config@latest
 npm install --save-optional chalk inquirer signale string-break
 
+function configurePackage() {
+
+}
+
 # @description Re-generate the Taskfile.yml if it has invalid includes
 if ! task donothing &> /dev/null; then
   curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/Taskfile.yml > Taskfile-shared.yml
@@ -43,7 +47,21 @@ if ! task donothing &> /dev/null; then
   mv "$TMP" Taskfile.yml
   rm Taskfile-shared.yml
   npm install
-  task fix:eslint -- Taskfile.yml
+  if ! task fix:eslint -- Taskfile.yml; then
+    curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/update/package-requirements.json > package-requirements.json
+    if [ ! -f 'package.json' ]; then
+      echo "{}" > package.json
+    fi
+    if ! type jq &> /dev/null; then
+      echo "ERROR: jq must be installed"
+      exit 1
+    else
+      TMP="$(mktemp)"
+      jq -s '.[0] * .[1]' package.json package-requirements.json > "$TMP"
+      mv "$TMP" package.json
+    fi
+    rm package-requirements.json
+  fi
 fi
 
 # @description Clean up
