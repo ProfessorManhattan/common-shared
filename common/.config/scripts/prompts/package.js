@@ -1,3 +1,4 @@
+/* eslint-disable no-negated-condition */
 import chalk from 'chalk'
 import inquirer from 'inquirer'
 import { execSync } from 'node:child_process'
@@ -8,53 +9,106 @@ import { logInstructions, LOG_DECORATOR_REGEX } from './lib/log.js'
 const DECORATION_LENGTH = 2
 
 /**
+ * Writes to package.json with jq
+ *
+ * @param {string} value - The value being written
+ * @param {string} location - The jq key of package.json being written to
+ * @returns {void}
+ */
+function writeField(value, location) {
+  execSync(
+    `TMP="$(mktemp)" && jq --arg field "${value}" '.blueprint.${location} = $field' package.json` +
+    ' > "$TMP" && mv "$TMP" package.json',
+    {
+      stdio: 'inherit'
+    }
+  )
+}
+
+/**
  * Prompts for the name of the project
  *
- * @returns {string} The project name
+ * @returns {*} Void
  */
 async function promptForName() {
-  logInstructions(
-    'Project Name',
-    'The project name should be a short, capitalized title for the project. The name is used' +
-      ' for the GitLab project title, references to the project in documentation,' +
-      ' and as a title for the README.md when the blueprint.title is not specified.'
-  )
-  const response = await inquirer.prompt([
-    {
-      message: 'Enter a short, descriptive name for the project:',
-      name: 'name',
-      type: 'input'
-    }
-  ])
+  const currentName = execSync(`jq -r '.blueprint.name' package.json`)
+  if (currentName !== 'null') {
+    signale.info('The `name` has already been populated')
+  } else {
+    logInstructions(
+      'Project Name',
+      'The project name should be a short, capitalized title for the project. The name is used' +
+        ' for the GitLab project title, references to the project in documentation,' +
+        ' and as a title for the README.md when the blueprint.title is not specified.'
+    )
+    const response = await inquirer.prompt([
+      {
+        message: 'Enter a short, descriptive name for the project:',
+        name: 'name',
+        type: 'input'
+      }
+    ])
+    writeField(response.name, 'name')
+    signale.success('Added `name` to package.json')
+  }
+}
 
-  return response.name
+/**
+ * Prompts for the title of the project
+ *
+ * @returns {*} Void
+ */
+async function promptForTitle() {
+  const currentTitle = execSync(`jq -r '.blueprint.title' package.json`)
+  if (currentTitle !== 'null') {
+    signale.info('The `title` has already been populated')
+  } else {
+    logInstructions(
+      'Project Title',
+      'The project title is a longer version of the project name. It is used as the title header of the README.md.'
+    )
+    const response = await inquirer.prompt([
+      {
+        message: 'Enter a catchy title for the project:',
+        name: 'title',
+        type: 'input'
+      }
+    ])
+    writeField(response.title, 'title')
+    signale.success('Added `title` to package.json')
+  }
 }
 
 /**
  * Prompts for a brief description of the project
  *
- * @returns {string} The description
+ * @returns {*} Void
  */
 async function promptForDescription() {
-  logInstructions(
-    'Description Instructions',
-    `${
-      'The brief description should describe the project in as few words as possible while' +
-      ' still giving users enough information to know exactly what the project is all about.' +
-      ' The description should make sense when placed in the following contexts:\n\n'
-    }${chalk.white('●')} A project that {{ description }}\n${chalk.white(
-      '●'
-    )} This repository is home to a project that {{ description }}`
-  )
-  const response = await inquirer.prompt([
-    {
-      message: 'Enter a brief description of the project (no more than 100 characters):',
-      name: 'description',
-      type: 'input'
-    }
-  ])
-
-  return response.description
+  const currentDesc = execSync(`jq -r '.blueprint.description' package.json`)
+  if (currentDesc !== 'null') {
+    signale.info('The `description` has already been populated')
+  } else {
+    logInstructions(
+      'Description Instructions',
+      `${
+        'The brief description should describe the project in as few words as possible while' +
+        ' still giving users enough information to know exactly what the project is all about.' +
+        ' The description should make sense when placed in the following contexts:\n\n'
+      }${chalk.white('●')} A project that {{ description }}\n${chalk.white(
+        '●'
+      )} This repository is home to a project that {{ description }}`
+    )
+    const response = await inquirer.prompt([
+      {
+        message: 'Enter a brief description of the project (no more than 100 characters):',
+        name: 'description',
+        type: 'input'
+      }
+    ])
+    writeField(response.description, 'description')
+    signale.success('Added `description` to package.json')
+  }
 }
 
 /**
@@ -63,7 +117,14 @@ async function promptForDescription() {
  * @param {string} gitUrl - The GitLab URL
  * @returns {string} The group
  */
+// eslint-disable-next-line max-statements, require-jsdoc
 async function promptForGroup(gitUrl) {
+  const currentGroup = execSync(`jq -r '.blueprint.group' package.json`)
+  if (currentGroup !== 'null') {
+    signale.info('The `group` has already been populated')
+
+    return currentGroup
+  }
   const guesses = {
     angular: '/apps/',
     ansible: '/ansible-roles/',
@@ -74,7 +135,7 @@ async function promptForGroup(gitUrl) {
     python: '/python/'
   }
   const guess = Object.entries(guesses)
-    .map((value) => ((gitUrl ? gitUrl : []).includes(value[1]) ? value[0] : false))
+    .map((value) => (gitUrl.includes(value[1]) ? value[0] : false))
     .find((exists) => exists)
   if (guess) {
     return guess
@@ -90,12 +151,16 @@ async function promptForGroup(gitUrl) {
     }
   ])
 
-  return response.group
+  const groupValue = response.group
     .replace('Node.js', 'npm')
     .replace(LOG_DECORATOR_REGEX, '')
     .toLowerCase()
     .slice(DECORATION_LENGTH)
     .replace(' ', '-')
+  writeField(groupValue, 'group')
+  signale.success('Added `group` to package.json')
+
+  return groupValue
 }
 
 const subgroups = {
@@ -152,7 +217,14 @@ const choiceOptions = {
  * @param {string} group - The project's group
  * @returns {string} The subgroup
  */
+// eslint-disable-next-line max-statements, require-jsdoc
 async function promptForSubgroup(gitUrl, group) {
+  const currentSubgroup = execSync(`jq -r '.blueprint.subgroup' package.json`)
+  if (currentSubgroup !== 'null') {
+    signale.info('The `subgroup` has already been populated')
+
+    return currentSubgroup
+  }
   if (group === 'other') {
     return 'other'
   }
@@ -176,13 +248,17 @@ async function promptForSubgroup(gitUrl, group) {
     }
   ])
 
-  return response.subgroup
+  const subgroupValue = response.subgroup
     .replace('Application', 'app')
     .replace('Configuration', 'config')
     .replace(LOG_DECORATOR_REGEX, '')
     .toLowerCase()
     .slice(DECORATION_LENGTH)
     .replace(' ', '-')
+  signale.success('Added `subgroup` to package.json')
+  writeField(subgroupValue, 'subgroup')
+
+  return subgroupValue
 }
 
 /**
@@ -191,6 +267,12 @@ async function promptForSubgroup(gitUrl, group) {
  * @returns {string} The GitHub repository
  */
 async function githubPrompt() {
+  const githubRepo = execSync(`jq -r '.blueprint.repository.github' package.json`)
+  if (githubRepo !== 'null') {
+    signale.success('The GitHub repository URL in the blueprint data is already present')
+
+    return githubRepo
+  }
   const response = await inquirer.prompt([
     {
       message:
@@ -201,6 +283,9 @@ async function githubPrompt() {
     }
   ])
 
+  writeField(response.github, 'repository.github')
+  signale.success('Added `repository.github` to package.json')
+
   return response.github
 }
 
@@ -210,6 +295,12 @@ async function githubPrompt() {
  * @returns {string} The GitLab repository
  */
 async function gitlabPrompt() {
+  const gitlabRepo = execSync(`jq -r '.blueprint.repository.gitlab' package.json`)
+  if (gitlabRepo !== 'null') {
+    signale.info('The GitLab repository URL in the blueprint data is already present')
+
+    return gitlabRepo
+  }
   const response = await inquirer.prompt([
     {
       message: 'What is planned GitLab repository HTTPS address (e.g. https://gitlab.com/megabyte-labs/gas-station)?',
@@ -217,6 +308,8 @@ async function gitlabPrompt() {
       type: 'input'
     }
   ])
+  writeField(response.gitlab, 'repository.gitlab')
+  signale.success('Added `repository.gitlab` to package.json')
 
   return response.gitlab
 }
@@ -273,83 +366,45 @@ async function getGitRepositories() {
 /**
  * Open editor where user can add markdown for the overview.
  *
- * @returns {string} The markdown used for the overview
+ * @returns {*} Void
  */
 async function promptForOverview() {
-  const response = await inquirer.prompt([
-    {
-      message: 'Enter an overview for the project',
-      name: 'overview',
-      type: 'editor'
-    }
-  ])
-
-  return response.overview
-}
-
-/**
- * Writes to package.json with jq
- *
- * @param {string} value - The value being written
- * @param {string} location - The jq key of package.json being written to
- * @returns {void}
- */
-function writeField(value, location) {
-  execSync(`TMP="$(mktemp)" && jq --arg field "${value}" '.blueprint.${location} = $field' package.json > "$TMP" && mv "$TMP" package.json`, {
-    stdio: 'inherit'
-  })
+  const currentOverview = execSync(`jq -r '.blueprint.overview' package.json`)
+  if (currentOverview !== 'null') {
+    signale.info('The `overview` has already been populated')
+  } else {
+    const response = await inquirer.prompt([
+      {
+        message: 'Enter an overview for the project',
+        name: 'overview',
+        type: 'editor'
+      }
+    ])
+    writeField(response.overview, 'overview')
+    signale.success('Added `overview` to package.json')
+  }
 }
 
 /**
  * Main script logic
  */
-// eslint-disable-next-line max-statements, require-jsdoc
+// eslint-disable-next-line require-jsdoc
 async function run() {
   logInstructions(
     'Package Initialization',
     'Provide answers to the following prompts to initialize the project. Some parts of the build process' +
       ' are dependent on some of the answers, so it is important to answer the questions.'
   )
-  // eslint-disable-next-line functional/no-let
-  let gits = {}
-  // eslint-disable-next-line functional/no-let
-  let group = ''
-  const CLI_ARG_INDEX = 2
-  // eslint-disable-next-line security/detect-object-injection
-  const missingValues = process.argv[CLI_ARG_INDEX].split(':')
-  if (missingValues.includes('name')) {
-    const name = await promptForName()
-    writeField(name, 'name')
-    const title = name
-    writeField(title, 'title')
-  }
-  if (missingValues.includes('description')) {
-    const desc = await promptForDescription()
-    writeField(desc, 'description')
-  }
-  if (missingValues.includes('repository.gitlab') || missingValues.includes('repository.github')) {
-    // eslint-disable-next-line fp/no-mutation
-    gits = await getGitRepositories()
-    writeField(gits.gitlab, 'repository.gitlab')
-    writeField(gits.github, 'repository.github')
-  }
-  if (missingValues.includes('group')) {
-    // eslint-disable-next-line fp/no-mutation
-    group = await promptForGroup(gits.gitlab)
-    writeField(group, 'group')
-  }
-  if (missingValues.includes('subgroup')) {
-    const subgroup = await promptForSubgroup(gits.gitlab, group)
-    writeField(subgroup, 'subgroup')
-  }
-  if (missingValues.includes('overview')) {
-    const overview = await promptForOverview()
-    writeField(overview, 'overview')
-  }
-  if (missingValues.includes('slug') && gits.gitlab) {
-    const slug = gits.gitlab.split('/').at(-1)
-    writeField(slug, 'slug')
-  }
+
+  await promptForName()
+  await promptForTitle()
+  await promptForDescription()
+  const gits = await getGitRepositories()
+  const group = await promptForGroup(gits.gitlab)
+  await promptForSubgroup(gits.gitlab, group)
+  await promptForOverview()
+  const slug = gits.gitlab.split('/').at(-1)
+  writeField(slug, 'slug')
 }
 
 run()

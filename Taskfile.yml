@@ -85,7 +85,6 @@ tasks:
       - task: git:gitlab:group:exec
 
   init:
-    interactive: true
     desc: Initialize a project for the first time (use when creating a new project)
     cmds:
       - |
