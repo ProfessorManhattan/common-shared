@@ -3,29 +3,34 @@ version: '3'
 
 tasks:
   check:package:
+    interactive: true
     deps:
       - :install:software:jq
     vars:
-      BLUEPRINT_REQUIRED_FIELDS: description group name overview slug subgroup title
+      BLUEPRINT_REQUIRED_FIELDS: description group name overview slug subgroup
     cmds:
       - |
         ALREADY_PRESENT=true
         for ITEM in {{.BLUEPRINT_REQUIRED_FIELDS}}; do
           VALUE="$(jq --arg item "$ITEM" -r '.blueprint[$item]' package.json)"
           if [ "$VALUE" == 'null' ]; then
-            ALREADY_PRESENT=false
+            echo "$ITEM blueprint data not already present"
+            ALREADY_PRESENT=$ALREADY_PRESENT:$ITEM
             break
           fi
         done
-        if [ "$ALREADY_PRESENT" == 'true' ]; then
-          GITHUB="$(jq -r '.blueprint.repository.github' package.json)"
-          GITLAB="$(jq -r '.blueprint.repository.gitlab' package.json)"
-          if [ "$GITHUB" == 'null' ] || [ "$GITLAB" == 'null' ]; then
-            ALREADY_PRESENT=false
-          fi
+        GITHUB="$(jq -r '.blueprint.repository.github' package.json)"
+        if [ "$GITHUB" == 'null' ]; then
+          echo "GitHub repository blueprint data is not already present"
+          ALREADY_PRESENT=$ALREADY_PRESENT:repository.github
+        fi
+        GITLAB="$(jq -r '.blueprint.repository.gitlab' package.json)"
+        if [ "$GITLAB" == 'null' ]; then
+          echo "GitLab repository blueprint data is not already present"
+          ALREADY_PRESENT=$ALREADY_PRESENT:repository.gitlab
         fi
         if [ ! -f 'package.json' ] || [ "$ALREADY_PRESENT" == 'false' ]; then
-          node .config/scripts/prompts/package.js
+          node .config/scripts/prompts/package.js "$ALREADY_PRESENT"
           task boilerplate:update:taskfile
         fi
 

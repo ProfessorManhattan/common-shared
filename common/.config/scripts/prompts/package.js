@@ -310,23 +310,45 @@ async function run() {
     'Provide answers to the following prompts to initialize the project. Some parts of the build process' +
       ' are dependent on some of the answers, so it is important to answer the questions.'
   )
-  const name = await promptForName()
-  writeField(name, 'name')
-  const title = name
-  writeField(title, 'title')
-  const desc = await promptForDescription()
-  writeField(desc, 'description')
-  const gits = await getGitRepositories()
-  writeField(gits.gitlab, 'repository.gitlab')
-  writeField(gits.github, 'repository.github')
-  const group = await promptForGroup(gits.gitlab)
-  writeField(group, 'group')
-  const subgroup = await promptForSubgroup(gits.gitlab, group)
-  writeField(subgroup, 'subgroup')
-  const overview = await promptForOverview()
-  writeField(overview, 'overview')
-  const slug = gits.gitlab.split('/').at(-1)
-  writeField(slug, 'slug')
+  // eslint-disable-next-line functional/no-let
+  let gits = {}
+  // eslint-disable-next-line functional/no-let
+  let group = ''
+  const CLI_ARG_INDEX = 2
+  const missingValues = process.argv[CLI_ARG_INDEX].split(':')
+  if (missingValues.includes('name')) {
+    const name = await promptForName()
+    writeField(name, 'name')
+    const title = name
+    writeField(title, 'title')
+  }
+  if (missingValues.includes('description')) {
+    const desc = await promptForDescription()
+    writeField(desc, 'description')
+  }
+  if (missingValues.includes('repository.gitlab') || missingValues.includes('repository.github')) {
+    // eslint-disable-next-line fp/no-mutation
+    gits = await getGitRepositories()
+    writeField(gits.gitlab, 'repository.gitlab')
+    writeField(gits.github, 'repository.github')
+  }
+  if (missingValues.includes('group')) {
+    // eslint-disable-next-line fp/no-mutation
+    group = await promptForGroup(gits.gitlab)
+    writeField(group, 'group')
+  }
+  if (missingValues.includes('subgroup')) {
+    const subgroup = await promptForSubgroup(gits.gitlab, group)
+    writeField(subgroup, 'subgroup')
+  }
+  if (missingValues.includes('overview')) {
+    const overview = await promptForOverview()
+    writeField(overview, 'overview')
+  }
+  if (missingValues.includes('slug') && gits.gitlab) {
+    const slug = gits.gitlab.split('/').at(-1)
+    writeField(slug, 'slug')
+  }
 }
 
 run()
