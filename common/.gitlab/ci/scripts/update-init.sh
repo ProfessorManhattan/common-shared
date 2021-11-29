@@ -5,7 +5,6 @@
 # of this script
 
 set -eo pipefail
-set -x
 
 # @description Configure git if environment is GitLab CI
 if [ -n "$GITLAB_CI" ]; then
