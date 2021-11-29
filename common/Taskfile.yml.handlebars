@@ -42,7 +42,7 @@ tasks:
     cmds:
       - |
         if [ -n "$GITLAB_CI" ]; then
-          if [ -n "$UPDATE_INIT_SCRIPT" ]; then SKIP_INIT=true curl -s "$UPDATE_INIT_SCRIPT" | bash; fi
+          if [ -n "$UPDATE_INIT_SCRIPT" ]; then curl -s "$UPDATE_INIT_SCRIPT" | bash; fi
         else
           if [ -z "$SKIP_INIT" ]; then SKIP_INIT=true curl -s '{{{{}}.INIT_SCRIPT{{}}}}' | bash; fi
         fi
