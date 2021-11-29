@@ -74,7 +74,7 @@ async function promptForGroup(gitUrl) {
     python: '/python/'
   }
   const guess = Object.entries(guesses)
-    .map((value) => (gitUrl.includes(value[1]) ? value[0] : false))
+    .map((value) => ((gitUrl ? gitUrl : []).includes(value[1]) ? value[0] : false))
     .find((exists) => exists)
   if (guess) {
     return guess
