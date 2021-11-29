@@ -25,6 +25,7 @@ git clone --depth=1 https://gitlab.com/megabyte-labs/common/shared.git common-sh
 mkdir -p .config
 rm -rf .config/taskfiles
 cp -rT common-shared/common/.config/taskfiles .config/taskfiles
+cp -rT common-shared/common/.config/scripts .config/scripts
 mkdir -p .gitlab
 rm -rf .gitlab/ci
 cp -rT common-shared/common/.gitlab/ci .gitlab/ci
@@ -106,8 +107,9 @@ TMP="$(mktemp)"
 jq 'del(."lint-staged")' package.json > "$TMP"
 mv "$TMP" package.json
 
-echo "Finished"
-
 if [ -z "$GITLAB_CI" ]; then
+  TMP="$(mktemp)"
+  cat Taskfile.yml | sed 's/task: upstream:shared/task: upstream:project/' > "$TMP"
+  mv "$TMP" Taskfile.yml
   SKIP_INIT=true task init
 fi
