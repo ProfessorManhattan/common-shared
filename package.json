@@ -18,7 +18,7 @@
   "scripts": {
     "help": "task --list",
     "prepare": "task common:husky",
-    "start": "bash .config/start.sh"
+    "start": "bash .config/scripts/start.sh"
   },
   "config": {
     "commitizen": {

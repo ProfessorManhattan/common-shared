@@ -85,15 +85,20 @@ tasks:
       - task: git:gitlab:group:exec
 
   init:
-    desc: Initialize a project for the first time (use when creating a new project)
+    desc: Ensures project is initialized with upstream files and migrates pre-existing projects
     cmds:
       - |
         if [ -n "$GITLAB_CI" ]; then
           if [ -n "$UPDATE_INIT_SCRIPT" ]; then curl -s "$UPDATE_INIT_SCRIPT" | bash; fi
         else
-          if [ -z "$SKIP_INIT" ]; then SKIP_INIT=true curl -s '{{.INIT_SCRIPT}}' | bash; fi
+          bash <(curl -s '{{{{}}.INIT_SCRIPT{{}}}}')
         fi
+
+  prepare:
+    desc: Prepares the project for the normal start command (only needed for new projects)
+    cmds:
       - task: boilerplate:check:package
+      - task: boilerplate:clean
       - task start
 
   start:

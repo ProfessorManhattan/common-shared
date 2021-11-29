@@ -45,23 +45,25 @@ if [ "$EXIT_CODE" != '0' ]; then
   curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/Taskfile.yml > Taskfile.yml
 fi
 
-# @description Ensure package.json has minimum requirements
-task fix:eslint -- Taskfile.yml || EXIT_CODE=$?
-if [ "$EXIT_CODE" != '0' ]; then
-  curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/update/package-requirements.json > package-requirements.json
-  if ! type jq &> /dev/null; then
-    task install:software:jq
-  fi
-  TMP="$(mktemp)"
-  jq -s '.[0] * .[1]' package.json package-requirements.json > "$TMP"
-  mv "$TMP" package.json
-  rm package-requirements.json
+# @description Ensure latest dependencies are being used
+curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/package.json > package-reference.json
+if ! type jq &> /dev/null; then
+  task install:software:jq
 fi
+DEPS="$(jq -s '.[0].dependencies // {} * .[1].dependencies // {}' package.json package-reference.json)"
+DEV_DEPS="$(jq -s '.[0].devDependencies // {} * .[1].devDependencies // {}' package.json package-reference.json)"
+OPT_DEPS="$(jq -s '.[0].optionalDependencies // {} * .[1].optionalDependencies // {}' package.json package-reference.json)"
+ESLINT_CONFIG="$(jq -r '.eslintConfig.extends' package-reference.json)"
+PRETTIER_CONFIG="$(jq -r '.prettier' package-reference.json)"
+TMP="$(mktemp)"
+jq --arg deps "$DEPS" --arg devDeps "$DEV_DEPS" --arg optDeps "$OPT_DEPS" --arg eslint "$ESLINT_CONFIG" --arg prettier "$PRETTIER_CONFIG" '.dependencies = ($deps | fromjson) | .devDependencies = ($devDeps | fromjson) | .optionalDependencies = ($optDeps | fromjson) | .eslintConfig.extends = $eslint | .prettier = $prettier' package.json
+mv "$TMP" package.json
+rm package-reference.json
 
 # @description Clean up
 rm -rf common-shared
 
-# @description Ensure files from old file structure are removed
+# @description Ensure files from old file structure are removed (temporary code)
 rm -f .ansible-lint
 rm -f .eslintrc.cjs
 rm -f .flake8
@@ -82,7 +84,7 @@ if test -d .config/docs; then
   cd ../..
 fi
 
-# @description Ensure documentation is in appropriate location
+# @description Ensure documentation is in appropriate location (temporary code)
 mkdir -p docs
 if test -f "CODE_OF_CONDUCT.md"; then
   mv CODE_OF_CONDUCT.md docs
@@ -97,19 +99,9 @@ fi
 # @description Commit and push the changes
 if [ -n "$GITLAB_CI" ]; then
   task ci:commit
-fi
-
-# @description Perform post commit tasks that will always cause changes
-TMP="$(mktemp)"
-jq 'del(."standard-version")' package.json > "$TMP"
-mv "$TMP" package.json
-TMP="$(mktemp)"
-jq 'del(."lint-staged")' package.json > "$TMP"
-mv "$TMP" package.json
-
-if [ -z "$GITLAB_CI" ] && [ -z "$SKIP_INIT" ]; then
+else
   TMP="$(mktemp)"
   cat Taskfile.yml | sed 's/task: upstream:shared/task: upstream:project/' > "$TMP"
   mv "$TMP" Taskfile.yml
-  SKIP_INIT=true task init
+  task prepare
 fi

@@ -30,6 +30,19 @@ tasks:
           task boilerplate:update:taskfile
         fi
 
+  clean:
+    deps:
+      - :install:software:jq
+    cmds:
+      - |
+        TMP="$(mktemp)"
+        jq 'del(."standard-version")' package.json > "$TMP"
+        mv "$TMP" package.json
+      - |
+        TMP="$(mktemp)"
+        jq 'del(."lint-staged")' package.json > "$TMP"
+        mv "$TMP" package.json
+
   update:taskfile:
     deps:
       - :install:software:yq

@@ -1,6 +1,0 @@
-{
-  "eslintConfig": {
-    "extends": "@mblabs/eslint-config"
-  },
-  "prettier": "@mblabs/prettier-config"
-}
