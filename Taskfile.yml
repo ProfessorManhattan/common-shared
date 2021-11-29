@@ -71,6 +71,8 @@ vars:
     -o -name package-lock.json -o -name poetry.lock -o -name '.variables.json'
   INIT_SCRIPT: https://gitlab.com/megabyte-labs/common/shared/-/raw/master/common/.gitlab/ci/scripts/update-init.sh
   NPM_PROGRAM: npm
+  NPM_PROGRAM_LOCAL:
+    sh: if [ -n "$GITLAB_CI" ]; then echo "pnpm"; else echo "npm"; fi
   NPX_HANDLE: ''
   NPX_PACKAGE: npx
   REPOSITORY_SUBTYPE: shared

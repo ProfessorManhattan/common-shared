@@ -45,21 +45,6 @@ if [ "$EXIT_CODE" != '0' ]; then
   curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/Taskfile.yml > Taskfile.yml
 fi
 
-# @description Ensure latest dependencies are being used
-curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/package.json > package-reference.json
-if ! type jq &> /dev/null; then
-  task install:software:jq
-fi
-DEPS="$(jq -s '.[0].dependencies // {} * .[1].dependencies // {}' package-reference.json package.json)"
-DEV_DEPS="$(jq -s '.[0].devDependencies // {} * .[1].devDependencies // {}' package-reference.json package.json)"
-OPT_DEPS="$(jq -s '.[0].optionalDependencies // {} * .[1].optionalDependencies // {}' package-reference.json package.json)"
-ESLINT_CONFIG="$(jq -r '.eslintConfig.extends' package-reference.json)"
-PRETTIER_CONFIG="$(jq -r '.prettier' package-reference.json)"
-TMP="$(mktemp)"
-jq --arg deps "$DEPS" --arg devDeps "$DEV_DEPS" --arg optDeps "$OPT_DEPS" --arg eslint "$ESLINT_CONFIG" --arg prettier "$PRETTIER_CONFIG" '.dependencies = ($deps | fromjson) | .devDependencies = ($devDeps | fromjson) | .optionalDependencies = ($optDeps | fromjson) | .eslintConfig.extends = $eslint | .prettier = $prettier' package.json > "$TMP"
-mv "$TMP" package.json
-rm package-reference.json
-
 # @description Clean up
 rm -rf common-shared
 
