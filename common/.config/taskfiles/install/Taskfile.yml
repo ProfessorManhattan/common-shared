@@ -81,7 +81,7 @@ tasks:
       - cmd: |
           LATEST="$(npm view {{.CLI_ARGS}} version)"
           LOCAL="$(jq -r '.version' ./node_modules/{{.CLI_ARGS}}/package.json)"
-          COMPARE="$(. .config/scripts/external/semver-compare.sh $LOCAL $LATEST)"
+          COMPARE="$(. .config/scripts/lib/semver-compare.sh $LOCAL $LATEST)"
           if [ "$COMPARE" == '-1' ]; then
             true info "Version $LATEST is available for {{.CLI_ARGS}} (currently version $LOCAL)"
             {{.NPM_PROGRAM_LOCAL}} update {{.CLI_ARGS}}

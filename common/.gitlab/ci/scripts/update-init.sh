@@ -63,7 +63,7 @@ rm -rf .config/esbuild
 rm -rf .husky
 rm -rf tests
 if test -d .config/docs; then
-  cd .config/docs
+  cd .config/docs || exit
   rm -rf .git .config .github .gitlab .vscode .editorconfig .gitignore .gitlab-ci.yml
   rm -rf LICENSE Taskfile.yml package-lock.json package.json poetry.lock pyproject.toml
   cd ../..
@@ -86,7 +86,7 @@ if [ -n "$GITLAB_CI" ]; then
   task ci:commit
 else
   TMP="$(mktemp)"
-  cat Taskfile.yml | sed 's/task: upstream:shared/task: upstream:project/' > "$TMP"
+  sed 's/task: upstream:shared/task: upstream:project/' < Taskfile.yml > "$TMP"
   mv "$TMP" Taskfile.yml
   task prepare
 fi
