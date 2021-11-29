@@ -269,7 +269,7 @@ async function promptForSubgroup(gitUrl, group) {
 async function githubPrompt() {
   const githubRepo = execSync(`jq -r '.blueprint.repository.github' package.json`)
   if (githubRepo !== 'null') {
-    signale.success('The GitHub repository URL in the blueprint data is already present')
+    signale.info('The GitHub repository URL in the blueprint data is already present')
 
     return githubRepo
   }
@@ -298,7 +298,7 @@ async function gitlabPrompt() {
   const gitlabRepo = execSync(`jq -r '.blueprint.repository.gitlab' package.json`)
   if (gitlabRepo !== 'null') {
     signale.info('The GitLab repository URL in the blueprint data is already present')
-
+    console.log(gitlabRepo)
     return gitlabRepo
   }
   const response = await inquirer.prompt([
