@@ -107,3 +107,4 @@ jq 'del(."lint-staged")' package.json > "$TMP"
 mv "$TMP" package.json
 
 echo "Finished"
+task init
