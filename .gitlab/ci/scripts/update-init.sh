@@ -13,8 +13,7 @@ if [ -n "$GITLAB_CI" ]; then
   git config user.name "$GITLAB_CI_NAME"
   git checkout "$CI_COMMIT_REF_NAME"
   git pull origin "$CI_COMMIT_REF_NAME"
-else
-  git reset --hard HEAD
+elif git reset --hard HEAD &> /dev/null; then
   git clean -fxd
   git checkout master
   git pull origin master
@@ -28,6 +27,7 @@ git clone https://gitlab.com/megabyte-labs/common/shared.git common-shared
 mkdir -p .config
 rm -rf .config/taskfiles
 cp -rT common-shared/common/.config/taskfiles .config/taskfiles
+mkdir -p .gitlab
 rm -rf .gitlab/ci
 cp -rT common-shared/common/.gitlab/ci .gitlab/ci
 

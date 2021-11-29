@@ -83,10 +83,20 @@ tasks:
     deps:
       - :install:modules:local
       - :install:npm:hbs
+    vars:
+      PYTHON_BREW_NOTICE: In order for this file to be generated, the customPyPiPackageName needs to be specified in the
+        blueprint section of package.json and the PyPi package needs to be installed on the system.
     env:
       TMP:
         sh: mktemp
     cmds:
+      - |
+        if [ '{{.REPOSITORY_TYPE}}' == 'python' ] && [ -f '.config/brew/python.hbs.rb' ]; then
+          BINARY_NAME="$(jq -r '.customPyPiPackageName' .variables.json)"
+          if [ "$BINARY_NAME" == 'null' ] || ! type "$BINARY_NAME" &> /dev/null; then
+            echo "{{.PYTHON_BREW_NOTICE}}" > .config/brew/python.hbs.rb
+          fi
+        fi
       - cp package.json package.json.bak
       - |
         function handlebars() {
@@ -137,3 +147,7 @@ tasks:
         -S '. = (. * ($blueprint | fromjson)) | .version = $version | .poetryKeywords = $poetry | .gitlab_encoded_path = $encoded'
         '{{.INPUT_FILE}}' > "$TMP"
       - mv "$TMP" {{.OUTPUT_FILE}}
+      - |
+        if [ '{{.REPOSITORY_TYPE}}' == 'ansible' ] && [ -f meta/main.yml ]; then
+          task: ansible:update:variables:descriptions
+        fi
