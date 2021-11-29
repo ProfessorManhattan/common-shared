@@ -109,5 +109,5 @@ mv "$TMP" package.json
 echo "Finished"
 
 if [ -z "$GITLAB_CI" ]; then
-  task init
+  SKIP_INIT=true task init
 fi
