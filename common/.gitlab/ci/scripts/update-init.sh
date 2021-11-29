@@ -113,3 +113,5 @@ mv "$TMP" package.json
 TMP="$(mktemp)"
 jq 'del(."lint-staged")' package.json > "$TMP"
 mv "$TMP" package.json
+
+echo "Finished"
