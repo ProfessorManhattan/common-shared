@@ -41,29 +41,20 @@ npm install --save-optional --ignore-scripts chalk inquirer signale string-break
 echo "Ensuring Taskfile is properly configured"
 task donothing || EXIT_CODE=$?
 if [ "$EXIT_CODE" != '0' ]; then
-  curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/Taskfile.yml > Taskfile-shared.yml
-  TMP="$(mktemp)"
-  yq eval-all 'select(fileIndex==0).includes = select(fileIndex==1).includes | select(fileIndex==0)' Taskfile.yml Taskfile-shared.yml > "$TMP"
-  mv "$TMP" Taskfile.yml
-  rm Taskfile-shared.yml
-  npm install --ignore-scripts
-  echo "Trying to run ESLint on Taskfile.yml"
-  task fix:eslint -- Taskfile.yml || EXIT_CODE=$?
-  echo "$EXIT_CODE"
-  if [ "$EXIT_CODE" != '0' ]; then
-    curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/update/package-requirements.json > package-requirements.json
-    echo "Applying package-requirements.json"
-    if ! type jq &> /dev/null; then
-      echo "ERROR: jq must be installed"
-      exit 1
-    else
-      TMP="$(mktemp)"
-      jq -s '.[0] * .[1]' package.json package-requirements.json > "$TMP"
-      mv "$TMP" package.json
-    fi
-    rm package-requirements.json
-    task fix:eslint -- Taskfile.yml
+  curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/Taskfile.yml > Taskfile.yml
+fi
+
+# @description Ensure package.json has minimum requirements
+task fix:eslint -- Taskfile.yml || EXIT_CODE=$?
+if [ "$EXIT_CODE" != '0' ]; then
+  curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/update/package-requirements.json > package-requirements.json
+  if ! type jq &> /dev/null; then
+    task install:software:jq
   fi
+  TMP="$(mktemp)"
+  jq -s '.[0] * .[1]' package.json package-requirements.json > "$TMP"
+  mv "$TMP" package.json
+  rm package-requirements.json
 fi
 
 # @description Clean up
