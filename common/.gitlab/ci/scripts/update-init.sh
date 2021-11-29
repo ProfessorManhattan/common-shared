@@ -50,9 +50,9 @@ curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/package.json
 if ! type jq &> /dev/null; then
   task install:software:jq
 fi
-DEPS="$(jq -s '.[0].dependencies // {} * .[1].dependencies // {}' package.json package-reference.json)"
-DEV_DEPS="$(jq -s '.[0].devDependencies // {} * .[1].devDependencies // {}' package.json package-reference.json)"
-OPT_DEPS="$(jq -s '.[0].optionalDependencies // {} * .[1].optionalDependencies // {}' package.json package-reference.json)"
+DEPS="$(jq -s '.[0].dependencies // {} * .[1].dependencies // {}' package-reference.json package.json)"
+DEV_DEPS="$(jq -s '.[0].devDependencies // {} * .[1].devDependencies // {}' package-reference.json package.json)"
+OPT_DEPS="$(jq -s '.[0].optionalDependencies // {} * .[1].optionalDependencies // {}' package-reference.json package.json)"
 ESLINT_CONFIG="$(jq -r '.eslintConfig.extends' package-reference.json)"
 PRETTIER_CONFIG="$(jq -r '.prettier' package-reference.json)"
 TMP="$(mktemp)"
