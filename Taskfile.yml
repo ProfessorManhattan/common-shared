@@ -92,7 +92,7 @@ tasks:
         if [ -n "$GITLAB_CI" ]; then
           if [ -n "$UPDATE_INIT_SCRIPT" ]; then curl -s "$UPDATE_INIT_SCRIPT" | bash; fi
         else
-          if [ -z "$SKIP_INIT" ]; then curl -s '\{{.INIT_SCRIPT}}' | bash; fi
+          if [ -z "$SKIP_INIT" ]; then curl -s '{{.INIT_SCRIPT}}' | bash; fi
         fi
       - task: boilerplate:check:package
       - task start
