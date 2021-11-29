@@ -298,7 +298,7 @@ async function gitlabPrompt() {
   const gitlabRepo = execSync(`jq -r '.blueprint.repository.gitlab' package.json`)
   if (gitlabRepo !== 'null') {
     signale.info('The GitLab repository URL in the blueprint data is already present')
-    console.log(gitlabRepo)
+    console.log(gitlabRepo.toString())
     return gitlabRepo
   }
   const response = await inquirer.prompt([
