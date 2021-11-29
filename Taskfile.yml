@@ -93,7 +93,7 @@ tasks:
         if [ -n "$GITLAB_CI" ]; then
           if [ -n "$UPDATE_INIT_SCRIPT" ]; then curl -s "$UPDATE_INIT_SCRIPT" | bash; fi
         else
-          bash <(curl -s '{{{{}}.INIT_SCRIPT{{}}}}')
+          bash <(curl -s '{{.INIT_SCRIPT}}')
         fi
 
   prepare:
