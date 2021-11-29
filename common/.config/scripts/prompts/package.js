@@ -295,7 +295,7 @@ async function promptForOverview() {
  * @returns {void}
  */
 function writeField(value, location) {
-  execSync(`jq --arg field "${value}" '.blueprint.${location} = $field' package.json`, {
+  execSync(`TMP="$(mktemp)" && jq --arg field "${value}" '.blueprint.${location} = $field' package.json > "$TMP" && mv "$TMP" package.json`, {
     stdio: 'inherit'
   })
 }
