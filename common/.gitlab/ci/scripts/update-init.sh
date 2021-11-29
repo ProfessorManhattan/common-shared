@@ -107,7 +107,7 @@ TMP="$(mktemp)"
 jq 'del(."lint-staged")' package.json > "$TMP"
 mv "$TMP" package.json
 
-if [ -z "$GITLAB_CI" ]; then
+if [ -z "$GITLAB_CI" ] && [ -z "$SKIP_INIT" ]; then
   TMP="$(mktemp)"
   cat Taskfile.yml | sed 's/task: upstream:shared/task: upstream:project/' > "$TMP"
   mv "$TMP" Taskfile.yml
