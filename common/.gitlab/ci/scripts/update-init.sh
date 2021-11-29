@@ -56,7 +56,7 @@ OPT_DEPS="$(jq -s '.[0].optionalDependencies // {} * .[1].optionalDependencies /
 ESLINT_CONFIG="$(jq -r '.eslintConfig.extends' package-reference.json)"
 PRETTIER_CONFIG="$(jq -r '.prettier' package-reference.json)"
 TMP="$(mktemp)"
-jq --arg deps "$DEPS" --arg devDeps "$DEV_DEPS" --arg optDeps "$OPT_DEPS" --arg eslint "$ESLINT_CONFIG" --arg prettier "$PRETTIER_CONFIG" '.dependencies = ($deps | fromjson) | .devDependencies = ($devDeps | fromjson) | .optionalDependencies = ($optDeps | fromjson) | .eslintConfig.extends = $eslint | .prettier = $prettier' package.json
+jq --arg deps "$DEPS" --arg devDeps "$DEV_DEPS" --arg optDeps "$OPT_DEPS" --arg eslint "$ESLINT_CONFIG" --arg prettier "$PRETTIER_CONFIG" '.dependencies = ($deps | fromjson) | .devDependencies = ($devDeps | fromjson) | .optionalDependencies = ($optDeps | fromjson) | .eslintConfig.extends = $eslint | .prettier = $prettier' package.json > "$TMP"
 mv "$TMP" package.json
 rm package-reference.json
 
