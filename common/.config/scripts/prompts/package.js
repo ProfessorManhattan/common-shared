@@ -31,7 +31,7 @@ function writeField(value, location) {
  * @returns {*} Void
  */
 async function promptForName() {
-  const currentName = execSync(`jq -r '.blueprint.name' package.json`).toString()
+  const currentName = execSync(`jq -r '.blueprint.name' package.json`).toString().trimRight()
   if (currentName !== 'null') {
     signale.info('The `name` has already been populated')
   } else {
@@ -59,7 +59,7 @@ async function promptForName() {
  * @returns {*} Void
  */
 async function promptForTitle() {
-  const currentTitle = execSync(`jq -r '.blueprint.title' package.json`).toString()
+  const currentTitle = execSync(`jq -r '.blueprint.title' package.json`).toString().trimRight()
   if (currentTitle !== 'null') {
     signale.info('The `title` has already been populated')
   } else {
@@ -85,7 +85,7 @@ async function promptForTitle() {
  * @returns {*} Void
  */
 async function promptForDescription() {
-  const currentDesc = execSync(`jq -r '.blueprint.description' package.json`).toString()
+  const currentDesc = execSync(`jq -r '.blueprint.description' package.json`).toString().trimRight()
   if (currentDesc !== 'null') {
     signale.info('The `description` has already been populated')
   } else {
@@ -119,7 +119,7 @@ async function promptForDescription() {
  */
 // eslint-disable-next-line max-statements, require-jsdoc
 async function promptForGroup(gitUrl) {
-  const currentGroup = execSync(`jq -r '.blueprint.group' package.json`).toString()
+  const currentGroup = execSync(`jq -r '.blueprint.group' package.json`).toString().trimRight()
   if (currentGroup !== 'null') {
     signale.info('The `group` has already been populated')
 
@@ -267,7 +267,7 @@ async function promptForSubgroup(gitUrl, group) {
  * @returns {string} The GitHub repository
  */
 async function githubPrompt() {
-  const githubRepo = execSync(`jq -r '.blueprint.repository.github' package.json`).toString()
+  const githubRepo = execSync(`jq -r '.blueprint.repository.github' package.json`).toString().trimRight()
   if (githubRepo !== 'null') {
     signale.info('The GitHub repository URL in the blueprint data is already present')
 
@@ -295,7 +295,7 @@ async function githubPrompt() {
  * @returns {string} The GitLab repository
  */
 async function gitlabPrompt() {
-  const gitlabRepo = execSync(`jq -r '.blueprint.repository.gitlab' package.json`).toString()
+  const gitlabRepo = execSync(`jq -r '.blueprint.repository.gitlab' package.json`).toString().trimRight()
   if (gitlabRepo !== 'null') {
     signale.info('The GitLab repository URL in the blueprint data is already present')
     return gitlabRepo
@@ -323,7 +323,7 @@ async function gitlabPrompt() {
 async function getGitRepositories() {
   // eslint-disable-next-line functional/no-try-statement
   try {
-    const gitOrigin = execSync(`git remote get-url origin`).toString()
+    const gitOrigin = execSync(`git remote get-url origin`).toString().trimRight()
     if (gitOrigin.includes('gitlab.com')) {
       signale.info('Detected GitLab address automatically')
       const github = await githubPrompt()
@@ -366,7 +366,7 @@ async function getGitRepositories() {
  * @returns {*} Void
  */
 async function promptForOverview() {
-  const currentOverview = execSync(`jq -r '.blueprint.overview' package.json`).toString()
+  const currentOverview = execSync(`jq -r '.blueprint.overview' package.json`).toString().trimRight()
   if (currentOverview !== 'null') {
     signale.info('The `overview` has already been populated')
   } else {
