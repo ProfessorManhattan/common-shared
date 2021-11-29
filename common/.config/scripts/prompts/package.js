@@ -138,6 +138,8 @@ async function promptForGroup(gitUrl) {
     .map((value) => (gitUrl.includes(value[1]) ? value[0] : false))
     .find((exists) => exists)
   if (guess) {
+    signale.info('Setting group to `' + guess + '` because the GitLab URL contained `' + guesses[guess] + '`')
+    writeField(guess, 'group')
     return guess
   }
   const choices = ['Angular', 'Ansible', 'Docker', 'Go', 'Node.js', 'Packer', 'Python', 'Other']
@@ -219,7 +221,7 @@ const choiceOptions = {
  */
 // eslint-disable-next-line max-statements, require-jsdoc
 async function promptForSubgroup(gitUrl, group) {
-  const currentSubgroup = execSync(`jq -r '.blueprint.subgroup' package.json`)
+  const currentSubgroup = execSync(`jq -r '.blueprint.subgroup' package.json`).toString().trimRight()
   if (currentSubgroup !== 'null') {
     signale.info('The `subgroup` has already been populated')
 
@@ -234,6 +236,8 @@ async function promptForSubgroup(gitUrl, group) {
     .map((value) => (gitUrl.includes(value[1]) ? value[0] : false))
     .find((exists) => exists)
   if (guess) {
+    signale.info('Setting subgroup to `' + guess + '` because the GitLab URL contained `' + guesses[guess] + '`')
+    writeField(guess, 'subgroup')
     return guess
   }
   // eslint-disable-next-line security/detect-object-injection
