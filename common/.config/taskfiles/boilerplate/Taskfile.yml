@@ -40,8 +40,8 @@ tasks:
         TASK_GROUP="$(yq eval '.vars.REPOSITORY_TYPE' Taskfile.yml)"
         TASK_SUBGROUP="$(yq eval '.vars.REPOSITORY_SUBTYPE' Taskfile.yml)"
         if [ "$GROUP" != "$TASK_GROUP" ]; then
-          yq e -i '.vars.REPOSITORY_TYPE = strenv(GROUP)' Taskfile.yml
+          yq e -i ".vars.REPOSITORY_TYPE = \"$GROUP\"" Taskfile.yml
         fi
         if [ "$SUBGROUP" != "$TASK_SUBGROUP" ]; then
-          yq e -i '.vars.REPOSITORY_SUBTYPE = strenv(GROUP)' Taskfile.yml
+          yq e -i ".vars.REPOSITORY_SUBTYPE = \"$GROUP\"" Taskfile.yml
         fi
