@@ -315,6 +315,7 @@ async function run() {
   // eslint-disable-next-line functional/no-let
   let group = ''
   const CLI_ARG_INDEX = 2
+  // eslint-disable-next-line security/detect-object-injection
   const missingValues = process.argv[CLI_ARG_INDEX].split(':')
   if (missingValues.includes('name')) {
     const name = await promptForName()
