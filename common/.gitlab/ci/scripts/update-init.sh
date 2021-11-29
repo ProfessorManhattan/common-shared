@@ -4,8 +4,6 @@
 # @brief Script that executes before the start task if the UPDATE_INIT_SCRIPT is set to the URL
 # of this script
 
-set -eo pipefail
-
 # @description Configure git if environment is GitLab CI
 if [ -n "$GITLAB_CI" ]; then
   git remote set-url origin "https://root:$GROUP_ACCESS_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git"
