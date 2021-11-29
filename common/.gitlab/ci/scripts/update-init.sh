@@ -62,6 +62,7 @@ if [ "$EXIT_CODE" != '0' ]; then
       mv "$TMP" package.json
     fi
     rm package-requirements.json
+    task fix:eslint -- Taskfile.yml
   fi
 fi
 
