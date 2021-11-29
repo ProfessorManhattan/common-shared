@@ -21,7 +21,7 @@ fi
 
 # @description Clone shared files repository
 rm -rf common-shared
-git clone https://gitlab.com/megabyte-labs/common/shared.git common-shared
+git clone --depth=1 https://gitlab.com/megabyte-labs/common/shared.git common-shared
 
 # @description Refresh taskfiles and GitLab CI files
 mkdir -p .config
@@ -35,10 +35,6 @@ cp -rT common-shared/common/.gitlab/ci .gitlab/ci
 npm install --save-dev @mblabs/eslint-config@latest
 npm install --save-optional chalk inquirer signale string-break
 
-function configurePackage() {
-
-}
-
 # @description Re-generate the Taskfile.yml if it has invalid includes
 if ! task donothing &> /dev/null; then
   curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/Taskfile.yml > Taskfile-shared.yml
@@ -46,7 +42,7 @@ if ! task donothing &> /dev/null; then
   yq eval-all 'select(fileIndex==0).includes = select(fileIndex==1).includes | select(fileIndex==0)' Taskfile.yml Taskfile-shared.yml > "$TMP"
   mv "$TMP" Taskfile.yml
   rm Taskfile-shared.yml
-  npm install
+  npm install --ignore-scripts
   if ! task fix:eslint -- Taskfile.yml; then
     curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/update/package-requirements.json > package-requirements.json
     if [ ! -f 'package.json' ]; then
