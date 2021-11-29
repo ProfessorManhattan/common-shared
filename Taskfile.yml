@@ -101,7 +101,6 @@ tasks:
     cmds:
       - task: boilerplate:check:package
       - task: boilerplate:clean
-      - task start
 
   start:
     desc: Set up the project and refresh it with the latest changes
