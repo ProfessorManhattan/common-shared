@@ -18,40 +18,18 @@
 #   if the `LOG_SUFFIX` is set then the log messages will end with its value.
 #
 #   If Node.js is present and the `$container` environment variable is not set to `docker` then
-#   the class will automatically start logging pretty error messages. If Node.js is not available
-#   or the `$container` variable is set to `docker`, then the `ENHANCED_LOGGING` variable must
-#   be set after Node.js becomes available. In addition, you should set the `NODE_PATH` variable
-#   equal to `NODE_PATH="$(npm root -g):$NODE_PATH"` to ensure the `signale` logging works
-#   as expected.
+#   the class will automatically start logging pretty error messages.
 
 set -eo pipefail
 
-# @description Determines whether or not an executable is accessible
-# @example commandExists node
-function commandExists() {
-  type "$1" &> /dev/null
-}
-
-if commandExists node; then
-  # npm root -g takes around 0.25s to run, so cache the value
-  if [ -f .cache/megabytelabs/NPM_ROOT ]; then
-    NODE_PATH="$(cat .cache/megabytelabs/NPM_ROOT):$NODE_PATH"
-  else
-    NPM_ROOT="$(npm root -g)"
-    NODE_PATH="$NPM_ROOT:$NODE_PATH"
-    mkdir -p .cache/megabytelabs
-    echo "$NPM_ROOT" > .cache/megabytelabs/NPM_ROOT
-  fi
-  export NODE_PATH
-  if [ "${container:=}" != 'docker' ]; then
-    ENHANCED_LOGGING=true
-  fi
+if [ "${container:=}" != 'docker' ] && type node &> /dev/null; then
+  ENHANCED_LOGGING=true
 fi
 
 # @description Logs to the console by using the NPM 'signale' library
 # @example signale info "An informative log"
 function signale() {
-  node -e 'require("signale").'"$1"'({prefix: "'"${LOG_PREFIX:=}"'", message:"'"$2"'", suffix: "'"${LOG_SUFFIX:=}"'"})'
+  node -e 'require("signale").'"$1"'({prefix: "'"${LOG_PREFIX:=}"'", message:"'"$2"'", suffix: "'"${LOG_SUFFIX:=}"'"})' 2> /dev/null
 }
 
 # @description Logs an error message
@@ -124,10 +102,4 @@ function warn() {
   fi
 }
 
-export -f error
-export -f info
-export -f star
-export -f start
-export -f stop
-export -f success
-export -f warn
+"$1" "$2"
