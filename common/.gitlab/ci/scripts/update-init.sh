@@ -77,7 +77,7 @@ if test -d .config/docs; then
 fi
 
 # @description Ensure pnpm field is populated
-yq e -i '.vars.NPM_PROGRAM_LOCAL.sh = "pnpm"; fi' Taskfile.yml
+yq e -i '.vars.NPM_PROGRAM_LOCAL = "pnpm"; fi' Taskfile.yml
 
 # @description Ensure documentation is in appropriate location (temporary code)
 mkdir -p docs
