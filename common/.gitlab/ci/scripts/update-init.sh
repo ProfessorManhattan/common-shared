@@ -40,16 +40,9 @@ fi
 if [ -f 'package-lock.json' ]; then
   rm package-lock.json
 fi
-if [ -n "$GITLAB_CI" ]; then
-  npm install --save-dev --ignore-scripts @mblabs/eslint-config@latest @mblabs/prettier-config@latest handlebars-helpers glob
-  npm install --save-dev --ignore-scripts @commitlint/config-conventional cz-conventional-changelog
-  npm install --save-optional --ignore-scripts chalk inquirer signale string-break
-  npm i --package-lock-only
-else
-  pnpm install --save-dev --ignore-scripts @mblabs/eslint-config@latest @mblabs/prettier-config@latest handlebars-helpers glob
-  pnpm install --save-dev --ignore-scripts @commitlint/config-conventional cz-conventional-changelog
-  pnpm install --save-optional --ignore-scripts chalk inquirer signale string-break
-fi
+pnpm install --save-dev --ignore-scripts @mblabs/eslint-config@latest @mblabs/prettier-config@latest handlebars-helpers glob
+pnpm install --save-dev --ignore-scripts @commitlint/config-conventional cz-conventional-changelog
+pnpm install --save-optional --ignore-scripts chalk inquirer signale string-break
 
 # @description Re-generate the Taskfile.yml if it has invalid includes
 echo "Ensuring Taskfile is properly configured"
@@ -84,7 +77,7 @@ if test -d .config/docs; then
 fi
 
 # @description Ensure pnpm field is populated
-yq e -i '.vars.NPM_PROGRAM_LOCAL.sh = "if [ -n \"$GITLAB_CI\" ]; then echo \"npm\"; else echo \"pnpm\"; fi"' Taskfile.yml
+yq e -i '.vars.NPM_PROGRAM_LOCAL.sh = "pnpm"; fi' Taskfile.yml
 
 # @description Ensure documentation is in appropriate location (temporary code)
 mkdir -p docs
