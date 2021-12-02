@@ -50,7 +50,7 @@ function ensureLocalPath() {
     local PATH_STRING='\nexport PATH=$HOME/.local/bin:$PATH'
     if grep -L "$PATH_STRING" "$SHELL_PROFILE"; then
       echo -e "$PATH_STRING" >> "$SHELL_PROFILE"
-      echo "Updated the PATH variable to include ~/.local/bin in $SHELL_PROFILE"
+      . .config/log info "Updated the PATH variable to include ~/.local/bin in $SHELL_PROFILE"
     fi
   elif [[ "$OSTYPE" == 'cygwin' ]] || [[ "$OSTYPE" == 'msys' ]] || [[ "$OSTYPE" == 'win32' ]]; then
     echo "Windows is not directly supported. Use WSL or Docker." && exit 1
@@ -127,14 +127,16 @@ function installTask() {
     local DOWNLOAD_URL="$TASK_RELEASE_URL/download/task_linux_amd64.tar.gz"
   fi
   mkdir -p "$(dirname "$DOWNLOAD_DESTINATION")"
-  curl "$DOWNLOAD_URL" -o "$DOWNLOAD_DESTINATION"
-  curl "$CHECKSUMS_URL" -o "$CHECKSUM_DESTINATION"
+  . .config/log info 'Downloading latest version of Task'
+  curl -sSL "$DOWNLOAD_URL" -o "$DOWNLOAD_DESTINATION"
+  curl -sSL "$CHECKSUMS_URL" -o "$CHECKSUM_DESTINATION"
   local DOWNLOAD_BASENAME
   DOWNLOAD_BASENAME="$(basename "$DOWNLOAD_URL")"
   local DOWNLOAD_SHA256
   DOWNLOAD_SHA256="$(grep "$DOWNLOAD_BASENAME" < "$CHECKSUM_DESTINATION" | cut -d ' ' -f 1)"
   sha256 "$DOWNLOAD_DESTINATION" "$DOWNLOAD_SHA256"
-  mkdir "$TMP_DIR/task"
+  . .config success 'Validated checksum'
+  mkdir -p "$TMP_DIR/task"
   tar -xzvf "$DOWNLOAD_DESTINATION" -C "$TMP_DIR/task"
   if type task &> /dev/null && [ -w "$(which task)" ]; then
     local TARGET_DEST
@@ -149,8 +151,8 @@ function installTask() {
     local TARGET_DEST="$TARGET_BIN_DIR/task"
   fi
   mkdir -p "$TARGET_BIN_DIR"
-  mv "$TMP_DIR/task" "$TARGET_DEST"
-  echo "Successfully installed Task to $TARGET_DEST"
+  mv "$TMP_DIR/task/task" "$TARGET_BIN_DIR/"
+  . .config/log success "Successfully installed Task to $TARGET_DEST"
   rm "$CHECKSUM_DESTINATION"
   rm "$DOWNLOAD_DESTINATION"
 }
