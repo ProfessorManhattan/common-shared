@@ -21,7 +21,8 @@ tasks:
       - |
         function populateChartVar() {
           CHART="["
-          jq --arg tag "$(echo $2 | tr '[a-z]' '[A-Z]')" -r '.[] | select(.tag == $tag) | . | del(. ["file", "ref", "line", "tag"]) | .text' "$1" | while read COMMENT; do
+          jq --arg tag "$(echo $2 | tr '[a-z]' '[A-Z]')" -r '.[] | select(.tag == $tag) | .
+            | del(. ["file", "ref", "line", "tag"]) | .text' "$1" | while read COMMENT; do
             if [ "$CHART" != '[' ]; then
               CHART="${CHART},"
             fi
