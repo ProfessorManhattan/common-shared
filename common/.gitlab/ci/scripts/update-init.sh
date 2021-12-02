@@ -26,11 +26,11 @@ git clone --depth=1 https://gitlab.com/megabyte-labs/common/shared.git common-sh
 # @description Refresh taskfiles and GitLab CI files
 mkdir -p .config
 rm -rf .config/taskfiles
-cp -rT common-shared/common/.config/taskfiles .config/taskfiles
-cp -rT common-shared/common/.config/scripts .config/scripts
+cp -rf common-shared/common/.config/taskfiles .config/
+cp -rf common-shared/common/.config/scripts .config/
 mkdir -p .gitlab
 rm -rf .gitlab/ci
-cp -rT common-shared/common/.gitlab/ci .gitlab/ci
+cp -rf common-shared/common/.gitlab/ci .gitlab/
 
 # @description Ensure proper NPM dependencies are installed
 echo "Installing NPM packages"
