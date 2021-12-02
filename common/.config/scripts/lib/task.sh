@@ -53,11 +53,11 @@ function ensureLocalPath() {
       . .config/log info "Updated the PATH variable to include ~/.local/bin in $SHELL_PROFILE"
     fi
   elif [[ "$OSTYPE" == 'cygwin' ]] || [[ "$OSTYPE" == 'msys' ]] || [[ "$OSTYPE" == 'win32' ]]; then
-    echo "Windows is not directly supported. Use WSL or Docker." && exit 1
+    . .config/log error "Windows is not directly supported. Use WSL or Docker." && exit 1
   elif [[ "$OSTYPE" == 'freebsd'* ]]; then
-    echo "FreeBSD support not added yet" && exit 1
+    . .config/log error "FreeBSD support not added yet" && exit 1
   else
-    echo "System type not recognized" && exit 1
+    . .config/log error "System type not recognized" && exit 1
   fi
 }
 
@@ -80,25 +80,25 @@ function ensureTaskInstalled() {
     if [[ "$OSTYPE" == 'darwin'* ]] || [[ "$OSTYPE" == 'linux-gnu'* ]]; then
       installTask
     elif [[ "$OSTYPE" == 'cygwin' ]] || [[ "$OSTYPE" == 'msys' ]] || [[ "$OSTYPE" == 'win32' ]]; then
-      echo "Windows is not directly supported. Use WSL or Docker." && exit 1
+      . .config/log error "Windows is not directly supported. Use WSL or Docker." && exit 1
     elif [[ "$OSTYPE" == 'freebsd'* ]]; then
-      echo "FreeBSD support not added yet" && exit 1
+      . .config/log error "FreeBSD support not added yet" && exit 1
     else
-      echo "System type not recognized" && exit 1
+      . .config/log error "System type not recognized" && exit 1
     fi
   else
     CURRENT_VERSION="$(task --version | cut -d' ' -f3 | cut -c 2-)"
-    LATEST_VERSION="$(curl -s "$TASK_RELEASE_API" | grep tag_name | cut -c 17- | head -c -3)"
+    LATEST_VERSION="$(curl -s "$TASK_RELEASE_API" | grep tag_name | cut -c 17- | sed 's/\",//')"
     if printf '%s\n%s\n' "$LATEST_VERSION" "$CURRENT_VERSION" | sort --check=quiet --version-sort; then
-      echo "Task is already up-to-date"
+      . .config/log info "Task is already up-to-date"
     else
-      echo "A new version of Task is available (version $LATEST_VERSION)"
+      . .config/log info "A new version of Task is available (version $LATEST_VERSION)"
       if [ ! -w "$(which task)" ]; then
         local MSG_A
         MSG_A="ERROR: Task is currently installed in a location the current user does not have write permissions for."
         local MSG_B
         MSG_B="Manually remove Task from its current location ($(which task)) and then run this script again."
-        echo """$MSG_A"" ""$MSG_B""" && exit 1
+        . .config/log error """$MSG_A"" ""$MSG_B""" && exit 1
       fi
       installTask
     fi
@@ -173,7 +173,7 @@ function sha256() {
       if type brew &> /dev/null; then
         brew install coreutils
       else
-        echo "WARNING: checksum validation is being skipped for $1 because both brew and sha256sum are unavailable"
+        . .config/log warn "WARNING: checksum validation is being skipped for $1 because both brew and sha256sum are unavailable"
       fi
     fi
     if type sha256sum &> /dev/null; then
@@ -181,16 +181,16 @@ function sha256() {
     fi
   elif [[ "$OSTYPE" == 'linux-gnu'* ]]; then
     if ! type shasum &> /dev/null; then
-      echo "WARNING: checksum validation is being skipped for $1 because the shasum program is not installed"
+      . .config/log warn "WARNING: checksum validation is being skipped for $1 because the shasum program is not installed"
     else
       echo "$1  $2" | shasum -s -a 256 -c
     fi
   elif [[ "$OSTYPE" == 'cygwin' ]] || [[ "$OSTYPE" == 'msys' ]] || [[ "$OSTYPE" == 'win32' ]]; then
-    echo "Windows is not directly supported. Use WSL or Docker." && exit 1
+    . .config/log error "Windows is not directly supported. Use WSL or Docker." && exit 1
   elif [[ "$OSTYPE" == 'freebsd'* ]]; then
-    echo "FreeBSD support not added yet" && exit 1
+    . .config/log error "FreeBSD support not added yet" && exit 1
   else
-    echo "System type not recognized" && exit 1
+    . .config/log error "System type not recognized" && exit 1
   fi
 }
 
