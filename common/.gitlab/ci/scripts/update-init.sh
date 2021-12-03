@@ -26,15 +26,15 @@ if [[ "$OSTYPE" == 'darwin'* ]]; then
   cp -rf common-shared/common/.config/taskfiles/ .config/
   cp -rf common-shared/common/.config/scripts/ .config/
 else
-  cp -rT common-shared/common/.config/taskfiles .config/
-  cp -rT common-shared/common/.config/scripts .config/
+  cp -rf common-shared/common/.config/taskfiles .config/
+  cp -rf common-shared/common/.config/scripts .config/
 fi
 mkdir -p .gitlab
 rm -rf .gitlab/ci
 if [[ "$OSTYPE" == 'darwin'* ]]; then
   cp -rf common-shared/common/.gitlab/ci/ .gitlab/
 else
-  cp -rT common-shared/common/.gitlab/ci .gitlab/
+  cp -rf common-shared/common/.gitlab/ci .gitlab/
 fi
 
 # @description Ensure proper NPM dependencies are installed
