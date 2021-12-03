@@ -49,7 +49,7 @@ fi
 # @description Remove old packages
 TMP="$(mktemp)" && sed 's/.*cz-conventional-changelog.*//' < package.json > "$TMP" && mv "$TMP" package.json
 TMP="$(mktemp)" && sed 's/.*config-conventional.*//' < package.json > "$TMP" && mv "$TMP" package.json
-rm temp.json
+rm -f temp.json
 TMP="$(mktemp)" && jq 'del(.devDependencies["@mblabs/prettier-config"])' package.json > "$TMP" && mv "$TMP" package.json
 TMP="$(mktemp)" && jq 'del(.devDependencies["@commitlint/config-conventional"])' package.json > "$TMP" && mv "$TMP" package.json
 TMP="$(mktemp)" && jq 'del(.devDependencies["@mblabs/eslint-config"])' package.json > "$TMP" && mv "$TMP" package.json
