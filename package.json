@@ -27,14 +27,16 @@
     }
   },
   "dependencies": {
+    "@mblabs/eslint-config": "^1.0.115",
+    "eslint": "^8.3.0",
     "tslib": "^2.3.1"
   },
   "optionalDependencies": {},
   "devDependencies": {
     "@washingtondc/development": "^1.0.2",
-    "@washingtondc/eslint": "^1.0.0",
     "@washingtondc/prettier": "^1.0.0",
     "@washingtondc/release": "^0.0.1",
+    "eslint-config-strict-mode": "^1.0.0",
     "parunner": "^0.0.1"
   },
   "keywords": [
@@ -48,7 +50,8 @@
     "package",
     "professormanhattan",
     "shared",
-    "taskfiles"
+    "taskfiles",
+    "washingtondc"
   ],
   "engines": {
     "node": ">=14.18.0"
@@ -70,7 +73,10 @@
     "title": "Shared Common Files"
   },
   "eslintConfig": {
-    "extends": "@mblabs/eslint-config"
+    "extends": "eslint-config-strict-mode",
+    "rules": {
+      "import/no-extraneous-dependencies": "off"
+    }
   },
   "funding": [
     {
@@ -104,7 +110,6 @@
       "task fix:json --"
     ],
     "**/*.sh": [
-      "task fix:shell --",
       "task lint:shell --"
     ],
     "**/*.toml": [
@@ -123,12 +128,12 @@
       "task image:compress --"
     ]
   },
-  "prettier": "@mblabs/prettier-config",
+  "prettier": "@washingtondc/prettier",
   "release": {
     "branches": [
       "master",
       "next"
     ],
-    "extends": "@mblabs/release-config"
+    "extends": "@washingtondc/release"
   }
 }

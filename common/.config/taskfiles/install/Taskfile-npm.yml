@@ -90,38 +90,14 @@ tasks:
           NPM_PACKAGE: git-notify
 
   global:
-    deps:
-      - :install:software:node
+    run: once
     cmds:
-      - |
-        if [[ "${container:=}" != 'docker' ]]; then
-          if [ '{{.FORCE_INSTALL}}' ]; then
-            {{.NPM_PROGRAM}} install -g {{.NPM_PACKAGE}}@latest --force
-          else
-            {{if eq .NPX_HANDLE ""}}{{.NPM_PROGRAM}} install -g {{.NPM_PACKAGE}}@latest{{else}}{{.NPX_PROGRAM}} -y {{.NPM_PACKAGE}}{{end}}
-          fi
-          . .config/log success 'The `{{.NPM_PACKAGE}}` NPM package successfully installed'
-        fi
-    status:
-      - type {{if .NPM_PACKAGE_BIN}}{{.NPM_PACKAGE_BIN}}{{else}}{{.NPM_PACKAGE}}{{end}} &> /dev/null
+      - 'true'
 
   global:library:
-    deps:
-      - :install:software:node
+    run: once
     cmds:
-      - |
-        function installLibrary() {
-            if ! npm list -g {{.NPM_PROGRAM}} > /dev/null; then
-              {{if eq .NPX_HANDLE ""}}{{.NPM_PROGRAM}} install -g {{.NPM_PACKAGE}}@latest{{else}}{{.NPX_PROGRAM}} -y {{.NPM_PACKAGE}}{{end}}
-            fi
-        }
-        if [[ "${container:=}" != 'docker' ]]; then
-          if [ '{{.FORCE_INSTALL}}' ]; then
-            {{.NPM_PROGRAM}} install -g {{.NPM_PACKAGE}}@latest --force
-          else
-            installLibrary &
-          fi
-        fi
+      - 'true'
 
   hbs:
     run: once

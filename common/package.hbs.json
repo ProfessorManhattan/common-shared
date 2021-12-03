@@ -26,16 +26,16 @@
   "description": "{{description}}",
   "devDependencies": {
     "@washingtondc/development": "^1.0.2",
-    "@washingtondc/eslint": "^1.0.0",
     "@washingtondc/prettier": "^1.0.0",
     "@washingtondc/release": "^0.0.1",
+    "eslint-config-strict-mode": "^1.0.0",
     "parunner": "^0.0.1"
   },
   "engines": {
     "node": ">=14.18.0"
   },
   "eslintConfig": {
-    "extends": "@washingtondc/eslint"
+    "extends": "eslint-config-strict-mode"
   },
   "funding": [
     {
@@ -62,7 +62,7 @@
     "**/*.(jpg|png)": ["task image:compress --"],
     "**/*.(js|jsx|ts|tsx)": ["task fix:js --", "task lint:js --"],
     "**/*.json": ["task fix:json --"],
-    "**/*.sh": ["task fix:shell --", "task lint:shell --"],
+    "**/*.sh": ["task lint:shell --"],
     "**/*.toml": ["task lint:toml --"],
     "**/*.xml": ["task fix:xml --", "task lint:xml --"],
     "**/*.yml": ["task fix:yaml --", "task lint:yaml --"],
@@ -71,7 +71,7 @@
   "name": "{{#if customPackageName}}{{customPackageName}}{{else}}@{{profile.npmjs_organization}}/{{repository.prefix.github}}{{slug}}{{/if}}",
   "optionalDependencies": {},
   "prettier": "@washingtondc/prettier",
-  "private": true,
+  "private": false,
   "publishConfig": {
     "access": "{{npm_publish_config_access}}"
   },

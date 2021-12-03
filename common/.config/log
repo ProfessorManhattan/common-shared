@@ -12,8 +12,6 @@
 #   * `success` - Logs a success message
 #   * `warn` - Logs a warning message
 
-set -eo pipefail
-
 if [ "${container:=}" != 'docker' ] && type node &> /dev/null && [ -f './node_modules/chalk/package.json' ] \
 && [ -f './node_modules/string-break/package.json' ]; then
   ENHANCED_LOGGING=true
@@ -21,13 +19,13 @@ fi
 
 # @description Logs using Node.js
 # @example logger info "An informative log"
-function logger() {
+logger() {
   node .config/scripts/prompts/lib/log.js "$1" "$2"
 }
 
 # @description Logs an error message
 # @example . .config/log error "Something happened!"
-function error() {
+error() {
   if [ "$ENHANCED_LOGGING" ]; then
     logger error "$1"
   else
@@ -37,7 +35,7 @@ function error() {
 
 # @description Logs an info message
 # @example . .config/log info "Here is some information"
-function info() {
+info() {
   if [ "$ENHANCED_LOGGING" ]; then
     logger info "$1"
   else
@@ -47,7 +45,7 @@ function info() {
 
 # @description Logs a message that starts with a star emoji
 # @example . .config/log star "Congratulations"
-function star() {
+star() {
   if [ "$ENHANCED_LOGGING" ]; then
     logger star "$1"
   else
@@ -57,7 +55,7 @@ function star() {
 
 # @description Logs a success message
 # @example . .config/log success "Yay!"
-function success() {
+success() {
   if [ "$ENHANCED_LOGGING" ]; then
     logger success "$1"
   else
@@ -67,7 +65,7 @@ function success() {
 
 # @description Logs a warning message
 # @example . .config/log warn "Just so you know.."
-function warn() {
+warn() {
   if [ "$ENHANCED_LOGGING" ]; then
     logger warn "$1"
   else
@@ -75,4 +73,6 @@ function warn() {
   fi
 }
 
-"$1" "$2"
+if [ -n "$1" ] && [ -n "$2" ]; then
+  "$1" "$2"
+fi

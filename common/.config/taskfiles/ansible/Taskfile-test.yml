@@ -146,7 +146,7 @@ tasks:
   molecule:virtualbox:converge:prompt:
     interactive: true
     deps:
-      - :install:modules:prompt
+      - :install:modules:local
     cmds:
       - node .config/scripts/prompts/molecule-desktop.js
 
@@ -210,7 +210,7 @@ tasks:
 
   vagrant:prompt:
     deps:
-      - :install:modules:prompt
+      - :install:modules:local
     interactive: true
     cmds:
       - node .config/scripts/prompts/vagrant-up.js

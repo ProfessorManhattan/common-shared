@@ -54,7 +54,16 @@ tasks:
       **Example:**
       `task lint:commit -- 'My commit message'`
     cmds:
-      - if [ ! -z '{{.CLI_ARGS}}' ]; then commitlint -e '{{.CLI_ARGS}}' --config {{.COMMITLINT_CONFIG}}; fi
+      - cmd: |
+          if [ ! -z '{{.CLI_ARGS}}' ]; then
+            cp '{{.CLI_ARGS}}' '{{.CLI_ARGS}}.bak'
+            TMP="$(mktemp)"
+            sed 's/^..//' < '{{.CLI_ARGS}}' > "$TMP"
+            mv "$TMP" '{{.CLI_ARGS}}'
+            {{.NPX_PACKAGE}} commitlint -e '{{.CLI_ARGS}}' --config {{.COMMITLINT_CONFIG}}
+          fi
+        ignore_error: true
+      - mv '{{.CLI_ARGS}}.bak' '{{.CLI_ARGS}}'
     status:
       - '[[ -z "{{.CLI_ARGS}}" ]]'
     preconditions:

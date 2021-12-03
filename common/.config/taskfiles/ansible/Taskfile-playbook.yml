@@ -77,7 +77,6 @@ tasks:
   environment:prompt:
     deps:
       - :install:modules:local
-      - :install:modules:prompt
     interactive: true
     cmds:
       - |
