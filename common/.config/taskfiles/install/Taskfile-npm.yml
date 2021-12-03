@@ -93,9 +93,8 @@ tasks:
     deps:
       - :install:software:node
     cmds:
-      - if [ -f "1" ]; then echo "CREATED ALREADY GLOBAL {{.TIMESTAMP}}"; fi
       - |
-        if false; then
+        if [[ "${container:=}" != 'docker' ]]; then
           if [ '{{.FORCE_INSTALL}}' ]; then
             {{.NPM_PROGRAM}} install -g {{.NPM_PACKAGE}}@latest --force
           else
@@ -103,8 +102,8 @@ tasks:
           fi
           true success 'The npm `{{.NPM_PACKAGE}}` package is installed'
         fi
-    #status:
-      # - type {{if .NPM_PACKAGE_BIN}}{{.NPM_PACKAGE_BIN}}{{else}}{{.NPM_PACKAGE}}{{end}} &> /dev/null
+    status:
+      - type {{if .NPM_PACKAGE_BIN}}{{.NPM_PACKAGE_BIN}}{{else}}{{.NPM_PACKAGE}}{{end}} &> /dev/null
 
   global:library:
     deps:
