@@ -8,26 +8,54 @@ tap "caskroom/cask"
 # e.g. `brew install <program>`
 # @brew [Act](https://github.com/nektos/act) - Run GitHub Actions locally
 brew "act"
+brew "appium"
+brew "bat"
+brew "bitwarden-cli"
+brew "croc"
 brew "curl"
-brew "docker", when: linux
+brew "dasel"
+brew "direnv"
+brew "dive"
+if OS.linux?
+    brew "docker"
+end
+brew "dockle"
 brew "goodwithtech/r/dockle"
 brew "exiftool"
+brew "ffsend"
 brew "gh"
 brew "git"
 brew "gitleaks"
 brew "glab"
 brew "go"
+brew "grex"
+brew "htmlq"
+brew "hyperfine"
+brew "jo"
 brew "jq"
+brew "minio/stable/mc"
+brew "mkcert"
 brew "node"
 brew "openssh"
+brew "ots"
+brew "oq"
 brew "php", restart_service: true
 brew "poetry"
+brew "pup"
 brew "python"
 brew "rsync"
 brew "ruby"
 brew "hudochenkov/sshpass/sshpass"
+brew "sysbench"
+brew "go-task/tap/go-task"
+brew "teleport"
 brew "tokei"
 brew "aquasecurity/trivy/trivy"
+brew "up"
+brew "hashicorp/tap/waypoint"
+if OS.linux?
+    brew "wireshark"
+end
 brew "yarn"
 brew "yq"
 if OS.mac?
@@ -37,15 +65,26 @@ end
 # Homebrew Casks (only available on macOS)
 # e.g. `brew install --cask <program>`
 # @cask [Docker](https://docker.com) - Description
-cask "docker", when: macos
+cask "altair"
+cask "balenaetcher"
+cask "bitwarden"
+cask "docker"
 cask "firefox"
+cask "gimp"
 cask "google-chrome"
+cask "iterm2"
 cask "java" unless system "/usr/libexec/java_home --failfast"
+cask "lens"
+cask "microsoft-teams"
+cask "postman"
 cask "slack"
-cask "vagrant", when: macos
-cask "virtualbox", when: macos
-cask "visual-studio-code" unless ""
-cask "vmware-fusion", when: macos
+cask "skype"
+cask "teamviewer"
+cask "vagrant"
+cask "virtualbox"
+cask "visual-studio-code"
+cask "vmware-fusion"
+cask "wireshark"
 
 # Examples below
 # 'brew install --with-rmtp', 'brew services restart' on version changes

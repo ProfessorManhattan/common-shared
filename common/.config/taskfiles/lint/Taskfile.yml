@@ -59,7 +59,7 @@ tasks:
           cp '{{.CLI_ARGS}}' '{{.CLI_ARGS}}.bak'
           TMP="$(mktemp)"
           COMMIT_MSG_NOEMOJI="$(sed 's/^..//' < '{{.CLI_ARGS}}')"
-          echo "$COMMIT_MSG_NOEMOJI" {{.NPX_PACKAGE}} commitlint --config {{.COMMITLINT_CONFIG}} < '{{.CLI_ARGS}}'
+          echo "$COMMIT_MSG_NOEMOJI" | {{.NPX_PACKAGE}} commitlint --config {{.COMMITLINT_CONFIG}}
         fi
     status:
       - '[[ -z "{{.CLI_ARGS}}" ]]'

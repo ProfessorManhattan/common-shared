@@ -15,6 +15,10 @@
     "email": "{{email.help}}",
     "url": "{{#if repository.gitlab}}{{repository.gitlab}}{{else}}{{repository.gitlabBaseUrl}}/{{group}}/{{subgroup}}/{{slug}}{{/if}}{{repository.location.issues.gitlab}}"
   },
+  "commitlint": {
+    "extends": ["@commitlint/config-conventional"],
+    "helpUrl": "https://megabyte.space/docs/contributing/commits"
+  },
   "config": {
     "commitizen": {
       "path": "node_modules/cz-emoji-conventional"
