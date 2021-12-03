@@ -27,15 +27,13 @@
     }
   },
   "dependencies": {
-    "@mblabs/eslint-config": "^1.0.115",
-    "eslint": "^8.3.0",
     "tslib": "^2.3.1"
   },
   "optionalDependencies": {},
   "devDependencies": {
     "@washingtondc/development": "^1.0.2",
     "@washingtondc/prettier": "^1.0.0",
-    "@washingtondc/release": "^0.0.1",
+    "@washingtondc/release": "^0.0.2",
     "eslint-config-strict-mode": "^1.0.0",
     "parunner": "^0.0.1"
   },
