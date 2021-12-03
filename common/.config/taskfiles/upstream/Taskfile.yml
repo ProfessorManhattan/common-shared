@@ -47,7 +47,6 @@ tasks:
 
   shared:
     cmds:
-      - task: :upstream:shared:clone
       - task: :upstream:shared:copy
       - task: :upstream:shared:variables
       - task: :upstream:shared:template
