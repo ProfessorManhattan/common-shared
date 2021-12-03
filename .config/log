@@ -14,14 +14,15 @@
 
 set -eo pipefail
 
-if [ "${container:=}" != 'docker' ] && type node &> /dev/null && [ -f './node_modules/signale/package.json' ]; then
+if [ "${container:=}" != 'docker' ] && type node &> /dev/null && [ -f './node_modules/chalk/package.json' ] \
+&& [ -f './node_modules/string-break/package.json' ]; then
   ENHANCED_LOGGING=true
 fi
 
 # @description Logs using Node.js
 # @example logger info "An informative log"
 function logger() {
-  node -e 'require(".config/scripts/lib/log.js").'"$1"'('"$2"')' 2> /dev/null
+  node .config/scripts/prompts/lib/log.js "$1" "$2"
 }
 
 # @description Logs an error message

@@ -35,7 +35,7 @@ tasks:
         git add {{.BASENAME}}
         git commit -m "refactor(convert-dir-to-submodule) Adding new submodule which was previously a directory."
         git push -u origin HEAD
-      - true success 'Converted the `{{.BASENAME}}` directory to a submodule'
+      - . .config/log success 'Converted the `{{.BASENAME}}` directory to a submodule'
     preconditions:
       - sh: '[[ ! $(git rev-parse --git-dir) =~ ".git/modules" ]]'
         msg: Cannot convert the directory to a submodule - the directory already appears to be a submodule.
@@ -59,11 +59,11 @@ tasks:
     run: once
     cmds:
       - cmd: >
-          if [ ! -z "$GITHUB_TOKEN" ] && test -e .git && ! gh repo view {{.GITHUB_ORG}}/{{.GITHUB_SLUG}} 2&>1 /dev/null; then
+          if [ ! -z "$GITHUB_TOKEN" ] && test -e .git && ! gh repo view {{.GITHUB_ORG}}/{{.GITHUB_SLUG}} > /dev/null; then
             gh repo create "{{.GITHUB_SLUG}}" --enable-wiki={{.GITHUB_WIKI}} -y --description "🔥👉 {{.DESCRIPTION}} 🚀" \
-              --homepage "{{.HOMEPAGE}}" {{.PROJECT_TYPE}} 2&>1 /dev/null
+              --homepage "{{.HOMEPAGE}}" {{.PROJECT_TYPE}} > /dev/null
           else
-            true warn 'The `GITHUB_TOKEN` environment variable is not set so the GitLab repository cannot be updated via the API.'
+            . .config/log warn 'The `GITHUB_TOKEN` environment variable is not set so the GitLab repository cannot be updated via the API.'
           fi
         ignore_error: true
     sources:
@@ -124,7 +124,7 @@ tasks:
               'https://api.github.com/repos/{{.GITHUB_ORG}}/{{.GITHUB_SLUG}}/topics' -d '{"names":['"$MINIMIZED_TOPICS"']}' > /dev/null
           fi
         else
-          true warn 'The `GITHUB_TOKEN` environment variable is not set so the GitHub repository cannot be updated via the API.'
+          . .config/log warn 'The `GITHUB_TOKEN` environment variable is not set so the GitHub repository cannot be updated via the API.'
         fi
     sources:
       - .config/common-keywords.json
@@ -187,7 +187,7 @@ tasks:
             glab repo create '{{.GITLAB_PATH}}' --group '{{.GITLAB_GROUP}}' --description '🔥👉 {{.DESCRIPTION}} 🚀' --name '{{.NAME}}' \
               {{.PROJECT_TYPE}} --tag '$KEYWORDS'
           else
-            true warn 'The `GITLAB_TOKEN` environment variable is not set so the GitLab repository cannot be created.'
+            . .config/log warn 'The `GITLAB_TOKEN` environment variable is not set so the GitLab repository cannot be created.'
           fi
         ignore_error: true
     sources:
@@ -272,13 +272,13 @@ tasks:
             if (! echo "$PIPELINE_RES" | grep "$DESC") > /dev/null; then
               glab api projects/:fullpath/pipeline_schedules -X POST -f active="$ACTIVE" -f description="$DESC" -f ref="$REF" \
                 -f cron="$CRON" -f cron_timezone='{{.TIMEZONE}}' --silent
-              true success 'Pipeline with description of `$DESC` successfully added'
+              . .config/log success 'Pipeline with description of `$DESC` successfully added'
             else
-              true log 'Pipeline with description of `'"$DESC"'` already added'
+              . .config/log info 'Pipeline with description of `'"$DESC"'` already added'
             fi
           done
         else
-          true warn 'The `GITLAB_TOKEN` environment variable is not set so the GitLab pipelines cannot be updated via the API.'
+          . .config/log warn 'The `GITLAB_TOKEN` environment variable is not set so the GitLab pipelines cannot be updated via the API.'
         fi
     sources:
       - .variables.json
@@ -343,7 +343,7 @@ tasks:
           '{"description": "🔥👉 {{.DESCRIPTION}} 🚀", "issues_template": "{{.ISSUES_TEMPLATE}}", "name": "{{.NAME}}"}' \
           "https://gitlab.com/api/v4/projects/$PROJECT_ID" > /dev/null
         else
-          true warn 'The `GITLAB_TOKEN` environment variable is not set so the GitLab repository cannot be updated via the API.'
+          . .config/log warn 'The `GITLAB_TOKEN` environment variable is not set so the GitLab repository cannot be updated via the API.'
         fi
     sources:
       - package.json
@@ -367,7 +367,7 @@ tasks:
         if [ ! -z "$GITLAB_TOKEN" ]; then
           glab api projects/:fullpath/services/external-wiki -X PUT -f external_wiki_url="{{.DOCS_URL}}" --silent
         else
-          true warn 'The `GITLAB_TOKEN` environment variable is not set so the GitLab repository external wiki cannot be updated via the API.'
+          . .config/log warn 'The `GITLAB_TOKEN` environment variable is not set so the GitLab repository external wiki cannot be updated via the API.'
         fi
     sources:
       - .variables.json
@@ -483,5 +483,5 @@ tasks:
             rm -rf "$MODULE_PATH"
           done
         else
-          true info 'This task does not run unless there is a `.gitmodules` file in the current directory'
+          . .config/log info 'This task does not run unless there is a `.gitmodules` file in the current directory'
         fi

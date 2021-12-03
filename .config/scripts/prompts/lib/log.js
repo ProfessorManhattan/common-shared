@@ -1,4 +1,4 @@
-/* eslint-disable no-console, sonarjs/no-nested-template-literals */
+/* eslint-disable no-console, sonarjs/no-nested-template-literals, prefer-named-capture-group */
 import chalk from 'chalk'
 import stringBreak from 'string-break'
 
@@ -6,6 +6,19 @@ const MESSAGE_MAX_WIDTH = 80
 
 // eslint-disable-next-line no-control-regex, security/detect-unsafe-regex
 export const LOG_DECORATOR_REGEX = /[\u001B\u009B][#();?[]*(?:\d{1,4}(?:;\d{0,4})*)?[\d<=>A-ORZcf-nqry]/gu
+
+/**
+ * Styles log messages that use markdown
+ *
+ * @param {string} message - The message to style
+ * @returns {string} The styled message
+ */
+function styler(message) {
+  const emphasized = /`(.*)`/gu
+  const bolded = /\*(.*)\*/gu
+
+  return message.replaceAll(emphasized, chalk.bgGray.white(' $1 ')).replaceAll(bolded, chalk.bold('$1'))
+}
 
 /**
  * Logs an informational message with pleasent styling
@@ -26,7 +39,7 @@ export function logInstructions(title, message) {
  * @param {string} message - The message
  */
 export function info(message) {
-  console.log(`${chalk.blue(`●`)} ${message}`)
+  console.log(`${chalk.blue(`●`)} ${styler(message)}`)
 }
 
 /**
@@ -35,7 +48,7 @@ export function info(message) {
  * @param {string} message - The message
  */
 export function error(message) {
-  console.log(`${chalk.white.bgRedBright.bold(`   ERROR   `)}\n${chalk.white.bold(`┗`)} ${message}`)
+  console.log(`\n${chalk.white.bgRedBright.bold(`   ERROR   `)}\n${chalk.white.bold(`┗`)} ${styler(message)}\n`)
 }
 
 /**
@@ -44,7 +57,7 @@ export function error(message) {
  * @param {string} message - The message
  */
 export function star(message) {
-  console.log(`\n⭐ ${message}\n`)
+  console.log(`\n⭐ ${styler(message)}\n`)
 }
 
 /**
@@ -53,7 +66,7 @@ export function star(message) {
  * @param {string} message - The message
  */
 export function success(message) {
-  console.log(`${chalk.green.bold(`✔`)} ${message}`)
+  console.log(`${chalk.green.bold(`✔`)} ${styler(message)}`)
 }
 
 /**
@@ -62,5 +75,19 @@ export function success(message) {
  * @param {string} message - The message
  */
 export function warn(message) {
-  console.log(`${chalk.white.bgYellowBright.bold(`    WARN   `)}\n${chalk.white.bold(`┗`)} ${message}`)
+  console.log(`\n${chalk.black.bgYellowBright.bold(`    WARN   `)}\n${chalk.white.bold(`┗`)} ${styler(message)}\n`)
 }
+
+const funcs = {
+  error,
+  info,
+  star,
+  success,
+  warn
+}
+
+const LOG_TYPE_INDEX = 2
+const LOG_MESSAGE_INDEX = 3
+
+// eslint-disable-next-line security/detect-object-injection
+funcs[process.argv[LOG_TYPE_INDEX]](process.argv[LOG_MESSAGE_INDEX])
