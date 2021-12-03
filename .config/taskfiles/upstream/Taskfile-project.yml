@@ -81,11 +81,10 @@ tasks:
         fi
 
   save:common:keywords:
-    env:
-      KEYWORDS:
-        sh: jq -r '.keywords' package.json.liquid
     cmds:
-      - jq -n --arg keywords "$KEYWORDS" '.keywords = ($keywords | fromjson | unique)' > .config/common-keywords.json.liquid
+      - |
+        KEYWORDS="$(jq -r '.keywords' package.json.liquid)"
+        jq -n --arg keywords "$KEYWORDS" '.keywords = ($keywords | fromjson | unique)' > .config/common-keywords.json.liquid
 
   template:
     cmds:

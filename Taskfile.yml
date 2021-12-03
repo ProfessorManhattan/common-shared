@@ -85,6 +85,7 @@ tasks:
   donothing: 'true'
 
   group:exec:
+    desc: Execute group commands on any group (including repositories in sub-groups)
     cmds:
       - task: git:gitlab:group:exec
 
@@ -103,6 +104,17 @@ tasks:
     cmds:
       - task: boilerplate:check:package
       - task: boilerplate:clean
+
+  services:
+    desc: Update elements of the repository that require API access
+    summary: |
+      # Update elements of the repository that require API access
+
+      This task will ensure that the git repositories and other services related to the
+      project are updated with the proper configurations. Requires that certain
+      API keys be set.
+    cmds:
+      - task: common:update:services
 
   start:
     desc: Set up the project and refresh it with the latest changes

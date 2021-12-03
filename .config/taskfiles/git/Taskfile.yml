@@ -53,12 +53,10 @@ tasks:
         sh: jq -r '.homepage' package.json
       PROJECT_TYPE:
         sh: if [[ $(jq -r '.private' package.json) == 'true' ]]; then echo '--private'; else echo '--public'; fi
-    env:
-      TMP:
-        sh: mktemp
     run: once
     cmds:
-      - cmd: >
+      - cmd: |
+          TMP="$(mktemp)"
           if [ ! -z "$GITHUB_TOKEN" ] && test -e .git && ! gh repo view {{.GITHUB_ORG}}/{{.GITHUB_SLUG}} > /dev/null; then
             gh repo create "{{.GITHUB_SLUG}}" --enable-wiki={{.GITHUB_WIKI}} -y --description "🔥👉 {{.DESCRIPTION}} 🚀" \
               --homepage "{{.HOMEPAGE}}" {{.PROJECT_TYPE}} > /dev/null
@@ -95,15 +93,11 @@ tasks:
         sh: jq -r '.homepage' package.json
       PRIVATE:
         sh: jq -r '.private' package.json | sed 's/null/false/'
-    env:
-      OPTIONAL_TAGS:
-        sh: jq '.keywords' .config/common-keywords.json
-      TOPICS:
-        sh: jq '.keywords' package.json | sed 's/null/[]/'
-      TOPICS_LENGTH:
-        sh: jq -r '.keywords | length' package.json
     cmds:
-      - >
+      - |
+        OPTIONAL_TAGS="$(jq '.keywords' .config/common-keywords.json)"
+        TOPICS="$(jq '.keywords' package.json | sed 's/null/[]/')"
+        TOPICS_LENGTH="$(jq -r '.keywords | length' package.json)"
         if [ ! -z "$GITHUB_TOKEN" ]; then
           gh api -X PATCH repos/{owner}/{repo} -f description="🔥👉 {{.DESCRIPTION}} 🚀" -f homepage="{{.HOMEPAGE}}" \
             -f has_issues={{.GITHUB_ISSUES}} -f has_wiki={{.GITHUB_WIKI}} -f private="{{.PRIVATE}}" --silent
@@ -177,12 +171,10 @@ tasks:
         sh: if [[ $(jq -r '.private' package.json) == 'true' ]]; then echo '--private'; else echo '--public'; fi
       TMP:
         sh: mktemp
-    env:
-      KEYWORDS:
-        sh: jq -r '.keywords | tostring' package.json | sed 's/\[//' | sed 's/\]//'
     run: once
     cmds:
-      - cmd: >
+      - cmd: |
+          KEYWORDS="$(jq -r '.keywords | tostring' package.json | sed 's/\[//' | sed 's/\]//')"
           if [ ! -z "$GITLAB_TOKEN" ] && test -e .git && ! glab repo view '{{.GITLAB_PATH}}' > /dev/null; then
             glab repo create '{{.GITLAB_PATH}}' --group '{{.GITLAB_GROUP}}' --description '🔥👉 {{.DESCRIPTION}} 🚀' --name '{{.NAME}}' \
               {{.PROJECT_TYPE}} --tag '$KEYWORDS'
@@ -206,11 +198,9 @@ tasks:
     deps:
       - :install:software:glab
       - :install:software:jq
-    env:
-      GITHUB_REPO:
-        sh: jq -r '.blueprint.repository.github' package.json
     cmds:
       - |
+        GITHUB_REPO="$(jq -r '.blueprint.repository.github' package.json)"
         if [ ! -z "$GITLAB_TOKEN" ] && [ ! -z "$GITHUB_TOKEN" ]; then
           glab api projects/:fullpath/integrations/github -X PUT -f token="$GITHUB_TOKEN" -f repository_url="$GITHUB_REPO" --silent
         fi
@@ -249,19 +239,12 @@ tasks:
       - :install:software:jq
       - gitlab:create
     vars:
-      GITHUB_SLUG:
-        sh: jq -r '.name' package.json | sed 's/.*\///'
-      GITLAB_REPO_ID:
-        sh: glab api projects/:fullpath | jq -r '.id'
       PIPELINE_COUNT:
         sh: jq -r '.gitlab_pipelines | length' .variables.json
-    env:
-      PIPELINES:
-        sh: jq -r '.gitlab_pipelines' .variables.json
-      PIPELINE_RES:
-        sh: glab api projects/:fullpath/pipeline_schedules
     cmds:
-      - >
+      - |
+        PIPELINES="$(jq -r '.gitlab_pipelines' .variables.json)"
+        PIPELINE_RES="$(glab api projects/:fullpath/pipeline_schedules)"
         if [ ! -z "$GITLAB_TOKEN" ]; then
           for INDEX in {1..{{.PIPELINE_COUNT}}}; do
             PIPELINE_INDEX="$((INDEX - 1))"
@@ -285,11 +268,9 @@ tasks:
       - package.json
 
   gitlab:pipelines:clear:
-    env:
-      TMP:
-        sh: mktemp
     cmds:
       - |
+        TMP="$(mktemp)"
         glab api projects/:id/pipeline_schedules -X GET > "$TMP"
         for PIPELINE_ID in $(jq -r '.[].id' "$TMP"); do
           glab api projects/:fullpath/pipeline_schedules/"$PIPELINE_ID" -X DELETE
@@ -331,11 +312,9 @@ tasks:
         sh: if [[ $(jq -r '.private' package.json) == 'true' ]]; then echo 'private'; else echo 'public'; fi
       TEST_COVERAGE_REGEX:
         sh: jq -r '.build_coverage_regex' .variables.json | sed 's/^null$//'
-    env:
-      KEYWORDS:
-        sh: jq -r '.keywords | tostring' package.json | sed 's/\[//' | sed 's/\]//' | sed 's/"//g'
     cmds:
       - |
+        KEYWORDS="$(jq -r '.keywords | tostring' package.json | sed 's/\[//' | sed 's/\]//' | sed 's/"//g')"
         if [ ! -z "$GITLAB_TOKEN" ]; then
           PROJECT_ID="$(glab api projects/:fullpath -X PUT -f build_coverage_regex="{{.TEST_COVERAGE_REGEX}}" \
           -f wiki_enabled={{.GITLAB_WIKI}} -f visibility="{{.PROJECT_TYPE}}" -f topics="$KEYWORDS" | jq '.id')"
@@ -391,13 +370,10 @@ tasks:
 
       **Example usage:**
       `task git:remotes`
-    env:
-      GITHUB_REPO:
-        sh: jq -r '.blueprint.repository.github' package.json | sed 's/^https:\/\//git@/' | sed 's/github.com\//github.com:/'
-      GITLAB_REPO:
-        sh: jq -r '.blueprint.repository.gitlab' package.json | sed 's/^https:\/\//git@/' | sed 's/gitlab.com\//gitlab.com:/'
     cmds:
       - |
+        GITHUB_REPO="$(jq -r '.blueprint.repository.github' package.json | sed 's/^https:\/\//git@/' | sed 's/github.com\//github.com:/')"
+        GITLAB_REPO="$(jq -r '.blueprint.repository.gitlab' package.json | sed 's/^https:\/\//git@/' | sed 's/gitlab.com\//gitlab.com:/')"
         if [ ! -z "$GITLAB_REPO" ]; then
           if git config remote.origin.url > /dev/null; then
             git remote set-url origin "${GITLAB_REPO}.git"

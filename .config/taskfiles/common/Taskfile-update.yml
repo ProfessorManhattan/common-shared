@@ -181,19 +181,9 @@ tasks:
       - task: project
 
   services:
-    deps:
-      - update
-    label: update:services
-    desc: Update elements of the repository that require API access
-    summary: |
-      # Update elements of the repository that require API access
-
-      This task will ensure that the git repositories and other services related to the
-      project are updated with the configurations.
-
-      **Example usage:**
-      `task common:update:services`
     cmds:
+      - task: :{{if eq .REPOSITORY_TYPE "project"}}donothing{{else}}start{{end}}
+      - task: update
       - task: services:repos
 
   services:repos:

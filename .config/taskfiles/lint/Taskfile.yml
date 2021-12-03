@@ -4,7 +4,7 @@ version: '3'
 vars:
   ANSIBLE_LINT_CONFIG: .config/ansible-lint.yml
   COMMITLINT_CONFIG: ./.config/commitlintrc.cjs
-  CSPELL_CONFIG: .config/.cspell.json
+  CSPELL_CONFIG: .config/cspell.json
   FLAKE8_CONFIG: .config/flake8.toml
   PRETTIERIGNORE_CONFIG: .config/prettierignore
   SHELLCHECK_EXCLUDE: SC1091
@@ -276,7 +276,7 @@ tasks:
     summary: |
       # Check for spelling errors in staged files
 
-      Use cspell to check for possible spelling errors using the configuration stored in `.common/.cspell.json`.
+      Use cspell to check for possible spelling errors using the configuration stored in `.config/cspell.json`.
 
       This task is utilized by the pre-commit hook. For more information about cspell, see the
       [cspell NPM page](https://www.npmjs.com/package/cspell).
@@ -302,11 +302,10 @@ tasks:
     deps:
       - :install:npm:cspell
       - :install:software:git
-    env:
-      STAGED_FILES: git diff --cached --name-only
     cmds:
       - cmd: |
-          if [ '{{.STAGED_FILES}}' ]; then
+          STAGED_FILES="$(git diff --cached --name-only)"
+          if [ -n "$STAGED_FILES" ]; then
             {{.NPX_HANDLE}}cspell --no-summary --no-progress --show-context --no-must-find-files --config {{.CSPELL_CONFIG}} "$STAGED_FILES"
           fi
         ignore_errors: true
