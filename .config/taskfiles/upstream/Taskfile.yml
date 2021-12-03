@@ -116,6 +116,8 @@ tasks:
     deps:
       - :install:software:jq
     env:
+      FILE_INPUT:
+        sh: if [ -f '{{.INPUT_FILE}}' ]; then echo {{.INPUT_FILE}}; else echo ".variables.json"; fi
       TMP:
         sh: mktemp
     cmds:
@@ -124,7 +126,7 @@ tasks:
         --arg poetry "$(jq -r '.keywords | join("\", \"")' package.json | sed 's/$/"/' | sed 's/^/"/')"
         --arg encoded "$(jq -r '.blueprint.repository.gitlab' package.json | sed 's/https:\/\/gitlab.com\///' | sed 's/\//%252F/g')"
         -S '. = (. * ($blueprint | fromjson)) | .version = $version | .poetryKeywords = $poetry | .gitlab_encoded_path = $encoded'
-        '{{.INPUT_FILE}}' > "$TMP"
+        "$FILE_INPUT" > "$TMP"
       - mv "$TMP" {{.OUTPUT_FILE}}
       - |
         if [ '{{.REPOSITORY_TYPE}}' == 'ansible' ] && [ -f meta/main.yml ]; then
