@@ -65,7 +65,7 @@ tasks:
           LATEST="$(npm view '{{.CLI_ARGS}}' version)"
           LOCAL="$(jq -r '.version' ./node_modules/{{.CLI_ARGS}}/package.json)"
           if [ -f "1" ]; then echo "CREATED ALREADY {{.TIMESTAMP}}"; fi
-          COMPARE="$(. .config/scripts/lib/semver-compare.sh $LOCAL $LATEST)"
+          COMPARE="$(. .config/scripts/lib/semver-compare.sh "$LOCAL" "$LATEST")"
           if [ -f "1" ]; then echo "CREATED ALREADY222 {{.TIMESTAMP}}"; fi
           if [ "$COMPARE" == '-1' ]; then
             true info "Version $LATEST is available for {{.CLI_ARGS}} (currently version $LOCAL)"
