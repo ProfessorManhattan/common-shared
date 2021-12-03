@@ -29,7 +29,7 @@ fi
 # @description Logs to the console by using the NPM 'signale' library
 # @example signale info "An informative log"
 function signale() {
-  node -e 'require("node_modules/signale").'"$1"'({prefix: "'"${LOG_PREFIX:=}"'", message:"'"$2"'", suffix: "'"${LOG_SUFFIX:=}"'"})' 2> /dev/null
+  node -e 'require(".config/scripts/lib/log.js").'"$1"'('"$2"')' 2> /dev/null
 }
 
 # @description Logs an error message
