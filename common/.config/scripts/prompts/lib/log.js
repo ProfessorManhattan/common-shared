@@ -35,7 +35,7 @@ export function info(message) {
  * @param {string} message - The message
  */
 export function error(message) {
-  console.log(`${chalk.white.bgRedBright.bold(`   ERROR   `)}\n${chalk.white.bold(`┗`)} ${message}`)
+  console.log(`\n${chalk.white.bgRedBright.bold(`   ERROR   `)}\n${chalk.white.bold(`┗`)} ${message}\n`)
 }
 
 /**
@@ -62,5 +62,19 @@ export function success(message) {
  * @param {string} message - The message
  */
 export function warn(message) {
-  console.log(`${chalk.white.bgYellowBright.bold(`    WARN   `)}\n${chalk.white.bold(`┗`)} ${message}`)
+  console.log(`\n${chalk.black.bgYellowBright.bold(`    WARN   `)}\n${chalk.white.bold(`┗`)} ${message}\n`)
 }
+
+const funcs = {
+  error,
+  info,
+  star,
+  success,
+  warn
+}
+
+const LOG_TYPE_INDEX = 2
+const LOG_MESSAGE_INDEX = 3
+
+// eslint-disable-next-line security/detect-object-injection
+funcs[process.argv[LOG_TYPE_INDEX]](process.argv[LOG_MESSAGE_INDEX])
