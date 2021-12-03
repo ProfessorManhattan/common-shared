@@ -302,11 +302,10 @@ tasks:
     deps:
       - :install:npm:cspell
       - :install:software:git
-    env:
-      STAGED_FILES: git diff --cached --name-only
     cmds:
       - cmd: |
-          if [ '{{.STAGED_FILES}}' ]; then
+          STAGED_FILES="$(git diff --cached --name-only)"
+          if [ -n "$STAGED_FILES" ]; then
             {{.NPX_HANDLE}}cspell --no-summary --no-progress --show-context --no-must-find-files --config {{.CSPELL_CONFIG}} "$STAGED_FILES"
           fi
         ignore_errors: true
