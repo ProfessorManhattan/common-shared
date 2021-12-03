@@ -6,10 +6,6 @@ specifiers:
   '@washingtondc/release': ^0.0.2
   eslint-config-strict-mode: ^1.0.0
   sleekfast: ^0.0.1
-  tslib: ^2.3.1
-
-dependencies:
-  tslib: 2.3.1
 
 devDependencies:
   '@washingtondc/development': 1.0.10
@@ -11690,6 +11686,7 @@ packages:
 
   /tslib/2.3.1:
     resolution: {integrity: sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==}
+    dev: true
 
   /tslint/6.1.3:
     resolution: {integrity: sha512-IbR4nkT96EQOvKE2PW/djGz8iGNeJ4rF2mBfiYaR/nvUWYKJhLwimoJKgjIFEIDibBtOevj7BqCRL4oHeWWUCg==}

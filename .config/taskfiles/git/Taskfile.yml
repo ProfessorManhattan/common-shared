@@ -2,6 +2,16 @@
 version: '3'
 
 vars:
+  EMOJI_END:
+    sh: |
+      if [ "$(jq -r '.emoji_endings[15]' .variables.json)" != 'null' ]; then
+        jq --arg place "$(shuf -i 0-15 -n 1)" -r '.emoji_endings[($place | tonumber)]' .variables.json
+      fi
+  EMOJI_START:
+    sh: |
+      if [ "$(jq -r '.emoji_beginnings[15]' .variables.json)" != 'null' ]; then
+        jq --arg place "$(shuf -i 0-15 -n 1)" -r '.emoji_beginnings[($place | tonumber)]' .variables.json
+      fi
   GITHUB_ISSUES: true
   GITHUB_WIKI: false
   GITLAB_WIKI: false
@@ -58,7 +68,7 @@ tasks:
       - cmd: |
           TMP="$(mktemp)"
           if [ ! -z "$GITHUB_TOKEN" ] && test -e .git && ! gh repo view {{.GITHUB_ORG}}/{{.GITHUB_SLUG}} > /dev/null; then
-            gh repo create "{{.GITHUB_SLUG}}" --enable-wiki={{.GITHUB_WIKI}} -y --description "🔥👉 {{.DESCRIPTION}} 🚀" \
+            gh repo create "{{.GITHUB_SLUG}}" --enable-wiki={{.GITHUB_WIKI}} -y --description "{{.EMOJI_START}}{{.DESCRIPTION}}{{.EMOJI_END}}" \
               --homepage "{{.HOMEPAGE}}" {{.PROJECT_TYPE}} > /dev/null
             . .config/log success 'Created a GitHub repository for {{.GITHUB_SLUG}}'
           fi
@@ -98,7 +108,7 @@ tasks:
         TOPICS="$(jq '.keywords' package.json | sed 's/null/[]/')"
         TOPICS_LENGTH="$(jq -r '.keywords | length' package.json)"
         if [ ! -z "$GITHUB_TOKEN" ]; then
-          gh api -X PATCH repos/{owner}/{repo} -f description="🔥👉 {{.DESCRIPTION}} 🚀" -f homepage="{{.HOMEPAGE}}" \
+          gh api -X PATCH repos/{owner}/{repo} -f description="{{.EMOJI_START}}{{.DESCRIPTION}}{{.EMOJI_END}}" -f homepage="{{.HOMEPAGE}}" \
             -f has_issues={{.GITHUB_ISSUES}} -f has_wiki={{.GITHUB_WIKI}} -f private="{{.PRIVATE}}" --silent
           RESULT="$TOPICS"
           if [ "$TOPICS_LENGTH" -gt 20 ]; then
@@ -176,7 +186,7 @@ tasks:
       - cmd: |
           KEYWORDS="$(jq -r '.keywords | tostring' package.json | sed 's/\[//' | sed 's/\]//')"
           if [ ! -z "$GITLAB_TOKEN" ] && test -e .git && ! glab repo view '{{.GITLAB_PATH}}' > /dev/null; then
-            glab repo create '{{.GITLAB_PATH}}' --group '{{.GITLAB_GROUP}}' --description '🔥👉 {{.DESCRIPTION}} 🚀' --name '{{.NAME}}' \
+            glab repo create '{{.GITLAB_PATH}}' --group '{{.GITLAB_GROUP}}' --description '{{.EMOJI_START}}{{.DESCRIPTION}}{{.EMOJI_END}}' --name '{{.NAME}}' \
               {{.PROJECT_TYPE}} --tag '$KEYWORDS'
           else
             . .config/log warn 'The `GITLAB_TOKEN` environment variable is not set so the GitLab repository cannot be created.'
@@ -256,9 +266,9 @@ tasks:
             if (! echo "$PIPELINE_RES" | grep "$DESC") > /dev/null; then
               glab api projects/:fullpath/pipeline_schedules -X POST -f active="$ACTIVE" -f description="$DESC" -f ref="$REF" \
                 -f cron="$CRON" -f cron_timezone='{{.TIMEZONE}}' --silent
-              . .config/log success "Pipeline with description of `'"$DESC"'` successfully added"
+              . .config/log success "Pipeline with description of `'""$DESC""'` successfully added"
             else
-              . .config/log info 'Pipeline with description of `'"$DESC"'` already added'
+              . .config/log info 'Pipeline with description of `'""$DESC""'` already added'
             fi
           done
         else
@@ -320,7 +330,7 @@ tasks:
           PROJECT_ID="$(glab api projects/:fullpath -X PUT -f build_coverage_regex="{{.TEST_COVERAGE_REGEX}}" \
           -f wiki_enabled={{.GITLAB_WIKI}} -f visibility="{{.PROJECT_TYPE}}" -f topics="$KEYWORDS" | jq '.id')"
           curl -s -H 'Content-Type: application/json' -H "Authorization: Bearer $GITLAB_TOKEN" -X PUT --data \
-          '{"description": "🔥👉 {{.DESCRIPTION}} 🚀", "issues_template": "{{.ISSUES_TEMPLATE}}", "name": "{{.NAME}}"}' \
+          '{"description": "{{.EMOJI_START}}{{.DESCRIPTION}}{{.EMOJI_END}}", "issues_template": "{{.ISSUES_TEMPLATE}}", "name": "{{.NAME}}"}' \
           "https://gitlab.com/api/v4/projects/$PROJECT_ID" > /dev/null
         else
           . .config/log warn 'The `GITLAB_TOKEN` environment variable is not set so the GitLab repository cannot be updated via the API.'
