@@ -6,7 +6,7 @@ tasks:
     cmds:
       - |
         if ! type {{.SOFTWARE}} &> /dev/null; then
-          true info 'Using https://install.doctor to install `{{.SOFTWARE}}`'
+          . .config/log info 'Using https://install.doctor to install `{{.SOFTWARE}}`'
           curl -sS https://install.doctor/{{.SOFTWARE}} | bash
         fi
     status:
@@ -39,6 +39,7 @@ tasks:
     deps:
       - :install:npm:{{.NPM_PROGRAM_LOCAL}}
       - :install:npm:cz-emoji
+    run: once
     cmds:
       - cmd: '{{.NPM_PROGRAM_LOCAL}} install'
         ignore_error: true
@@ -61,11 +62,11 @@ tasks:
   modules:local:sync:package:
     cmds:
       - cmd: |
-          LATEST="$(npm view {{.CLI_ARGS}} version)"
+          LATEST="$(npm view '{{.CLI_ARGS}}' version)"
           LOCAL="$(jq -r '.version' ./node_modules/{{.CLI_ARGS}}/package.json)"
-          COMPARE="$(. .config/scripts/lib/semver-compare.sh $LOCAL $LATEST)"
+          COMPARE="$(. .config/scripts/lib/semver-compare.sh "$LOCAL" "$LATEST")"
           if [ "$COMPARE" == '-1' ]; then
-            true info "Version $LATEST is available for {{.CLI_ARGS}} (currently version $LOCAL)"
+            . .config/log info "Version $LATEST is available for {{.CLI_ARGS}} (currently version $LOCAL)"
             {{.NPM_PROGRAM_LOCAL}} update {{.CLI_ARGS}}
           fi
         ignore_error: true
