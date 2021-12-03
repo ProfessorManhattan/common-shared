@@ -45,11 +45,6 @@ fi
 if [ -f 'package-lock.json' ]; then
   rm package-lock.json
 fi
-if type pnpm &> /dev/null; then
-  pnpm install --save-dev --ignore-scripts @mblabs/eslint-config@latest \
-  @mblabs/prettier-config@latest handlebars-helpers glob typescript
-  pnpm install --save-optional --ignore-scripts chalk inquirer signale string-break
-fi
 
 # @description Remove old packages
 TMP="$(mktemp)" && sed 's/.*cz-conventional-changelog.*//' < package.json > "$TMP" && mv "$TMP" package.json

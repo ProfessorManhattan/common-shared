@@ -17,7 +17,7 @@
   },
   "config": {
     "commitizen": {
-      "path": "cz-emoji"
+      "path": "node_modules/cz-emoji-conventional"
     }
   },
   "dependencies": {
@@ -25,19 +25,17 @@
   },
   "description": "{{description}}",
   "devDependencies": {
-    "@commitlint/types": "^15.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.2.0",
-    "commitlint-config-gitmoji": "^2.2.5",
-    "glob": "^7.2.0",
-    "handlebars-helpers": "^0.10.0",
-    "semantic-release": "^18.0.0",
-    "typescript": "^4.5.2"
+    "@washingtondc/development": "^1.0.2",
+    "@washingtondc/eslint": "^1.0.0",
+    "@washingtondc/prettier": "^1.0.0",
+    "@washingtondc/release": "^0.0.1",
+    "parunner": "^0.0.1"
   },
   "engines": {
     "node": ">=14.18.0"
   },
   "eslintConfig": {
-    "extends": "@mblabs/eslint-config"
+    "extends": "@washingtondc/eslint"
   },
   "funding": [
     {
@@ -50,7 +48,7 @@
     }
   ],
   "homepage": "{{link.home}}",
-  "keywords": ["mblabs", "megabytelabs", "professormanhattan"],
+  "keywords": ["mblabs", "megabytelabs", "professormanhattan", "washingtondc"],
   "license": "{{license}}",
   "lint-staged": {
     "**/*": [
@@ -71,20 +69,15 @@
     "logo.png": ["task image:resize -- 200 200", "task image:compress --"]
   },
   "name": "{{#if customPackageName}}{{customPackageName}}{{else}}@{{profile.npmjs_organization}}/{{repository.prefix.github}}{{slug}}{{/if}}",
-  "optionalDependencies": {
-    "chalk": "^4.1.2",
-    "inquirer": "^8.2.0",
-    "signale": "^1.4.0",
-    "string-break": "^1.2.0"
-  },
-  "prettier": "@mblabs/prettier-config",
+  "optionalDependencies": {},
+  "prettier": "@washingtondc/prettier",
   "private": true,
   "publishConfig": {
     "access": "{{npm_publish_config_access}}"
   },
   "release": {
     "branches": ["master", "next"],
-    "extends": "@mblabs/release-config"
+    "extends": "@washingtondc/release"
   },
   "repository": {
     "type": "git",
