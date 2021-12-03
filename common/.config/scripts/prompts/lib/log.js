@@ -26,7 +26,7 @@ export function logInstructions(title, message) {
  * @param {string} message - The message
  */
 export function info(message) {
-  console.log(`\n${chalk.blue(`●`)}${message}`)
+  console.log(`${chalk.blue(`●`)} ${message}`)
 }
 
 /**
@@ -35,7 +35,25 @@ export function info(message) {
  * @param {string} message - The message
  */
 export function error(message) {
-  console.log(`\n${chalk.white.bgRedBright.bold(`   ERROR   `)}${message}`)
+  console.log(`${chalk.white.bgRedBright.bold(`   ERROR   `)}\n${chalk.white.bold(`┗`)} ${message}`)
+}
+
+/**
+ * Logs a message with a star next to it
+ *
+ * @param {string} message - The message
+ */
+export function star(message) {
+  console.log(`\n⭐ ${message}\n`)
+}
+
+/**
+ * Logs a success message
+ *
+ * @param {string} message - The message
+ */
+export function success(message) {
+  console.log(`${chalk.green.bold(`✔`)} ${message}`)
 }
 
 /**
@@ -44,5 +62,5 @@ export function error(message) {
  * @param {string} message - The message
  */
 export function warn(message) {
-  console.log(`\n${chalk.white.bgYellowBright.bold(`    WARN   `)}${message}`)
+  console.log(`${chalk.white.bgYellowBright.bold(`    WARN   `)}\n${chalk.white.bold(`┗`)} ${message}`)
 }
