@@ -99,14 +99,6 @@ tasks:
     cmds:
       - 'true'
 
-  hbs:
-    run: once
-    cmds:
-      - task: global
-        vars:
-          NPM_PACKAGE: hbs-cli
-          NPM_PACKAGE_BIN: hbs
-
   husky:
     run: once
     cmds:
@@ -134,6 +126,13 @@ tasks:
       - task: global
         vars:
           NPM_PACKAGE: lint-staged
+
+  liquidjs:
+    run: once
+    cmds:
+      - task: global
+        vars:
+          NPM_PACKAGE: liquidjs
 
   majestic:
     run: once

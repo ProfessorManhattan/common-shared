@@ -83,9 +83,9 @@ tasks:
   save:common:keywords:
     env:
       KEYWORDS:
-        sh: jq -r '.keywords' package.hbs.json
+        sh: jq -r '.keywords' package.json.liquid
     cmds:
-      - jq -n --arg keywords "$KEYWORDS" '.keywords = ($keywords | fromjson | unique)' > .config/common-keywords.hbs.json
+      - jq -n --arg keywords "$KEYWORDS" '.keywords = ($keywords | fromjson | unique)' > .config/common-keywords.json.liquid
 
   template:
     cmds:

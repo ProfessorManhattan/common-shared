@@ -58,11 +58,9 @@ tasks:
         if [ ! -z '{{.CLI_ARGS}}' ]; then
           cp '{{.CLI_ARGS}}' '{{.CLI_ARGS}}.bak'
           TMP="$(mktemp)"
-          sed 's/^..//' < '{{.CLI_ARGS}}' > "$TMP"
-          mv "$TMP" '{{.CLI_ARGS}}'
-          {{.NPX_PACKAGE}} commitlint -e '{{.CLI_ARGS}}' --config {{.COMMITLINT_CONFIG}}
+          COMMIT_MSG_NOEMOJI="$(sed 's/^..//' < '{{.CLI_ARGS}}')"
+          echo "$COMMIT_MSG_NOEMOJI" {{.NPX_PACKAGE}} commitlint --config {{.COMMITLINT_CONFIG}} < '{{.CLI_ARGS}}'
         fi
-      - mv '{{.CLI_ARGS}}.bak' '{{.CLI_ARGS}}'
     status:
       - '[[ -z "{{.CLI_ARGS}}" ]]'
     preconditions:

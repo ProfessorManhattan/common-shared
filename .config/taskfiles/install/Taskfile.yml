@@ -23,7 +23,7 @@ tasks:
       - task: :install:npm:cspell
       - task: :install:npm:eslint
       - task: :install:npm:git-notify
-      - task: :install:npm:hbs
+      - task: :install:npm:liquidjs
       - task: :install:npm:husky
       - task: :install:npm:lint-staged
       - task: :install:npm:prettier
