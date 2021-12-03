@@ -369,7 +369,7 @@ tasks:
 
       **Example usage:**
       `task git:remotes`
-    vars:
+    env:
       GITHUB_REPO:
         sh: jq -r '.blueprint.repository.github' package.json | sed 's/^https:\/\//git@/' | sed 's/github.com\//github.com:/'
       GITLAB_REPO:
