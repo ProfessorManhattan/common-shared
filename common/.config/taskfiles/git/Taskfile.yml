@@ -147,6 +147,13 @@ tasks:
     status:
       - '[ -z "$GITHUB_TOKEN" ] || [ -z "$ANSIBLE_GALAXY_TOKEN" ] || [ "{{.REPOSITORY_TYPE}}" != "ansible" ]'
 
+  gitlab:branches:
+    deps:
+      - :install:software:glab
+    cmds:
+      - glab api projects/:fullpath/protected_branches -X POST -f name=protected-* -f code_owner_approval_required=true
+      - glab api projects/:fullpath/protected_branches -X POST -f name=synchronize -f code_owner_approval_required=true
+
   gitlab:create:
     deps:
       - :install:software:glab
@@ -287,6 +294,7 @@ tasks:
 
   gitlab:update:
     deps:
+      - gitlab:branches
       - gitlab:mirror
       - gitlab:integrations
       - gitlab:pipelines
