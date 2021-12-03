@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ['@commitlint/config-conventional', 'gitmoji'],
+  extends: ['@commitlint/config-conventional'],
   parserPreset: {
     parserOpts: {
       headerPattern: /^(:\w*:)(?:\s)(?:\((.*?)\))?\s((?:.*(?=\())|.*)(?:\(#(\d*)\))?/,

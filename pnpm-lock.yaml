@@ -10,6 +10,7 @@ specifiers:
   chalk: ^4.1.2
   commitizen: ^4.2.4
   commitlint-config-gitmoji: ^2.2.5
+  cz-conventional-changelog-emoji: ^0.1.0
   cz-emoji-conventional: ^1.0.1
   glob: ^7.2.0
   handlebars-helpers: ^0.10.0
@@ -38,6 +39,7 @@ devDependencies:
   '@typescript-eslint/eslint-plugin': 5.5.0_typescript@4.5.2
   commitizen: 4.2.4
   commitlint-config-gitmoji: 2.2.5
+  cz-conventional-changelog-emoji: 0.1.0
   cz-emoji-conventional: 1.0.1
   glob: 7.2.0
   handlebars-helpers: 0.10.0
@@ -2022,6 +2024,10 @@ packages:
       through2: 4.0.2
     dev: true
 
+  /conventional-commit-types-emoji/0.1.0:
+    resolution: {integrity: sha1-8xk6X55m28be5aOA0RHYORpICfY=}
+    dev: true
+
   /conventional-commit-types/3.0.0:
     resolution: {integrity: sha512-SmmCYnOniSsAa9GqWOeLqc179lfr5TRu5b4QFDkbsrJ5TZjPJx85wtOr3zn+1dbeNiXDKGPbZ72IKbPhLXh/Lg==}
     dev: true
@@ -2111,6 +2117,17 @@ packages:
   /crypto-random-string/2.0.0:
     resolution: {integrity: sha512-v1plID3y9r/lPhviJ1wrXpLeyUIGAZ2SHNYTEapm7/8A9nLPoyvVp3RK/EPFqn5kEznyWgYZNsRtYYIWbuG8KA==}
     engines: {node: '>=8'}
+    dev: true
+
+  /cz-conventional-changelog-emoji/0.1.0:
+    resolution: {integrity: sha1-jq3ReYuOPhvRVo3oV3EHmIyX7/8=}
+    dependencies:
+      conventional-commit-types-emoji: 0.1.0
+      lodash.map: 4.6.0
+      longest: 1.0.1
+      pad-right: 0.2.2
+      right-pad: 1.0.1
+      word-wrap: 1.2.3
     dev: true
 
   /cz-conventional-changelog/3.2.0:
@@ -4947,6 +4964,11 @@ packages:
       log-utils: 0.2.1
     dev: true
 
+  /longest/1.0.1:
+    resolution: {integrity: sha1-MKCy2jj3N3DoKUoNIuZiXtd9AJc=}
+    engines: {node: '>=0.10.0'}
+    dev: true
+
   /longest/2.0.1:
     resolution: {integrity: sha1-eB4YMpaqlPbU2RbcM10NF676I/g=}
     engines: {node: '>=0.10.0'}
@@ -5538,6 +5560,13 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
+  /pad-right/0.2.2:
+    resolution: {integrity: sha1-b7ySQEXSRPKiokRQMGDTv8YAl3Q=}
+    engines: {node: '>=0.10.0'}
+    dependencies:
+      repeat-string: 1.6.1
+    dev: true
+
   /parent-module/1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
     engines: {node: '>=6'}
@@ -6044,6 +6073,11 @@ packages:
   /reusify/1.0.4:
     resolution: {integrity: sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==}
     engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
+    dev: true
+
+  /right-pad/1.0.1:
+    resolution: {integrity: sha1-jKCMLLtbVedNr6lr9/0aJ9VoyNA=}
+    engines: {node: '>= 0.10'}
     dev: true
 
   /rimraf/3.0.2:
