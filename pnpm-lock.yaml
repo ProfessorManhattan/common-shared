@@ -6,6 +6,7 @@ specifiers:
   '@washingtondc/release': ^0.0.2
   eslint-config-strict-mode: ^1.0.0
   parunner: ^0.0.1
+  sleekfast: ^0.0.1
   tslib: ^2.3.1
 
 dependencies:
@@ -17,6 +18,7 @@ devDependencies:
   '@washingtondc/release': 0.0.2
   eslint-config-strict-mode: 1.0.0
   parunner: 0.0.1
+  sleekfast: 0.0.1
 
 packages:
 
@@ -10895,6 +10897,17 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
+  /sleekfast/0.0.1:
+    resolution: {integrity: sha512-5qrKzqgHhHN0qTuSBK7ydCeF0XoG69iF2+xDJQDWboAxcUZfnC72Y2mlU3F8M9d8OzD6VH6SpGRU1QbUs4o3ZQ==}
+    engines: {node: '>=14.18.0'}
+    dependencies:
+      chalk: 4.1.2
+      handlebars-helpers: 0.10.0
+      inquirer: 8.2.0
+      signale: 1.4.0
+      string-break: 1.2.0
+    dev: true
+
   /slice-ansi/2.1.0:
     resolution: {integrity: sha512-Qu+VC3EwYLldKa1fCxuuvULvSJOKEgk9pi8dZeCVK7TqBfUNTH4sFkk4joj8afVSfAYgJoSOetjx9QWOJ5mYoQ==}
     engines: {node: '>=6'}
@@ -12254,7 +12267,7 @@ packages:
   /wide-align/1.1.5:
     resolution: {integrity: sha512-eDMORYaPNZ4sQIuuYPDHdQvf4gyCF9rEEV/yPxGfwPkRodwEgiMUUXTx/dex+Me0wxx53S+NgUHaP7y3MGlDmg==}
     dependencies:
-      string-width: 1.0.2
+      string-width: 4.2.3
     dev: true
 
   /widest-line/3.1.0:

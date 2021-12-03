@@ -35,7 +35,8 @@
     "@washingtondc/prettier": "^1.0.0",
     "@washingtondc/release": "^0.0.2",
     "eslint-config-strict-mode": "^1.0.0",
-    "parunner": "^0.0.1"
+    "parunner": "^0.0.1",
+    "sleekfast": "^0.0.1"
   },
   "keywords": [
     "common",
@@ -69,6 +70,12 @@
     "slug": "common-shared",
     "subgroup": "shared",
     "title": "Shared Common Files"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ],
+    "helpUrl": "https://megabyte.space/docs/contributing/commits"
   },
   "eslintConfig": {
     "extends": "eslint-config-strict-mode",

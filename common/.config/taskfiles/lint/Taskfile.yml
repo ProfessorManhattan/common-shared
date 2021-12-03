@@ -55,11 +55,13 @@ tasks:
       `task lint:commit -- 'My commit message'`
     cmds:
       - |
-        if [ ! -z '{{.CLI_ARGS}}' ]; then
+        if [ ! -z '{{.CLI_ARGS}}' ] && [ '{{.CLI_ARGS}}' != 'MERGE_MSG' ]; then
           cp '{{.CLI_ARGS}}' '{{.CLI_ARGS}}.bak'
           TMP="$(mktemp)"
           COMMIT_MSG_NOEMOJI="$(sed 's/^..//' < '{{.CLI_ARGS}}')"
           echo "$COMMIT_MSG_NOEMOJI" | {{.NPX_PACKAGE}} commitlint --config {{.COMMITLINT_CONFIG}}
+        elif [ '{{.CLI_ARGS}}' == 'MERGE_MSG' ]; then
+          . .config/log info 'Bypassing commitlint since the message is a merge message'
         fi
     status:
       - '[[ -z "{{.CLI_ARGS}}" ]]'
