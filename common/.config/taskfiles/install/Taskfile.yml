@@ -42,7 +42,7 @@ tasks:
     cmds:
       - cmd: '{{.NPM_PROGRAM_LOCAL}} install'
         ignore_error: true
-      - task: modules:local:sync
+      # - task: modules:local:sync
     sources:
       - package.json
 
