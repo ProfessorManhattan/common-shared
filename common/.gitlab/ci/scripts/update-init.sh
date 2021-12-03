@@ -26,7 +26,7 @@ if [[ "$OSTYPE" == 'darwin'* ]]; then
   cp -rf common-shared/common/.config/taskfiles/ .config/
   cp -rf common-shared/common/.config/scripts/ .config/
 else
-  cp -rT common-shared/common/.config/taskfiles .config/.taskfiles
+  cp -rT common-shared/common/.config/taskfiles .config/taskfiles
   cp -rT common-shared/common/.config/scripts .config/scripts
 fi
 mkdir -p .gitlab
