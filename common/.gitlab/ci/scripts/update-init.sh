@@ -13,10 +13,6 @@ if [ -n "$GITLAB_CI" ]; then
   git config user.name "$GITLAB_CI_NAME"
   git checkout master
   git pull origin master
-elif git reset --hard HEAD &> /dev/null; then
-  git clean -fxd
-  git checkout master
-  git pull origin master
 fi
 
 # @description Clone shared files repository
