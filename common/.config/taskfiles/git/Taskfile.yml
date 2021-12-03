@@ -151,8 +151,9 @@ tasks:
     deps:
       - :install:software:glab
     cmds:
-      - glab api projects/:fullpath/protected_branches -X POST -f name=protected-* -f code_owner_approval_required=true
-      - glab api projects/:fullpath/protected_branches -X POST -f name=synchronize -f code_owner_approval_required=true
+      - glab api projects/:fullpath/protected_branches -X POST -f name=protected-* -f code_owner_approval_required=true 2&>1 /dev/null
+      - glab api projects/:fullpath/protected_branches -X POST -f name=synchronize -f code_owner_approval_required=true 2&>1 /dev/null
+      - . .config/log info "Set up protected branches"
 
   gitlab:create:
     deps:
