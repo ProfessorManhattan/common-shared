@@ -147,6 +147,19 @@ tasks:
     status:
       - '[ -z "$GITHUB_TOKEN" ] || [ -z "$ANSIBLE_GALAXY_TOKEN" ] || [ "{{.REPOSITORY_TYPE}}" != "ansible" ]'
 
+  gitlab:branches:
+    deps:
+      - :install:software:glab
+    cmds:
+      - |
+        if [ "$(glab api projects/:fullpath/protected_branches/master | jq '.code_owner_approval_required')" == 'false' ]; then
+          glab api projects/:fullpath/protected_branches/master -X DELETE
+          glab api projects/:fullpath/protected_branches -X POST -f name=master -f code_owner_approval_required=true > /dev/null
+        fi
+      - glab api projects/:fullpath/protected_branches -X POST -f name=protected-* -f code_owner_approval_required=true > /dev/null
+      - glab api projects/:fullpath/protected_branches -X POST -f name=synchronize -f code_owner_approval_required=true > /dev/null
+      - . .config/log info "Set up protected branches"
+
   gitlab:create:
     deps:
       - :install:software:glab
@@ -287,6 +300,7 @@ tasks:
 
   gitlab:update:
     deps:
+      - gitlab:branches
       - gitlab:mirror
       - gitlab:integrations
       - gitlab:pipelines

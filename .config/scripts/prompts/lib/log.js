@@ -19,3 +19,48 @@ export function logInstructions(title, message) {
     process.stdout.columns > MESSAGE_MAX_WIDTH ? stringBreak(message, MESSAGE_MAX_WIDTH).join('\n') : message
   console.log(`\n${formattedMessage}\n`)
 }
+
+/**
+ * Logs a regular message
+ *
+ * @param {string} message - The message
+ */
+export function info(message) {
+  console.log(`${chalk.blue(`●`)} ${message}`)
+}
+
+/**
+ * Logs an error message
+ *
+ * @param {string} message - The message
+ */
+export function error(message) {
+  console.log(`${chalk.white.bgRedBright.bold(`   ERROR   `)}\n${chalk.white.bold(`┗`)} ${message}`)
+}
+
+/**
+ * Logs a message with a star next to it
+ *
+ * @param {string} message - The message
+ */
+export function star(message) {
+  console.log(`\n⭐ ${message}\n`)
+}
+
+/**
+ * Logs a success message
+ *
+ * @param {string} message - The message
+ */
+export function success(message) {
+  console.log(`${chalk.green.bold(`✔`)} ${message}`)
+}
+
+/**
+ * Logs a warning message
+ *
+ * @param {string} message - The message
+ */
+export function warn(message) {
+  console.log(`${chalk.white.bgYellowBright.bold(`    WARN   `)}\n${chalk.white.bold(`┗`)} ${message}`)
+}

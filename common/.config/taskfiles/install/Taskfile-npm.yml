@@ -100,7 +100,7 @@ tasks:
           else
             {{if eq .NPX_HANDLE ""}}{{.NPM_PROGRAM}} install -g {{.NPM_PACKAGE}}@latest{{else}}{{.NPX_PROGRAM}} -y {{.NPM_PACKAGE}}{{end}}
           fi
-          true success 'The npm `{{.NPM_PACKAGE}}` package is installed'
+          . .config/log success 'The npm `{{.NPM_PACKAGE}}` package is installed'
         fi
     status:
       - type {{if .NPM_PACKAGE_BIN}}{{.NPM_PACKAGE_BIN}}{{else}}{{.NPM_PACKAGE}}{{end}} &> /dev/null
@@ -121,7 +121,7 @@ tasks:
           else
             installLibrary &
           fi
-          true success 'The npm `{{.NPM_PACKAGE}}` package is installed'
+          . .config/log success 'The npm `{{.NPM_PACKAGE}}` package is installed'
         fi
 
   hbs:

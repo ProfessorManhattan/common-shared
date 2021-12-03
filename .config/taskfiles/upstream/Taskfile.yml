@@ -47,6 +47,7 @@ tasks:
 
   shared:
     cmds:
+      - git pull
       - task: :upstream:shared:copy
       - task: :upstream:shared:variables
       - task: :upstream:shared:template
