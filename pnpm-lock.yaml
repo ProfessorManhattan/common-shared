@@ -2,7 +2,7 @@ lockfileVersion: 5.3
 
 specifiers:
   '@mblabs/eslint-config': ^1.0.115
-  '@mblabs/prettier-config': ^14.14.31
+  '@mblabs/prettier-config': ^14.14.32
   '@mblabs/release-config': ^1.0.0
   '@typescript-eslint/eslint-plugin': ^5.2.0
   chalk: ^4.1.2
@@ -27,7 +27,7 @@ optionalDependencies:
 
 devDependencies:
   '@mblabs/eslint-config': 1.0.115_typescript@4.5.2
-  '@mblabs/prettier-config': 14.14.31_typescript@4.5.2
+  '@mblabs/prettier-config': 14.14.32_typescript@4.5.2
   '@mblabs/release-config': 1.1.14
   '@typescript-eslint/eslint-plugin': 5.5.0_typescript@4.5.2
   commitlint-config-gitmoji: 2.2.5
@@ -406,8 +406,8 @@ packages:
       - typescript
     dev: true
 
-  /@mblabs/prettier-config/14.14.31_typescript@4.5.2:
-    resolution: {integrity: sha512-4UaVrZZEqISHB5NWSCJpT8m5Ks8MEtZDuzY8gDfp1MC61O575oDgIdHOWjVxYJkMhINn4m25XekEGv3OYeKiAg==}
+  /@mblabs/prettier-config/14.14.32_typescript@4.5.2:
+    resolution: {integrity: sha512-VAqc4bZr+OvWYXmsGk1D4VJGE8lubepAguXy+BnMvE0oqjP9Fa6yHyyH44faI8cpn6FLExGp35nsKRnqpLRAWQ==}
     engines: {node: '>=10'}
     dependencies:
       '@prettier/plugin-xml': 1.1.0
@@ -3616,7 +3616,7 @@ packages:
       source-map: 0.6.1
       wordwrap: 1.0.0
     optionalDependencies:
-      uglify-js: 3.14.3
+      uglify-js: 3.14.4
     dev: true
 
   /hard-rejection/2.1.0:
@@ -6306,8 +6306,8 @@ packages:
     hasBin: true
     dev: true
 
-  /uglify-js/3.14.3:
-    resolution: {integrity: sha512-mic3aOdiq01DuSVx0TseaEzMIVqebMZ0Z3vaeDhFEh9bsc24hV1TFvN74reA2vs08D0ZWfNjAcJ3UbVLaBss+g==}
+  /uglify-js/3.14.4:
+    resolution: {integrity: sha512-AbiSR44J0GoCeV81+oxcy/jDOElO2Bx3d0MfQCUShq7JRXaM4KtQopZsq2vFv8bCq2yMaGrw1FgygUd03RyRDA==}
     engines: {node: '>=0.8.0'}
     hasBin: true
     requiresBuild: true
