@@ -8,8 +8,6 @@ specifiers:
   '@mblabs/release-config': ^1.0.0
   '@typescript-eslint/eslint-plugin': ^5.2.0
   chalk: ^4.1.2
-  commitizen: ^4.2.4
-  commitlint-config-gitmoji: ^2.2.5
   cz-conventional-changelog-emoji: ^0.1.0
   cz-emoji-conventional: ^1.0.1
   glob: ^7.2.0
@@ -37,8 +35,6 @@ devDependencies:
   '@mblabs/prettier-config': 14.14.32_typescript@4.5.2
   '@mblabs/release-config': 1.1.14
   '@typescript-eslint/eslint-plugin': 5.5.0_typescript@4.5.2
-  commitizen: 4.2.4
-  commitlint-config-gitmoji: 2.2.5
   cz-conventional-changelog-emoji: 0.1.0
   cz-emoji-conventional: 1.0.1
   glob: 7.2.0
@@ -470,14 +466,6 @@ packages:
       strip-json-comments: 3.1.1
     transitivePeerDependencies:
       - supports-color
-    dev: true
-
-  /@gitmoji/commit-types/1.1.5:
-    resolution: {integrity: sha512-8D3FZMRY+gtYpTcHG1SOGmm9CFqxNh6rI9xDoCydxHxnWgqInbdF3nk9gibW5gXA58Hf2cVcJaLEcGOKLRAtmw==}
-    dev: true
-
-  /@gitmoji/parser-opts/1.3.0:
-    resolution: {integrity: sha512-NqfoW12eXMdDJz3g3NHnopEgDoqdY1YshO6XxIVPOqotGTDcjD1sL28AVKskbYveGmHBPdHieRRv6M9Iq7dt4w==}
     dev: true
 
   /@humanwhocodes/config-array/0.6.0:
@@ -1946,25 +1934,6 @@ packages:
       strip-json-comments: 3.0.1
     dev: true
 
-  /commitlint-config-gitmoji/2.2.5:
-    resolution: {integrity: sha512-2Es3QtiOzrNHNuYsonNHodNZIub17+F0/ZukDlVz4FdrRZvYi1f5B1bTr23QPL1QmlhgYcXkNxLOQhegKqaA/g==}
-    dependencies:
-      '@gitmoji/commit-types': 1.1.5
-      '@gitmoji/parser-opts': 1.3.0
-      commitlint-plugin-gitmoji: 2.2.0
-    transitivePeerDependencies:
-      - commitlint
-    dev: true
-
-  /commitlint-plugin-gitmoji/2.2.0:
-    resolution: {integrity: sha512-njFLibrctUTeYjJYqiG9EOnCUcX/OvHCf96bArYBIbH7IEV6fylslVTt6pQcCvaMfOPUBj3f+a3g1eYchggZVw==}
-    peerDependencies:
-      commitlint: ^11.0.0
-    dependencies:
-      dotenv: 8.6.0
-      emoji-name-map: 1.2.9
-    dev: true
-
   /common-tags/1.8.2:
     resolution: {integrity: sha512-gk/Z852D2Wtb//0I+kRFNKKE9dIIVirjoqPoA1wJU+XePVXZfGeBpk45+A1rKO4Q43prqWBNY/MiIeRLbPWUaA==}
     engines: {node: '>=4.0.0'}
@@ -2379,11 +2348,6 @@ packages:
     resolution: {integrity: sha512-cjIHHKlf2dPINJ5Io3lPocWvWmthXn3ztqyHVzUfufRiCiPECb0oiEqEGbEGaunFZtcMvwgUcxP9CTpLG4KCsA==}
     dev: true
 
-  /dotenv/8.6.0:
-    resolution: {integrity: sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==}
-    engines: {node: '>=10'}
-    dev: true
-
   /duplexer2/0.1.4:
     resolution: {integrity: sha1-ixLauHjA1p4+eJEFFmKjL8a93ME=}
     dependencies:
@@ -2404,14 +2368,6 @@ packages:
     resolution: {integrity: sha512-tFgA40Iq2oy4k2PnZrLJowbgpij+lD6ZLxkw8Ht1NKTYyN8dvSvC5xlo8X0WW2jqhKSzITrbr5mpB4/AZ/8OUA==}
     dev: true
 
-  /emoji-name-map/1.2.9:
-    resolution: {integrity: sha512-MSM8y6koSqh/2uEMI2VoKA+Ac0qL5RkgFGP/pzL6n5FOrOJ7FOZFxgs7+uNpqA+AT+WmdbMPXkd3HnFXXdz4AA==}
-    dependencies:
-      emojilib: 2.4.0
-      iterate-object: 1.3.4
-      map-o: 2.0.10
-    dev: true
-
   /emoji-regex/7.0.3:
     resolution: {integrity: sha512-CwBLREIQ7LvYFB0WyRvwhq5N5qPhc6PMjD6bYggFlI5YyDgl+0vxq5VHbMOFqLg7hfWzmu8T5Z1QofhmTIhItA==}
     dev: false
@@ -2419,10 +2375,6 @@ packages:
 
   /emoji-regex/8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
-
-  /emojilib/2.4.0:
-    resolution: {integrity: sha512-5U0rVMU5Y2n2+ykNLQqMoqklN9ICBT/KsvC1Gz6vqHbz2AXXGkG+Pm5rMWk/8Vjrr/mY9985Hi8DYzn1F09Nyw==}
-    dev: true
 
   /enquirer/2.3.6:
     resolution: {integrity: sha512-yjNnPr315/FjS4zIsUxYguYUPP2e1NK4d7E7ZOLiyYCcbFBiTMyID+2wvm2w6+pZ/odMA7cRkjhsPbltwBOrLg==}
@@ -4625,10 +4577,6 @@ packages:
       lodash.uniqby: 4.7.0
     dev: true
 
-  /iterate-object/1.3.4:
-    resolution: {integrity: sha512-4dG1D1x/7g8PwHS9aK6QV5V94+ZvyP4+d19qDv43EzImmrndysIl4prmJ1hWWIGCqrZHyaHBm6BSEWHOLnpoNw==}
-    dev: true
-
   /java-properties/1.0.2:
     resolution: {integrity: sha512-qjdpeo2yKlYTH7nFdK0vbZWuTCesk4o63v5iVOlhMQPfuIZQfW/HI35SjfhA+4qpg36rnFSvUK5b1m+ckIblQQ==}
     engines: {node: '>= 0.6.0'}
@@ -5005,12 +4953,6 @@ packages:
   /map-cache/0.2.2:
     resolution: {integrity: sha1-wyq9C9ZSXZsFFkW7TyasXcmKDb8=}
     engines: {node: '>=0.10.0'}
-    dev: true
-
-  /map-o/2.0.10:
-    resolution: {integrity: sha512-BxazE81fVByHWasyXhqKeo2m7bFKYu+ZbEfiuexMOnklXW+tzDvnlTi/JaklEeuuwqcqJzPaf9q+TWptSGXeLg==}
-    dependencies:
-      iterate-object: 1.3.4
     dev: true
 
   /map-obj/1.0.1:

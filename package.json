@@ -23,7 +23,7 @@
   },
   "config": {
     "commitizen": {
-      "path": "cz-conventional-changelog-emoji"
+      "path": "node_modules/cz-conventional-changelog-emoji"
     }
   },
   "dependencies": {
@@ -42,7 +42,7 @@
     "@mblabs/prettier-config": "^14.14.32",
     "@mblabs/release-config": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^5.2.0",
-    "cz-conventional-changelog-emoji": "^0.1.0",
+    "cz-emoji-conventional": "^1.0.1",
     "glob": "^7.2.0",
     "handlebars-helpers": "^0.10.0",
     "semantic-release": "^18.0.0",
