@@ -72,6 +72,10 @@ TMP="$(mktemp)" && jq '.devDependencies["@washingtondc/release"] = "^0.0.2"' pac
 TMP="$(mktemp)" && jq '.devDependencies["eslint-config-strict-mode"] = "^1.0.0"' package.json > "$TMP" && mv "$TMP" package.json
 TMP="$(mktemp)" && jq '.devDependencies["sleekfast"] = "^0.0.1"' package.json > "$TMP" && mv "$TMP" package.json
 
+if [ "$(jq -r '.blueprint.group' package.json)" == 'documentation' ]; then
+  TMP="$(mktemp)" && jq '.eslintConfig.rules["import/no-extraneous-dependencies"] = "off"' package.json > "$TMP" && mv "$TMP" package.json
+fi
+
 # @description Re-generate the Taskfile.yml if it has invalid includes
 echo "Ensuring Taskfile is properly configured"
 task donothing || EXIT_CODE=$?
