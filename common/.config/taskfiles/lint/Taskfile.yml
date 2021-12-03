@@ -63,7 +63,7 @@ tasks:
             {{.NPX_PACKAGE}} commitlint -e '{{.CLI_ARGS}}' --config {{.COMMITLINT_CONFIG}}
           fi
         ignore_error: true
-      - mv '{{.CLI_ARGS}}.bak' '{{.CLI_ARGS}}'
+      - mv '{{.CLI_ARGS}}.bak' '{{.CLI_ARGS}}' &
     status:
       - '[[ -z "{{.CLI_ARGS}}" ]]'
     preconditions:
