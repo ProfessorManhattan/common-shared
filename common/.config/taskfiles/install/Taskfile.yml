@@ -66,7 +66,7 @@ tasks:
           LOCAL="$(jq -r '.version' ./node_modules/{{.CLI_ARGS}}/package.json)"
           COMPARE="$(. .config/scripts/lib/semver-compare.sh "$LOCAL" "$LATEST")"
           if [ "$COMPARE" == '-1' ]; then
-            . .config/log info "Version $LATEST is available for {{.CLI_ARGS}} (currently version $LOCAL)"
+            . .config/log info "Version `""$LATEST""` is available for {{.CLI_ARGS}} (currently version $LOCAL)"
             {{.NPM_PROGRAM_LOCAL}} update {{.CLI_ARGS}}@latest
           fi
         ignore_error: true
@@ -79,3 +79,28 @@ tasks:
       - npm install chalk inquirer signale
     sources:
       - .config/scripts/prompts/**
+
+  tslib:
+    env:
+      TSLIB_MSG: You can potentially optimize your bundle by setting `importHelpers` in compilerOptions
+        in tsconfig.json to `true`. After importHelpers is set to true, the taskfiles will automatically
+        install tslib.
+    run: once
+    cmds:
+      - |
+        if [ -f 'tsconfig.json' ]; then
+          if [ "$(jq -r '.dependencies.tslib' package.json)" == 'null' ]; then
+            if [ "$(jq -r '.compilerOptions.importHelpers')" != 'true' ]; then
+              . .config/log info '{{.TSLIB_MSG}}'
+            else
+              . .config/log info 'Automatically installing `tslib` since `importHelpers` is set to true in tsconfig.json'
+              {{.NPM_PROGRAM}} install --save tslib@latest
+              . .config/log success 'Successfully installed `tslib`'
+            fi
+          else
+            task install:modules:local:sync:package -- "tslib"
+          fi
+        fi
+    sources:
+      - package.json
+      - tsconfig.json

@@ -29,7 +29,8 @@ tasks:
         TMP_JQ="$(mktemp)"
         jq -cRrs 'split("\n") | "{ \"recommendations\": \(.) }"' < "$TMP_YQ" > "$TMP_JQ"
         sed 's/,""//' < "$TMP_JQ" > '{{.EXTENSIONS_FILE}}'
-      - prettier --write '{{.EXTENSIONS_FILE}}'
+      - |
+        {{.NPX_HANDLE}}prettier --write '{{.EXTENSIONS_FILE}}'
 
   generate:
     deps:
@@ -66,4 +67,5 @@ tasks:
           fi
         done <<< "$(task --list)"
         jq --arg tasks "${TASKS%?}]" '.tasks = ($tasks | fromjson)' "$TMP" > '{{.TASKS_FILE}}'
-      - prettier --write '{{.TASKS_FILE}}'
+      - |
+        {{.NPX_HANDLE}}prettier --write '{{.TASKS_FILE}}'

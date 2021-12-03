@@ -143,6 +143,7 @@ tasks:
   gitlab:branches:
     deps:
       - :install:software:glab
+    run: once
     cmds:
       - |
         if [ "$(glab api projects/:fullpath/protected_branches/master | jq '.code_owner_approval_required')" == 'false' ]; then
@@ -193,6 +194,7 @@ tasks:
     deps:
       - gitlab:integrations:github
 
+    run: once
   gitlab:integrations:github:
     deps:
       - :install:software:glab
@@ -254,13 +256,13 @@ tasks:
             if (! echo "$PIPELINE_RES" | grep "$DESC") > /dev/null; then
               glab api projects/:fullpath/pipeline_schedules -X POST -f active="$ACTIVE" -f description="$DESC" -f ref="$REF" \
                 -f cron="$CRON" -f cron_timezone='{{.TIMEZONE}}' --silent
-              . .config/log success 'Pipeline with description of `$DESC` successfully added'
+              . .config/log success "Pipeline with description of `'"$DESC"'` successfully added"
             else
               . .config/log info 'Pipeline with description of `'"$DESC"'` already added'
             fi
           done
         else
-          . .config/log warn 'The `GITLAB_TOKEN` environment variable is not set so the GitLab pipelines cannot be updated via the API.'
+          . .config/log warn 'The `'"GITLAB_TOKEN"'` environment variable is not set so the GitLab pipelines cannot be updated via the API.'
         fi
     sources:
       - .variables.json
