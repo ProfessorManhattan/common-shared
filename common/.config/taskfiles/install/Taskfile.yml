@@ -59,6 +59,7 @@ tasks:
         done
 
   modules:local:sync:package:
+    run: when_changed
     cmds:
       - cmd: |
           LATEST="$(npm view {{.CLI_ARGS}} version)"
