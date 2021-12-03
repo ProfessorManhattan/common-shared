@@ -60,8 +60,7 @@ tasks:
           if [ ! -z "$GITHUB_TOKEN" ] && test -e .git && ! gh repo view {{.GITHUB_ORG}}/{{.GITHUB_SLUG}} > /dev/null; then
             gh repo create "{{.GITHUB_SLUG}}" --enable-wiki={{.GITHUB_WIKI}} -y --description "🔥👉 {{.DESCRIPTION}} 🚀" \
               --homepage "{{.HOMEPAGE}}" {{.PROJECT_TYPE}} > /dev/null
-          else
-            . .config/log warn 'The `GITHUB_TOKEN` environment variable is not set so the GitLab repository cannot be updated via the API.'
+            . .config/log success 'Created a GitHub repository for {{.GITHUB_SLUG}}'
           fi
         ignore_error: true
     sources:
@@ -370,10 +369,13 @@ tasks:
 
       **Example usage:**
       `task git:remotes`
+    env:
+      GITHUB_REPO:
+        sh: jq -r '.blueprint.repository.github' package.json | sed 's/^https:\/\//git@/' | sed 's/github.com\//github.com:/'
+      GITLAB_REPO:
+        sh: jq -r '.blueprint.repository.gitlab' package.json | sed 's/^https:\/\//git@/' | sed 's/gitlab.com\//gitlab.com:/'
     cmds:
       - |
-        GITHUB_REPO="$(jq -r '.blueprint.repository.github' package.json | sed 's/^https:\/\//git@/' | sed 's/github.com\//github.com:/')"
-        GITLAB_REPO="$(jq -r '.blueprint.repository.gitlab' package.json | sed 's/^https:\/\//git@/' | sed 's/gitlab.com\//gitlab.com:/')"
         if [ ! -z "$GITLAB_REPO" ]; then
           if git config remote.origin.url > /dev/null; then
             git remote set-url origin "${GITLAB_REPO}.git"
@@ -403,6 +405,7 @@ tasks:
           git remote set-url --add --push all "${GITHUB_REPO}.git"
           git remote set-url --add --push all "${GITLAB_REPO}.git"
         fi
+      - . .config/log success 'Added Git remotes'
     status:
       - '[[ "$(git config remote.all.url)" == "${GITLAB_REPO}.git" ]] || [[ "${container:=}" == "docker" ]]'
       - '[[ "$(git config remote.github.url)" == "${GITHUB_REPO}.git" ]] || [[ "${container:=}" == "docker" ]]'

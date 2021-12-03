@@ -12,9 +12,13 @@ tasks:
       - task: all:docs
 
   all:docs:
-    deps:
-      - contributing
-      - readme
+    cmds:
+      - |
+        {{if eq .REPOSITORY_TYPE "common"}}{{else}}{{if eq .REPOSITORY_TYPE "documentation"}}{{else}}
+        task common:update:contributing &
+        task common:update:readme &
+        wait
+        {{end}}{{end}}
 
   ansible:
     deps:
