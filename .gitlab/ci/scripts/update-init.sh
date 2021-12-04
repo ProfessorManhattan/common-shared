@@ -26,7 +26,7 @@ if [[ "$OSTYPE" == 'darwin'* ]]; then
   cp -rf common-shared/common/.config/taskfiles/ .config/
   cp -rf common-shared/common/.config/scripts/ .config/
 else
-  cp -rT common-shared/common/.config/taskfiles .config/.taskfiles
+  cp -rT common-shared/common/.config/taskfiles .config/taskfiles
   cp -rT common-shared/common/.config/scripts .config/scripts
 fi
 mkdir -p .gitlab
@@ -49,7 +49,7 @@ fi
 # @description Remove old packages
 TMP="$(mktemp)" && sed 's/.*cz-conventional-changelog.*//' < package.json > "$TMP" && mv "$TMP" package.json
 TMP="$(mktemp)" && sed 's/.*config-conventional.*//' < package.json > "$TMP" && mv "$TMP" package.json
-curl -sS https://gitlab.com/megabyte-labs/common/shared/-/raw/master/package.json > temp.json
+rm -f temp.json
 TMP="$(mktemp)" && jq 'del(.devDependencies["@mblabs/prettier-config"])' package.json > "$TMP" && mv "$TMP" package.json
 TMP="$(mktemp)" && jq 'del(.devDependencies["@commitlint/config-conventional"])' package.json > "$TMP" && mv "$TMP" package.json
 TMP="$(mktemp)" && jq 'del(.devDependencies["@mblabs/eslint-config"])' package.json > "$TMP" && mv "$TMP" package.json
@@ -69,8 +69,12 @@ TMP="$(mktemp)" && jq '.private = false' package.json > "$TMP" && mv "$TMP" pack
 TMP="$(mktemp)" && jq '.devDependencies["@washingtondc/development"] = "^1.0.2"' package.json > "$TMP" && mv "$TMP" package.json
 TMP="$(mktemp)" && jq '.devDependencies["@washingtondc/prettier"] = "^1.0.0"' package.json > "$TMP" && mv "$TMP" package.json
 TMP="$(mktemp)" && jq '.devDependencies["@washingtondc/release"] = "^0.0.2"' package.json > "$TMP" && mv "$TMP" package.json
-TMP="$(mktemp)" && jq '.devDependencies["eslint-config-strict-mode" = "^1.0.0"]' package.json > "$TMP" && mv "$TMP" package.json
-TMP="$(mktemp)" && jq '.devDependencies["sleekfast" = "^0.0.1"]' package.json > "$TMP" && mv "$TMP" package.json
+TMP="$(mktemp)" && jq '.devDependencies["eslint-config-strict-mode"] = "^1.0.0"' package.json > "$TMP" && mv "$TMP" package.json
+TMP="$(mktemp)" && jq '.devDependencies["sleekfast"] = "^0.0.1"' package.json > "$TMP" && mv "$TMP" package.json
+
+if [ "$(jq -r '.blueprint.group' package.json)" == 'documentation' ]; then
+  TMP="$(mktemp)" && jq '.eslintConfig.rules["import/no-extraneous-dependencies"] = "off"' package.json > "$TMP" && mv "$TMP" package.json
+fi
 
 # @description Re-generate the Taskfile.yml if it has invalid includes
 echo "Ensuring Taskfile is properly configured"
