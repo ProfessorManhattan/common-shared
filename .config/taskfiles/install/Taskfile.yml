@@ -67,7 +67,7 @@ tasks:
           LOCAL="$(jq -r '.version' ./node_modules/{{.CLI_ARGS}}/package.json)"
           COMPARE="$(.config/scripts/lib/semver-compare.sh "$LOCAL" "$LATEST")"
           if [ "$COMPARE" == '-1' ]; then
-            .config/log info "Version `$LATEST` is available for {{.CLI_ARGS}} (currently version $LOCAL)"
+            .config/log info "Version $LATEST is available for {{.CLI_ARGS}} (currently version $LOCAL)"
             {{.NPM_PROGRAM_LOCAL}} update {{.CLI_ARGS}}@latest
           fi
         ignore_error: true

@@ -216,8 +216,6 @@ tasks:
           if [ ! -z "$GITLAB_TOKEN" ] && test -e .git && ! glab repo view '{{.GITLAB_PATH}}' > /dev/null; then
             glab repo create '{{.GITLAB_PATH}}' --group '{{.GITLAB_GROUP}}' --description '{{.EMOJI_START}}{{.DESCRIPTION}}{{.EMOJI_END}}' --name '{{.NAME}}' \
               {{.PROJECT_TYPE}} --tag '$KEYWORDS'
-          else
-            .config/log warn 'The `GITLAB_TOKEN` environment variable is not set so the GitLab repository cannot be created.'
           fi
         ignore_error: true
     sources:
@@ -308,9 +306,10 @@ tasks:
             if (! echo "$PIPELINE_RES" | grep "$DESC") > /dev/null; then
               glab api projects/:fullpath/pipeline_schedules -X POST -f active="$ACTIVE" -f description="$DESC" -f ref="$REF" \
                 -f cron="$CRON" -f cron_timezone='{{.TIMEZONE}}' --silent
-              .config/log success "Pipeline with description of '${DESC}' successfully added"
+
+              if [ "$DESC" != 'null' ]; then .config/log success "Pipeline with description of '${DESC}' successfully added"; fi
             else
-              .config/log info "Pipeline with description of '${DESC}' already added"
+              if [ "$DESC" != 'null' ]; then .config/log info "Pipeline with description of '${DESC}' already added"; fi
             fi
           done
         else
