@@ -162,7 +162,7 @@ tasks:
       INSTALLING:
         sh: if test -f install_in_progress; then echo 'true'; else echo 'false'; fi
     cmds:
-      - . .config/log info "Running the Ansible play locally"
+      - .config/log info "Running the Ansible play locally"
       - cp test/{{OS}}/inventory inventory
       - if [ ! -f ansible.cfg.bak ]; then cp ansible.cfg ansible.cfg.bak; fi
       - cp test/{{OS}}/ansible.cfg ansible.cfg

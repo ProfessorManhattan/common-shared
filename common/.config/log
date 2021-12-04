@@ -24,7 +24,7 @@ logger() {
 }
 
 # @description Logs an error message
-# @example . .config/log error "Something happened!"
+# @example .config/log error "Something happened!"
 error() {
   if [ "$ENHANCED_LOGGING" ]; then
     logger error "$1"
@@ -34,7 +34,7 @@ error() {
 }
 
 # @description Logs an info message
-# @example . .config/log info "Here is some information"
+# @example .config/log info "Here is some information"
 info() {
   if [ "$ENHANCED_LOGGING" ]; then
     logger info "$1"
@@ -44,7 +44,7 @@ info() {
 }
 
 # @description Logs a message that starts with a star emoji
-# @example . .config/log star "Congratulations"
+# @example .config/log star "Congratulations"
 star() {
   if [ "$ENHANCED_LOGGING" ]; then
     logger star "$1"
@@ -54,7 +54,7 @@ star() {
 }
 
 # @description Logs a success message
-# @example . .config/log success "Yay!"
+# @example .config/log success "Yay!"
 success() {
   if [ "$ENHANCED_LOGGING" ]; then
     logger success "$1"
@@ -64,7 +64,7 @@ success() {
 }
 
 # @description Logs a warning message
-# @example . .config/log warn "Just so you know.."
+# @example .config/log warn "Just so you know.."
 warn() {
   if [ "$ENHANCED_LOGGING" ]; then
     logger warn "$1"

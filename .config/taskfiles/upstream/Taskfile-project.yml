@@ -22,9 +22,9 @@ tasks:
         done
         GREP="$(echo $GREP | sed 's/\\|$//')"
         if ! ls -la | grep "$GREP" &> /dev/null; then
-          . .config/log info "Adding boilerplate code since there are no overlapping files"
+          .config/log info "Adding boilerplate code since there are no overlapping files"
           cp {{if eq OS "darwin"}}-rf{{else}}-rT{{end}} .boilerplate{{if eq OS "darwin"}}/{{end}} .
-          . .config/log success "Scaffolded the project with boilerplate code!"
+          .config/log success "Scaffolded the project with boilerplate code!"
         fi
       - rm -rf .boilerplate
 

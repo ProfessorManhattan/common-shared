@@ -8,6 +8,6 @@
 # command, the event type is 'merge'.
 
 if [ "$2" != 'merge' ]; then
-  . .config/log info 'Opening a `git commit` dialog'
+  .config/log info 'Opening a `git commit` dialog'
   exec < /dev/tty && pnpx git-cz --hook || true
 fi

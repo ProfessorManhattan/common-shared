@@ -183,7 +183,7 @@ tasks:
       to automatically apply Shellcheck's recommendations. It only runs on files that are not in the
       `IGNORED_FOLDERS` variable in `Taskfile.yml`.
 
-      This task is experimental. It may work to get rid of the Shellcheck lin. .config/log errors but the code
+      This task is experimental. It may work to get rid of the Shellcheck lin.config/log errors but the code
       should still be tested since it might break things. Ideally, you should apply Shellcheck's
       recommendations manually.
 

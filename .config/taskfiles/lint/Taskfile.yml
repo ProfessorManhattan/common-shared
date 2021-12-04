@@ -60,7 +60,7 @@ tasks:
           COMMIT_MSG_NOEMOJI="$(sed 's/^..//' < '{{.CLI_ARGS}}')"
           echo "$COMMIT_MSG_NOEMOJI" | {{.NPX_PACKAGE}} commitlint
         elif [ '{{.CLI_ARGS}}' == '.git/MERGE_MSG' ]; then
-          . .config/log info 'Bypassing commitlint since the message is a merge message'
+          .config/log info 'Bypassing commitlint since the message is a merge message'
         fi
     status:
       - '[[ -z "{{.CLI_ARGS}}" ]]'

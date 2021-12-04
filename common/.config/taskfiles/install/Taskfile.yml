@@ -6,7 +6,7 @@ tasks:
     cmds:
       - |
         if ! type {{.SOFTWARE}} &> /dev/null; then
-          . .config/log info 'Using https://install.doctor to install `{{.SOFTWARE}}`'
+          .config/log info 'Using https://install.doctor to install `{{.SOFTWARE}}`'
           curl -sS https://install.doctor/{{.SOFTWARE}} | bash
         fi
     status:
@@ -64,9 +64,9 @@ tasks:
       - cmd: |
           LATEST="$(npm view '{{.CLI_ARGS}}' version)"
           LOCAL="$(jq -r '.version' ./node_modules/{{.CLI_ARGS}}/package.json)"
-          COMPARE="$(. .config/scripts/lib/semver-compare.sh "$LOCAL" "$LATEST")"
+          COMPARE="$(.config/scripts/lib/semver-compare.sh "$LOCAL" "$LATEST")"
           if [ "$COMPARE" == '-1' ]; then
-            . .config/log info "Version `""$LATEST""` is available for {{.CLI_ARGS}} (currently version $LOCAL)"
+            .config/log info "Version `""$LATEST""` is available for {{.CLI_ARGS}} (currently version $LOCAL)"
             {{.NPM_PROGRAM_LOCAL}} update {{.CLI_ARGS}}@latest
           fi
         ignore_error: true
@@ -91,11 +91,11 @@ tasks:
         if [ -f 'tsconfig.json' ]; then
           if [ "$(jq -r '.dependencies.tslib' package.json)" == 'null' ]; then
             if [ "$(jq -r '.compilerOptions.importHelpers')" != 'true' ]; then
-              . .config/log info '{{.TSLIB_MSG}}'
+              .config/log info '{{.TSLIB_MSG}}'
             else
-              . .config/log info 'Automatically installing `tslib` since `importHelpers` is set to true in tsconfig.json'
+              .config/log info 'Automatically installing `tslib` since `importHelpers` is set to true in tsconfig.json'
               {{.NPM_PROGRAM}} install --save tslib@latest
-              . .config/log success 'Successfully installed `tslib`'
+              .config/log success 'Successfully installed `tslib`'
             fi
           else
             task install:modules:local:sync:package -- "tslib"
