@@ -21,7 +21,7 @@ function styler(message) {
 }
 
 /**
- * Logs an informational message with pleasent styling
+ * Logs an informational message with pleasant styling
  *
  * @param {string} title - The title to show in emphasized styling
  * @param {string} message - The instructions for the operation
@@ -89,5 +89,7 @@ const funcs = {
 const LOG_TYPE_INDEX = 2
 const LOG_MESSAGE_INDEX = 3
 
-// eslint-disable-next-line security/detect-object-injection
-funcs[process.argv[LOG_TYPE_INDEX]](process.argv[LOG_MESSAGE_INDEX])
+if (process.argv.length > LOG_TYPE_INDEX) {
+  // eslint-disable-next-line security/detect-object-injection
+  funcs[process.argv[LOG_TYPE_INDEX]](process.argv[LOG_MESSAGE_INDEX])
+}
