@@ -31,9 +31,7 @@ tasks:
           mkdir -p "$DIR_NAME"
           if [ -d "$REPO_PATH" ]; then
             cd "$REPO_PATH"
-            git reset --hard HEAD
-            git clean -fxd
-            git pull origin master
+            git pull origin master || continue
             cd "$BASE_PWD"
           else
             git clone --depth=1 "$REPO_URL" "$REPO_PATH"
