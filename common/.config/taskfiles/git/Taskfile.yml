@@ -1,4 +1,5 @@
 ---
+# eslint-disable max-lines, eslint-comments/disable-enable-pair
 version: '3'
 
 vars:
@@ -97,9 +98,20 @@ tasks:
       - sh: '[ "{{.HOMEPAGE}}" != "null" ]'
         msg: The `.homepage` in `package.json` must be set.
 
+  github:ids:
+    deps:
+      - :install:software:gh
+      - :install:software:jq
+    cmds:
+      - |
+        PROJECT_ID="$(gh repo view --json id | jq -r '.id')"
+        TMP="$(mktemp)" && jq --arg projectId "$PROJECT_ID" '.blueprint.github_id = $projectId' package.json > "$TMP"
+        mv "$TMP" package.json
+
   github:update:
     deps:
       - github:update:meta
+      - github:ids
       - github:variables
 
   github:update:meta:
@@ -214,6 +226,20 @@ tasks:
       - sh: '[ "{{.NAME}}" != "null" ]'
         msg: The `.blueprint.name` variable in `package.json` must be set.
 
+  gitlab:ids:
+    deps:
+      - :install:software:glab
+      - :install:software:jq
+    cmds:
+      - |
+        API_RES="$(glab api projects/:fullpath)"
+        PROJECT_ID="$(echo "$API_RES" | jq '.id')"
+        TMP="$(mktemp)" && jq --arg projectId "$PROJECT_ID" '.blueprint.gitlab_project_id = $projectId' package.json > "$TMP"
+        mv "$TMP" package.json
+        GROUP_ID="$(echo "$API_RES" | jq '.namespace.id')"
+        TMP="$(mktemp)" && jq --arg groupId "$GROUP_ID" '.blueprint.gitlab_group_id = $groupId' package.json > "$TMP"
+        mv "$TMP" package.json
+
   gitlab:integrations:
     deps:
       - gitlab:integrations:github
@@ -249,7 +275,7 @@ tasks:
           if [[ "{{.PUSH_MIRROR_COUNT}}" == '0' ]]; then
             glab api projects/:fullpath/remote_mirrors --method POST --header "Content-Type: application/json" \
               -f "url=https://{{.GITHUB_USER}}:$GITHUB_TOKEN@github.com/{{.GITHUB_ORG}}/{{.GITHUB_SLUG}}.git" \
-              -f 'enabled=true'
+              -f 'enabled=true' > /dev/null
           fi
           curl -s -H 'Content-Type: application/json' -H "Authorization: Bearer $GITLAB_TOKEN" -X PUT --data \
             "{\"mirror\": true, \"import_url\": \"https://{{.GITHUB_USER}}:$GITHUB_TOKEN@github.com/{{.GITHUB_ORG}}/{{.GITHUB_SLUG}}.git\"}" \
@@ -280,9 +306,9 @@ tasks:
             if (! echo "$PIPELINE_RES" | grep "$DESC") > /dev/null; then
               glab api projects/:fullpath/pipeline_schedules -X POST -f active="$ACTIVE" -f description="$DESC" -f ref="$REF" \
                 -f cron="$CRON" -f cron_timezone='{{.TIMEZONE}}' --silent
-              . .config/log success "Pipeline with description of `'""$DESC""'` successfully added"
+              . .config/log success "Pipeline with description of '${DESC}' successfully added"
             else
-              . .config/log info 'Pipeline with description of `'""$DESC""'` already added'
+              . .config/log info "Pipeline with description of '${DESC}' already added"
             fi
           done
         else
@@ -309,6 +335,7 @@ tasks:
       - gitlab:branches
       - gitlab:mirror
       - gitlab:integrations
+      - gitlab:ids
       - gitlab:pipelines
       - gitlab:update:meta
       - gitlab:wiki
