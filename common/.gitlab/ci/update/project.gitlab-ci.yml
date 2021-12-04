@@ -24,3 +24,4 @@ update:project:
     - task ci:submodules
     - task start
     - task ci:commit
+    - task ci:synchronize

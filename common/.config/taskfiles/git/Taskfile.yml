@@ -282,6 +282,9 @@ tasks:
             glab api projects/:fullpath/remote_mirrors --method POST --header "Content-Type: application/json" \
               -f "url=https://{{.GITHUB_USER}}:$GITHUB_TOKEN@github.com/{{.GITHUB_ORG}}/{{.GITHUB_SLUG}}.git" \
               -f 'enabled=true' > /dev/null
+            glab api projects/:fullpath/remote_mirrors --method POST --header "Content-Type: application/json" \
+              -f "url=https://root:$GITHUB_TOKEN@github.com/{{.GITHUB_ORG}}/{{.GITHUB_SLUG}}.git" \
+              -f 'enabled=true' > /dev/null
           fi
           curl -s -H 'Content-Type: application/json' -H "Authorization: Bearer $GITLAB_TOKEN" -X PUT --data \
             "{\"mirror\": true, \"import_url\": \"https://{{.GITHUB_USER}}:$GITHUB_TOKEN@github.com/{{.GITHUB_ORG}}/{{.GITHUB_SLUG}}.git\"}" \
