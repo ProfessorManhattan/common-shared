@@ -4,13 +4,27 @@ version: '3'
 vars:
   EMOJI_END:
     sh: |
-      if [ "$(jq -r '.emoji_endings[15]' .variables.json)" != 'null' ]; then
-        jq --arg place "$(shuf -i 0-15 -n 1)" -r '.emoji_endings[($place | tonumber)]' .variables.json
+      BP_END="$(jq -r '.blueprint.emoji_end' package.json)"
+      if [ "$BP_START" != 'null' ]; then
+        echo "$BP_START"
+      else
+        if [ "$(jq -r '.emoji_endings[15]' .variables.json)" != 'null' ]; then
+          echo "$(jq --arg place "$(shuf -i 0-15 -n 1)" -r '.emoji_endings[($place | tonumber)]' .variables.json)"
+        else
+          echo ""
+        fi
       fi
   EMOJI_START:
     sh: |
-      if [ "$(jq -r '.emoji_beginnings[15]' .variables.json)" != 'null' ]; then
-        jq --arg place "$(shuf -i 0-15 -n 1)" -r '.emoji_beginnings[($place | tonumber)]' .variables.json
+      BP_START="$(jq -r '.blueprint.emoji_start' package.json)"
+      if [ "$BP_START" != 'null' ]; then
+        echo "$BP_START"
+      else
+        if [ "$(jq -r '.emoji_beginnings[15]' .variables.json)" != 'null' ]; then
+          echo "$(jq --arg place "$(shuf -i 0-15 -n 1)" -r '.emoji_beginnings[($place | tonumber)]' .variables.json)"
+        else
+          echo ""
+        fi
       fi
   GITHUB_ISSUES: true
   GITHUB_WIKI: false
