@@ -4,6 +4,8 @@
 # @file .config/husky/pre-commit
 # @brief A git hook script for the `pre-commit` hook
 
+chmod +x .config/log
+
 .config/log info "Performing various pre-commit tasks on staged files (like autofixing, detecting private keys, etc.)"
 STAGED_FILES=$(git diff --cached --name-only)
 for FILE in "$STAGED_FILES"; do

@@ -87,6 +87,7 @@ tasks:
   husky:permissions:
     cmds:
       - |
+        if [ -f .config/log ]; then chmod +x .config/log; fi
         find ./.config/husky/* -maxdepth 0 -type f | while read PATHH; do
           chmod +x "$PATHH"
         done
