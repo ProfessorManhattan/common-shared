@@ -108,7 +108,7 @@ tasks:
     run: once
     env:
       LIST_GREP:
-        sh: npm list -g | grep '{{.NPM_PACKAGE}}'; echo $?
+        sh: if npm list -g | grep '{{.NPM_PACKAGE}}'; then echo "0"; else echo "1"; fi
     cmds:
       - |
         if [ "$LIST_GREP" == '1' ]; then
