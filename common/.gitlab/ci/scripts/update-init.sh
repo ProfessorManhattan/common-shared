@@ -19,8 +19,6 @@ fi
 rm -rf common-shared
 git clone --depth=1 https://gitlab.com/megabyte-labs/common/shared.git common-shared
 
-pip3 install xmlrpc
-
 # @description Refresh taskfiles and GitLab CI files
 mkdir -p .config
 rm -rf .config/taskfiles
