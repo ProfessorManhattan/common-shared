@@ -6,9 +6,9 @@ vars:
   EMOJI_END:
     sh: |
       if [ -f '.variables.json' ]; then
-        BP_END="$(jq -r '.blueprint.emoji_end' .variables.json)"
-        if [ "$BP_START" != 'null' ]; then
-          echo "$BP_START"
+        BP_END="$(jq -r '.emoji_end' .variables.json)"
+        if [ "$BP_END" != 'null' ]; then
+          echo "$BP_END"
         else
           if [ "$(jq -r '.emoji_endings[15]' .variables.json)" != 'null' ]; then
             echo "$(jq --arg place "$(shuf -i 0-15 -n 1)" -r '.emoji_endings[($place | tonumber)]' .variables.json)"
@@ -20,7 +20,7 @@ vars:
   EMOJI_START:
     sh: |
       if [ -f '.variables.json' ]; then
-        BP_START="$(jq -r '.blueprint.emoji_start' .variables.json)"
+        BP_START="$(jq -r '.emoji_start' .variables.json)"
         if [ "$BP_START" != 'null' ]; then
           echo "$BP_START"
         else
@@ -93,6 +93,7 @@ tasks:
           fi
         ignore_error: true
     sources:
+      - .variables.json
       - package.json
     preconditions:
       - sh: '[ "{{.DESCRIPTION}}" != "null" ]'
@@ -161,6 +162,7 @@ tasks:
         fi
     sources:
       - .config/common-keywords.json
+      - .variables.json
       - package.json
     preconditions:
       - sh: '[ "{{.DESCRIPTION}}" != "null" ]'
@@ -229,6 +231,7 @@ tasks:
           fi
         ignore_error: true
     sources:
+      - .variables.json
       - package.json
     preconditions:
       - sh: '[ "{{.DESCRIPTION}}" != "null" ]'
@@ -391,6 +394,7 @@ tasks:
           .config/log warn 'The `GITLAB_TOKEN` environment variable is not set so the GitLab repository cannot be updated via the API.'
         fi
     sources:
+      - .variables.json
       - package.json
     preconditions:
       - sh: '[ "{{.DESCRIPTION}}" != "null" ]'
