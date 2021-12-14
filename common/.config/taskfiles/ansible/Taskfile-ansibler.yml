@@ -33,8 +33,9 @@ tasks:
     deps:
       - :install:python:requirements
     cmds:
-      - |
-        {{.PYTHON_HANDLE}}ansibler --generate-compatibility-chart --molecule-results-dir '{{.MOLECULE_RESULTS_PATH}}' --json-file .cache/compatibility-chart.json
+      - >
+        {{.PYTHON_HANDLE}}ansibler --generate-compatibility-chart --molecule-results-dir '{{.MOLECULE_RESULTS_PATH}}'
+        --json-file .cache/compatibility-chart.json
     sources:
       - '{{.MOLECULE_RESULTS_PATH}}/*'
     generates:
