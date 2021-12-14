@@ -212,6 +212,11 @@
       "command": "bash .config/scripts/vscode.sh && task lint:ansible"
     },
     {
+      "label": "(lint:any): Generic linting of files for things like destroyed-symlinks, merge conflicts, etc.",
+      "type": "shell",
+      "command": "bash .config/scripts/vscode.sh && task lint:any"
+    },
+    {
       "label": "(lint:docker): Lint Dockerfiles using Hadolint (requires Docker)",
       "type": "shell",
       "command": "bash .config/scripts/vscode.sh && task lint:docker"
@@ -490,6 +495,11 @@
       "label": "(python:test): Runs tests with `pytest` after fixing and linting",
       "type": "shell",
       "command": "bash .config/scripts/vscode.sh && task python:test"
+    },
+    {
+      "label": "(scripts): Run and view descriptions for `npm scripts` via an interactive dialog",
+      "type": "shell",
+      "command": "bash .config/scripts/vscode.sh && task scripts"
     },
     {
       "label": "(security:bandit): Check for Python code security issues",
