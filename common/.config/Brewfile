@@ -8,56 +8,102 @@ tap "caskroom/cask"
 # e.g. `brew install <program>`
 # @brew [Act](https://github.com/nektos/act) - Run GitHub Actions locally
 brew "act"
+# @brew [Appium](https://appium.io/) - Automation For Apps
 brew "appium"
+# @brew [Bat](https://github.com/sharkdp/bat) - Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
+# @brew [Bitwarden-cli](https://github.com/bitwarden/cli) - Secure and free password manager for all of your devices
 brew "bitwarden-cli"
+# @brew [Croc](https://github.com/schollz/croc) - Securely send things from one computer to another
 brew "croc"
+# @brew [Curl](https://curl.se) - Get a file from an HTTP, HTTPS or FTP server
 brew "curl"
+# @brew [Dasel](https://github.com/TomWright/dasel) - JSON, YAML, TOML, XML, and CSV query and modification tool
 brew "dasel"
+# @brew [Direnv](https://github.com/direnv/direnv) - Load/unload environment variables based on $PWD
 brew "direnv"
+# @brew [Dive](https://github.com/wagoodman/dive) - Tool for exploring each layer in a docker image
 brew "dive"
 if OS.linux?
     brew "docker"
 end
+# @brew [Dockle](https://github.com/goodwithtech/dockle) - Container Image Linter for Security
 brew "dockle"
+# @brew [Dockle](https://github.com/goodwithtech/dockle) - Container Image Linter for Security
 brew "goodwithtech/r/dockle"
+# @brew [Exiftool](https://exiftool.org) - Perl lib for reading and writing EXIF metadata
 brew "exiftool"
+# @brew [Ffsend](https://github.com/timvisee/ffsend) - Fully featured Firefox Send client
 brew "ffsend"
+# @brew [Gh](https://github.com/cli/cli) - GitHub command line tool
 brew "gh"
+# @brew [Git](https://git-scm.com) - Distributed revision control system
 brew "git"
+# @brew [Gitleaks](https://github.com/zricethezav/gitleaks) - Audit git repos for secrets
 brew "gitleaks"
+# @brew [Glab](https://glab.readthedocs.io/) - Open-source GitLab command-line tool
 brew "glab"
+# @brew [Go](https://go.dev) - Open source programming language to build simple, reliable, efficient software
 brew "go"
+# @brew [Grex](https://github.com/pemistahl/grex) - Command-line tool for generating regular expressions
 brew "grex"
+# @brew [Htmlq](https://github.com/mgdm/htmlq) - Uses CSS selectors to extract bits content from HTML files
 brew "htmlq"
+# @brew [Hyperfine](https://github.com/sharkdp/hyperfine) - Command-line benchmarking tool
 brew "hyperfine"
+# @brew [Jo](https://github.com/jpmens/jo) - JSON output from a shell
 brew "jo"
+# @brew [Jq](https://stedolan.github.io/jq/) - Lightweight and flexible command-line JSON processor
 brew "jq"
+# @brew [Minio-mc](https://github.com/minio/mc) - Replacement for ls, cp and other commands for object storage
 brew "minio/stable/mc"
+# @brew [Mkcert](https://github.com/FiloSottile/mkcert) - Simple tool to make locally trusted development certificates
 brew "mkcert"
+# @brew [Node](https://nodejs.org/) - Platform built on V8 to build network applications
 brew "node"
+# @brew [Openssh](https://www.openssh.com/) - OpenBSD freely-licensed SSH connectivity tools
 brew "openssh"
+# @brew [Ots](https://ots.sniptt.com) - Share end-to-end encrypted secrets with others via a one-time URL
 brew "ots"
+# @brew [Oq](https://blacksmoke16.github.io/oq) - Performant, and portable jq wrapper to support formats other than JSON
 brew "oq"
+# @brew [Php](https://www.php.net/) - General-purpose scripting language
 brew "php", restart_service: true
+# @brew [Poetry](https://python-poetry.org/) - Python package management tool
 brew "poetry"
+# @brew [Pup](https://github.com/EricChiang/pup) - Parse HTML at the command-line
 brew "pup"
+# @brew [Python](https://www.python.org/) - Interpreted, interactive, object-oriented programming language python
 brew "python"
+# @brew [Rsync](https://rsync.samba.org/) - Utility that provides fast incremental file transfer
 brew "rsync"
+# @brew [Ruby](https://www.ruby-lang.org/) - Powerful, clean, object-oriented scripting language ruby
 brew "ruby"
+# @brew [Sshpass](https://github.com/hudochenkov/homebrew-sshpass) - sshpass formula for Homebrew
 brew "hudochenkov/sshpass/sshpass"
+# @brew [Sysbench](https://github.com/akopytov/sysbench) - System performance benchmark tool
 brew "sysbench"
+# @brew [Go-task](https://github.com/go-task/homebrew-tap) - Homebrew tap for Task
 brew "go-task/tap/go-task"
+# @brew [Teleport](https://github.com/bbatsche/homebrew-teleport) - Modern SSH server for teams managing distributed infrastructure
 brew "teleport"
+# @brew [Tokei](https://github.com/XAMPPRocky/tokei) - Program that allows you to count code, quickly
 brew "tokei"
+# @brew [Trivy](https://aquasecurity.github.io/trivy/v0.18.3/) - A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifacts
 brew "aquasecurity/trivy/trivy"
+# @brew [Up](https://github.com/akavel/up) - Tool for writing command-line pipes with instant live preview
 brew "up"
+# @brew [Waypoint](https://www.waypointproject.io/) - Tool to build, deploy, and release any application on any platform
 brew "hashicorp/tap/waypoint"
+# @brew [Wireshark](https://www.wireshark.org) - Graphical network analyzer and capture tool
 if OS.linux?
     brew "wireshark"
 end
+# @brew [Yarn](https://yarnpkg.com/) - JavaScript package manager
 brew "yarn"
+# @brew [Yq](https://github.com/mikefarah/yq) - Process YAML documents from the CLI
 brew "yq"
+# @brew [Coreutils](https://www.gnu.org/software/coreutils) - GNU File, Shell, and Text utilities
 if OS.mac?
     brew "coreutils"
 end
@@ -66,25 +112,44 @@ end
 # e.g. `brew install --cask <program>`
 # @cask [Docker](https://docker.com) - Description
 cask "altair"
+# @cask [Altair](https://altair.sirmuel.design/) - GraphQL client
 cask "balenaetcher"
+# @cask [Balenaetcher](https://balena.io/etcher) - Tool to flash OS images to SD cards & USB drives
 cask "bitwarden"
+# @cask [Bitwarden](https://bitwarden.com/) - Desktop password and login vault
 cask "docker"
+# @cask [Docker](https://docker.com) - App to build and share containerized applications and microservices
 cask "firefox"
+# @cask [Firefox](https://www.mozilla.org/firefox/) - Web browser
 cask "gimp"
+# @cask [Gimp](https://www.gimp.org/) - Free and open-source image editor
 cask "google-chrome"
+# @cask [Google-chrome](https://www.google.com/chrome/) - Web browser
 cask "iterm2"
+# @cask [Iterm2](https://www.iterm2.com/) - Terminal emulator as alternative to Apple's Terminal app
 cask "java" unless system "/usr/libexec/java_home --failfast"
 cask "lens"
+# @cask [Lens](https://k8slens.dev/) - Kubernetes IDE
 cask "microsoft-teams"
+# @cask [microsoft-teams](https://teams.microsoft.com/downloads) - Meet, chat, call, and collaborate in just one place
 cask "postman"
+# @cask [postman](https://www.postman.com/) - Collaboration platform for API development
 cask "slack"
+# @cask [slack](https://slack.com/) - Team communication and collaboration software
 cask "skype"
+# @cask [skype](https://www.skype.com/) - Video chat, voice call and instant messaging application
 cask "teamviewer"
+# @cask [teamviewer](https://www.teamviewer.com/) - Remote access and connectivity software focused on security
 cask "vagrant"
+# @cask [vagrant](https://www.vagrantup.com/) - Development environment
 cask "virtualbox"
+# @cask [virtualbox](https://www.virtualbox.org/) - Virtualizer for x86 hardware
 cask "visual-studio-code"
+# @cask [visual-studio-code](https://code.visualstudio.com/) - Open source code editor
 cask "vmware-fusion"
+# @cask [vmware-fusion](https://www.vmware.com/products/fusion.html) - Create, manage, and run virtual machines
 cask "wireshark"
+# @cask [wireshark](https://www.wireshark.org) - Graphical network analyzer and capture tool
 
 # Examples below
 # 'brew install --with-rmtp', 'brew services restart' on version changes
