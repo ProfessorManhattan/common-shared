@@ -252,6 +252,7 @@ tasks:
     deps:
       - :install:software:glab
       - :install:software:jq
+      - gitlab:create
     cmds:
       - |
         API_RES="$(glab api projects/:fullpath)"
@@ -264,8 +265,10 @@ tasks:
 
   gitlab:integrations:
     deps:
-      - gitlab:integrations:github
+      - gitlab:create
     run: once
+    cmds:
+      - task: gitlab:integrations:github
 
   gitlab:integrations:github:
     deps:
