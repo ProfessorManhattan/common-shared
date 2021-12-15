@@ -107,6 +107,7 @@ tasks:
     deps:
       - :install:software:gh
       - :install:software:jq
+      - github:create
     cmds:
       - |
         PROJECT_ID="$(gh repo view --json id | jq -r '.id')"
@@ -349,6 +350,8 @@ tasks:
       - package.json
 
   gitlab:pipelines:clear:
+    deps:
+      - gitlab:create
     cmds:
       - |
         TMP="$(mktemp)"
