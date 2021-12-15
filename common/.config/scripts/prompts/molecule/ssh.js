@@ -9,7 +9,7 @@ import { logInstructions, LOG_DECORATOR_REGEX } from '../lib/log.js'
  * @returns {string} The operating system string, lowercased
  */
 async function promptForSSHDetails() {
-  return await inquirer.prompt([
+  return inquirer.prompt([
     {
       message: 'What is the target\'s IP address or FQDN?',
       name: 'host',
