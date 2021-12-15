@@ -1,3 +1,4 @@
+import chalk from 'chalk'
 import inquirer from 'inquirer'
 import { execSync } from 'node:child_process'
 import { logInstructions, LOG_DECORATOR_REGEX } from '../lib/log.js'
@@ -8,7 +9,7 @@ import { logInstructions, LOG_DECORATOR_REGEX } from '../lib/log.js'
  * @returns {string} The operating system string, lowercased
  */
 async function promptForSSHDetails() {
-  const response = await inquirer.prompt([
+  return await inquirer.prompt([
     {
       message: 'What is the target\'s IP address or FQDN?',
       name: 'host',
@@ -33,8 +34,6 @@ async function promptForSSHDetails() {
       default: '22'
     }
   ])
-
-  return response
 }
 
 /**
@@ -48,7 +47,7 @@ async function run() {
       ' and password. Before running this test, you should ensure that you can already connect to the machine' +
       ' via SSH (i.e. the ~/.ssh keys should already be set up).'
   )
-  const environment = await promptForSSHDetails()
+  const details = await promptForSSHDetails()
   execSync(`TEST_HOST=${details.host} TEST_PASSWORD=${details.password} TEST_PORT=${details.port}
     TEST_SSH_USER=${details.user} TEST_USER=${details.user} task ansible:test:molecule:ssh:cli`, { stdio: 'inherit' })
 }

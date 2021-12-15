@@ -1,7 +1,10 @@
+import chalk from 'chalk'
 import inquirer from 'inquirer'
 import { execSync } from 'node:child_process'
 import { decorateSystem } from '../lib/decorate-system.js'
 import { logInstructions, LOG_DECORATOR_REGEX } from '../lib/log.js'
+
+const MENU_ENTRY_TITLE_WIDTH = 24
 
 /**
  * Prompts the user for the environment group they would like to target
@@ -10,7 +13,8 @@ import { logInstructions, LOG_DECORATOR_REGEX } from '../lib/log.js'
  */
 async function promptForGroup() {
   const groups = JSON.parse(execSync("yq eval -o=j '.groups' molecule/default/molecule.yml"))
-  const choices = Object.keys(groups).map(key => key.padEnd(24) + chalk.gray(groups[key]))
+  // eslint-disable-next-line security/detect-object-injection
+  const choices = Object.keys(groups).map(key => key.padEnd(MENU_ENTRY_TITLE_WIDTH) + chalk.gray(groups[key]))
   const choicesDecorated = choices.map((choice) => decorateSystem(choice))
   const response = await inquirer.prompt([
     {

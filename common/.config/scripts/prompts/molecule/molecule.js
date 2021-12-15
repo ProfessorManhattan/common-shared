@@ -1,7 +1,10 @@
+import chalk from 'chalk'
 import inquirer from 'inquirer'
 import { execSync } from 'node:child_process'
 import { decorateSystem } from '../lib/decorate-system.js'
 import { logInstructions, LOG_DECORATOR_REGEX } from '../lib/log.js'
+
+const MENU_ENTRY_TITLE_WIDTH = 24
 
 /**
  * Prompts the user for the type of Molecule test they wish to perform
@@ -10,8 +13,9 @@ import { logInstructions, LOG_DECORATOR_REGEX } from '../lib/log.js'
  */
 async function promptForTestType() {
   const descriptionMap = ['VirtualBox (Headless)', 'VirtualBox (Desktop)', 'Docker', 'Local', 'SSH']
+  // eslint-disable-next-line security/detect-object-injection
   const choices = execSync(`yq eval -o=j '.description' molecule/*/molecule.yml`).split('\n').map(
-    (description, index) => descriptionMap[index].padEnd(24) + chalk.gray(description.slice(1,-1))
+    (description, index) => descriptionMap[index].padEnd(MENU_ENTRY_TITLE_WIDTH) + chalk.gray(description.slice(1,-1))
   )
   const choicesDecorated = choices.map((choice) => decorateSystem(choice))
   const response = await inquirer.prompt([
