@@ -73,6 +73,7 @@ tasks:
     deps:
       - :install:software:gh
       - :install:software:jq
+      - remotes
     vars:
       DESCRIPTION:
         sh: jq -r '.description' package.json
@@ -90,6 +91,9 @@ tasks:
             gh repo create "{{.GITHUB_SLUG}}" --enable-wiki={{.GITHUB_WIKI}} -y --description "{{.EMOJI_START}}{{.DESCRIPTION}}{{.EMOJI_END}}" \
               --homepage "{{.HOMEPAGE}}" {{.PROJECT_TYPE}} > /dev/null
             .config/log success 'Created a GitHub repository for {{.GITHUB_SLUG}}'
+            git add --all
+            git commit -m "Birth" --no-verify
+            git push github master
           fi
         ignore_error: true
     sources:
@@ -219,6 +223,7 @@ tasks:
     deps:
       - :install:software:glab
       - :install:software:jq
+      - remotes
     vars:
       DESCRIPTION:
         sh: jq -r '.description' package.json
@@ -240,6 +245,9 @@ tasks:
             NO_PROMPT=1 glab repo create '{{.GITLAB_PATH}}' --group '{{.GITLAB_GROUP}}' \
               --description '{{.EMOJI_START}}{{.DESCRIPTION}}{{.EMOJI_END}}' --name '{{.NAME}}' \
               {{.PROJECT_TYPE}} --tag "$KEYWORDS"
+            git add --all
+            git commit -m "Birth" --no-verify
+            git push gitlab master
           fi
         ignore_error: true
     sources:
@@ -444,6 +452,7 @@ tasks:
         msg: The `.group` variable in `.variables.json` must be set.
 
   remotes:
+    run: once
     deps:
       - :install:software:git
       - :install:software:jq
