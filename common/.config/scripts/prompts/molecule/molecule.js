@@ -12,13 +12,18 @@ const MENU_ENTRY_TITLE_WIDTH = 24
  * @returns {string} The type of test, lowercased
  */
 async function promptForTestType() {
+  const DECORATION_LENGTH = 2
+
   const descriptionMap = ['VirtualBox (Headless)', 'VirtualBox (Desktop)', 'Docker', 'Local', 'SSH']
   const choices = execSync(`yq eval -o=j '.description' molecule/*/molecule.yml`).toString()
     .split('\n').filter(value => value !== 'null' && value !== '').map(
       // eslint-disable-next-line security/detect-object-injection
       (description, index) => descriptionMap[index].padEnd(MENU_ENTRY_TITLE_WIDTH) + chalk.gray(description.slice(1,-1))
   )
-  const choicesDecorated = choices.map((choice) => decorateSystem(choice))
+  const choicesDecorated = choices.map((choice) => ({
+    name: choice,
+    short: choice.replace(LOG_DECORATOR_REGEX, '').toLowerCase().slice(DECORATION_LENGTH).split(" ")[0]
+  }))
   const response = await inquirer.prompt([
     {
       choices: choicesDecorated,
@@ -28,9 +33,7 @@ async function promptForTestType() {
     }
   ])
 
-  const DECORATION_LENGTH = 2
-
-  return response.testType.replace(LOG_DECORATOR_REGEX, '').toLowerCase().slice(DECORATION_LENGTH)
+  return response.testType.replace(LOG_DECORATOR_REGEX, '').toLowerCase().slice(DECORATION_LENGTH).split(" ")[0]
 }
 
 /**
