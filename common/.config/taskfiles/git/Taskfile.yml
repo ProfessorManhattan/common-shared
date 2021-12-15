@@ -455,6 +455,7 @@ tasks:
       GITLAB_REPO:
         sh: jq -r '.blueprint.repository.gitlab' package.json | sed 's/^https:\/\//git@/' | sed 's/gitlab.com\//gitlab.com:/'
     cmds:
+      - git init
       - |
         if [ ! -z "$GITLAB_REPO" ]; then
           if git config remote.origin.url > /dev/null; then
