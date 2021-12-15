@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import inquirer from 'inquirer'
 import { execSync } from 'node:child_process'
-import { logInstructions, LOG_DECORATOR_REGEX } from '../lib/log.js'
+import { info, logInstructions, LOG_DECORATOR_REGEX } from '../lib/log.js'
 
 /**
  * Prompts the user for details required for provisioning via SSH
@@ -9,7 +9,7 @@ import { logInstructions, LOG_DECORATOR_REGEX } from '../lib/log.js'
  * @returns {string} The operating system string, lowercased
  */
 async function promptForSSHDetails() {
-  return inquirer.prompt([
+  const response = await inquirer.prompt([
     {
       message: 'What is the target\'s IP address or FQDN?',
       name: 'host',
@@ -34,6 +34,9 @@ async function promptForSSHDetails() {
       default: '22'
     }
   ])
+  info('SSH connection details acquired')
+
+  return response
 }
 
 /**
