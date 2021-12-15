@@ -236,7 +236,7 @@ tasks:
           KEYWORDS="$(jq -r '.keywords | tostring' package.json | sed 's/\[//' | sed 's/\]//')"
           if [ ! -z "$GITLAB_TOKEN" ] && test -e .git && ! glab repo view '{{.GITLAB_PATH}}' > /dev/null; then
             glab repo create '{{.GITLAB_PATH}}' --group '{{.GITLAB_GROUP}}' --description '{{.EMOJI_START}}{{.DESCRIPTION}}{{.EMOJI_END}}' --name '{{.NAME}}' \
-              {{.PROJECT_TYPE}} --tag '$KEYWORDS'
+              {{.PROJECT_TYPE}} --tag "$KEYWORDS"
           fi
         ignore_error: true
     sources:
