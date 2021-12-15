@@ -4,26 +4,27 @@ import { decorateSystem } from '../lib/decorate-system.js'
 import { logInstructions, LOG_DECORATOR_REGEX } from '../lib/log.js'
 
 /**
- * Prompts the user for the operating system they wish to launch and test the
- * Ansible play against.
+ * Prompts the user for the environment group they would like to target
  *
- * @returns {string} The operating system string, lowercased
+ * @returns {string} The environment group string, lowercased
  */
-async function promptForDesktop() {
-  const choices = ['Archlinux', 'CentOS', 'Debian', 'Fedora', 'macOS', 'Ubuntu', 'Windows']
+async function promptForGroup() {
+  const groups = JSON.parse(execSync("yq eval -o=j '.groups' molecule/default/molecule.yml"))
+  const choices = Object.keys(groups).map(key => key.padEnd(24) + chalk.gray(groups[key]))
   const choicesDecorated = choices.map((choice) => decorateSystem(choice))
   const response = await inquirer.prompt([
     {
       choices: choicesDecorated,
-      message: 'Which desktop operating system would you like to test the Ansible play against?',
-      name: 'operatingSystem',
+      message: 'What environment(s) would you like to target with this test?',
+      name: 'group',
       type: 'list'
     }
   ])
 
   const DECORATION_LENGTH = 2
 
-  return response.operatingSystem.replace(LOG_DECORATOR_REGEX, '').toLowerCase().slice(DECORATION_LENGTH)
+  return response.group.replace(LOG_DECORATOR_REGEX, '')
+    .toLowerCase().slice(DECORATION_LENGTH).split(" ")[0]
 }
 
 /**
@@ -38,8 +39,8 @@ async function run() {
       ' all the tests at once. This type of test is used to generate the compatibility chart so the results' +
       ' of this type of test have the final say.'
   )
-  const environment = await promptForDesktop()
-  execSync(`task ansible:test:molecule:virtualbox:converge:cli -- ${environment}`, { stdio: 'inherit' })
+  const group = await promptForGroup()
+  execSync(`task ansible:test:molecule:virtualbox:cli -- ${group}`, { stdio: 'inherit' })
 }
 
 run()

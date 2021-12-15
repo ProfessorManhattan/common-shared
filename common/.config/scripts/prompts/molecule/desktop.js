@@ -10,7 +10,8 @@ import { logInstructions, LOG_DECORATOR_REGEX } from '../lib/log.js'
  * @returns {string} The operating system string, lowercased
  */
 async function promptForDesktop() {
-  const choices = ['Archlinux', 'CentOS', 'Debian', 'Fedora', 'macOS', 'Ubuntu', 'Windows']
+  const groups = JSON.parse(execSync("yq eval -o=j '.groups' molecule/desktop/molecule.yml"))
+  const choices = Object.keys(groups).map(key => key.padEnd(24) + chalk.gray(groups[key]))
   const choicesDecorated = choices.map((choice) => decorateSystem(choice))
   const response = await inquirer.prompt([
     {
@@ -23,7 +24,8 @@ async function promptForDesktop() {
 
   const DECORATION_LENGTH = 2
 
-  return response.operatingSystem.replace(LOG_DECORATOR_REGEX, '').toLowerCase().slice(DECORATION_LENGTH)
+  return response.operatingSystem.replace(LOG_DECORATOR_REGEX, '')
+    .toLowerCase().slice(DECORATION_LENGTH).split(" ")[0]
 }
 
 /**
