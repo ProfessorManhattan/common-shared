@@ -6,10 +6,10 @@ tasks:
     deps:
       - ':{{if eq .REPOSITORY_TYPE "packer"}}packer:update:descriptions{{else}}donothing{{end}}'
       - files
-      - :git:remotes
       - :install:tslib
       - :python:requirementstxt
     cmds:
+      - task: :git:remotes
       - task: all:docs
 
   all:docs:
