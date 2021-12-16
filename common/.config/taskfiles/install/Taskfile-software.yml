@@ -15,8 +15,6 @@ tasks:
     run: once
     cmds:
       - task: brew:{{OS}}
-    status:
-      - type brew &> /dev/null || [[ "${container:=}" == "docker" ]]
 
   brew:cask:
     deps:
@@ -43,6 +41,15 @@ tasks:
           chmod -R go-w "$(brew --prefix)/share/zsh"
           .config/log success "Successfully installed Homebrew"
         fi
+      - task: brew:utils
+    status:
+      - type brew &> /dev/null || [[ "${container:=}" == "docker" ]]
+      - type gcp > /dev/null
+      - type gfind > /dev/null
+      - type gsed > /dev/null
+      - type ggrep > /dev/null
+      - type gtar > /dev/null
+      - type ggawk > /dev/null
 
   brew:formulae:
     deps:
@@ -88,6 +95,14 @@ tasks:
           brew update --force --quiet
           ensureSource "$SHELL_PROFILE"
         fi
+    status:
+      - type brew &> /dev/null || [[ "${container:=}" == "docker" ]]
+
+  brew:utils:
+    cmds:
+      - .config/log info "Installing GNU-compatibility tools for macOS via Homebrew"
+      - brew install coreutils findutils gnu-indent gnu-sed gnutls grep gnu-tar gawk
+      - .config/log success "Successfully installed GNU-compatibility tools"
 
   brew:windows:
     cmds:
@@ -101,27 +116,12 @@ tasks:
   common:darwin:
     cmds:
       - task: common:darwin:xcode
-      - task: common:darwin:utils
-
-  common:darwin:utils:
-    deps:
-      - brew
-    cmds:
-      - .config/log info "Installing GNU-compatibility tools for macOS via Homebrew"
-      - brew install coreutils findutils gnu-indent gnu-sed gnutls grep gnu-tar gawk
-      - .config/log success "Successfully installed GNU-compatibility tools"
-    status:
-      - type gcp > /dev/null
-      - type gfind > /dev/null
-      - type gsed > /dev/null
-      - type ggrep > /dev/null
-      - type gtar > /dev/null
-      - type ggawk > /dev/null
 
   common:darwin:xcode:
-    interactive: true
     cmds:
+      - .config/log info "Installing xcode-select"
       - xcode-select --install
+      - .config/log success "Successfully installed xcode-select"
     status:
       - xcode-select -p 1> /dev/null
 
