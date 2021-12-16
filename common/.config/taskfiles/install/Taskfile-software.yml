@@ -98,6 +98,25 @@ tasks:
   common:darwin:
     interactive: true
     cmds:
+      - task: common:darwin:xcode
+      - task: common:darwin:utils
+
+  common:darwin:utils:
+    deps:
+      - brew
+    cmds:
+      - brew install coreutils findutils gnu-indent gnu-sed gnutls grep gnu-tar gawk
+    status:
+      - type gcp > /dev/null
+      - type gfind > /dev/null
+      - type gsed > /dev/null
+      - type ggrep > /dev/null
+      - type gtar > /dev/null
+      - type ggawk > /dev/null
+
+  common:darwin:xcode:
+    interactive: true
+    cmds:
       - xcode-select --install
     status:
       - xcode-select -p 1> /dev/null
