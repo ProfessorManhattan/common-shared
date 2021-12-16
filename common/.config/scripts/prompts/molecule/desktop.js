@@ -16,11 +16,13 @@ async function promptForDesktop() {
   const DECORATION_LENGTH = 2
 
   const groups = JSON.parse(execSync("yq eval -o=j '.groups' molecule/desktop/molecule.yml"))
-  // eslint-disable-next-line security/detect-object-injection
-  const choices = Object.keys(groups).map(key => decorateSystem(key.padEnd(MENU_ENTRY_TITLE_WIDTH) + chalk.gray(groups[key])))
+  const choices = Object.keys(groups).map((key) =>
+    // eslint-disable-next-line security/detect-object-injection
+    decorateSystem(key.padEnd(MENU_ENTRY_TITLE_WIDTH) + chalk.gray(groups[key]))
+  )
   const choicesDecorated = choices.map((choice) => ({
     name: choice,
-    short: choice.replace(LOG_DECORATOR_REGEX, '').toLowerCase().slice(DECORATION_LENGTH).split(" ")[0]
+    short: choice.replace(LOG_DECORATOR_REGEX, '').toLowerCase().slice(DECORATION_LENGTH).split(' ')[0]
   }))
   const response = await inquirer.prompt([
     {
@@ -31,8 +33,7 @@ async function promptForDesktop() {
     }
   ])
 
-  return response.operatingSystem.replace(LOG_DECORATOR_REGEX, '')
-    .toLowerCase().slice(DECORATION_LENGTH).split(" ")[0]
+  return response.operatingSystem.replace(LOG_DECORATOR_REGEX, '').toLowerCase().slice(DECORATION_LENGTH).split(' ')[0]
 }
 
 /**
