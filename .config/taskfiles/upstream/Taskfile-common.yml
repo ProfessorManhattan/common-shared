@@ -50,14 +50,16 @@ tasks:
 
   copy:common:
     env:
-      PATH: "$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
+      PATH: 
+        sh: echo "$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
     cmds:
       - cp -rT ./{{.SHARED_FOLDER}}/common/ .
       - task: :common:husky:permissions
 
   copy:project:
     env:
-      PATH: "$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
+      PATH:
+        sh: echo "$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
     cmds:
       - cp -rT ./{{.SHARED_FOLDER}}/common ./{{.COMMON_FOLDER}}
       - if [ ! -d project ]; then mkdir project; fi
@@ -65,7 +67,8 @@ tasks:
 
   copy:project:subtype:
     env:
-      PATH: "$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
+      PATH:
+        sh: echo "$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
     cmds:
       - |
         for FOLDER in project-*/; do
