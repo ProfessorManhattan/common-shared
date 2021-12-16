@@ -8,8 +8,7 @@ vars:
 tasks:
   boilerplate:
     env:
-      PATH:
-        sh: "$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
+      PATH: "$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
     cmds:
       - |
         if [ "$(jq -r '.blueprint.boilerplate' package.json)" == 'true' ]; then
@@ -43,8 +42,7 @@ tasks:
 
   copy:
     env:
-      PATH:
-        sh: "$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
+      PATH: "$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
     cmds:
       - cp -rT {{.SHARED_FOLDER}}/_generated_/common .
       - cp -rT {{.SHARED_FOLDER}}/_generated_/{{.REPOSITORY_SUBTYPE}} .
