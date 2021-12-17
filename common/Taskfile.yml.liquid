@@ -54,6 +54,17 @@ tasks:
           bash <(curl -s \{{.INIT_SCRIPT}})
         fi
 
+  preload:
+    deps:
+      - install:brewfile
+    desc: Set up your workstation in advance by installing commonly used programs
+    cmds:
+      - |
+        task install:modules:global &
+        task install:pipx:global &
+        wait
+        .config/log success 'Successfully preloaded commonly used system applications'
+
   prepare:
     desc: Prepares the project for the normal start command
     cmds:

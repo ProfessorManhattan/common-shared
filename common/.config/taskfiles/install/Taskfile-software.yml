@@ -348,6 +348,36 @@ tasks:
         vars:
           FORMULAE: node
 
+  pipx:
+    run: once
+    cmds:
+      - task: pipx:{{OS}}
+    status:
+      - type pipx > /dev/null
+
+  pipx:darwin:
+    deps:
+      - brew
+    cmds:
+      - .config/log info 'Installing pipx and running `pipx ensurepath`'
+      - brew install pipx
+      - pipx ensurepath
+      - .config/log success 'Successfully installed pipx'
+
+  pipx:linux:
+    deps:
+      - :install:software:python
+    cmds:
+      - .config/log info 'Installing pipx and running `pipx ensurepath`'
+      - python3 -m pip install --user pipx
+      - python3 -m pipx ensurepath
+      - .config/log success 'Successfully installed pipx'
+
+  pipx:windows:
+    cmds:
+      - .config/log error 'These scripts are not currently compatible with Windows. Try using WSL.'
+      - exit 1
+
   poetry:
     run: once
     cmds:
