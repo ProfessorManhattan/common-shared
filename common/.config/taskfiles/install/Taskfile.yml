@@ -6,7 +6,7 @@ tasks:
     cmds:
       - |
         if ! type {{.SOFTWARE}} &> /dev/null; then
-          .config/log info 'Using https://install.doctor to install `{{.SOFTWARE}}`'
+          .config/log info 'Installing `{{.SOFTWARE}}` via `curl -sS https://install.doctor/{{.SOFTWARE}} | bash`'
           curl -sS https://install.doctor/{{.SOFTWARE}} | bash
         fi
     status:
@@ -41,9 +41,11 @@ tasks:
       - :install:npm:cz-emoji
     run: once
     cmds:
+      - .config/log info 'Installing local NPM dependencies'
       - cmd: '{{.NPM_PROGRAM_LOCAL}} i --shamefully-hoist --no-frozen-lockfile'
         ignore_error: true
       - task: modules:local:sync
+      - .config/log success 'Successfully installed local NPM dependencies'
     sources:
       - package.json
 
@@ -76,6 +78,7 @@ tasks:
         if [ "$REFRESH_PACKAGES" == 'true' ]; then
           .config/log info "Updating NPM packages configured to sync with latest version since one or more of them have an update available"
           {{.NPM_PROGRAM_LOCAL}} update "$PACKAGE_LIST"
+          .config/log success "Successfully ensured the following NPM packages are the latest version - `$PACKAGE_LIST`"
         else
           .config/log info "NPM packages configured to sync with latest version are all up-to-date"
         fi
