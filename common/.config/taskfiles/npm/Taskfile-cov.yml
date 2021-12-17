@@ -56,5 +56,5 @@ tasks:
       - :install:npm:codecov
     desc: Uploads code coverage report to `codecov.io`
     cmds:
-      -  .config/log info 'Running `codecov`'
+      - .config/log info 'Running `codecov`'
       - '{{.NPX_HANDLE}}codecov'
