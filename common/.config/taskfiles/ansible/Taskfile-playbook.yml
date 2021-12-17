@@ -28,7 +28,7 @@ tasks:
             fi
             LINK="$(echo $COMMENT | sed 's/ - .*//')"
             DESCRIPTION="$(echo $COMMENT | sed 's/.* - //')"
-            CHART="${CHART}[\"**$LINK\**",\"$DESCRIPTION\"]"
+            CHART="${CHART}[\\"**$LINK\**",\\"$DESCRIPTION\\"]"
           done
           CHART="${CHART}]"
           TMP="$(mktemp)"
