@@ -16,7 +16,7 @@ tasks:
       }
       ```
     vars:
-      DOC_IDS: '@binary,@brew,@cask,@chrome,@gem,@helm,@hostapp,@htpc,@npm,@pypi,@vscode'
+      DOC_IDS: '@binary,@brew,@cask,@chrome,@firefox,@gem,@helm,@npm,@pypi,@vscode'
     cmds:
       - |
         function populateChartVar() {
@@ -32,7 +32,8 @@ tasks:
           done
           CHART="${CHART}]"
           TMP_CHART="$(mktemp)"
-          jq --arg chart "$CHART" --arg key "${2}_var_chart" '.[$key] = ($chart | fromjson)' .variables.json > "$TMP_CHART"
+          KEY="$(echo $2 | sed 's/^@//')"
+          jq --arg chart "$CHART" --arg key "${KEY}_var_chart" '.[$key] = ($chart | fromjson)' .variables.json > "$TMP_CHART"
           mv "$TMP_CHART" .variables.json
         }
         TMP="$(mktemp)"
