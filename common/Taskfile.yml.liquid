@@ -58,12 +58,34 @@ tasks:
     deps:
       - install:brewfile
     desc: Set up your workstation in advance by installing commonly used programs
+    summary: |
+      # Speed up future development by preloading system applications
+
+      Just about every development task requires some sort of globally installed
+      application. TypeScript requires Node.js to be installed. Ansible requires
+      a handful of CLIs (and Python). This task will check for missing applications
+      and install them globally. If you do not run this task, the routines will
+      assume you want to keep the footprint small and use disposable virtual
+      environments whenever possible (i.e. {{.NPX_PACKAGE}} in the case of Node.js,
+      poetry in the case of Python, etc.).
+
+      Some software that is installed, like VirtualBox and Docker, require reboots so
+      it is recommended that you reboot after running this task.
+
+      This installation method and all the methods we use will only prompt for a sudo
+      password when absolutely necessary. If you already have common development tools
+      it is possible that you will not even have to enter a sudo password. This is
+      accomplished by installing to `$HOME/.local/bin` whenever a traditionally system
+      level binary is installed. However, if you are missing something like git, then
+      chances are you will be asked for a sudo password. In this case, we recommend
+      you adopt the Megabyte Labs philosophy and inspect the code before running it.
     cmds:
       - |
         task install:modules:global &
         task install:pipx:global &
         wait
         .config/log success 'Successfully preloaded commonly used system applications'
+        .config/log info 'Some software that requires a reboot may have been installed - rebooting would be prudent'
 
   prepare:
     desc: Prepares the project for the normal start command
