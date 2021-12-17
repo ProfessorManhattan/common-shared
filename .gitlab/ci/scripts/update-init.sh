@@ -23,8 +23,8 @@ git clone --depth=1 https://gitlab.com/megabyte-labs/common/shared.git common-sh
 mkdir -p .config
 rm -rf .config/taskfiles
 if [[ "$OSTYPE" == 'darwin'* ]]; then
-  cp -rf common-shared/common/.config/taskfiles/ .config/
-  cp -rf common-shared/common/.config/scripts/ .config/
+  cp -rf common-shared/common/.config/taskfiles .config
+  cp -rf common-shared/common/.config/scripts .config
 else
   cp -rT common-shared/common/.config/taskfiles .config/taskfiles
   cp -rT common-shared/common/.config/scripts .config/scripts
@@ -32,7 +32,7 @@ fi
 mkdir -p .gitlab
 rm -rf .gitlab/ci
 if [[ "$OSTYPE" == 'darwin'* ]]; then
-  cp -rf common-shared/common/.gitlab/ci/ .gitlab/
+  cp -rf common-shared/common/.gitlab/ci .gitlab
 else
   cp -rT common-shared/common/.gitlab/ci .gitlab/ci
 fi
@@ -78,6 +78,10 @@ if [ "$(jq -r '.blueprint.group' package.json)" == 'documentation' ]; then
   TMP="$(mktemp)" && jq '.eslintConfig.rules["import/no-extraneous-dependencies"] = "off"' package.json > "$TMP" && mv "$TMP" package.json
 fi
 
+if [ -f meta/main.yml ]; then
+  yq eval -i '.galaxy_info.min_ansible_version = 2.10' meta/main.yml
+fi
+
 # @description Re-generate the Taskfile.yml if it has invalid includes
 echo "Ensuring Taskfile is properly configured"
 task donothing || EXIT_CODE=$?
@@ -101,6 +105,8 @@ rm -f .update.sh
 rm -f .yamllint
 rm -f requirements.txt
 rm -f .config/eslintcache
+rm -f CODE_OF_CONDUCT.md
+rm -f CONTRIBUTING.md
 rm -rf .common
 rm -rf .config/esbuild
 rm -rf .pnpm-store
@@ -121,6 +127,13 @@ rm -rf molecule/fedora-desktop
 rm -rf molecule/macos-desktop
 rm -rf molecule/ubuntu-desktop
 rm -rf molecule/windows-desktop
+rm -f molecule/default/converge.yml
+rm -f molecule/default/prepare.yml
+rm -f molecule/docker/converge.yml
+rm -f molecule/docker/prepare.yml
+rm -f .github/workflows/macOS.yml
+rm -f .config/docs/CODE_OF_CONDUCT.md
+rm -f .config/docs/CONTRIBUTING.md
 if test -d .config/docs; then
   cd .config/docs || exit
   rm -rf .git .config .github .gitlab .vscode .editorconfig .gitignore .gitlab-ci.yml

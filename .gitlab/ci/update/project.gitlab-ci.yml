@@ -1,7 +1,7 @@
 ---
 update:project:
   stage: update
-  image: megabytelabs/updater:slim
+  image: $UPDATER_IMAGE
   rules:
     - if: $DO_CI == 'false'
       when: never
@@ -18,11 +18,12 @@ update:project:
       - .pnpm-store/
       - .venv/
   before_script:
+    - if [ "$UPDATER_IMAGE" != 'megabytelabs/updater:slim' ]; then bash .config/scripts/start.sh; fi
     - if [ -n "$UPDATE_INIT_SCRIPT" ]; then curl -s "$UPDATE_INIT_SCRIPT" | bash; fi
     - task ci:before
   script:
     - task ci:submodules
     - task start
-    - if [ "$UPDATE_SERVICES" == 'true' ]; then task services; fi
+    - if [ "$REPOSITORY_UPDATE" == 'true' ]; then task services; fi
     - task ci:commit
     - task ci:synchronize

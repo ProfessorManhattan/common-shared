@@ -123,7 +123,6 @@ tasks:
         msg: The `roles/` folder is missing. Is the project set up right?
 
   remotes:
-    run: once
     deps:
       - :install:software:git
       - :install:software:jq
@@ -136,6 +135,7 @@ tasks:
 
       It also adds a remote for a private submodule that is intended to store
       files that are not meant to be shared. The remote is named `private`.
+    run: once
     cmds:
       - git init
       - |

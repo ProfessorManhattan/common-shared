@@ -2,9 +2,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "(ansible:playbook:environment:cli): Prompts for which environment to use and then symlinks to it",
+      "label": "(ansible:playbook:environment): Prompts for which environment to use and then symlinks to it",
       "type": "shell",
-      "command": "bash .config/scripts/vscode.sh && task ansible:playbook:environment:cli"
+      "command": "bash .config/scripts/vscode.sh && task ansible:playbook:environment"
     },
     {
       "label": "(ansible:playbook:find-missing): Find roles that are missing files",
@@ -120,6 +120,11 @@
       "label": "(docker:build:slim): Build a slim version of the Docker image",
       "type": "shell",
       "command": "bash .config/scripts/vscode.sh && task docker:build:slim"
+    },
+    {
+      "label": "(docker:test:container-structure-test): Runs ContainerStructureTest for Dockerfile build",
+      "type": "shell",
+      "command": "bash .config/scripts/vscode.sh && task docker:test:container-structure-test"
     },
     {
       "label": "(fix:eslint): Fix JavaScript/TypeScript errors automatically",
@@ -515,6 +520,11 @@
       "label": "(security:gitleaks): Scans repository (including git history) for possible leaked keys",
       "type": "shell",
       "command": "bash .config/scripts/vscode.sh && task security:gitleaks"
+    },
+    {
+      "label": "(security:grype): Scan container images and file systems for security issues using Grype",
+      "type": "shell",
+      "command": "bash .config/scripts/vscode.sh && task security:grype"
     },
     {
       "label": "(security:private-keys): Scan for private keys",
