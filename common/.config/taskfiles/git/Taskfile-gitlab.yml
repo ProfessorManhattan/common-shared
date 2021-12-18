@@ -78,22 +78,6 @@ tasks:
       - sh: '[ "{{.NAME}}" != "null" ]'
         msg: The `.blueprint.name` variable in `package.json` must be set.
 
-  ids:
-    deps:
-      - :install:software:glab
-      - :install:software:jq
-      - create
-    cmds:
-      - |
-        API_RES="$(glab api projects/:fullpath)"
-        PROJECT_ID="$(echo "$API_RES" | jq '.id')"
-        TMP="$(mktemp)" && jq --arg projectId "$PROJECT_ID" '.blueprint.gitlab_project_id = $projectId' package.json > "$TMP"
-        mv "$TMP" package.json
-        GROUP_ID="$(echo "$API_RES" | jq '.namespace.id')"
-        TMP="$(mktemp)" && jq --arg groupId "$GROUP_ID" '.blueprint.gitlab_group_id = $groupId' package.json > "$TMP"
-        mv "$TMP" package.json
-        .config/log success 'Added GitLab project ID to package.json'
-
   group:exec:
     desc: Execute a shell script across all repositories in a group and commit the changes
     summary: |
@@ -176,6 +160,22 @@ tasks:
           done
         fi
         wait
+
+  ids:
+    deps:
+      - :install:software:glab
+      - :install:software:jq
+      - create
+    cmds:
+      - |
+        API_RES="$(glab api projects/:fullpath)"
+        PROJECT_ID="$(echo "$API_RES" | jq '.id')"
+        TMP="$(mktemp)" && jq --arg projectId "$PROJECT_ID" '.blueprint.gitlab_project_id = $projectId' package.json > "$TMP"
+        mv "$TMP" package.json
+        GROUP_ID="$(echo "$API_RES" | jq '.namespace.id')"
+        TMP="$(mktemp)" && jq --arg groupId "$GROUP_ID" '.blueprint.gitlab_group_id = $groupId' package.json > "$TMP"
+        mv "$TMP" package.json
+        .config/log success 'Added GitLab project ID to package.json'
 
   integrations:
     deps:
