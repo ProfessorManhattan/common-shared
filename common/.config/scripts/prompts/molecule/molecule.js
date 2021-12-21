@@ -14,7 +14,14 @@ const MENU_ENTRY_TITLE_WIDTH = 24
 async function promptForTestType() {
   const DECORATION_LENGTH = 2
 
-  const descriptionMap = ['VirtualBox (Headless)', 'VirtualBox (Desktop)', 'Docker', 'Local', 'SSH', 'Google Cloud Platform']
+  const descriptionMap = [
+    'VirtualBox (Headless)',
+    'VirtualBox (Desktop)',
+    'Docker',
+    'Local',
+    'SSH',
+    'Google Cloud Platform'
+  ]
   const choices = execSync(`yq eval -o=j '.description' molecule/*/molecule.yml`)
     .toString()
     .split('\n')

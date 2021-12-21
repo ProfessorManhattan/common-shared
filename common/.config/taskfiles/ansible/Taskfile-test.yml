@@ -113,12 +113,12 @@ tasks:
         .config/log success 'Finished running Google Cloud Platform Molecule test'
 
   molecule:gcp:matrix:
-    vars:
-      MOLECULE_DATE:
-        sh: date '+%Y-%m-%d'
     deps:
       - :install:modules:local
       - :install:software:gcloud
+    vars:
+      MOLECULE_DATE:
+        sh: date '+%Y-%m-%d'
     cmds:
       - task: molecule:gcp:preconditions
       - mkdir -p molecule/.results
