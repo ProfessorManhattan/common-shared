@@ -1,5 +1,5 @@
 ---
-# eslint-disable max-lines
+# eslint-disable max-lines, eslint-comments/disable-enable-pair
 version: '3'
 
 tasks:
