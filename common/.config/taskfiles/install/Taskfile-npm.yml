@@ -1,5 +1,4 @@
 ---
-# eslint-disable eslint-comments/disable-enable-pair, max-lines, json-schema-validator/no-invalid
 version: '3'
 
 tasks:
