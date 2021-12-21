@@ -140,9 +140,11 @@ tasks:
   molecule:gcp:preconditions:
     preconditions:
       - sh: '[ -n "$GCE_SERVICE_ACCOUNT_EMAIL" ]'
-        msg: The GCE_SERVICE_ACCOUNT_EMAIL environment variable must be set (e.g. export GCE_SERVICE_ACCOUNT_EMAIL=molecule@megabyte-labs.iam.gserviceaccount.com)
+        msg: The GCE_SERVICE_ACCOUNT_EMAIL environment variable must be set (e.g. export
+          GCE_SERVICE_ACCOUNT_EMAIL=molecule@megabyte-labs.iam.gserviceaccount.com).
       - sh: '[ -n "$GCE_CREDENTIALS_FILE" ]'
-        msg: The GCE_CREDENTIALS_FILE environment variable must be set and pointing to the GCP service account JSON key (e.g. export GCE_CREDENTIALS_FILE=~/.config/gcp.json)
+        msg: The GCE_CREDENTIALS_FILE environment variable must be set and pointing to the GCP
+          service account JSON key (e.g. export GCE_CREDENTIALS_FILE=~/.config/gcp.json).
       - sh: test -f "$GCE_CREDENTIALS_FILE"
         msg: The GCE_CREDENTIALS_FILE environment variable is defined but is not pointing to a file that exists.
       - sh: '[ -n "$GCE_PROJECT_ID" ]'
