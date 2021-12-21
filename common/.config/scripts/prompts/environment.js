@@ -1,4 +1,4 @@
-/* eslint-disable security/detect-non-literal-fs-filename */
+/* eslint-disable security/detect-non-literal-fs-filename, max-lines-per-function */
 
 import inquirer from 'inquirer'
 import * as fs from 'node:fs'
