@@ -138,7 +138,7 @@ tasks:
       - node .config/scripts/prompts/molecule/local.js
 
   molecule:local:test:
-      cmds:
+    cmds:
       - |
         .config/log info 'Running Molecule test locally'
         {{.PYTHON_HANDLE}}molecule test -s local
