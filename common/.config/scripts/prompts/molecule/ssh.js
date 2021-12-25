@@ -40,6 +40,8 @@ async function promptForSSHDetails() {
 
 /**
  * Main script logic
+ *
+ * @returns {Promise} Promise that resolves to an execSync
  */
 async function run() {
   logInstructions(
@@ -50,11 +52,17 @@ async function run() {
       ' via SSH (i.e. the ~/.ssh keys should already be set up).'
   )
   const details = await promptForSSHDetails()
-  execSync(
-    `TEST_HOST=${details.host} TEST_PASSWORD=${details.password} TEST_PORT=${details.port}
-    TEST_SSH_USER=${details.user} TEST_USER=${details.user} task ansible:test:molecule:ssh:cli`,
-    { stdio: 'inherit' }
-  )
+  // eslint-disable-next-line functional/no-try-statement
+  try {
+    return execSync(
+      `TEST_HOST=${details.host} TEST_PASSWORD=${details.password} TEST_PORT=${details.port}
+      TEST_SSH_USER=${details.user} TEST_USER=${details.user} task ansible:test:molecule:ssh:cli`,
+      { stdio: 'inherit' }
+    )
+  } catch {
+    // eslint-disable-next-line no-process-exit
+    return process.exit(1)
+  }
 }
 
 run()
