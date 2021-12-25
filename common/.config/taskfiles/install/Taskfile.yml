@@ -75,7 +75,7 @@ tasks:
         }
         chmod +x .config/log
         chmod +x .config/scripts/lib/semver-compare.sh
-        for PATTERN in for PATTERN in {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}{{.NPM_KEEP_UPDATED}}{{end}}; do
+        for PATTERN in {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}{{.NPM_KEEP_UPDATED}}{{end}}; do
            while read PATHH; do
             if [ -f "$PATHH/package.json" ]; then
               PKG="$(echo $PATHH | sed 's/.\/node_modules\///')"
