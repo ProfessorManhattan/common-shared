@@ -29,6 +29,11 @@ tasks:
       - mv ansible.cfg.bak ansible.cfg
       - rm inventory
 
+  molecule:dependencies:
+    cmds:
+      - ansible-galaxy install --ignore-errors -r requirements.yml
+      - task: :symlink:{{.REPOSITORY_SUBTYPE}}
+
   molecule:docker:
     deps:
       - :install:python:requirements
