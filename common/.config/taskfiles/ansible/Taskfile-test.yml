@@ -133,6 +133,21 @@ tasks:
           .config/log success 'Finished running Google Cloud Platform Molecule test'
         fi
 
+  molecule:local:
+    cmds:
+      - node .config/scripts/prompts/molecule/local.js
+
+  molecule:local:test:
+      cmds:
+      - |
+        .config/log info 'Running Molecule test locally'
+        {{.PYTHON_HANDLE}}molecule test -s local
+        if [ $? != '0' ]; then
+          .config/log error 'There was an error while running the Molecule test locally'
+        else
+          .config/log success 'The local Molecule test was successful!'
+        fi
+
   molecule:gcp:matrix:
     deps:
       - :install:modules:local
@@ -189,7 +204,7 @@ tasks:
 
   molecule:ssh:prompt:
     deps:
-      - :install:local:modules
+      - :install:modules:local
     cmds:
       - node .config/scripts/prompts/molecule/ssh.js
 
