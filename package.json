@@ -99,6 +99,9 @@
     }
   ],
   "lint-staged": {
+    "**/!(logo).(jpg|png)": [
+      "task image:compress --"
+    ],
     "**/*": [
       "task lint:any --"
     ],
