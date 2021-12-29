@@ -34,7 +34,7 @@ tasks:
         brew install --cask {{.CASK}}
         .config/log success 'Successfully installed the `{{.CASK}}` Homebrew cask'
     status:
-      - type {{.CASK}} &> /dev/null || [[ "${container:=}" == "docker" ]]
+      - type {{.CASK}} &> /dev/null
 
   brew:darwin:
     cmds:
@@ -61,7 +61,7 @@ tasks:
         fi
       - task: brew:utils
     status:
-      - type brew &> /dev/null || [[ "${container:=}" == "docker" ]]
+      - type brew &> /dev/null
       - type gcp > /dev/null
       - type gfind > /dev/null
       - type gsed > /dev/null
@@ -79,7 +79,7 @@ tasks:
         brew install {{.FORMULAE}}
         .config/log success 'Successfully installed the `{{.FORMULAE}}` Homebrew package'
     status:
-      - type {{.FORMULAE}} &> /dev/null || [[ "${container:=}" == "docker" ]]
+      - type {{.FORMULAE}} &> /dev/null
 
   brew:linux:
     run: once
@@ -124,7 +124,7 @@ tasks:
           exit 1
         fi
     status:
-      - type brew &> /dev/null || [[ "${container:=}" == "docker" ]]
+      - type brew &> /dev/null
 
   brew:utils:
     cmds:
@@ -188,11 +188,11 @@ tasks:
         sudo pacman update
         sudo pacman -S base-devel curl file git procps-ng
     status:
-      - type curl &> /dev/null || [[ "${container:=}" == "docker" ]]
-      - type git &> /dev/null || [[ "${container:=}" == "docker" ]]
-      - ldconfig -p | grep base-devel || [[ "${container:=}" == "docker" ]]
-      - ldconfig -p | grep file || [[ "${container:=}" == "docker" ]]
-      - ldconfig -p | grep procps-ng || [[ "${container:=}" == "docker" ]]
+      - type curl &> /dev/null
+      - type git &> /dev/null
+      - ldconfig -p | grep base-devel
+      - ldconfig -p | grep file
+      - ldconfig -p | grep procps-ng
 
   common:linux:debian:
     interactive: true
@@ -202,11 +202,11 @@ tasks:
         sudo apt-get -y update
         sudo apt-get install -y build-essential curl file git procps
     status:
-      - type curl &> /dev/null || [[ "${container:=}" == "docker" ]]
-      - type git &> /dev/null || [[ "${container:=}" == "docker" ]]
-      - dpkg-query -l build-essential &> /dev/null || [[ "${container:=}" == "docker" ]]
-      - dpkg-query -l file &> /dev/null || [[ "${container:=}" == "docker" ]]
-      - dpkg-query -l procps &> /dev/null || [[ "${container:=}" == "docker" ]]
+      - type curl &> /dev/null
+      - type git &> /dev/null
+      - dpkg-query -l build-essential &> /dev/null
+      - dpkg-query -l file &> /dev/null
+      - dpkg-query -l procps &> /dev/null
 
   common:linux:redhat:
     interactive: true
