@@ -47,9 +47,10 @@ function ensureLocalPath() {
   if [[ "$OSTYPE" == 'darwin'* ]] || [[ "$OSTYPE" == 'linux-gnu'* ]]; then
     export PATH="$HOME/.local/bin:$PATH"
     # shellcheck disable=SC2016
-    local PATH_STRING='\nexport PATH=$HOME/.local/bin:$PATH'
+    local PATH_STRING='PATH="$HOME/.local/bin:$PATH"'
     if grep -L "$PATH_STRING" "$SHELL_PROFILE"; then
-      echo -e "$PATH_STRING" >> "$SHELL_PROFILE"
+      echo -e "export ${PATH_STRING}\n" >> "$SHELL_PROFILE"
+      echo "$SHELL_PROFILE" > "$TMP_PROFILE_PATH"
       .config/log info "Updated the PATH variable to include ~/.local/bin in $SHELL_PROFILE"
     fi
   elif [[ "$OSTYPE" == 'cygwin' ]] || [[ "$OSTYPE" == 'msys' ]] || [[ "$OSTYPE" == 'win32' ]]; then
