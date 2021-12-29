@@ -45,8 +45,9 @@ function ensureLocalPath() {
       ;;
   esac
   if [[ "$OSTYPE" == 'darwin'* ]] || [[ "$OSTYPE" == 'linux-gnu'* ]]; then
+    export PATH="$HOME/.local/bin:$PATH"
     # shellcheck disable=SC2016
-    local PATH_STRING='PATH="$HOME/.local/bin:$PATH"'
+    local PATH_STRING='\nexport PATH=$HOME/.local/bin:$PATH'
     if grep -L "$PATH_STRING" "$SHELL_PROFILE"; then
       echo -e "export ${PATH_STRING}\n" >> "$SHELL_PROFILE"
       echo "$SHELL_PROFILE" > "$TMP_PROFILE_PATH"
@@ -138,7 +139,6 @@ function installTask() {
   .config/log success 'Validated checksum'
   mkdir -p "$TMP_DIR/task"
   tar -xzvf "$DOWNLOAD_DESTINATION" -C "$TMP_DIR/task"
-  ensureLocalPath
   if type task &> /dev/null && [ -w "$(which task)" ]; then
     local TARGET_DEST
     TARGET_DEST="$(which task)"
@@ -147,6 +147,7 @@ function installTask() {
       local TARGET_BIN_DIR='/usr/local/bin'
     else
       local TARGET_BIN_DIR="$HOME/.local/bin"
+      ensureLocalPath
     fi
     local TARGET_DEST="$TARGET_BIN_DIR/task"
   fi
