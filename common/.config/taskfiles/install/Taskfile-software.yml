@@ -106,7 +106,7 @@ tasks:
           exit 1
         fi
     status:
-      - type brew &> /dev/null
+      - type brew &> /dev/null || [ "$OPTIMIZED_IMAGE" == 'true' ]
 
   brew:utils:
     cmds:
@@ -168,6 +168,8 @@ tasks:
           fi
     cmds:
       - task: common:linux:{{.LINUX_FAMILY}}
+    status:
+      - '[[ "$OPTIMIZED_IMAGE" == "true" ]]'
 
   common:linux:archlinux:
     interactive: true
