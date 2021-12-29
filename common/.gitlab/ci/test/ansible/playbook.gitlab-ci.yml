@@ -39,4 +39,5 @@ test:molecule:linux:
       fi
     - bash .config/scripts/start.sh
   script:
+    - task environment -- dev
     - task ansible:test:molecule:docker:cli -- "$OPERATING_SYSTEM"

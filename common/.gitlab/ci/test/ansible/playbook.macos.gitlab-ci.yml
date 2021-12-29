@@ -26,6 +26,7 @@ test:molecule:darwin:
       fi
     - bash .config/scripts/start.sh
   script:
+    - task environment -- dev
     - task ansible:test:molecule:local:test
   artifacts:
     when: always
