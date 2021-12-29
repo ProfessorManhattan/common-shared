@@ -48,7 +48,7 @@ function ensureLocalPath() {
     # shellcheck disable=SC2016
     local PATH_STRING='PATH="$HOME/.local/bin:$PATH"'
     if grep -L "$PATH_STRING" "$SHELL_PROFILE"; then
-      echo -e "export $PATH_STRING\n" >> "$SHELL_PROFILE"
+      echo -e "export ${PATH_STRING}\n" >> "$SHELL_PROFILE"
       echo "$SHELL_PROFILE" > "$TMP_PROFILE_PATH"
       .config/log info "Updated the PATH variable to include ~/.local/bin in $SHELL_PROFILE"
     fi
