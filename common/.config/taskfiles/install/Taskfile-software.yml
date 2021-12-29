@@ -62,12 +62,6 @@ tasks:
       - task: brew:utils
     status:
       - type brew &> /dev/null
-      - type gcp > /dev/null
-      - type gfind > /dev/null
-      - type gsed > /dev/null
-      - type ggrep > /dev/null
-      - type gtar > /dev/null
-      - type ggawk > /dev/null
 
   brew:formulae:
     deps:
@@ -87,7 +81,7 @@ tasks:
       - |
         .config/log info 'Ensuring Homebrew is installed and available'
         function ensureSource() {
-          if ! (grep "/bin/brew shellenv" < cat "$1" &> /dev/null); then
+          if ! (grep "/bin/brew shellenv" < "$1" &> /dev/null); then
             echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> "$1"
           fi
         }
@@ -106,13 +100,7 @@ tasks:
             SHELL_PROFILE="${HOME}/.profile"
             ;;
         esac
-        if [ -f "~/.local/homebrew/bin/brew" ] && ! type brew &> /dev/null; then
-          ensureSource "$SHELL_PROFILE"
-          .config/log info 'Homebrew was added to your ~/.profile or equivalent'
-          .config/log warn 'The terminal session needs to be reloaded'
-          .config/log info 'Close and re-open the terminal and re-run the same command to continue'
-          exit 1
-        elif ! type brew &> /dev/null; then
+        if ! type brew &> /dev/null; then
           rm -rf ~/.local/homebrew
           mkdir -p ~/.local/homebrew
           git clone https://github.com/Homebrew/brew ~/.local/homebrew
@@ -132,6 +120,13 @@ tasks:
         .config/log info "Installing GNU-compatibility tools for macOS via Homebrew"
         brew install coreutils findutils gnu-indent gnu-sed gnutls grep gnu-tar gawk
         .config/log success "Successfully installed GNU-compatibility tools"
+    status:
+      - type gcp > /dev/null
+      - type gfind > /dev/null
+      - type gsed > /dev/null
+      - type ggrep > /dev/null
+      - type gtar > /dev/null
+      - type gawk > /dev/null
 
   brew:windows:
     cmds:
