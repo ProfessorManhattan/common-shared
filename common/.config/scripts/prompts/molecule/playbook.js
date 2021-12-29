@@ -1,7 +1,8 @@
 import chalk from 'chalk'
 import inquirer from 'inquirer'
+import * as fs from 'node:fs'
 import { execSync } from 'node:child_process'
-import { decorateFiles } from '../lib/decorate-system.js'
+import { decorateFiles } from '../lib/decorate-files.js'
 import { logInstructions, logRaw, LOG_DECORATOR_REGEX } from '../lib/log.js'
 
 /**
@@ -11,7 +12,9 @@ import { logInstructions, logRaw, LOG_DECORATOR_REGEX } from '../lib/log.js'
  * @returns {string[]} An array of files located in the path
  */
 function getFiles(path) {
+  // eslint-disable-next-line security/detect-non-literal-fs-filename
   return fs.readdirSync(path).filter((file) => {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
     return fs.statSync(`${path}/${file}`).isFile()
   })
 }
@@ -61,7 +64,7 @@ async function run() {
   try {
     execSync(`task environment`, { stdio: 'inherit' })
     const inventory = await promptForInventory()
-    execSync(`task playbook -- ${inventory}`, { stdio: 'inherit' })
+    return execSync(`task playbook -- ${inventory}`, { stdio: 'inherit' })
   } catch {
     // eslint-disable-next-line no-process-exit
     return process.exit(1)
