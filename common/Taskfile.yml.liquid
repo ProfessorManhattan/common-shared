@@ -102,7 +102,13 @@ tasks:
         else
           bash <(curl -s \{{.INIT_SCRIPT}})
         fi
+{{#eq group 'ansible'}}{{#eq subgroup 'playbook'}}
+  playbook:
+    desc: Runs the playbook
+    cmds:
+      - task: ansible:playbook:run
 
+{{/eq}}
   preload:
     deps:
       - install:brewfile
