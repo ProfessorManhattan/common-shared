@@ -57,6 +57,7 @@ tasks:
     cmds:
       - |
         .config/log info 'Running `poetry install`'
+        poetry config virtualenvs.create false
         poetry install
         .config/log success '`poetry install` completed successfully'
     sources:

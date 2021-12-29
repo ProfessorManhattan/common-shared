@@ -40,13 +40,7 @@ tasks:
     cmds:
       - |
         .config/log info 'Ensuring Homebrew is installed and available'
-        if [ -f "~/.local/homebrew/bin/brew" ] && ! type brew &> /dev/null; then
-          .config/log info "Homebrew is already installed"
-          .config/log error 'Homebrew is not being correctly sourced'
-          .config/log info 'Ensure your ~/.profile or equivalent is correctly sourcing Homebrew. Ensure the following line is present:\n'
-          .config/log info '`eval "$(~/.local/homebrew/bin/brew shellenv)"`'
-          exit 1
-        elif ! type brew &> /dev/null; then
+        if ! type brew &> /dev/null; then
           rm -rf ~/.local/homebrew
           mkdir -p ~/.local/homebrew
           git clone https://github.com/Homebrew/brew ~/.local/homebrew
@@ -447,6 +441,9 @@ tasks:
       - pipx
     cmds:
       - pipx install poetry
+      - task: :install:path:add
+        vars:
+          PATH_STRING: .local/pipx/venvs/poetry/bin
     status:
       - type poetry > /dev/null
 
@@ -456,6 +453,8 @@ tasks:
       - exit 1
 
   python:
+    deps:
+      - brew # bug fix
     run: once
     cmds:
       - task: python:{{OS}}
