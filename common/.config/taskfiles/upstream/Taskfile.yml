@@ -97,6 +97,7 @@ tasks:
     deps:
       - :install:modules:local
       - :install:npm:liquidjs
+      - :install:software:jq
     vars:
       PYTHON_BREW_NOTICE: In order for this file to be generated, the customPyPiPackageName needs to be specified in the
         blueprint section of package.json and the PyPi package needs to be installed on the system.
