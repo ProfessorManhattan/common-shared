@@ -75,7 +75,7 @@ tasks:
             git config url."https://gitlab.com/".insteadOf git@gitlab.com:
           fi
         fi
-      - cmd: git pull --ff-only
+      - cmd: if git branch -r | grep origin > /dev/null; then git pull --ff-only; fi
         ignore_error: true
       - cmd: git config --unset url."https://gitlab.com/".insteadOf
         ignore_error: true
