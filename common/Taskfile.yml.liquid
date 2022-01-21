@@ -55,6 +55,9 @@ profile: |
     PATH="$PATH:$(brew --prefix)/opt/gnu-tar/libexec/gnubin"
     PATH="$PATH:$(brew --prefix)/opt/gawk/libexec/gnubin"
   fi
+  if [ -f .venv/bin/activate ]; then
+    . .venv/bin/activate
+  fi
 
 tasks:
   build:
