@@ -145,7 +145,6 @@ tasks:
   modules:
     deps:
       - :install:software:git
-    label: update:modules
     summary: |
       # Ensure all submodules in `.modules/` are updated
 
@@ -174,6 +173,8 @@ tasks:
       - '! ls .modules/*/ > /dev/null 2>&1'
 
   project:
+    log:
+      start: Pulling `master` if `origin` is defined
     cmds:
       - |
         if [ -d .git ] && git branch -r | grep origin > /dev/null; then
@@ -188,6 +189,10 @@ tasks:
       - :install:npm:readme
     vars:
       README_TEMPLATE: blueprint-readme-{{.REPOSITORY_SUBTYPE}}.md
+    log:
+      start: Generating `README.md`
+      success: Generated README.md successfully
+      error: Error encountered while generating `README.md`
     cmds:
       - >
         {{.NPX_HANDLE}}readme generate --headingPrefix '{}' --silent --config .variables.json
@@ -197,7 +202,6 @@ tasks:
           SCRUB_FILE: README.md
       - task: ':{{if eq .REPOSITORY_TYPE "packer"}}packer:update:readme{{else}}donothing{{end}}'
       - '{{.NPX_HANDLE}}prettier --write README.md > /dev/null'
-      - .config/log success 'Generated README.md successfully'
     sources:
       - .autodoc/*
       - .config/docs/**/*
@@ -235,7 +239,6 @@ tasks:
       - ':{{if eq .REPOSITORY_TYPE "packer"}}packer:latestos{{else}}donothing{{end}}'
       - init
       - repositories
-    label: update
     summary: |
       # Refresh project with latest upstream code and ensure project files are up-to-date
 
