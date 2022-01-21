@@ -108,14 +108,16 @@ tasks:
       - task: compatibility:grep
       - task: compatibility:gnu-tar
       - task: compatibility:gawk
+    status:
+      - '[ "{{OS}}" != "darwin" ]'
 
-  compatibility:coreutils:
+  coreutils:
     cmds:
       - task: brew:formulae
         vars:
           FORMULAE: coreutils
     status:
-      - type gcp > /dev/null
+      - type gcp > /dev/null || [ "{{OS}}" != "darwin" ]
 
   compatibility:findutils:
     cmds:
