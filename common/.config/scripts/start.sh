@@ -23,21 +23,6 @@ SOURCE_PATH="$(
   pwd -P
 )"
 PROJECT_BASE_DIR="$SOURCE_PATH/../.."
-case "${SHELL}" in
-  */bash*)
-    if [[ -r "${HOME}/.bash_profile" ]]; then
-      SHELL_PROFILE="${HOME}/.bash_profile"
-    else
-      SHELL_PROFILE="${HOME}/.profile"
-    fi
-    ;;
-  */zsh*)
-    SHELL_PROFILE="${HOME}/.zshrc"
-    ;;
-  *)
-    SHELL_PROFILE="${HOME}/.profile"
-    ;;
-esac
 
 # @description Ensures ~/.local/bin is in the PATH variable on *nix machines and
 # exits with an error on unsupported OS types
@@ -46,7 +31,6 @@ esac
 #   ensureLocalPath
 #
 # @set PATH string The updated PATH with a reference to ~/.local/bin
-# @set SHELL_PROFILE string The preferred profile
 #
 # @noarg
 #
@@ -57,16 +41,16 @@ function ensureLocalPath() {
     # shellcheck disable=SC2016
     local PATH_STRING='PATH="$HOME/.local/bin:$PATH"'
     mkdir -p "$HOME/.local/bin"
-    if grep -L "$PATH_STRING" "$SHELL_PROFILE"; then
-      echo -e "export ${PATH_STRING}\n" >> "$SHELL_PROFILE"
-      .config/log info "Updated the PATH variable to include ~/.local/bin in $SHELL_PROFILE"
+    if grep -L "$PATH_STRING" "$HOME/.profile" > /dev/null; then
+      echo -e "${PATH_STRING}\n" >> "$HOME/.profile"
+      .config/log info "Updated the PATH variable to include ~/.local/bin in $HOME/.profile"
     fi
   elif [[ "$OSTYPE" == 'cygwin' ]] || [[ "$OSTYPE" == 'msys' ]] || [[ "$OSTYPE" == 'win32' ]]; then
-    .config/log error "Windows is not directly supported. Use WSL or Docker." && exit 1
+    echo "Windows is not directly supported. Use WSL or Docker." && exit 1
   elif [[ "$OSTYPE" == 'freebsd'* ]]; then
-    .config/log error "FreeBSD support not added yet" && exit 1
+    echo "FreeBSD support not added yet" && exit 1
   else
-    .config/log error "System type not recognized"
+    echo "System type not recognized"
   fi
 }
 
@@ -241,7 +225,6 @@ function sha256() {
     else
       echo "$2 $1" | sha256sum -c
     fi
-    fi
   elif [[ "$OSTYPE" == 'cygwin' ]] || [[ "$OSTYPE" == 'msys' ]] || [[ "$OSTYPE" == 'win32' ]]; then
     .config/log error "Windows is not directly supported. Use WSL or Docker." && exit 1
   elif [[ "$OSTYPE" == 'freebsd'* ]]; then
@@ -251,24 +234,11 @@ function sha256() {
   fi
 }
 
-# @description Ensure profile is sourced (in case of error with SHELL_PROFILE_PATH)
-case "${SHELL}" in
-  */bash*)
-    if [[ -r "${HOME}/.bash_profile" ]]; then
-      . "${HOME}/.bash_profile"
-    else
-      . "${HOME}/.profile"
-    fi
-    ;;
-  */zsh*)
-    . "${HOME}/.zshrc"
-    ;;
-  *)
-    . "${HOME}/.profile"
-    ;;
-esac
-
 ##### Main Logic #####
+
+if [ ! -f "$HOME/.profile" ]; then
+  touch "$HOME/.profile"
+fi
 
 # @description Ensures ~/.local/bin is in PATH
 ensureLocalPath
@@ -281,6 +251,7 @@ if [[ "$OSTYPE" == 'darwin'* ]]; then
     .config/log error 'Neither curl nor brew are installed. Install one of them manually and try again.'
   fi
   if ! type git > /dev/null; then
+    # shellcheck disable=SC2016
     .config/log info 'Git is not present. A password may be required to run `sudo xcode-select --install`'
     sudo xcode-select --install
   fi
@@ -312,7 +283,8 @@ ensureTaskInstalled
 # @description Run the start logic, if appropriate
 cd "$PROJECT_BASE_DIR" || exit
 if [ -z "$GITLAB_CI" ]; then
-  . "$SHELL_PROFILE"
+  # shellcheck disable=SC1091
+  . "$HOME/.profile"
   task start
-  .config/log info 'There may have been changes to your PATH variable. You may have to reload your terminal or run:\n\n`. '"$SHELL_PROFILE_PATH"'`'
+  .config/log info 'There may have been changes to your PATH variable. You may have to reload your terminal or run:\n\n`. '"$HOME/.profile"'`'
 fi
