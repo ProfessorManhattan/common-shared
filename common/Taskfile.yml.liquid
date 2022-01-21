@@ -4,7 +4,9 @@ version: '3'
 output: interleaved
 
 vars:
-  DOCKERHUB_PROFILE: {{profile.dockerhub}}{{#eq group 'ansible'}}{{#eq subgroup 'role'}}
+  DOCKERHUB_PROFILE: {{profile.dockerhub}}{{#eq group 'ansible'}}
+  ESLINT_FORMATTER: pretty
+  ESLINT_FORMATTER_OPTIONS: git-log pretty summary{{#eq subgroup 'role'}}
   GALAXY_NAMESPACE:
     sh: "if [ -f meta/main.yml ]; then grep namespace < meta/main.yml | sed 's/.*namespace: \\(.*\\)$/\\1/g'; fi"
   GALAXY_ROLE_NAME:
