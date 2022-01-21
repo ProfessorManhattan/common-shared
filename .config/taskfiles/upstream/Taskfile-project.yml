@@ -10,11 +10,9 @@ tasks:
     deps:
       - :install:software:coreutils
       - :install:software:jq
-    env:
-      PATH:
-        sh: echo "$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
     cmds:
       - |
+        PATH="$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
         if [[ "$(jq -r '.blueprint.boilerplate' package.json)" == 'true' ]]; then
           for ENTITY in .boilerplate/*; do
             TARGET="$(echo $ENTITY | sed 's/^.boilerplate\///')"
@@ -40,27 +38,19 @@ tasks:
 
   clone:
     cmds:
-      - |
-        if [ -w "$PWD/{{.SHARED_FOLDER}}" ]; then
-          rm -rf {{.SHARED_FOLDER}}
-        else
-          if [ -d "$PWD/{{.SHARED_FOLDER}}" ] && type sudo > /dev/null; then
-            sudo rm -rf {{.SHARED_FOLDER}}
-          fi
-        fi
+      - rm -rf {{.SHARED_FOLDER}}
       - git clone --depth=1 {{.PROJECT_COMMON_URL}} {{.SHARED_FOLDER}}
       - rm -rf ./{{.SHARED_FOLDER}}/.git
 
   copy:
     deps:
       - :install:software:coreutils
-    env:
-      PATH:
-        sh: echo "$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
     cmds:
       - rm -rf .config
-      - cp -rT {{.SHARED_FOLDER}}/_generated_/common .
-      - cp -rT {{.SHARED_FOLDER}}/_generated_/{{.REPOSITORY_SUBTYPE}} .
+      - |
+        PATH="$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
+        cp -rT {{.SHARED_FOLDER}}/_generated_/common .
+        cp -rT {{.SHARED_FOLDER}}/_generated_/{{.REPOSITORY_SUBTYPE}} .
       - task: :common:husky:permissions
       - task: save:common:keywords
 
