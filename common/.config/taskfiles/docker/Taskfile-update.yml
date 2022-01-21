@@ -8,6 +8,9 @@ tasks:
     vars:
       GROUP_URL:
         sh: jq -r '.repository.group.dockerfile' .variables.json
+    log:
+      start: Ensuring `Dockerfile` labels are up-to-date
+      success: '`Dockerfile` labels are up-to-date'
     cmds:
       - task: update:labels:add
       - task: update:labels:{{OS}}
@@ -62,6 +65,8 @@ tasks:
       - grep 'org.opencontainers.image.documentation' Dockerfile
 
   labels:darwin:
+    log:
+      error: Encountered error while updating `Dockerfile` labels
     vars:
       GROUP_URL:
         sh: jq -r '.repository.group.dockerfile' .variables.json
@@ -77,6 +82,8 @@ tasks:
       # eslint-enable max-len
 
   labels:linux:
+    log:
+      error: Encountered error while updating `Dockerfile` labels
     vars:
       GROUP_URL:
         sh: jq -r '.repository.group.dockerfile' .variables.json
