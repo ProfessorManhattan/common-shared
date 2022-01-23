@@ -77,6 +77,38 @@ tasks:
     cmds:
       - task: go:build
 
+  commit:
+    deps:
+      - install:software:git
+    desc: Add all and commit
+    summary: |
+      # Commit the code
+
+      By default, this task is an alias for:
+
+      ```
+      git add --all
+      git commit
+      ```
+
+      If you pass a commit message as a CLI argument, then the pre-commit
+      logic will be bypassed. By bypassing the hooks, the commit message will be
+      excluded from the automatic CHANGELOG.md entry generated during commits.
+      Passing the commit message as a CLI argument can be done like so:
+
+      ```
+      task commit -- "Added new files that do not need to show up in CHANGELOG.md"
+      ```
+  cmds:
+    - |
+      {{if .CLI_ARGS}}
+      git add --all
+      HUSKY=0 git commit -m "{{.CLI_ARGS}}" --no-verify
+      {{else}}
+      git add --all
+      git commit
+      {{end}}
+  
   donothing: 'true'
 
 {{#eq group "ansible"}}
