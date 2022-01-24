@@ -36,6 +36,10 @@ tasks:
       [syntax described in this link](https://ansible-lint.readthedocs.io/en/latest/rules.html#false-positives-skipping-rules).
 
       For more information, see [Ansible Lint's GitHub page](https://github.com/ansible-community/ansible-lint).
+    log:
+      start: Linting project with Ansible Lint
+      success: Validated project with Ansible Lint
+      error: Ansible Lint has detected possible errors!
     cmds:
       - |
         .config/log info 'Linting the project with ansible-lint'
@@ -45,6 +49,9 @@ tasks:
     deps:
       - :install:python:requirements
     desc: Generic linting of files for things like destroyed-symlinks, merge conflicts, etc.
+    log:
+      start: Linting `{{.CLI_ARGS}}` with global linters
+      error: Errors were reported by the global linters for `{{.CLI_ARGS}}`
     cmds:
       - '{{.PYTHON_HANDLE}}blocklint --wordlist blacklist,slave,whitelist {{.CLI_ARGS}}'
       - '{{.PYTHON_HANDLE}}check-merge-conflict {{.CLI_ARGS}}'
@@ -55,6 +62,10 @@ tasks:
   codeclimate:
     deps:
       - :install:software:codeclimate
+    log:
+      start: Running `codeclimate`
+      success: Successfully validated the project by running `codeclimate`
+      error: '`codeclimate` has detected errors'
     cmds:
       - codeclimate
 
@@ -70,6 +81,8 @@ tasks:
 
       **Example:**
       `task lint:commit -- 'My commit message'`
+    log:
+      error: Encountered error while linting commit message ({{.CLI_ARGS}})
     cmds:
       - |
         if [ ! -z '{{.CLI_ARGS}}' ] && [ '{{.CLI_ARGS}}' != '.git/MERGE_MSG' ] && [ "$(head -c12 < .git/MERGE_MSG)" != 'Merge branch' ]; then
@@ -118,6 +131,10 @@ tasks:
       `task lint:docker -- CustomDockerfile`
 
       For more information, see [Hadolint's GitHub page](https://github.com/hadolint/hadolint).
+    log:
+      start: Linting {{if .CLI_ARGS}}`{{.CLI_ARGS}}`{{else}}the project{{end}} with Hadolint
+      success: Hadolint reported no errors
+      error: Hadolint reported errors
     cmds:
       - |
         .config/log info 'Linting {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}all Dockerfiles{{end}} with a Hadolint Docker image'
@@ -156,6 +173,7 @@ tasks:
     log:
       start: Linting {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}the project{{end}} with ESLint
       success: Successfully passed the ESLint test (please still address warnings)
+      error: ESLint has detected errors that need to be addressed
     cmds:
       - >
         {{.NPX_HANDLE}}eslint -c package.json --no-eslintrc --format {{.ESLINT_FORMATTER}} --cache
@@ -196,10 +214,12 @@ tasks:
     deps:
       - :install:modules:local
       - :install:npm:eslint
+    log:
+      start: Linting {{if .CLI_ARGS}}`{{.CLI_ARGS}}`{{else}}JavaScript/TypeScript files{{end}} with ESLint
+      success: Successfully passed ESLint checks for {{if .CLI_ARGS}}`{{.CLI_ARGS}}`{{else}}JavaScript/TypeScript files{{end}}
+      error: Errors were reported by ESLint for {{if .CLI_ARGS}}`{{.CLI_ARGS}}`{{else}}JavaScript/TypeScript files{{end}}
     cmds:
       - >
-        .config/log info 'Linting {{if .CLI_ARGS}}`{{.CLI_ARGS}}`{{else}}JavaScript/TypeScript files{{end}} with ESLint'
-
         {{.NPX_HANDLE}}eslint -c package.json --no-eslintrc --format pretty --ext .js,.jsx,.ts,.tsx --cache
         --cache-location .cache/eslintcache {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
 
@@ -208,10 +228,12 @@ tasks:
       - :install:modules:global
       - :install:modules:local
       - :install:python:requirements
+    log:
+      start: Linting staged files
+      success: The staged files appear to be good!
+      error: Errors were encountered when validating the staged files
     cmds:
-      - |
-        .config/log info 'Linting changed files'
-        {{.NPX_HANDLE}}lint-staged
+      - '{{.NPX_HANDLE}}lint-staged'
 
   packer:
     deps:
