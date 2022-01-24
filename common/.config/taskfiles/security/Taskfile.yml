@@ -10,6 +10,10 @@ tasks:
     deps:
       - :install:python:dependencies
     desc: Check for Python code security issues
+    log:
+      start: Running `bandit -r run.py`
+      success: No security issues found with `bandit`!
+      error: '`bandit` reported some security issues that need to be fixed!'
     cmds:
       - poetry run bandit -r run.py
       - poetry run bandit -r src
