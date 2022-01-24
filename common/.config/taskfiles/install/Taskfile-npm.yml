@@ -102,13 +102,12 @@ tasks:
     vars:
       PACKAGE_BIN: '{{if index . "NPM_PACKAGE_BIN"}}{{.NPM_PACKAGE_BIN}}{{else}}{{.NPM_PACKAGE}}{{end}}'
     run: when_changed
+    log:
+      start: Installing NPM package `{{.NPM_PACKAGE}}` globally
+      success: Installed NPM package `{{.NPM_PACKAGE}}` globally
+      error: Failed to install NPM package `{{.NPM_PACKAGE}}` globally
     cmds:
-      - |
-        if ! type {{.PACKAGE_BIN}} > /dev/null; then
-          .config/log info 'Installing _NPM CLI_ package `{{.NPM_PACKAGE}}` globally'
-          {{.NPM_PROGRAM}} install -g {{.NPM_PACKAGE}}
-          .config/log success 'Successfully installed `{{.NPM_PACKAGE}}` globally'
-        fi
+      - '{{.NPM_PROGRAM}} install -g {{.NPM_PACKAGE}}'
     status:
       - type {{.PACKAGE_BIN}} > /dev/null
 
