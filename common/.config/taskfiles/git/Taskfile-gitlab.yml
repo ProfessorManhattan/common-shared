@@ -267,7 +267,8 @@ tasks:
             -f 'enabled=true' > /dev/null
           .config/log success 'Successfully set up push mirroring from GitLab to GitHub'
         fi
-      - curl -s -H 'Content-Type: application/json' -H "Authorization: Bearer $GITLAB_TOKEN" -X PUT --data
+      - >
+        curl -s -H 'Content-Type: application/json' -H "Authorization: Bearer $GITLAB_TOKEN" -X PUT --data
         "{\"mirror\": true, \"import_url\": \"https://{{.GITHUB_USER}}:$GITHUB_TOKEN@github.com/{{.GITHUB_ORG}}/{{.GITHUB_SLUG}}.git\"}"
         'https://gitlab.com/api/v4/projects/{{.GITLAB_REPO_ID}}' > /dev/null
     status:
