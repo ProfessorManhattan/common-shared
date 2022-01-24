@@ -15,6 +15,9 @@ if [ -n "$GITLAB_CI" ]; then
   git checkout master
 fi
 
+rm -rf start.sh
+curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/common/start.sh > update-init.sh
+
 # @description Clone shared files repository
 rm -rf common-shared
 git clone --depth=1 https://gitlab.com/megabyte-labs/common/shared.git common-shared
