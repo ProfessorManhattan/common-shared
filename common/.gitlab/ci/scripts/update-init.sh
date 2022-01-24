@@ -17,6 +17,7 @@ fi
 
 rm -rf start.sh
 curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/common/start.sh > update-init.sh
+curl -s https://gitlab.com/megabyte-labs/common/shared/-/raw/master/common/.config/taskfiles/install/Taskfile-python.yml > .config/taskfiles/install/Taskfile-python.yml
 
 # @description Clone shared files repository
 rm -rf common-shared
