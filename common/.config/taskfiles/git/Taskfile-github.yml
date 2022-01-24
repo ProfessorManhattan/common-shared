@@ -43,12 +43,19 @@ tasks:
       - :install:software:gh
       - :install:software:jq
       - create
+    vars:
+      CURRENT_PROJECT_ID:
+        sh: jq -r '.blueprint.github_id' package.json
+      PROJECT_ID:
+        sh: gh repo view --json id | jq -r '.id'
+    log:
+      start: Saving GitHub project ID to package.json
+      success: Added GitHub project ID to package.json
+      error: Failed to add GitHub project ID to package.json
     cmds:
-      - |
-        PROJECT_ID="$(gh repo view --json id | jq -r '.id')"
-        TMP="$(mktemp)" && jq --arg projectId "$PROJECT_ID" '.blueprint.github_id = $projectId' package.json > "$TMP"
-        mv "$TMP" package.json
-        .config/log success 'Added GitHub project ID to package.json'
+      - TMP="$(mktemp)" && jq --arg projectId "{{.PROJECT_ID}}" '.blueprint.github_id = $projectId' package.json > "$TMP" && mv "$TMP" package.json
+    status:
+      - '[[ "{{.CURRENT_PROJECT_ID}}" == "{{.PROJECT_ID}}" ]]'
 
   update:
     deps:
@@ -70,6 +77,10 @@ tasks:
         sh: jq -r '.homepage' package.json
       PRIVATE:
         sh: jq -r '.private' package.json | sed 's/null/false/'
+    log:
+      start: Updating GitHub project metadata
+      success: Updated GitHub repository metadata
+      error: Error while updating GitHub repository metadata
     cmds:
       - |
         OPTIONAL_TAGS="$(jq '.keywords' .config/common-keywords.json)"
