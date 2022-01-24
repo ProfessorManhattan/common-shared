@@ -124,11 +124,11 @@ tasks:
     deps:
       - :install:software:gh
       - create
+    log:
+      start: Setting GitHub Actions Ansible Galaxy token
+      success: GitHub Actions Ansible Galaxy token set
+      error: Error setting GitHub Actions Ansible Galaxy token
     cmds:
-      - |
-        if [ ! -z "$GITHUB_TOKEN" ] && [ ! -z "$ANSIBLE_GALAXY_TOKEN" ] && [ '{{.REPOSITORY_TYPE}}' == 'ansible' ]; then
-          gh secret set ANSIBLE_GALAXY_TOKEN -b "$ANSIBLE_GALAXY_TOKEN"
-          .config/log success 'Updated GitHub Actions `ANSIBLE_GALAXY_TOKEN` environment variable successfully'
-        fi
+      - gh secret set ANSIBLE_GALAXY_TOKEN -b "$ANSIBLE_GALAXY_TOKEN"
     status:
       - '[ -z "$GITHUB_TOKEN" ] || [ -z "$ANSIBLE_GALAXY_TOKEN" ] || [ "{{.REPOSITORY_TYPE}}" != "ansible" ]'
