@@ -92,10 +92,8 @@ tasks:
         fi
 
   venv:node:
-    deps:
-      - :install:software:python
     log:
-      error: Encountered error while setting up `.venv` environment
+      error: Encountered error while setting up `.venv` environment.. Is Python 3 installed?
       start: Setting up a Python 3 `.venv`
       success: Finished setting up `.venv`. Run `. .venv/bin/activate` to load the environment into your shell.
     cmds:
