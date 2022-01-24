@@ -17,21 +17,19 @@ tasks:
       PROJECT_TYPE:
         sh: if [[ $(jq -r '.private' package.json) == 'true' ]]; then echo '--private'; else echo '--public'; fi
     run: once
+    log:
+      start: Checking for presence of GitHub repository and creating one if it does not exist
+      success: Ensure GitHub repository is present
+      error: Error while ensuring GitHub repository exists
     cmds:
-      - cmd: |
-          TMP="$(mktemp)"
-          if [ ! -z "$GITHUB_TOKEN" ] && test -e .git && ! gh repo view {{.GITHUB_ORG}}/{{.GITHUB_SLUG}} > /dev/null; then
-            gh repo create "{{.GITHUB_SLUG}}" --enable-wiki={{.GITHUB_WIKI}} -y --description "{{.EMOJI_START}}{{.DESCRIPTION}}{{.EMOJI_END}}" \
-              --homepage "{{.HOMEPAGE}}" {{.PROJECT_TYPE}} > /dev/null
-            .config/log success 'Created a GitHub repository - `https://github.com/{{.GITHUB_ORG}}/{{.GITHUB_SLUG}}`'
-            git add --all
-            git commit --quiet -m "🎂 Birth" -n
-            git push --quiet -u --no-progress github master
-          fi
+      - cmd: gh repo create "{{.GITHUB_SLUG}}" --enable-wiki={{.GITHUB_WIKI}} -y --description "{{.EMOJI_START}}{{.DESCRIPTION}}{{.EMOJI_END}}"
+          --homepage "{{.HOMEPAGE}}" {{.PROJECT_TYPE}} > /dev/null
         ignore_error: true
-    sources:
-      - .variables.json
-      - package.json
+      - git add --all
+      - git commit --quiet -m "🎂 Birth" -n
+      - git push --quiet -u --no-progress github master
+    status:
+      - '[ -z "$GITHUB_TOKEN" ] || ! test -e .git || gh repo view {{.GITHUB_ORG}}/{{.GITHUB_SLUG}} > /dev/null'
     preconditions:
       - sh: '[ "{{.DESCRIPTION}}" != "null" ]'
         msg: The `.description` in `package.json` must be set.
