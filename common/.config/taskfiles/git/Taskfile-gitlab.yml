@@ -17,6 +17,10 @@ tasks:
       TOKEN_STATUS:
         sh: glab api projects/:fullpath/access_tokens | jq -r '.[] | select(.name=="PROJECT_CI_ACCESS_TOKENX") | .id'
     run: once
+    log:
+      start: Configuring project-specific access token
+      success: Configured project-specific access token
+      error: Failed to configure project-specific access token
     cmds:
       - |
         curl -sSL --request POST --header "PRIVATE-TOKEN: $GITLAB_TOKEN" --header \
@@ -33,6 +37,10 @@ tasks:
       REPO_ID:
         sh: glab api projects/:fullpath | jq '.id'
     run: once
+    log:
+      start: Setting up protected branches
+      success: Set up protected branches
+      error: Error encountered while setting up protected branches
     cmds:
       - |
         if [[ "$(glab api projects/:fullpath/protected_branches/master | jq '.code_owner_approval_required')" == 'false' ]]; then
@@ -62,7 +70,6 @@ tasks:
         glab api projects/:fullpath/repository/branches -X POST -f id={{.REPO_ID}} -f branch=synchronize -f ref=master > /dev/null &
         glab api projects/:fullpath/protected_branches -X POST -f name=synchronize -f code_owner_approval_required=true -f allow_force_push=true > /dev/null &
         wait
-        .config/log success "Successfully set up GitLab protected branches"
 
   create:
     deps:
@@ -83,22 +90,20 @@ tasks:
       TMP:
         sh: mktemp
     run: once
+    log:
+      start: Ensuring GitLab repository has been created
+      success: Ensured GitLab repository exists
+      error: Encountered error while creating GitLab repository
     cmds:
-      - cmd: |
-          KEYWORDS="$(jq -r '.keywords | tostring' package.json | sed 's/\[//' | sed 's/\]//')"
-          if [ ! -z "$GITLAB_TOKEN" ] && test -e .git && ! glab repo view '{{.GITLAB_PATH}}' > /dev/null; then
-            NO_PROMPT=1 glab repo create '{{.GITLAB_PATH}}' --group '{{.GITLAB_GROUP}}' \
-              --description '{{.EMOJI_START}}{{.DESCRIPTION}}{{.EMOJI_END}}' --name '{{.NAME}}' \
-              {{.PROJECT_TYPE}} --tag "$KEYWORDS"
-            git add --all
-            git commit --quiet -m "🎂 Birth" -n
-            git push --quiet -u --no-progress gitlab master
-            .config/log success 'Created new GitLab repository - `https://gitlab.com/{{.GITLAB_PATH}}`'
-          fi
+      - cmd: NO_PROMPT=1 glab repo create '{{.GITLAB_PATH}}' --group '{{.GITLAB_GROUP}}'
+          --description '{{.EMOJI_START}}{{.DESCRIPTION}}{{.EMOJI_END}}' --name '{{.NAME}}'
+          {{.PROJECT_TYPE}} --tag "$(jq -r '.keywords | tostring' package.json | sed 's/\[//' | sed 's/\]//')"
         ignore_error: true
-    sources:
-      - .variables.json
-      - package.json
+      - git add --all
+      - git commit --quiet -m "🎂 Birth" -n
+      - git push --quiet -u --no-progress gitlab master
+    status:
+      - '[ -z "$GITLAB_TOKEN" ] || ! test -e .git && glab repo view "{{.GITLAB_PATH}}" > /dev/null'
     preconditions:
       - sh: '[ "{{.DESCRIPTION}}" != "null" ]'
         msg: The `.description` in `package.json` must be set.
