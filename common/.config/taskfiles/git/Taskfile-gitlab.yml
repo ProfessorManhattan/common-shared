@@ -231,13 +231,15 @@ tasks:
     deps:
       - :install:software:glab
       - :install:software:jq
+    log:
+      start: Ensuring GitLab's GitHub integration is enabled
+      success: GitLab's GitHub integration is enabled
+      error: Error enabling GitLab's GitHub integration
     cmds:
-      - |
-        GITHUB_REPO="$(jq -r '.blueprint.repository.github' package.json)"
-        if [ ! -z "$GITLAB_TOKEN" ] && [ ! -z "$GITHUB_TOKEN" ]; then
-          glab api projects/:fullpath/integrations/github -X PUT -f token="$GITHUB_TOKEN" -f repository_url="$GITHUB_REPO" --silent
-          .config/log success 'Ensured GitLab'\''s GitHub integration is activated'
-        fi
+      - glab api projects/:fullpath/integrations/github -X PUT -f token="$GITHUB_TOKEN"
+        -f repository_url="$(jq -r '.blueprint.repository.github' package.json)" --silent
+    status:
+      - '[ -z "$GITLAB_TOKEN" ] || [ -z $GITHUB_TOKEN ]'
 
   mirror:
     deps:
