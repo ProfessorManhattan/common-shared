@@ -305,9 +305,10 @@ elif [[ "$OSTYPE" == 'linux-gnu'* ]] || [[ "$OSTYPE" == 'linux-musl'* ]]; then
   fi
 fi
 
-# @description Ensures Homebrew and Poetry are installed
+# @description Ensures Homebrew and Poetry are installed. Checks for presence of INIT_CWD
+# and skips Homebrew install when called from package.json in postinstall hook.
 if [[ "$OSTYPE" == 'darwin'* ]] || [[ "$OSTYPE" == 'linux-gnu'* ]] || [[ "$OSTYPE" == 'linux-musl'* ]]; then
-  if ! type brew > /dev/null; then
+  if ! type brew > /dev/null && [ -z "$INIT_CWD" ]; then
     .config/log warn 'Homebrew is not installed. The script will attempt to install Homebrew and you might be prompted for your password.'
     bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   fi
