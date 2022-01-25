@@ -28,6 +28,9 @@ tasks:
       - :install:npm:semantic-release
       - :install:software:git
       - :install:software:poetry
+    env:
+      GITHUB_URL:
+        sh: jq -r '.blueprint.repository.github' package.json
     log:
       error: Error while running `semantic-release`
       start: Releasing with `semantic-release`..
