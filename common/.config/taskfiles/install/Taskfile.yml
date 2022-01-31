@@ -210,7 +210,7 @@ tasks:
             .config/log success 'Successfully installed `tslib`'
           fi
         else
-          task install:modules:local:sync -- "tslib"
+          task install:modules:local:sync -- tslib
         fi
     status:
       - '[ ! -f tsconfig.json ]'
