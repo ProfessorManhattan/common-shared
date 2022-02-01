@@ -33,8 +33,9 @@
     "@washingtondc/development": "^1.0.0",
     "cz-emoji-conventional": "^1.0.1",
     "eslint-config-strict-mode": "^1.0.28",
+    "handlebars-helpers": "^0.10.0",
     "prettier-config-sexy-mode": "^1.0.0",
-    "semantic-release-config": "^0.0.12"
+    "semantic-release-config": "^0.0.16"
   },
   "keywords": [
     "common",
