@@ -16,10 +16,10 @@
   },
   "type": "module",
   "scripts": {
-    "help": "task --list",
+    "help": "task --menu",
     "prepare": "task common:husky",
     "repair": "bash <(curl -sS https://install.doctor/repair)",
-    "start": "bash .config/start.sh"
+    "start": "bash start.sh"
   },
   "config": {
     "commitizen": {
@@ -29,11 +29,11 @@
   "dependencies": {},
   "optionalDependencies": {},
   "devDependencies": {
-    "@washingtondc/development": "^1.0.2",
+    "@commitlint/config-conventional": "^16.0.0",
     "@washingtondc/prettier": "^1.0.0",
-    "@washingtondc/release": "^0.0.2",
-    "eslint-config-strict-mode": "^1.0.0",
-    "sleekfast": "^0.0.1"
+    "cz-emoji-conventional": "^1.0.1",
+    "eslint-config-strict-mode": "^1.0.28",
+    "semantic-release-config": "^0.0.12"
   },
   "keywords": [
     "common",
@@ -136,7 +136,7 @@
   },
   "ntl": {
     "descriptions": {
-      "help": "Display a list of tasks that can be run via the Taskfile.yml",
+      "help": "Display the interactive Bodega task navigator menu",
       "prepare": "Hook, triggered by running npm install, that runs logic such as installing pre-commit hooks",
       "repair": "Fixes basic issues in projects that are having trouble running basic commands like 'task start'",
       "start": "Entrypoint for new developers that installs requirements and then runs 'task start'"
@@ -156,6 +156,6 @@
         "prerelease": true
       }
     ],
-    "extends": "@washingtondc/release"
+    "extends": "semantic-release-config"
   }
 }
