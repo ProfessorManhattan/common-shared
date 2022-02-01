@@ -5,6 +5,10 @@ vars:
   GORELEASER_CONFIG:
     sh: if [ -f .goreleaser.yml ]; then echo ".goreleaser.yml"; else echo ".config/goreleaser.yml"; fi
 
+env:
+  GOVERSION:
+    sh: go version
+
 tasks:
   build:
     deps:
