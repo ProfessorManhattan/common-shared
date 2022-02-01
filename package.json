@@ -143,7 +143,7 @@
       "start": "Entrypoint for new developers that installs requirements and then runs 'task start'"
     }
   },
-  "prettier": "@washingtondc/prettier",
+  "prettier": "prettier-config-sexy-mode",
   "release": {
     "branches": [
       "main",
