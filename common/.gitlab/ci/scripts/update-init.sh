@@ -109,6 +109,7 @@ rm -f .prettierignore
 rm -f .start.sh
 rm -f .update.sh
 rm -f .yamllint
+rm -f update-init.sh
 rm -f .config/eslintcache
 rm -f CODE_OF_CONDUCT.md
 rm -f CONTRIBUTING.md
