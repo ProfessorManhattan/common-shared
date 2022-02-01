@@ -1,6 +1,6 @@
 ---
 name: '🐛 Bug Report'
-description: Submit a bug report
+description: Stumbled upon an error? Submit a bug report.
 labels: [question]
 body:
   - type: markdown
@@ -18,8 +18,9 @@ body:
     attributes:
       label: What are you experiencing an issue with?
       options:
-        - Normal Use
-        - Development
+        - Latest Release
+        - Prior Release
+        - Development Issue
         - Other
     validations:
       required: true
@@ -75,8 +76,8 @@ body:
     attributes:
       value: |
         ## :heart: Love Megabyte Labs?
-        
-        Please consider donating so we sustain our projects.
+
+        If you find **[Megabyte Labs]({{link.home}})** projects useful, please consider donating so we sustain our projects:
 
         <a title="Support us on Open Collective" href="{{ profile_link.opencollective }}/{{ profile.opencollective }}" target="_blank">
           <img alt="Open Collective sponsors" src="https://img.shields.io/opencollective/sponsors/megabytelabs?logo=opencollective&label=OpenCollective&logoColor=white&style={{ badge_style }}" />
