@@ -85,10 +85,7 @@
     "helpUrl": "https://megabyte.space/docs/contributing/commits"
   },
   "eslintConfig": {
-    "extends": "eslint-config-strict-mode",
-    "rules": {
-      "import/no-extraneous-dependencies": "off"
-    }
+    "extends": "eslint-config-strict-mode"
   },
   "funding": [
     {
