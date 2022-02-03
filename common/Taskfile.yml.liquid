@@ -36,6 +36,9 @@ vars:
   SEMANTIC_CONFIG: semantic-release-config
   TIMEZONE: America/New_York
 
+env:
+  SENTRY_DSN: {{#if sentryDSN}}{{sentryDSN}}{{else}}''{{/if}}
+
 includes:
   project:
     taskfile: Taskfile-project.yml
