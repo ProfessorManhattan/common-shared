@@ -63,7 +63,7 @@ tasks:
       error: Encountered error while installing local NPM dependencies
     cmds:
       - cmd: |
-          if [ -n "$GITLAB_CI" ] && [ "$AUTO_UPDATE_NPM_PACKAGES" == 'true' ]; then
+          if [ -n "$AUTO_UPDATE_NPM_PACKAGES" ]; then
             {{.NPM_PROGRAM_LOCAL}} update
           else
             {{.NPM_PROGRAM_LOCAL}} install
