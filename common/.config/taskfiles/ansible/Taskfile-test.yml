@@ -104,7 +104,8 @@ tasks:
     cmds:
       - |
         set -o pipefail
-        {{.MOLECULE_TEST_OPTIONS}} MOLECULE_GROUP="{{.CLI_ARGS}}" {{.PYTHON_HANDLE}}molecule test -s docker -- --skip-tags skipdockertest 2>&1 | tee debug.log || EXIT_CODE=$?
+        {{.MOLECULE_TEST_OPTIONS}} MOLECULE_GROUP="{{.CLI_ARGS}}" {{.PYTHON_HANDLE}}molecule test -s docker \
+        -- --skip-tags skipdockertest 2>&1 | tee debug.log || EXIT_CODE=$?
 
   molecule:docker:matrix:
     deps:
@@ -378,7 +379,8 @@ tasks:
       - mkdir -p {{.MOLECULE_LOGS_PATH}}
       - |
         set -o pipefail
-        PY_COLORS=0 {{.MOLECULE_TEST_OPTIONS}} {{.PYTHON_HANDLE}}molecule test 2&>1 | tee '{{.MOLECULE_LOGS_PATH}}/{{.MOLECULE_DATE}}-default.txt' || EXIT_CODE=$?
+        PY_COLORS=0 {{.MOLECULE_TEST_OPTIONS}} {{.PYTHON_HANDLE}}molecule test 2&>1 | \
+        tee '{{.MOLECULE_LOGS_PATH}}/{{.MOLECULE_DATE}}-default.txt' || EXIT_CODE=$?
 
   # yamllint enable rule:truthy
   molecule:virtualbox:prompt:

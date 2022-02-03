@@ -14,11 +14,3 @@ tasks:
       - bin install {{.GITHUB}} "$GOPATH/bin/{{.BIN}}"
     status:
       - type {{.BIN}} > /dev/null
-
-  sentry:
-    run: once
-    cmds:
-      - task: install
-        vars:
-          BIN:
-          GITHUB:
