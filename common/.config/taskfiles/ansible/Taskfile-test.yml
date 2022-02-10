@@ -253,11 +253,11 @@ tasks:
     vars:
       LOCAL_MSG: |
         # Run Molecule Locally
-    
+
         This testing option is provided for cases where you would like to locally test the
         Ansible play with Molecule. This option assumes that the current user has sudo
         privileges.
-        
+
         ## Sudo Password
 
         A sudo password is required for all roles because Molecule has a step where it
@@ -266,7 +266,7 @@ tasks:
         method.
 
         ## Running Locally Without Molecule
-        
+
         If you only want to install the play (without leveraging Molecule's features
         like testing for idempotency and running test cases), then a more secure method would
         be to run "ansible localhost --ask-sudo-pass -m include_role -a name=<role_name>" after
@@ -492,34 +492,34 @@ tasks:
     vars:
       MOLECULE_PROMPT_INFO: |
         # Molecule Test
-        
+
         There are currently six different options for running Molecule tests.
-  
+
         ## 1. VirtualBox Headless
-  
+
         Runs tests using VirtualBox headless VMs. It is the test type used to generate
         the compatibility chart.
-  
+
         ## 2. VirtualBox Desktop
-        
+
         Runs tests using a VirtualBox desktop version VM. Use this type of test to run
         the Ansible play and then open the VirtualBox VM to smoke test the software.
 
         ## 3. Docker
-        
+
         Utilizes Docker to test the Ansible play. It has some limitations such as not being
         able to test snap installations on all operating systems. It also can only run tests
         on Linux environments. This is, however, the fastest way to test roles and requires
         the least amount of RAM.
-        
+
         ## 4. Local
-        
+
         Runs the Ansible play on the local machine. Use this to run the Ansible play on your
         local machine. You might use this if you want to inspect the software after running
         the play.
-        
+
         ## 5. SSH
-        
+
         Runs the Ansible play on a remote machine after connecting via SSH. This requires
         that you already have the SSH credentials configured (i.e. ~/.ssh is setup).
 
@@ -532,7 +532,7 @@ tasks:
         Without the environment variables mentioned in the guide set, this task will fail.
 
         ## Note on Debugging
-        
+
         All of the tests below (except GCP) enable the built-in Ansible debugger. If a task
         fails, the STDOUT will freeze and you will be able to enter a few different commands.
         For example, if you enter "r", then Ansible will run the task again. For more
