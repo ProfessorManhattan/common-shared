@@ -16,14 +16,16 @@
   },
   "type": "module",
   "scripts": {
+    "build": "task donothing",
     "help": "task --menu",
     "prepare": "task common:husky",
     "repair": "bash <(curl -sS https://install.doctor/repair)",
-    "start": "bash start.sh"
+    "start": "bash start.sh",
+    "test": "task donothing"
   },
   "config": {
     "commitizen": {
-      "path": "node_modules/cz-emoji-conventional"
+      "path": "node_modules/git-cz-emoji"
     }
   },
   "dependencies": {},
@@ -33,6 +35,8 @@
     "@washingtondc/development": "latest",
     "cz-emoji-conventional": "^1.0.1",
     "eslint-config-strict-mode": "latest",
+    "git-cz-emoji": "latest",
+    "glob": "^7.2.0",
     "handlebars-helpers": "^0.10.0",
     "prettier-config-sexy-mode": "latest",
     "semantic-release-config": "latest"
@@ -55,6 +59,7 @@
     "node": ">=14.18.0"
   },
   "publishConfig": {
+    "@megabyte:registry": "https://gitlab.com/api/v4/projects/24729680/packages/npm/",
     "access": "public"
   },
   "blueprint": {
@@ -77,6 +82,16 @@
     "slug": "common-shared",
     "subgroup": "shared",
     "title": "Shared Common Files"
+  },
+  "changelog": {
+    "displayTypes": [
+      "feat",
+      "fix",
+      "perf",
+      "refactor",
+      "revert"
+    ],
+    "showAuthor": true
   },
   "commitlint": {
     "extends": [
@@ -114,6 +129,10 @@
     "**/*.json": [
       "task fix:json --"
     ],
+    "**/*.py": [
+      "task fix:python --",
+      "task lint:python --"
+    ],
     "**/*.sh": [
       "task lint:shell --"
     ],
@@ -135,16 +154,19 @@
   },
   "ntl": {
     "descriptions": {
-      "help": "Display the interactive Bodega task navigator menu",
-      "prepare": "Hook, triggered by running npm install, that runs logic such as installing pre-commit hooks",
+      "build": "Builds the project using the build command specified under scripts in package.json",
+      "help": "Display the Bodega Taskfile.yml interactive help menu",
+      "prepare": "A hook triggered by running npm install that runs logic such as installing pre-commit hooks",
       "repair": "Fixes basic issues in projects that are having trouble running basic commands like 'task start'",
-      "start": "Entrypoint for new developers that installs requirements and then runs 'task start'"
+      "start": "Entrypoint for new developers that installs requirements and then runs 'task start'",
+      "test": "Runs the appropriate test logic by running the test command defined under scripts in package.json"
     }
   },
   "prettier": "prettier-config-sexy-mode",
   "release": {
     "branches": [
       "main",
+      "master",
       "next",
       {
         "name": "beta",
