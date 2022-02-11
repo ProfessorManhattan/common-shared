@@ -117,6 +117,9 @@ tasks:
     deps:
       - :install:software:dasel
       - :install:software:python
+    vars:
+      POETRY_MANUAL_SETUP_MSG: Adding semantic-release-python plugin Python dependencies by
+        running `poetry add pip@latest setuptools@latest twine@latest wheel@latest`
     log:
       error: Encountered error while installing Python dependencies for `semantic-release-python`
       start: Installing `semantic-release-python` Python dependencies
@@ -131,18 +134,18 @@ tasks:
             .config/log info '`semantic` extras bundle detected.. Installing via `poetry install -E semantic`'
             poetry install -E semantic
           else
-            .config/log info 'Adding semantic-release-python plugin Python dependencies by running `poetry add pip@latest setuptools@latest twine@latest wheel@latest`'
+            .config/log info '{{.POETRY_MANUAL_SETUP_MSG}}'
             poetry add pip@latest setuptools@latest twine@latest wheel@latest
           fi
         else
           if [ -f venv/bin/activate ]; then
-            .config/log info 'Using existing virtualenv found at `venv/bin/activate`'
+            .config/log info 'Using existing virtualenv found at `venv/`'
             . venv/bin/activate
           elif [ -f .venv/bin/activate ]; then
-            .config/log info 'Using existing virtualenv found at `.venv/bin/activate`'
+            .config/log info 'Using existing virtualenv found at `.venv/`'
             . .venv/bin/activate
           else
-            .config/log info 'No virtualenv detected.. Creating virtualenv at `.venv/`'
+            .config/log info 'No virtualenv detected.. Creating virtualenv in `.venv/`'
             python3 -m venv .venv
             . .venv/bin/activate
           fi

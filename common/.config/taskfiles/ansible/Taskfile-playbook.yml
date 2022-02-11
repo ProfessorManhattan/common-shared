@@ -49,7 +49,7 @@ tasks:
 
   environment:
     desc: Prompts for which environment to use and then symlinks to it
-    hide: '{{if ne (print .REPOSITORY_TYPE "-" .REPOSITORY_SUBTYPE) "ansible-playbook" }}'
+    hide: '{{ne (print .REPOSITORY_TYPE "-" .REPOSITORY_SUBTYPE) "ansible-playbook"}}'
     summary: |
       # Switch environments using an interactive dialogue
 
@@ -127,7 +127,7 @@ tasks:
 
   find-missing:
     desc: Find roles that are missing files
-    hide: '{{if ne (print .REPOSITORY_TYPE "-" .REPOSITORY_SUBTYPE) "ansible-playbook" }}'
+    hide: '{{ne (print .REPOSITORY_TYPE "-" .REPOSITORY_SUBTYPE) "ansible-playbook"}}'
     summary: |
       # Find roles that are missing any given file
 
