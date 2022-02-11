@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "{{#if customPyPiPackageName}}{{customPyPiPackageName}}{{else}}{{repository.prefix.github}}{{slug}}{{/if}}"
+name = "{{#if customPyPiPackageName}}{{customPyPiPackageName}}{{else}}{{#if customPackageName}}{{customPackageName}}{{else}}{{repository.prefix.github}}{{slug}}{{/if}}{{/if}}"
 version = "{{version}}"
 description = "{{description}}"
 authors = ["{{author.name}} <{{author.email}}>"]
