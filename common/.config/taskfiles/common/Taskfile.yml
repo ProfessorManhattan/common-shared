@@ -109,7 +109,6 @@ tasks:
       - :install:modules:global
       - :install:modules:local
       - :install:python:requirements
-    desc: Ensure all the local dependencies are installed (Node.js, Python, etc.)
     summary: |
       # Ensure dependencies are installed
 
@@ -122,29 +121,13 @@ tasks:
     run: once
 
   reset:
-    desc: Resets the project by removing all caches and updating the project
-    summary: |
-      # Reset the project and then update it
-
-      This task is intended to be used when the `common:update` task is having trouble
-      or when breaking changes are made to the build tools. Use this task if you are
-      having trouble with other tasks that are dependent on stale caches. Unlike
-      `task common:hard-reset`, this will not remove uncommitted work (assuming your
-      work does not reside in folders ignored by the `.gitignore` file).
     cmds:
       - task: clean
       - task: update
 
-  reset-force:
+  reset:force:
     deps:
       - software:git
-    desc: 'Aggressively reset the project (**WARNING** This will wipe uncommitted work)'
-    summary: |
-      # Aggressively reset the project
-
-      If using `task common:reset` does not fix your issues, you can run this task
-      to completely wipe out uncommitted work, clear all the caches, and sync
-      with the master branch of both this project and its upstream repositories.
     log:
       error: Failed to reset project back to its HEAD
       start: Forcing project to reset aggressively
@@ -155,7 +138,6 @@ tasks:
       - git clean -fxd :/
       - git checkout master
       - git pull origin master --no-rebase
-      - bash .config/scripts/start.sh
 
   shell:
     deps:
