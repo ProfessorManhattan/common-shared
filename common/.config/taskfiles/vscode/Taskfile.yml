@@ -41,6 +41,11 @@ tasks:
     deps:
       - :install:npm:prettier
       - :install:software:jq
+    summary: |
+      # Inject `devcontainer.json` with Extensions
+
+      This task synchronizes the extensions from `.vscode/extensions.json` into the
+      `.devcontainer/devcontainer.json` extensions field.
     log:
       error: Failed to inject `{{.EXTENSIONS_FILE}}` `recommendations` into `{{.DEVCONTAINER_CONFIG}}`
       start: Injecting `{{.EXTENSIONS_FILE}}` `recommendations` into `{{.DEVCONTAINER_CONFIG}}`
@@ -49,7 +54,7 @@ tasks:
       - |
         TMP="$(mktemp)"
         jq --arg recommendations "$(jq '.recommendations' {{.EXTENSIONS_FILE}})" '.extensions = ($recommendations | fromjson)' {{.DEVCONTAINER_CONFIG}} > "$TMP"
-        mv "$TMP" 
+        mv "$TMP"
       - |
         {{.NPX_HANDLE}}prettier --write '{{.DEVCONTAINER_CONFIG}}' > /dev/null
 
