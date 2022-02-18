@@ -90,11 +90,14 @@ tasks:
       - |
         if [ ! -f package-lock.json ]; then
           pnpm-lock-export
-          mv package-lock.json .config/package-lock.json
+          MOVE_PACKAGE_LOCK=true
         fi
-        if [ ! -f yarn.lock ]; then
+        if [ ! -f yarn.lock ] && [ -f package-lock.json ]; then
           synp --source-file package-lock.json
           mv yarn.lock .config/yarn.lock
+        fi
+        if [ -n "$MOVE_PACKAGE_LOCK" ]; then
+          mv package-lock.json .config/package-lock.json
         fi
     sources:
       - pnpm-lock.yaml
