@@ -63,18 +63,22 @@
   "license": "{{license}}",
   "lint-staged": {
     "**/*": ["task lint:any --"],
-    "**/*.(css|html|less|md|mjml|php|scss|sh|xml)": ["task fix:prettier --"],
+    "**/*.(bash|cfg|cgi|command|css|env|env.*|handlebars|hbs|html|less|fcgi|java|md|mdx|mjml|php|phtml|properties|reg|scss|tmpl|tmux|tool|tpl|zsh)": ["task fix:prettier --"],
     "**/!(logo).(jpg|png)": ["task image:compress --"],
     "**/*.(cjs|js|jsx|mjs|ts|tsx)": ["task fix:js --", "task lint:js --"],
-    "(**/*.(json|webapp|webmanifest)|composer.lock|Pipfile.lock)": ["task fix:json --"],
+    "**/*.(json|webapp|webmanifest)": ["task fix:json --"],
     "**/*.go": ["task fix:go --", task lint:go --"],
     "**/*.py": ["task fix:python --", "task lint:python --"],
     "**/*.php": ["task fix:php --", "task lint:php --"],
-    "**/*.sh": ["task lint:shell --"],
-    "**/*.toml": ["task lint:toml --"],
+    "**/*.sh": ["task fix:prettier --", "task fix:shell --", "task lint:shell --"],
+    "**/*.toml": ["task fix:prettier --", "task lint:toml --"],
     "**/*.xml": ["task fix:xml --", "task lint:xml --"],
-    "**/*.yml": ["task fix:yaml --", "task lint:yaml --"],
-    "logo.png": ["task image:resize -- 200 200", "task image:compress --"]
+    "**/*.(yml|yaml)": ["task fix:yaml --", "task lint:yaml --"],
+    "(Brewfile|composer.lock|Gemfile|Gopkg.lock|Pipfile.lock)": ["task fix:prettier --"],
+    "(.dockerignore|.editorconfig|.eslintignore|.gitattributes|.gitconfig|.gitignore|.gitmodules|.nodemonignore|.npmignore|.prettierignore)": ["task fix:prettier --"],
+    "logo.png": ["task image:resize -- 200 200", "task image:compress --"],
+    "Dockerfile": ["task fix:prettier --", "task lint:docker --"],
+    "Vagrantfile": ["task fix:prettier --", "task lint:vagrant"]
   },
   "name": "{{#if customPackageName}}{{customPackageName}}{{else}}@{{profile.npmjs_organization}}/{{repository.prefix.github}}{{slug}}{{/if}}",
   "ntl": {
