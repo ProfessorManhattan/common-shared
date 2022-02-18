@@ -32,10 +32,13 @@ tasks:
       start: Copying common files
       success: Copied common files
     cmds:
-      - rm -rf .config
+      - mv .config .config-old
       - |
         PATH="$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
         cp -rT ./{{.COMMON_FOLDER}}/common/ .
+      - cp -f .config-old/package-lock.json .config/package-lock.json
+      - cp -f .config-old/yarn.lock .config/yarn.lock
+      - rm -rf .config-old
       - task: :common:husky:permissions
       - mv {{.COMMON_FOLDER}}/.gitlab-ci.yml .gitlab-ci.yml
 

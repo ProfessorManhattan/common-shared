@@ -82,6 +82,24 @@ tasks:
     sources:
       - package.json
 
+  modules:local:lockfiles:
+    deps:
+      - :install:software:node
+      - :install:software:yarn
+    cmds:
+      - |
+        if [ ! -f package-lock.json ]; then
+          npm install --package-lock-only
+          mv package-lock.json .config/package-lock.json
+        fi
+      - |
+        if [ ! -f yarn.lock ]; then
+          yarn install --mode update-lockfile
+          mv yarn.lock .config/yarn.lock
+        fi
+    sources:
+      - pnpm-lock.yaml
+
   modules:local:sync:
     log:
       error: Error while synchronizing `NPM_KEEP_UPDATED` packages with the latest version(s)

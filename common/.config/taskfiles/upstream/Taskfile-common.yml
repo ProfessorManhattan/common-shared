@@ -68,8 +68,11 @@ tasks:
       start: Removing `.config/`
       success: Removed `.config/`
     cmds:
-      - rm -rf .config
+      - mv .config .config-old
       - task: copy:begin
+      - cp -f .config-old/package-lock.json .config/package-lock.json
+      - cp -f .config-old/yarn.lock .config/yarn.lock
+      - rm -rf .config-old
 
   copy:begin:
     deps:
