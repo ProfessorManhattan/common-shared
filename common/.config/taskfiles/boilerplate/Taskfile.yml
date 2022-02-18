@@ -71,19 +71,19 @@ tasks:
       - |
         if [ "$(jq -r '.dependencies' {{.PKG_FILE}})" == 'null' ]; then
           TMP="$(mktemp)"
-          jq '.dependencies = {}' > "$TMP"
+          jq '.dependencies = {}' {{.PKG_FILE}} > "$TMP"
           mv "$TMP" {{.PKG_FILE}}
         fi
       - |
         if [ "$(jq -r '.devDependencies' {{.PKG_FILE}})" == 'null' ]; then
           TMP="$(mktemp)"
-          jq '.devDependencies = {}' > "$TMP"
+          jq '.devDependencies = {}' {{.PKG_FILE}} > "$TMP"
           mv "$TMP" {{.PKG_FILE}}
         fi
       - |
         if [ "$(jq -r '.optionalDependencies' {{.PKG_FILE}})" == 'null' ]; then
           TMP="$(mktemp)"
-          jq '.optionalDependencies = {}' > "$TMP"
+          jq '.optionalDependencies = {}' {{.PKG_FILE}} > "$TMP"
           mv "$TMP" {{.PKG_FILE}}
         fi
 
