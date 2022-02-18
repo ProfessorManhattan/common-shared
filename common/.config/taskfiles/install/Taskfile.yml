@@ -84,17 +84,16 @@ tasks:
 
   modules:local:lockfiles:
     deps:
-      - :install:software:node
-      - :install:software:yarn
+      - :install:npm:pnpm-lock-export
+      - :install:npm:synp
     cmds:
       - |
         if [ ! -f package-lock.json ]; then
-          npm install --package-lock-only
+          pnpm-lock-export
           mv package-lock.json .config/package-lock.json
         fi
-      - |
         if [ ! -f yarn.lock ]; then
-          yarn install --mode update-lockfile
+          synp --source-file package-lock.json
           mv yarn.lock .config/yarn.lock
         fi
     sources:

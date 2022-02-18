@@ -75,7 +75,6 @@
     "**/*.xml": ["task fix:xml --", "task lint:xml --"],
     "**/*.(yml|yaml)": ["task fix:yaml --", "task lint:yaml --"],
     "(Brewfile|composer.lock|Gemfile|Gopkg.lock|Pipfile.lock)": ["task fix:prettier --"],
-    "(.dockerignore|.editorconfig|.eslintignore|.gitattributes|.gitconfig|.gitignore|.gitmodules|.nodemonignore|.npmignore|.prettierignore)": ["task fix:prettier --"],
     "logo.png": ["task image:resize -- 200 200", "task image:compress --"],
     "Dockerfile": ["task fix:prettier --", "task lint:docker --"],
     "Vagrantfile": ["task fix:prettier --", "task lint:vagrant"]
