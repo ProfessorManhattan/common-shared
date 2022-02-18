@@ -54,7 +54,7 @@ tasks:
       - |
         TMP="$(mktemp)"
         jq --arg recommendations "$(jq '.recommendations' {{.EXTENSIONS_FILE}})" '.extensions = ($recommendations | fromjson)' {{.DEVCONTAINER_CONFIG}} > "$TMP"
-        mv "$TMP"
+        mv "$TMP" {{.DEVCONTAINER_CONFIG}}
       - |
         {{.NPX_HANDLE}}prettier --write '{{.DEVCONTAINER_CONFIG}}' > /dev/null
 
