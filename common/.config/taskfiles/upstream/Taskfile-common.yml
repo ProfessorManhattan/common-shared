@@ -70,8 +70,14 @@ tasks:
     cmds:
       - mv .config .config-old
       - task: copy:begin
-      - cp -f .config-old/package-lock.json .config/package-lock.json
-      - cp -f .config-old/yarn.lock .config/yarn.lock
+      - |
+        if [ -f .config-old/package-lock.json ]; then
+          cp .config-old/package-lock.json .config/package-lock.json
+        fi
+      - |
+        if [ -f .config-old/yarn.lock ]; then
+          cp .config-old/yarn.lock .config/yarn.lock
+        fi
       - rm -rf .config-old
 
   copy:begin:
