@@ -69,7 +69,7 @@ tasks:
             {{.NPM_PROGRAM_LOCAL}} update
           else
             {{.NPM_PROGRAM_LOCAL}} install || EXIT_CODE=$?
-            if [ "$EXIT_CODE" != "0" ]; then
+            if [ -n "$EXIT_CODE" ]; then
               .config/log info 'Running `{{.NPM_PROGRAM_LOCAL}} update` because install had non-zero exit code '"($EXIT_CODE)"
               {{.NPM_PROGRAM_LOCAL}} update
             fi

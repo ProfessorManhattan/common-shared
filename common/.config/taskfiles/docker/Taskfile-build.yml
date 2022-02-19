@@ -35,7 +35,8 @@ tasks:
           {{else}}
           echo "codeclimate-$(jq -r '.blueprint.slug' package.json)"
           {{end}}
-      VERSION: latest
+      VERSION:
+        sh: jq -r '.version' package.json
     log:
       error: Error building `{{.DOCKER_IMAGE}}:{{.VERSION}}`
       start: Building Docker container `{{.DOCKER_IMAGE}}:{{.VERSION}}` (also tagged as latest)
