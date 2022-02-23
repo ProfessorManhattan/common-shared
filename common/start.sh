@@ -259,7 +259,7 @@ function installTask() {
   fi
   mv "$TMP_DIR/task/task" "$TARGET_DEST"
   if type sudo &> /dev/null && sudo -n true; then
-    mv "$TARGET_DEST" /usr/local/bin/task
+    sudo mv "$TARGET_DEST" /usr/local/bin/task
     logger success "Installed Task to /usr/local/bin/task"
   else
     logger success "Installed Task to $TARGET_DEST"
