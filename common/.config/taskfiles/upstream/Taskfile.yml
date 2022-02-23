@@ -207,7 +207,7 @@ tasks:
 
   template:pyproject:local:
     vars:
-      PYPROJECT_NOTICE: |
+      PYPROJECT_NOTICE: |-
         ##### IMPORTANT DEVELOPER NOTICE #####
         # This `pyproject.toml` file is automatically generated.
         # If you want to make changes that persist then you should
