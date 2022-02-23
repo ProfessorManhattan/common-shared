@@ -45,7 +45,7 @@ tasks:
       - task: common
       - task: brew:{{OS}}
     status:
-      - type brew > /dev/null
+      - type brew > /dev/null || [ -n "$NO_INSTALL_HOMEBREW" ]
 
   brew:cask:
     run: when_changed
