@@ -210,7 +210,7 @@ tasks:
       - echo '{{.PYPROJECT_NOTICE}}' >> pyproject.toml
       - echo '' >> pyproject.toml
     status:
-      - '[ ! -f local/pyproject.partial.toml ]'
+      - '[ ! -f local/pyproject.partial.toml ] || [ ! -f pyproject.toml ]'
 
   variables:
     deps:
