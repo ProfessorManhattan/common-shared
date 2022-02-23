@@ -479,6 +479,8 @@ tasks:
         vars:
           PROFILE_STRING: export PATH="$PATH:${GOPATH}/bin:${GOROOT}/bin"
       - task: go:install
+    status:
+      - '[ -n "$NO_INSTALL_HOMEBREW" ]'
 
   go:gopath:
     run: once
