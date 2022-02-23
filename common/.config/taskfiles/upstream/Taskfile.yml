@@ -155,6 +155,7 @@ tasks:
         function handlebars() {
           FILE="$1"
           TMP="$(mktemp)"
+          .config/log info 'Generating file from `'"$FILE"'`'
           {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "$TMP"
           mv "$TMP" "${FILE//.liquid}"
           rm "$FILE"
