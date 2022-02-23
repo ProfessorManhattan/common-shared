@@ -26,6 +26,15 @@ tasks:
     status:
       - type allure > /dev/null
 
+  ansifilter:
+    run: once
+    cmds:
+      - task: brew:formulae
+        vars:
+          FORMULAE: ansifilter
+    status:
+      - type ansifilter > /dev/null
+
   brew:
     run: once
     log:
@@ -383,6 +392,15 @@ tasks:
       - .config/log warn 'Software was installed that requires a system reboot'
       - .config/log info 'Please reboot the system and re-run the same command after rebooting'
       - exit 1
+
+  expect:
+    run: once
+    cmds:
+      - task: brew:formulae
+        vars:
+          FORMULAE: expect
+    status:
+      - type expect > /dev/null
 
   gcloud:
     run: once
