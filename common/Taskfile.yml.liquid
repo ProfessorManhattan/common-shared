@@ -396,8 +396,6 @@ tasks:
 
 {{/eq}}{{/eq}}
   preload:
-    deps:
-      - install:brewfile
     desc: Set up your workstation in advance by installing commonly used programs
     summary: |
       # Speed Up Future Development by Preloading Common System Applications
@@ -430,8 +428,13 @@ tasks:
       error: Encountered error while preloading system with common dependencies (REBOOT RECOMMENDED)
     cmds:
       - task: install:brewfile
-      - task: install:modules:global
-      - task: install:pipx:global
+      - task: install:go:bundle
+      - task: install:rust:bundle
+      - task: install:github:bundle
+      - task: install:npm:bundle
+      - task: install:pipx:bundle
+      - task: install:python:requirements
+      - task: install:modules:local
 
   prepare:
     desc: Prepares the project for the normal start command
