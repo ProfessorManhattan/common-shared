@@ -27,6 +27,8 @@ tasks:
       - :install:software:ansifilter
     cmds:
       - TMP="$(mktemp)" && cat {{.FILE}} | ansifilter > "$TMP" && mv "$TMP" {{.FILE}}
+    status:
+      - '[ -n "$CI" ]'
 
   default:
     log:
@@ -48,12 +50,34 @@ tasks:
       - task: local:test
 
   local:test:
+    cmds:
+      - task: local:test:ci
+      - task: local:test:local
+
+  local:test:ci:
+    deps:
+      - :symlink:{{.REPOSITORY_SUBTYPE}}
+    cmds:
+      - |
+        if [ -n "$WINDOWS_ANSIBLE_TEST" ]; then
+          pip3 install ansible ansibler molecule 'pywinrm[credssp]'
+        else
+          pip3 install ansible ansibler molecule
+        fi
+      - ansible-galaxy install -r requirements.yml
+      - task: local:test:logic
+
+  local:test:local:
     deps:
       - :symlink:{{.REPOSITORY_SUBTYPE}}
       - :install:software:sentry
       - task: :install:python:requirements
         env:
           INSTALL_OPTIONS: --no-dev
+    cmds:
+      - task: local:test:logic
+
+  local:test:logic:
     vars:
       ANSIBLE_CFG: |
         [winrm_connection]
@@ -77,9 +101,6 @@ tasks:
         else
           echo 'localhost ansible_connection=local' > inventory
         fi
-      - mkdir -p "$HOME/.ansible/roles"
-      - rm -rf "$HOME/.ansible/roles/{{.ROLE_NAME}}"
-      - ln -sf "$PWD" "$HOME/.ansible/roles/{{.ROLE_NAME}}"
       - task: local:test:playbook
         vars:
           PLAY_HOSTS:
