@@ -190,6 +190,22 @@ tasks:
   template:pyproject:
     deps:
       - :install:github:fusion
+    cmds:
+      - task: template:pyproject:config
+      - task: template:pyproject:local
+
+  template:pyproject:config:
+    log:
+      error: Encountered error while merging `.config/pyproject.partial.toml` into the regenerated `pyproject.toml`
+      start: Merging `.config/pyproject.partial.toml` into `pyproject.toml`
+      success: The `pyproject.toml` file was successfully generated from `.config/pyproject.partial.toml`
+    cmds:
+      - fusion toml pyproject.toml .config/pyproject.partial.toml -o pyproject.next.toml
+      - mv pyproject.next.toml pyproject.toml
+    status:
+      - '[ ! -f .config/pyproject.partial.toml ] || [ ! -f pyproject.toml ]'
+
+  template:pyproject:local:
     vars:
       PYPROJECT_NOTICE: |
         ##### IMPORTANT DEVELOPER NOTICE #####
@@ -201,7 +217,7 @@ tasks:
         # `bash start.sh && task init`.
     log:
       error: Encountered error while merging `local/pyproject.partial.toml` into the regenerated `pyproject.toml`
-      start: Merging `local/pyproject.toml` into `pyproject.partial.toml`
+      start: Merging `local/pyproject.partial.toml` into `pyproject.toml`
       success: The `pyproject.toml` file was successfully generated from `local/pyproject.partial.toml`
     cmds:
       - fusion toml pyproject.toml local/pyproject.partial.toml -o pyproject.next.toml
