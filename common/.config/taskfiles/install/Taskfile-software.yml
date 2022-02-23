@@ -651,13 +651,8 @@ tasks:
       - type rust &> /dev/null
 
   sentry:
-    run: once
     cmds:
-      - task: brew:formulae
-        vars:
-          FORMULAE: getsentry/tools/sentry-cli
-    status:
-      - type sentry-cli > /dev/null
+      - task: :install:github:sentry
 
   snapcraft:
     run: once
