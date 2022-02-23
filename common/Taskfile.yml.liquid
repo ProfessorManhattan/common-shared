@@ -41,6 +41,12 @@ vars:
   TIMEZONE: America/New_York
 
 env:
+  OSTYPE:
+    sh: |
+      {{if eq OS "linux"}}LINUX_FLAVOR='linux-gnu'
+      LIBC=$(ldd /bin/ls | grep 'musl' | head -1 | cut -d ' ' -f1)
+      if [ -n "$LIBC" ]; then LINUX_FLAVOR='linux-musl'; fi{{end}}
+      echo "\{{if eq OS "linux"}}$LINUX_FLAVOR\{{else}}darwin\{{end}}"
   SENTRY_DSN: {{#if sentryDSN}}{{sentryDSN}}{{else}}''{{/if}}
 
 includes:
