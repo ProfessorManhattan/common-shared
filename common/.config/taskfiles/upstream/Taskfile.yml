@@ -185,6 +185,32 @@ tasks:
         package.json.bak package.json > "$TMP"
       - mv "$TMP" package.json
       - rm package.json.bak
+      - task: template:pyproject
+
+  template:pyproject:
+    deps:
+      - :install:github:fusion
+    vars:
+      PYPROJECT_NOTICE: |
+        ##### IMPORTANT DEVELOPER NOTICE #####
+        # This `pyproject.toml` file is automatically generated.
+        # If you want to make changes that persist then you should
+        # add your changes to `./docs/pyproject.partial.toml`.
+        # Be sure to include the section's title with your custom
+        # entries. You can test the generation of this file by running
+        # `bash start.sh && task init`.
+    log:
+      error: Encountered error while merging `local/pyproject.partial.toml` into the regenerated `pyproject.toml`
+      start: Merging `local/pyproject.toml` into `pyproject.partial.toml`
+      success: The `pyproject.toml` file was successfully generated from `local/pyproject.partial.toml`
+    cmds:
+      - fusion toml pyproject.toml local/pyproject.partial.toml -o pyproject.next.toml
+      - mv pyproject.next.toml pyproject.toml
+      - echo '' >> pyproject.toml
+      - echo '{{.PYPROJECT_NOTICE}}' >> pyproject.toml
+      - echo '' >> pyproject.toml
+    status:
+      - '[ ! -f local/pyproject.partial.toml ]'
 
   variables:
     deps:

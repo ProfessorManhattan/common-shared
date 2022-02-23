@@ -23,6 +23,16 @@ tasks:
         type -f /usr/lib/docker/cli-plugins/docker-pushrm ||
         type -f /usr/libexec/docker/cli-plugins/docker-pushrm
 
+  fusion:
+    run: once
+    cmds:
+      - task: install
+        vars:
+          BIN: fusion
+          GITHUB: github.com/edgelaboratories/fusion
+    status:
+      - type fusion > /dev/null
+
   install:
     deps:
       - :install:go:bin
