@@ -465,11 +465,11 @@ tasks:
       `task test:molecule`
 
       **Example usage bypassing prompt:**
-      `task test:molecule -- Archlinux`
+      `task test:molecule -- ArchLinux`
 
       ## Available scenarios:
 
-      * Archlinux
+      * ArchLinux
       * CentOS
       * Debian
       * Fedora
