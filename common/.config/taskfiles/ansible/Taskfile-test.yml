@@ -92,8 +92,10 @@ tasks:
         if [ -n "$WINDOWS_ANSIBLE_TEST" ]; then
           export ANSIBLE_CONFIG="$PWD/ansible.cfg"
         fi
-        {{.PYTHON_MOLECULE_HANDLE}} ansible-playbook -i inventory{{.SUDO_PASS_PARAM}} test/{{OS}}/test.yml 2&>1 | tee debug.log || EXIT_CODE=$?
-      - TMP="$(mktemp)" && cat debug.log | ansifilter > "$TMP" && mv "$TMP" debug.log
+        {{.PYTHON_MOLECULE_HANDLE}} ansible-playbook -i inventory{{.SUDO_PASS_PARAM}} test/{{OS}}/test.yml 2>&1 | tee debug.log || EXIT_CODE=$?
+      - task: ansifilter
+        vars:
+          FILE: debug.log
 
   local:test:playbook:
     vars:
@@ -373,7 +375,7 @@ tasks:
       - |
         set -o pipefail
         PATH="$(poetry env info | grep 'Python:   /' | sed 's/Python:   //' | sed 's/$/\/bin/'):$PATH" \
-        {{.MOLECULE_TEST_OPTIONS}} {{.PYTHON_MOLECULE_HANDLE}}molecule test -s local 2&>1 | tee debug.log || EXIT_CODE=$?
+        {{.MOLECULE_TEST_OPTIONS}} {{.PYTHON_MOLECULE_HANDLE}}molecule test -s local 2>&1 | tee debug.log || EXIT_CODE=$?
         if [ -n "$EXIT_CODE" ]; then
         fi
       - task: ansifilter
@@ -405,7 +407,7 @@ tasks:
     cmds:
       - |
         set -o pipefail
-        {{.MOLECULE_TEST_OPTIONS}} {{.PYTHON_MOLECULE_HANDLE}}molecule test -s remote 2&>1 | tee debug.log || EXIT_CODE=$?
+        {{.MOLECULE_TEST_OPTIONS}} {{.PYTHON_MOLECULE_HANDLE}}molecule test -s remote 2>&1 | tee debug.log || EXIT_CODE=$?
         if [ -n "$EXIT_CODE" ]; then
         fi
       - task: ansifilter
@@ -527,7 +529,7 @@ tasks:
     cmds:
       - |
         set -o pipefail
-        {{.MOLECULE_TEST_OPTIONS}} MOLECULE_GROUP="{{.CLI_ARGS}}" {{.PYTHON_MOLECULE_HANDLE}}molecule test 2&>1 | tee debug.log || EXIT_CODE=$?
+        {{.MOLECULE_TEST_OPTIONS}} MOLECULE_GROUP="{{.CLI_ARGS}}" {{.PYTHON_MOLECULE_HANDLE}}molecule test 2>&1 | tee debug.log || EXIT_CODE=$?
         if [ -n "$EXIT_CODE" ]; then
         fi
       - task: ansifilter
@@ -577,7 +579,7 @@ tasks:
     cmds:
       - |
         set -o pipefail
-        {{.MOLECULE_TEST_OPTIONS}} MOLECULE_GROUP={{.CLI_ARGS}} {{.PYTHON_MOLECULE_HANDLE}}molecule converge -s desktop 2&>1 | tee debug.log || EXIT_CODE=$?
+        {{.MOLECULE_TEST_OPTIONS}} MOLECULE_GROUP={{.CLI_ARGS}} {{.PYTHON_MOLECULE_HANDLE}}molecule converge -s desktop 2>&1 | tee debug.log || EXIT_CODE=$?
         if [ -n "$EXIT_CODE" ]; then
         fi
       - task: ansifilter
@@ -635,7 +637,6 @@ tasks:
     vars:
       MOLECULE_DATE:
         sh: date '+%Y-%m-%d'
-      OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
     log:
       error: Errors were encountered while running the full E2E test (see `{{.MOLECULE_LOGS_PATH}}/{{.MOLECULE_DATE}}-default.txt` for details)
       start: Running a full E2E test with VirtualBox (results will be saved to `{{.MOLECULE_LOGS_PATH}}/{{.MOLECULE_DATE}}-default.txt`)
@@ -644,7 +645,7 @@ tasks:
       - mkdir -p {{.MOLECULE_LOGS_PATH}}
       - |
         set -o pipefail
-        {{.MOLECULE_TEST_OPTIONS}} {{.PYTHON_MOLECULE_HANDLE}}molecule test 2&>1 | \
+        {{.MOLECULE_TEST_OPTIONS}} {{.PYTHON_MOLECULE_HANDLE}}molecule test 2>&1 | \
         tee '{{.MOLECULE_LOGS_PATH}}/{{.MOLECULE_DATE}}-default.txt' || EXIT_CODE=$?
         if [ "$EXIT_CODE" ]; then
         fi
@@ -844,7 +845,7 @@ tasks:
     cmds:
       - |
         set -o pipefail
-        vagrant up {{.CLI_ARGS}} 2&>1 | tee debug.log || EXIT_CODE=$?
+        vagrant up {{.CLI_ARGS}} 2>&1 | tee debug.log || EXIT_CODE=$?
         if [ -n "$EXIT_CODE" ]; then
         fi
       - task: ansifilter
