@@ -34,14 +34,13 @@ tasks:
       - type fusion > /dev/null
 
   install:
-    deps:
-      - :install:go:bin
     run: when_changed
     log:
       error: Failed to acquire GitHub release from `{{.GITHUB}}`
       start: Acquiring GitHub binary release from `{{.GITHUB}}`
       success: Installed GitHub release from `{{.GITHUB}}`, available as `{{.BIN}}`
     cmds:
+      - task: :install:go:bin
       - bin install {{.GITHUB}} "$GOPATH/bin/{{.BIN}}"
     status:
       - type {{.BIN}} > /dev/null
