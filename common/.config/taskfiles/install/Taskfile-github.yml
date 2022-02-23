@@ -43,7 +43,7 @@ tasks:
       - task: :install:go:bin
       - bin install {{.GITHUB}} "$GOPATH/bin/{{.BIN}}"
     status:
-      - type {{.BIN}} > /dev/null
+      - type {{.BIN}} > /dev/null || [ -n "$NO_INSTALL_HOMEBREW" ]
 
   sentry:
     run: once
