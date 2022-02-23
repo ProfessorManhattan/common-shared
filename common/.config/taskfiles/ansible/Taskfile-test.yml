@@ -97,8 +97,6 @@ tasks:
       ROLE_NAME: '{{.GALAXY_NAMESPACE}}.{{.GALAXY_ROLE_NAME}}'
       SUDO_PASS_PARAM:
         sh: if [ -z "$CI" ]; then echo ' --ask-sudo-pass'; else echo ''; fi
-    env:
-      ROLE_NAME:
     log:
       error: Encountered error while testing the Ansible playbook locally
       start: Testing the Ansible playbook locally
