@@ -5,6 +5,8 @@ tasks:
   clear:
     deps:
       - :install:software:virtualbox
+    vars:
+      DEFAULT_PATTERN: default_
     summary: |
       # Remove All VMs / Reset
 
@@ -18,6 +20,15 @@ tasks:
       There is the capability of only resetting VMs that match a certain pattern.
 
       **Example resetting all VMs matching a pattern:**
-      `task app:virtualbox:clear -- '^macOS'`
+      `task app:virtualbox:clear -- 'macOS'`
     cmds:
+      - killall -9 VBoxHeadless
       - vboxmanage list vms
+      - |
+        while read VM; do
+          VM_NAME="$(echo $VM | sed 's/^"\(.*\)" {.*}/\1/')"
+          VM_UUID="$(echo $VM | sed 's/^".*".{\(.*\)}/\1/')"
+          vboxmanage startvm "$VM_UUID" --type emergencystop
+          vboxmanage unregistervm "$VM_UUID"
+          rm -rf "$HOME/VirtualBox VMs/$VM_NAME"
+        done < <(vboxmanage list vms | grep '{{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}{{.DEFAULT_PATTERN}}{{end}}')
