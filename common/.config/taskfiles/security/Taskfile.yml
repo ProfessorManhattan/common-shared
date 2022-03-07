@@ -19,7 +19,10 @@ tasks:
         if [ -f run.py ]; then
           poetry run bandit -r run.py
         fi
-      - poetry run bandit -r src
+      - |
+        if [ -d src ]; then
+          poetry run bandit -r src
+        fi
 
   dockle:
     deps:

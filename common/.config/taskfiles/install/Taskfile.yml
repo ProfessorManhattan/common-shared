@@ -65,7 +65,10 @@ tasks:
       DEPS:
         sh: jq -r '.dependencies + .devDependencies + .optionalDependencies + .peerDependencies' package.json
       PREVIOUS_DEPS:
-        sh: test -f .task/npm-deps && cat .task/npm-deps
+        sh: |
+          if [ -f .task/npm-deps ]; then
+            cat .task/npm-deps
+          fi
     run: once
     log:
       error: Encountered error while installing local NPM dependencies
