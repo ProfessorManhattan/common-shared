@@ -92,8 +92,8 @@ tasks:
         TASKS='['
         while read LINE; do
           if [[ "${LINE:0:1}" == '*' ]]; then
-            TASK_NAME=$(echo "$LINE" | sed 's/^\*.\([^\ ]*\):\(.*\)$/\1/g' | xargs)
-            TASK_DESC=$(echo "$LINE" | sed 's/^\*.\([^\ ]*\):\(.*\)$/\2/g' | xargs)
+            TASK_NAME=$(echo "$LINE" | sed 's/^\*.\([^\ ]*\):\(.*\)$/\1/g')
+            TASK_DESC=$(echo "$LINE" | sed 's/^\*.\([^\ ]*\):\(.*\)$/\2/g')
             LABEL="($TASK_NAME): $TASK_DESC"
             TYPE="shell"
             COMMAND="bash .config/scripts/start.sh && task $TASK_NAME"
