@@ -59,7 +59,7 @@
     "**/*.(bash|cfg|cgi|command|css|env|env.*|handlebars|hbs|html|less|fcgi|java|md|mdx|mjml|php|phtml|properties|reg|scss|tmpl|tmux|tool|tpl|zsh)": ["task fix:prettier --"],
     "**/!(logo).(jpg|png)": ["task image:compress --"],
     "**/*.(cjs|js|jsx|mjs|ts|tsx)": ["task fix:js --", "task lint:js --"],
-    "**/*.(json|webapp|webmanifest)": ["task fix:json --"],
+    "**/*!(template).(json|webapp|webmanifest)": ["task fix:json --"],
     "**/*.go": ["task fix:go --", "task lint:go --"],
     "**/*.md": ["task fix:markdown --", "task lint:spelling:markdown --"],
     "**/*.py": ["task fix:python --", "task lint:python --"],
