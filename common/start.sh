@@ -21,7 +21,11 @@ fi
 chmod +x .config/log
 
 # @description Acquire unique ID for this script
-FILE_HASH="$(md5sum "$0" | sed 's/\s.*$//')"
+if type m5sum &> /dev/null; then
+  FILE_HASH="$(md5sum "$0" | sed 's/\s.*$//')"
+else
+  FILE_HASH="$(date +%s -r "$0")"
+fi
 
 # @description Caches values from commands
 #
