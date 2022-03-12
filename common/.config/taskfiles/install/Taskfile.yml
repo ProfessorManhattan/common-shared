@@ -58,7 +58,6 @@ tasks:
   modules:local:
     deps:
       - :install:npm:{{.NPM_PROGRAM_LOCAL}}
-      - :install:npm:cz-emoji
       - :install:software:jq
     env:
       SEMANTIC_PYTHON_POST_INSTALL: '{{if eq .SEMANTIC_RELEASE "true"}}true{{else}}false{{end}}'
