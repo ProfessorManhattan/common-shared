@@ -4,11 +4,19 @@ version: '3'
 tasks:
   act:
     summary: |
-      ## Act
+      ## Simulate GitHub Actions Locally
 
-      A program that allows you to simulate GitHub Actions locally.
+      [Act]((https://github.com/nektos/act) gives you the capability to test
+      GitHub Actions locally. The program allows you to programmatically run
+      steps defined in your `.github/workflows/` folder. Just like GitHub,
+      it runs the actions in Docker containers. You can then simulate
+      your GitHub Actions with a CLI:
 
-      [GitHub](https://github.com/nektos/act)
+      **Example triggering pull_request flow:**
+      `act pull_request`
+
+      **Example running a specific job:**
+      `act -j test`
     run: once
     cmds:
       - task: brew:formulae
