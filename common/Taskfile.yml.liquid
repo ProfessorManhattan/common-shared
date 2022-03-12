@@ -292,7 +292,7 @@ tasks:
         else
           bash <(curl -sSL \{{.INIT_SCRIPT}})
         fi
-      - git push origin master
+      - task: ci:commit
       - task: ci:synchronize
 
   lint:
