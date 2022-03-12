@@ -347,6 +347,7 @@ tasks:
       - nodemon --config \{{if .CLI_ARGS}}\{{.CLI_ARGS}}\{{else}}.config/nodemon.json\{{end}}
 
   new:project:
+    desc: Create a new project
     cmds:
       - task: prepare
 
