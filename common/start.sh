@@ -116,8 +116,8 @@ if [ "$EUID" -eq 0 ] && [ -z "$INIT_CWD" ] && type useradd &> /dev/null; then
   # shellcheck disable=SC2016
   logger info 'Running as root - creating seperate user named `megabyte` to run script with'
   echo "megabyte ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-  useradd -m -s "$(which bash)" -c "Megabyte Labs Homebrew Account" megabyte > /dev/null || EXIT_CODE=$?
-  if [ -n "$EXIT_CODE" ]; then
+  useradd -m -s "$(which bash)" -c "Megabyte Labs Homebrew Account" megabyte > /dev/null || ROOT_EXIT_CODE=$?
+  if [ -n "$ROOT_EXIT_CODE" ]; then
     # shellcheck disable=SC2016
     logger info 'User `megabyte` already exists'
   fi
@@ -355,6 +355,45 @@ function sha256() {
   fi
 }
 
+# @description Ensures the Taskfile.yml is accessible
+#
+# @example
+#   ensureTaskfiles
+function ensureTaskfiles() {
+  # shellcheck disable=SC2030
+  task donothing | BOOTSTRAP_EXIT_CODE=$?
+  # shellcheck disable=SC2031
+  if [ -n "$BOOTSTRAP_EXIT_CODE" ]; then
+    curl -sSL https://gitlab.com/megabyte-labs/common/shared/-/archive/master/shared-master.tar.gz > shared-master.tar.gz
+    tar -xzvf shared-master.tar.gz
+    rm shared-master.tar.gz
+    mv shared-master/common/.config .config
+    mv shared-master/common/.editorconfig .editorconfig
+    mv shared-master/common/.gitignore .gitignore
+    rm -rf shared-master
+  fi
+}
+
+# @description Ensures basic files like package.json and Taskfile.yml are present
+#
+# @example
+#   ensureProjectBootstrapped
+function ensureProjectBootstrapped() {
+  if [ ! -f start.sh ] || [ ! -f package.json ] || [ ! -f Taskfile.yml ]; then
+    if [ ! -f start.sh ]; then
+      curl -sSL https://gitlab.com/megabyte-labs/common/shared/-/raw/master/common/start.sh > start.sh
+    fi
+    if [ ! -f package.json ]; then
+      curl -sSL https://gitlab.com/megabyte-labs/common/shared/-/raw/master/package.json > package.json
+    fi
+    if [ ! -f Taskfile.yml ]; then
+      curl -sSL https://gitlab.com/megabyte-labs/common/shared/-/raw/master/Taskfile.yml > Taskfile.yml
+    fi
+    ensureTaskfiles
+    task new:project
+  fi
+}
+
 ##### Main Logic #####
 
 if [ ! -f "$HOME/.profile" ]; then
@@ -448,12 +487,22 @@ fi
 ensureTaskInstalled
 
 # @description Run the start logic, if appropriate
-if [ -z "$CI" ] && [ -z "$INIT_CWD" ] && [ -f Taskfile.yml ]; then
+if [ -z "$CI" ] && [ -z "$INIT_CWD" ]; then
   # shellcheck disable=SC1091
   . "$HOME/.profile"
+  ensureProjectBootstrapped
   if task donothing &> /dev/null; then
     task start
-    # shellcheck disable=SC2016
-    logger info 'There may have been changes to your PATH variable. You may have to reload your terminal or run:\n\n`. "$HOME/.profile"`'
+  else
+    logger info 'Ensuring Taskfile.yml files are all in good standing'
+    ensureTaskfiles
+    if task donothing &> /dev/null; then
+      task start
+    else
+      # shellcheck disable=SC2016
+      logger warn 'Something appears to be wrong with the main `Taskfile.yml` - resetting to shared common version'
+      rm Taskfile.yml
+      ensureProjectBootstrapped
+    fi
   fi
 fi
