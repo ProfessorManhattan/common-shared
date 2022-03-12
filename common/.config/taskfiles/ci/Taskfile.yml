@@ -57,6 +57,10 @@ tasks:
   commit:config:
     deps:
       - :install:software:git
+    log:
+      error: Error configuring git
+      start: Configuring git to use CI-friendly parameters
+      success: Successfully configured git to use CI parameters
     cmds:
       - git remote set-url origin "https://root:$GROUP_ACCESS_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git"
       - git config user.email "$GITLAB_CI_EMAIL"
