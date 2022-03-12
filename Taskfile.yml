@@ -11,9 +11,6 @@ includes:
   boilerplate:populate: ./.config/taskfiles/boilerplate/Taskfile-populate.yml
   boilerplate:prompt: ./.config/taskfiles/boilerplate/Taskfile-prompt.yml
   ci: ./.config/taskfiles/ci/Taskfile.yml
-  project:
-    taskfile: ./local/Taskfile-project.yml
-    optional: true
   ci:github: ./.config/taskfiles/ci/Taskfile-github.yml
   common: ./.config/taskfiles/common/Taskfile.yml
   common:code: ./.config/taskfiles/common/Taskfile-code.yml
