@@ -28,13 +28,8 @@ module.exports.register = function (Handlebars) {
     const files = readdir('.config/taskfiles/')
     const tasks = Handlebars.helpers.each([...files, './local'], {
       fn: (file) => {
-        console.log(file)
-        const isDir = fs.lstatSync(file).isDirectory()
-        console.log(isDir)
-        if (isDir) {
-          const categoryTaskfiles = readdir(file).filter((taskfile) => taskfile.match(/.*Taskfile.*.yml/gu))
-          console.log(categoryTaskfiles)
-          return categoryTaskfiles
+        if (fs.lstatSync(file).isDirectory()) {
+          return readdir(file).filter((taskfile) => taskfile.match(/.*Taskfile.*.yml/gu))
         } else {
           return []
         }
