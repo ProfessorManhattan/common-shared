@@ -293,7 +293,10 @@ tasks:
           bash <(curl -sSL \{{.INIT_SCRIPT}})
         fi
       - task: ci:commit
-      - task: ci:synchronize
+      - |
+        if [ -z "$CI" ]; then
+          task ci:synchronize
+        fi
 
   lint:
     desc: Lints the project using all linters
