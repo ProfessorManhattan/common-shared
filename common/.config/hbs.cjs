@@ -40,8 +40,7 @@ module.exports.register = function (Handlebars) {
         }
       }
     })
-    console.log('tasks')
-    console.log(tasks)
+
     return tasks
       .replaceAll('.config/taskfiles/', ',.config/taskfiles/')
       .replaceAll('local/', ',local/')
