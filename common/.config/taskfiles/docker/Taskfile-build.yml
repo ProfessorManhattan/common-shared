@@ -3,6 +3,7 @@ version: '3'
 
 tasks:
   fat:
+    run: when_changed
     deps:
       - :install:software:docker
       - :install:software:jq
@@ -86,17 +87,19 @@ tasks:
           fi
       SLUG:
         sh: jq -r '.blueprint.slug' package.json
+      VERSION:
+        sh: jq -r '.version' package.json
     log:
       error: Error building `{{.DOCKER_IMAGE}}:slim` with `docker-slim`
       start: Building Docker container named `{{.DOCKER_IMAGE}}:slim`
       success: Successfully built Docker container named `{{.DOCKER_IMAGE}}:slim`
     cmds:
       - >
-        .config/log info 'Running `docker-slim build --tag {{.DOCKER_IMAGE}}:slim
+        .config/log info 'Running `docker-slim build --tag {{.DOCKER_IMAGE}}:slim --tag {{.DOCKER_IMAGE}}:{{.VERSION}}-slim
         {{if eq .REPOSITORY_SUBTYPE "codeclimate"}}--tag codeclimate/codeclimate-{{.SLUG}}:slim {{end}}
         {{.SLIM_COMMAND | replace "'" "\""}} {{.DOCKER_IMAGE}}:latest`'
       - >
-        docker-slim build --tag {{.DOCKER_IMAGE}}:slim
+        docker-slim build --tag {{.DOCKER_IMAGE}}:slim --tag {{.DOCKER_IMAGE}}:{{.VERSION}}-slim
         {{if eq .REPOSITORY_SUBTYPE "codeclimate"}}--tag codeclimate/codeclimate-{{.SLUG}}:slim {{end}}
         {{.SLIM_COMMAND | replace "'" "\""}} {{.DOCKER_IMAGE}}:latest
 
