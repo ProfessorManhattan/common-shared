@@ -11,10 +11,35 @@
 
 set -eo pipefail
 
-# @description Ensure .config/log is executable
-if [ -f .config/log ]; then
-  chmod +x .config/log
+# @description Ensure .config/log is present
+if [ ! -f .config/log ]; then
+  mkdir -p .config
+  curl -sSL https://gitlab.com/megabyte-labs/common/shared/-/raw/master/common/.config/log > .config/log
 fi
+
+# @description Ensure .config/log is executable
+chmod +x .config/log
+
+# @description Acquire unique ID for this script
+FILE_HASH="$(md5sum "$0" | sed 's/\s.*$//')"
+
+# @description Caches values from commands
+#
+# @example
+#   cache brew --prefix golang
+#
+# @arg The command to run
+function cache() {
+  local DIR="${CACHE_DIR:-.cache}"
+  if ! test -d "$DIR"; then
+    mkdir -p "$DIR"
+  fi
+  local FN="$DIR/${LINENO}-${FILE_HASH}"
+  if ! test -f "$FN" ; then
+    "$@" > "$FN"
+  fi
+  cat "$FN"
+}
 
 # @description Formats log statements
 #
@@ -194,23 +219,35 @@ function ensureTaskInstalled() {
       logger error "System type not recognized. You must install task manually." && exit 1
     fi
   else
-    logger info "Checking for latest version of Task"
-    CURRENT_VERSION="$(task --version | cut -d' ' -f3 | cut -c 2-)"
-    LATEST_VERSION="$(curl -s "$TASK_RELEASE_API" | grep tag_name | cut -c 17- | sed 's/\",//')"
-    if printf '%s\n%s\n' "$LATEST_VERSION" "$CURRENT_VERSION" | sort -V -c &> /dev/null; then
-      logger info "Task is already up-to-date"
+    mkdir -p "$HOME/.cache/megabyte/start.sh"
+    if [ -f "$HOME/.cache/megabyte/start.sh/bodega-update-check" ]; then
+      TASK_UPDATE_TIME="$(cat "$HOME/.cache/megabyte/start.sh/bodega-update-check")"
     else
-      logger info "A new version of Task is available (version $LATEST_VERSION)"
-      logger info "The current version of Task installed is $CURRENT_VERSION"
-      if ! type task &> /dev/null; then
-        installTask
+      TASK_UPDATE_TIME="$(date +%s)"
+      echo "$TASK_UPDATE_TIME" > "$HOME/.cache/megabyte/start.sh/bodega-update-check"
+    fi
+    TIME_DIFF="$(($(date +%s) - "$TASK_UPDATE_TIME"))"
+    # Only run if it has been at least 15 minutes since last attempt
+    if [ "$TIME_DIFF" -gt 900 ] || [ "$TIME_DIFF" -lt 5 ]; then
+      date +%s > "$HOME/.cache/megabyte/start.sh/bodega-update-check"
+      logger info "Checking for latest version of Task"
+      CURRENT_VERSION="$(task --version | cut -d' ' -f3 | cut -c 2-)"
+      LATEST_VERSION="$(curl -s "$TASK_RELEASE_API" | grep tag_name | cut -c 17- | sed 's/\",//')"
+      if printf '%s\n%s\n' "$LATEST_VERSION" "$CURRENT_VERSION" | sort -V -c &> /dev/null; then
+        logger info "Task is already up-to-date"
       else
-        if rm "$(which task)" &> /dev/null; then
-          installTask
-        elif sudo rm "$(which task)" &> /dev/null; then
+        logger info "A new version of Task is available (version $LATEST_VERSION)"
+        logger info "The current version of Task installed is $CURRENT_VERSION"
+        if ! type task &> /dev/null; then
           installTask
         else
-          logger warn "Unable to remove previous version of Task"
+          if rm "$(which task)" &> /dev/null; then
+            installTask
+          elif sudo rm "$(which task)" &> /dev/null; then
+            installTask
+          else
+            logger warn "Unable to remove previous version of Task"
+          fi
         fi
       fi
     fi
@@ -376,22 +413,34 @@ if [[ "$OSTYPE" == 'darwin'* ]] || [[ "$OSTYPE" == 'linux-gnu'* ]] || [[ "$OSTYP
   fi
 fi
 
-# @description Attempts to pull the latest changes if the folder is a git repository
+# @description Attempts to pull the latest changes if the folder is a git repository.
 if [ -d .git ] && type git &> /dev/null; then
-  HTTPS_VERSION="$(git remote get-url origin | sed 's/git@gitlab.com:/https:\/\/gitlab.com\//')"
-  git pull "$HTTPS_VERSION" master --ff-only
-  ROOT_DIR="$PWD"
-  if ls .modules/*/ > /dev/null 2>&1; then
-    for SUBMODULE_PATH in .modules/*/; do
-      cd "$SUBMODULE_PATH"
-      DEFAULT_BRANCH=$(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5)
-      git reset --hard HEAD
-      git checkout "$DEFAULT_BRANCH"
-      git pull origin "$DEFAULT_BRANCH" --ff-only || true
-    done
-    cd "$ROOT_DIR"
-    # shellcheck disable=SC2016
-    logger success 'Ensured submodules in the `.modules` folder are pointing to the master branch'
+  mkdir -p .cache/start.sh
+  if [ -f .cache/start.sh/git-pull-time ]; then
+    GIT_PULL_TIME="$(cat .cache/start.sh/git-pull-time)"
+  else
+    GIT_PULL_TIME="$(date +%s)"
+    echo "$GIT_PULL_TIME" > .cache/start.sh/git-pull-time
+  fi
+  TIME_DIFF="$(($(date +%s) - "$GIT_PULL_TIME"))"
+  # Only run if it has been at least 15 minutes since last attempt
+  if [ "$TIME_DIFF" -gt 900 ] || [ "$TIME_DIFF" -lt 5 ]; then
+    date +%s > .cache/start.sh/git-pull-time
+    HTTPS_VERSION="$(git remote get-url origin | sed 's/git@gitlab.com:/https:\/\/gitlab.com\//')"
+    git pull "$HTTPS_VERSION" master --ff-only
+    ROOT_DIR="$PWD"
+    if ls .modules/*/ > /dev/null 2>&1; then
+      for SUBMODULE_PATH in .modules/*/; do
+        cd "$SUBMODULE_PATH"
+        DEFAULT_BRANCH=$(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5)
+        git reset --hard HEAD
+        git checkout "$DEFAULT_BRANCH"
+        git pull origin "$DEFAULT_BRANCH" --ff-only || true
+      done
+      cd "$ROOT_DIR"
+      # shellcheck disable=SC2016
+      logger success 'Ensured submodules in the `.modules` folder are pointing to the master branch'
+    fi
   fi
 fi
 
