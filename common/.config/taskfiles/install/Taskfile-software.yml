@@ -945,12 +945,7 @@ tasks:
   yq:
     run: once
     cmds:
-      - task: system
-        vars:
-          PACKAGE: yq
       - task: brew:formulae
         vars:
           FORMULAE: yq
           INSTALL_TASK: '{{.TASK}}'
-    status:
-      - type jq > /dev/null
