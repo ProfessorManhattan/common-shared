@@ -122,7 +122,7 @@ function ensureRootPackageInstalled() {
 # @description If the user is running this script as root, then create a new user named
 # megabyte and restart the script with that user. This is required because Homebrew
 # can only be invoked by non-root users.
-if [ "$EUID" -eq 0 ] && [ -z "$INIT_CWD" ] && type useradd &> /dev/null; then
+if [ "$USER" == "root" ] && [ -z "$INIT_CWD" ] && type useradd &> /dev/null; then
   # shellcheck disable=SC2016
   logger info 'Running as root - creating seperate user named `megabyte` to run script with'
   echo "megabyte ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
@@ -182,17 +182,17 @@ function ensurePackageInstalled() {
       brew install "$1"
     elif [[ "$OSTYPE" == 'linux'* ]]; then
       if [ -f "/etc/redhat-release" ]; then
-        if [ "$EUID" -eq 0 ]; then
+        if [ "$USER" == "root" ]; then
           yum install -y "$1"
         elif type sudo &> /dev/null && sudo -n true; then
           sudo yum install -y "$1"
         elif type sudo &> /dev/null; then
           sudo yum install -y "$1"
         else
-          .config/log warn 'sudo unavailable'
+         logger warn '`sudo` is unavailable and the user appears to have no permissions'
         fi
       elif [ -f "/etc/lsb-release" ]; then
-        if [ "$EUID" -eq 0 ]; then
+        if [ "$USER" == "root" ]; then
           apt-get update
           apt-get install -y "$1"
         elif type sudo &> /dev/null && sudo -n true; then
@@ -202,10 +202,10 @@ function ensurePackageInstalled() {
           sudo apt update
           sudo apt install -y "$1"
         else
-          .config/log warn 'sudo unavailable'
+          logger warn '`sudo` is unavailable and the user appears to have no permissions'
         fi
       elif [ -f "/etc/arch-release" ]; then
-        if [ "$EUID" -eq 0 ]; then
+        if [ "$USER" == "root" ]; then
           pacman update
           pacman -S "$1"
         elif type sudo &> /dev/null && sudo -n true; then
@@ -215,17 +215,17 @@ function ensurePackageInstalled() {
           sudo pacman update
           sudo pacman -S "$1"
         else
-          .config/log warn 'sudo unavailable'
+          logger warn '`sudo` is unavailable and the user appears to have no permissions'
         fi
       elif [ -f "/etc/alpine-release" ]; then
-        if [ "$EUID" -eq 0 ]; then
+        if [ "$USER" == "root" ]; then
           apk --no-cache add "$1"
         elif type sudo &> /dev/null && sudo -n true; then
           sudo apk --no-cache add "$1"
         elif type sudo &> /dev/null; then
           sudo apk --no-cache add "$1"
         else
-          .config/log warn 'sudo unavailable'
+          logger warn '`sudo` is unavailable and the user appears to have no permissions'
         fi
       else
         logger error "$1 is missing. Please install $1 to continue." && exit 1
