@@ -189,7 +189,8 @@ function ensurePackageInstalled() {
         elif type sudo &> /dev/null; then
           sudo yum install -y "$1"
         else
-         logger warn '`sudo` is unavailable and the user appears to have no permissions'
+          # shellcheck disable=SC2016
+          logger warn '`sudo` is unavailable and the user appears to have no permissions'
         fi
       elif [ -f "/etc/lsb-release" ]; then
         if [ "$USER" == "root" ]; then
@@ -202,6 +203,7 @@ function ensurePackageInstalled() {
           sudo apt update
           sudo apt install -y "$1"
         else
+          # shellcheck disable=SC2016
           logger warn '`sudo` is unavailable and the user appears to have no permissions'
         fi
       elif [ -f "/etc/arch-release" ]; then
@@ -215,6 +217,7 @@ function ensurePackageInstalled() {
           sudo pacman update
           sudo pacman -S "$1"
         else
+          # shellcheck disable=SC2016
           logger warn '`sudo` is unavailable and the user appears to have no permissions'
         fi
       elif [ -f "/etc/alpine-release" ]; then
@@ -225,6 +228,7 @@ function ensurePackageInstalled() {
         elif type sudo &> /dev/null; then
           sudo apk --no-cache add "$1"
         else
+          # shellcheck disable=SC2016
           logger warn '`sudo` is unavailable and the user appears to have no permissions'
         fi
       else
