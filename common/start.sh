@@ -14,7 +14,9 @@ set -eo pipefail
 # @description Ensure .config/log is present
 if [ ! -f .config/log ]; then
   mkdir -p .config
-  curl -sSL https://gitlab.com/megabyte-labs/common/shared/-/raw/master/common/.config/log > .config/log
+  if type curl &> /dev/null; then
+    curl -sSL https://gitlab.com/megabyte-labs/common/shared/-/raw/master/common/.config/log > .config/log
+  fi
 fi
 
 # @description Ensure .config/log is executable
@@ -180,16 +182,41 @@ function ensurePackageInstalled() {
       brew install "$1"
     elif [[ "$OSTYPE" == 'linux'* ]]; then
       if [ -f "/etc/redhat-release" ]; then
-        sudo yum update
-        sudo yum install -y "$1"
+        if [ "$EUID" -eq 0 ] || (type sudo &> /dev/null && sudo -n true); then
+          yum install -y "$1"
+        elif type sudo &> /dev/null; then
+          sudo yum install -y "$1"
+        else
+          .config/log warn 'sudo unavailable'
+        fi
       elif [ -f "/etc/lsb-release" ]; then
-        sudo apt update
-        sudo apt install -y "$1"
+        if [ "$EUID" -eq 0 ] || (type sudo &> /dev/null && sudo -n true); then
+          apt-get update
+          apt-get install -y "$1"
+        elif type sudo &> /dev/null; then
+          sudo apt update
+          sudo apt install -y "$1"
+        else
+          .config/log warn 'sudo unavailable'
+        fi
       elif [ -f "/etc/arch-release" ]; then
-        sudo pacman update
-        sudo pacman -S "$1"
+        if [ "$EUID" -eq 0 ] || (type sudo &> /dev/null && sudo -n true); then
+          pacman update
+          pacman -S "$1"
+        elif type sudo &> /dev/null; then
+          sudo pacman update
+          sudo pacman -S "$1"
+        else
+          .config/log warn 'sudo unavailable'
+        fi
       elif [ -f "/etc/alpine-release" ]; then
-        apk --no-cache add "$1"
+        if [ "$EUID" -eq 0 ] || (type sudo &> /dev/null && sudo -n true); then
+          apk --no-cache add "$1"
+        elif type sudo &> /dev/null; then
+          sudo apk --no-cache add "$1"
+        else
+          .config/log warn 'sudo unavailable'
+        fi
       else
         logger error "$1 is missing. Please install $1 to continue." && exit 1
       fi
@@ -429,33 +456,31 @@ elif [[ "$OSTYPE" == 'linux-gnu'* ]] || [[ "$OSTYPE" == 'linux-musl'* ]]; then
     ensurePackageInstalled "file"
     ensurePackageInstalled "git"
     ensurePackageInstalled "gzip"
+    ensurePackageInstalled "jq"
+    ensurePackageInstalled "yq"
   fi
 fi
 
-# @description Ensures Homebrew, Poetry, jq, and yq are installed
-if [[ "$OSTYPE" == 'darwin'* ]] || [[ "$OSTYPE" == 'linux-gnu'* ]] || [[ "$OSTYPE" == 'linux-musl'* ]]; then
-  if [ -z "$INIT_CWD" ]; then
-    if ! type brew &> /dev/null; then
-      if type sudo &> /dev/null && sudo -n true; then
-        echo | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-      else
-        logger warn "Homebrew is not installed. The script will attempt to install Homebrew and you might be prompted for your password."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# @description Ensures Homebrew and Poetry are installed
+if [ -z "$NO_INSTALL_HOMEBREW" ]; then
+  if [[ "$OSTYPE" == 'darwin'* ]] || [[ "$OSTYPE" == 'linux-gnu'* ]] || [[ "$OSTYPE" == 'linux-musl'* ]]; then
+    if [ -z "$INIT_CWD" ]; then
+      if ! type brew &> /dev/null; then
+        if type sudo &> /dev/null && sudo -n true; then
+          echo | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        else
+          logger warn "Homebrew is not installed. The script will attempt to install Homebrew and you might be prompted for your password."
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        fi
       fi
-    fi
-    if [ -f "$HOME/.profile" ]; then
-      # shellcheck disable=SC1091
-      . "$HOME/.profile"
-    fi
-    if ! type poetry &> /dev/null; then
-      # shellcheck disable=SC2016
-      brew install poetry || logger info 'There may have been an issue installing `poetry` with `brew`'
-    fi
-    if ! type jq &> /dev/null; then
-      brew install jq
-    fi
-    if ! type yq &> /dev/null; then
-      brew install yq
+      if [ -f "$HOME/.profile" ]; then
+        # shellcheck disable=SC1091
+        . "$HOME/.profile"
+      fi
+      if ! type poetry &> /dev/null; then
+        # shellcheck disable=SC2016
+        brew install poetry || logger info 'There may have been an issue installing `poetry` with `brew`'
+      fi
     fi
   fi
 fi
