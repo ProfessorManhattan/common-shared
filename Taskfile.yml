@@ -300,6 +300,7 @@ tasks:
         if [ -z "$CI" ]; then
           task ci:synchronize
         fi
+      - echo "TESTINGGGG"
 
   lint:
     desc: Lints the project using all linters
