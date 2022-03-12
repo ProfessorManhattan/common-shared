@@ -456,6 +456,7 @@ elif [[ "$OSTYPE" == 'linux-gnu'* ]] || [[ "$OSTYPE" == 'linux-musl'* ]]; then
     ensurePackageInstalled "file"
     ensurePackageInstalled "git"
     ensurePackageInstalled "gzip"
+    ensurePackageInstalled "sudo"
     ensurePackageInstalled "jq"
     ensurePackageInstalled "yq"
   fi
