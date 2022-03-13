@@ -47,7 +47,7 @@ vars:
   REPOSITORY_TYPE:
     sh: |
       if type jq &> /dev/null && [ -f package.json ]; then
-        VER="$(jq -r '.blueprint.subgroup' package.json)"
+        VER="$(jq -r '.blueprint.group' package.json)"
         if [ "$VER" == 'null' ]; then echo "{{group}}"; else echo "$VER"; fi
       else
         echo "{{group}}"
