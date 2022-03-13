@@ -286,6 +286,66 @@ eslint-config-prettier@^8.4.0:
   resolved "8.4.0"
   integrity sha512-CFotdUcMY18nGRo5KGsnNxpznzhkopOcOo0InID+sgQssPrzjvsyKZPvOgymTFeHrFuC3Tzdf2YndhXtULK9Iw==
 
+eslint-config-strict-mode@latest:
+  version "1.0.53"
+  resolved "1.0.53"
+  integrity sha512-kCmkfc2arq+YGs6qhK5loPaAuq4vWJHHnF/PFhxjFY+WCH1l/TjdOZML0Wg1AmAiKnNdbCWyw65kbUXmh9iksQ==
+  dependencies:
+    "@typescript-eslint/eslint-plugin" "^5.12.0"
+    "@typescript-eslint/parser" "^5.12.0"
+    eslint "^8.9.0"
+    eslint-config-prettier "^8.4.0"
+    eslint-formatter-git-log "^0.5.3"
+    eslint-formatter-gitlab "^3.0.0"
+    eslint-formatter-pretty "^4.1.0"
+    eslint-formatter-summary "^1.1.0"
+    eslint-plugin-angular "^4.1.0"
+    eslint-plugin-array-func "^3.1.7"
+    eslint-plugin-diff "^1.0.12"
+    eslint-plugin-editorconfig "^3.2.0"
+    eslint-plugin-eslint-comments "^3.2.0"
+    eslint-plugin-etc "^2.0.2"
+    eslint-plugin-ext "^0.1.0"
+    eslint-plugin-filenames "^1.3.2"
+    eslint-plugin-fp "^2.3.0"
+    eslint-plugin-functional "^4.2.0"
+    eslint-plugin-html "^6.2.0"
+    eslint-plugin-import "^2.25.4"
+    eslint-plugin-jest "^25.7.0"
+    eslint-plugin-jest-async "^1.0.3"
+    eslint-plugin-jest-dom "^3.9.4"
+    eslint-plugin-jest-formatting "^3.1.0"
+    eslint-plugin-jsdoc "^37.9.4"
+    eslint-plugin-json-schema-validator "^1.2.49"
+    eslint-plugin-jsonc "^1.7.0"
+    eslint-plugin-no-constructor-bind "^2.0.4"
+    eslint-plugin-no-explicit-type-exports "^0.12.1"
+    eslint-plugin-no-secrets "^0.8.9"
+    eslint-plugin-no-unsanitized "^3.2.0"
+    eslint-plugin-no-use-extend-native "^0.5.0"
+    eslint-plugin-node "^11.1.0"
+    eslint-plugin-optimize-regex "^1.2.1"
+    eslint-plugin-prefer-arrow "^1.2.3"
+    eslint-plugin-prettier "^4.0.0"
+    eslint-plugin-promise "^5.2.0"
+    eslint-plugin-regexp "^1.5.1"
+    eslint-plugin-rxjs "^4.0.4"
+    eslint-plugin-security "^1.4.0"
+    eslint-plugin-sonarjs "^0.10.0"
+    eslint-plugin-sort-class-members "^1.14.1"
+    eslint-plugin-sort-keys-fix "^1.1.2"
+    eslint-plugin-switch-case "^1.1.2"
+    eslint-plugin-toml "^0.2.0"
+    eslint-plugin-tsdoc "^0.2.14"
+    eslint-plugin-typescript-sort-keys "^2.1.0"
+    eslint-plugin-unicorn "^37.0.1"
+    eslint-plugin-unused-imports "^1.1.5"
+    eslint-plugin-woke "^1.0.1"
+    eslint-plugin-yml "^0.10.1"
+    parse-gitignore "^1.0.1"
+    tslib "^2.3.1"
+    yaml "^1.10.2"
+
 eslint-etc@^5.1.0:
   version "5.1.0"
   resolved "5.1.0"
@@ -375,6 +435,11 @@ eslint-plugin-array-func@^3.1.7:
   version "3.1.7"
   resolved "3.1.7"
   integrity sha512-fB5TBICjHSTGToNTbCCgR8zsngpUkoCM31EMh/M/NEAyNg90i5rUuG0dnNNBML2n0BzM0nBE3sPvo2SEWf6jlA==
+
+eslint-plugin-diff@^1.0.12:
+  version "1.0.12"
+  resolved "1.0.12"
+  integrity sha512-gc770JHqLd5BSGc3dk/LZ4l58dEGg3leAX/7mQLnuAnC1ar8ZC1jNxLF8pvpTQTXEOXtwXyeSeXiV0TMhAM+nA==
 
 eslint-plugin-editorconfig@^3.2.0:
   version "3.2.0"
@@ -985,6 +1050,29 @@ jsonc-eslint-parser@^1.4.1:
     espree "^6.0.0"
     semver "^6.3.0"
 
+prettier-config-sexy-mode@latest:
+  version "1.1.4"
+  resolved "1.1.4"
+  integrity sha512-nJyYCqfZxuz3Lxpm1WkZmAZypi+Avv42wvByCV+lLipkpDG2uTs6Pb2vD7XOXh4s/ZLWfLg6gwlD7Yj2+0ewBg==
+  dependencies:
+    "@prettier/plugin-php" "^0.17.6"
+    "@prettier/plugin-pug" "^1.19.2"
+    "@prettier/plugin-ruby" "^2.0.0"
+    "@prettier/plugin-xml" "^1.0.2"
+    prettier "^2.4.1"
+    prettier-plugin-go-template "^0.0.11"
+    prettier-plugin-ini "^0.3.1"
+    prettier-plugin-java "^1.6.1"
+    prettier-plugin-jsdoc "^0.3.30"
+    prettier-plugin-organize-imports "^2.3.4"
+    prettier-plugin-package-perfection "^1.0.1"
+    prettier-plugin-properties "^0.1.0"
+    prettier-plugin-sh "^0.7.1"
+    prettier-plugin-solidity "^1.0.0-beta.19"
+    prettier-plugin-sql "^0.4.1"
+    prettier-plugin-toml-fixed "^0.3.3"
+    tslib latest
+
 prettier-plugin-go-template@^0.0.11:
   version "0.0.11"
   resolved "0.0.11"
@@ -1065,6 +1153,14 @@ prettier-plugin-sql@^0.4.1:
     node-sql-parser "^4.0.0"
     sql-formatter "^4.0.2"
 
+prettier-plugin-toml-fixed@^0.3.3:
+  version "0.3.3"
+  resolved "0.3.3"
+  integrity sha512-0TSQPR3//82X3iL+EjjVdCxSwXDdkLC/X9AsFTq5CtkJ9biRWdI+3XpMi0wJQ+iguP8yjBjtxPq7wPAcPG0YuQ==
+  dependencies:
+    "@toml-tools/parser" "^0.3.1"
+    prettier "^1.16.0"
+
 semantic-release-config@latest:
   version "1.1.18"
   resolved "1.1.18"
@@ -1092,6 +1188,11 @@ toml-eslint-parser@^0.2.1:
   integrity sha512-lAESSx47NjCe/O9Y5dbAmP+U/EFvdxPRgA0Hp4TxCZP3Bs6hxRfLHxZvBuXvTGkVoK0DpYamPz/rCqYBzoFWVQ==
   dependencies:
     eslint-visitor-keys "^2.0.0"
+
+typescript@latest:
+  version "4.6.2"
+  resolved "4.6.2"
+  integrity sha512-HM/hFigTBHZhLXshn9sN37H085+hQGeJHJ/X7LpBWLID/fbc2acUMfU+lGD98X81sKP+pFa9f0DZmCwB9GnbAg==
 
 yaml-eslint-parser@^0.4.0:
   version "0.4.1"

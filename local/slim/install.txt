@@ -1,0 +1,3 @@
+install:npm:husky
+install:npm:commitlint
+install:npm:commitizen
