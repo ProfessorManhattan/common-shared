@@ -39,8 +39,8 @@ vars:
   NPX_PACKAGE: pnpx
   PROJECT_TYPE:
     sh: |
-      if type jq &> /dev/null && [ -f package.json ]; then; VER="$(jq -r '.blueprint.group' package.json)"; if [ "$VER" == 'null' ]; then echo TYPE="{{group}}"; else TYPE="$VER"; fi; else; TYPE="{{group}}"; fi
-      if type jq &> /dev/null && [ -f package.json ]; then; VER="$(jq -r '.blueprint.subgroup' package.json)"; if [ "$VER" == 'null' ]; then SUBTYPE="{{subgroup}}"; else SUBTYPE="$VER"; fi; else; SUBTYPE="{{subgroup}}"; fi
+      if type jq &> /dev/null && [ -f package.json ]; then VER="$(jq -r '.blueprint.group' package.json)"; if [ "$VER" == 'null' ]; then echo TYPE="{{group}}"; else TYPE="$VER"; fi; else TYPE="{{group}}"; fi
+      if type jq &> /dev/null && [ -f package.json ]; then VER="$(jq -r '.blueprint.subgroup' package.json)"; if [ "$VER" == 'null' ]; then SUBTYPE="{{subgroup}}"; else SUBTYPE="$VER"; fi; else SUBTYPE="{{subgroup}}"; fi
       if [ "$TYPE" == 'common' ] && [ "$SUBTYPE" == 'shared' ]; then
         echo 'shared'
       elif [ "$TYPE" == 'common' ]; then
@@ -81,7 +81,7 @@ env:
       if [ -n "$LIBC" ]; then LINUX_FLAVOR='linux-musl'; fi\{{end}}
       echo "\{{if (eq OS "linux")}}$LINUX_FLAVOR\{{else}}darwin\{{end}}"
   RECORD_INSTALL:
-    sh: test -n "$CI" && echo "true" || true
+    sh: if [ -n "$CI" ]; then echo 'true'; fi
   SENTRY_DSN:
     sh: |
       DSN="$(jq -r '.blueprint.sentryDSN' package.json)"
