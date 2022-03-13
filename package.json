@@ -45,7 +45,7 @@
     "handlebars-helpers": "latest",
     "prettier-config-sexy-mode": "latest",
     "semantic-release-config": "latest",
-    "typescript": "latest"
+    "typescript": "^4.5.5"
   },
   "keywords": [
     "common",
