@@ -18,7 +18,6 @@ tasks:
         sh: jq -r '.homepage' package.json
       PROJECT_TYPE:
         sh: if [[ $(jq -r '.private' package.json) == 'true' ]]; then echo '--private'; else echo '--public'; fi
-    run: once
     log:
       error: Error while ensuring GitHub repository exists
       start: Checking for presence of GitHub repository and creating one if it does not exist
