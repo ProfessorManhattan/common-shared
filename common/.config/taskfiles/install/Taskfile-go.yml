@@ -99,6 +99,8 @@ tasks:
 
   node-prune:
     run: once
+    tags:
+      - semantic
     cmds:
       - task: install:go
         vars:

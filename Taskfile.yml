@@ -16,7 +16,7 @@ includes:
   ci:github: ./.config/taskfiles/ci/Taskfile-github.yml
   common: ./.config/taskfiles/common/Taskfile.yml
   common:code: ./.config/taskfiles/common/Taskfile-code.yml
-  common:start: ./.config/taskfiles/common/Taskfile-common.yml
+  common:start: ./.config/taskfiles/common/Taskfile-start.yml
   common:update: ./.config/taskfiles/common/Taskfile-update.yml
   common:util: ./.config/taskfiles/common/Taskfile-util.yml
   docker: ./.config/taskfiles/docker/Taskfile.yml
@@ -841,15 +841,6 @@ tasks:
       start: Updating the repository..
       success: Finished updating the repository
     cmds:
-      - |
-        if ! type brew > /dev/null; then
-          task install:software:brew
-          . "$HOME/.profile"
-        fi
-        if ! type jq > /dev/null || ! type yq > /dev/null || ! type node > /dev/null || ! type go > /dev/null || ! type poetry > /dev/null; then
-          task update:prereqs
-          . "$HOME/.profile"
-        fi
-        task update:init
-        task prepare
-        task update:finish
+      - task: common:start
+        env:
+          UPDATE_PROJECT: 'true'

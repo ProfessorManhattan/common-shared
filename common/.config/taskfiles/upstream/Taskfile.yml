@@ -38,6 +38,7 @@ tasks:
       - task: :git:push:all
 
   docs:
+    todo: Remove the git:commit:automated tasks
     log:
       error: Error updating document repository
       start: Updating document repository
