@@ -163,10 +163,6 @@ tasks:
       - '[ -n "$CI" ]'
 
   update:
-    log:
-      error: Failed to finish update process
-      start: Continuing the update process
-      success: Finished the final stage of the update process
     cmds:
       - task: :upstream:{{.PROJECT_TYPE}}
       - task: update:git

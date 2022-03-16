@@ -16,6 +16,7 @@ includes:
   ci:github: ./.config/taskfiles/ci/Taskfile-github.yml
   common: ./.config/taskfiles/common/Taskfile.yml
   common:code: ./.config/taskfiles/common/Taskfile-code.yml
+  common:start: ./.config/taskfiles/common/Taskfile-common.yml
   common:update: ./.config/taskfiles/common/Taskfile-update.yml
   common:util: ./.config/taskfiles/common/Taskfile-util.yml
   docker: ./.config/taskfiles/docker/Taskfile.yml
@@ -124,9 +125,7 @@ vars:
   # yamllint disable rule:line-length
   PROJECT_TYPE:
     sh: |
-      # yamllint disable-line rule:line-length
       if type jq &> /dev/null && [ -f package.json ]; then VER="$(jq -r '.blueprint.group' package.json)"; if [ "$VER" == 'null' ]; then echo TYPE="common"; else TYPE="$VER"; fi; else TYPE="common"; fi
-      # yamllint disable-line rule:line-length
       if type jq &> /dev/null && [ -f package.json ]; then VER="$(jq -r '.blueprint.subgroup' package.json)"; if [ "$VER" == 'null' ]; then SUBTYPE="shared"; else SUBTYPE="$VER"; fi; else SUBTYPE="shared"; fi
       if [ "$TYPE" == 'common' ] && [ "$SUBTYPE" == 'shared' ]; then
         echo 'shared'
