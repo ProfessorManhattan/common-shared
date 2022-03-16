@@ -10,7 +10,6 @@ vars:
     sh: mktemp
 
 env:
-  AUTO_COMMIT: 'false'
   AUTO_COMMIT_MESSAGE: 'false'
   PREPARE_PROJECT: 'true'
   UPDATE_GIT_REPOS: 'true'
