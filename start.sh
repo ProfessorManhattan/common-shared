@@ -10,6 +10,7 @@
 #   properly generated with them, and that all the development dependencies are installed.
 
 set -eo pipefail
+if [ -n "$DEBUG" ]; then set -x; fi
 
 # @description Ensure .config/log is present
 if [ ! -f .config/log ]; then
