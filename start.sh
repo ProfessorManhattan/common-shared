@@ -10,7 +10,13 @@
 #   properly generated with them, and that all the development dependencies are installed.
 
 set -eo pipefail
-if [ -n "$DEBUG" ]; then set -x; fi
+
+# @description Ensure permissions in CI environments
+if [ -n "$CI" ]; then
+  if type sudo &> /dev/null; then
+    sudo chown -R "$(whoami):$(whoami)" .
+  fi
+fi
 
 # @description Ensure .config/log is present
 if [ ! -f .config/log ]; then
@@ -105,11 +111,14 @@ function ensureRootPackageInstalled() {
   if ! type "$1" &> /dev/null; then
     if [[ "$OSTYPE" == 'linux'* ]]; then
       if [ -f "/etc/redhat-release" ]; then
-        yum update
-        yum install -y "$1"
+        if type dnf &> /dev/null; then
+          dnf install -y "$1"
+        else
+          yum install -y "$1"
+        fi
       elif [ -f "/etc/lsb-release" ]; then
-        apt update
-        apt install -y "$1"
+        apt-get update
+        apt-get install -y "$1"
       elif [ -f "/etc/arch-release" ]; then
         pacman update
         pacman -S "$1"
@@ -127,7 +136,7 @@ if [ "$USER" == "root" ] && [ -z "$INIT_CWD" ] && type useradd &> /dev/null; the
   # shellcheck disable=SC2016
   logger info 'Running as root - creating seperate user named `megabyte` to run script with'
   echo "megabyte ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-  useradd -m -s "$(which bash)" -c "Megabyte Labs Homebrew Account" megabyte > /dev/null || ROOT_EXIT_CODE=$?
+  useradd -m -s "$(which bash)" --gecos "" --disabled-login -c "Megabyte Labs" megabyte > /dev/null || ROOT_EXIT_CODE=$?
   if [ -n "$ROOT_EXIT_CODE" ]; then
     # shellcheck disable=SC2016
     logger info 'User `megabyte` already exists'
@@ -183,37 +192,29 @@ function ensurePackageInstalled() {
       brew install "$1"
     elif [[ "$OSTYPE" == 'linux'* ]]; then
       if [ -f "/etc/redhat-release" ]; then
-        if [ "$USER" == "root" ]; then
-          yum install -y "$1"
-        elif type sudo &> /dev/null && sudo -n true; then
-          sudo yum install -y "$1"
-        elif type sudo &> /dev/null; then
-          sudo yum install -y "$1"
+        if type sudo &> /dev/null; then
+          if type dnf &> /dev/null; then
+            sudo dnf install -y "$1"
+          else
+            sudo yum install -y "$1"
+          fi
         else
-          yum install -y "$1"
+          if type dnf &> /dev/null; then
+            dnf install -y "$1"
+          else
+            yum install -y "$1"
+          fi
         fi
       elif [ -f "/etc/lsb-release" ]; then
-        if [ "$USER" == "root" ]; then
-          apt-get update
-          apt-get install -y "$1"
-        elif type sudo &> /dev/null && sudo -n true; then
-          sudo apt update
-          sudo apt install -y "$1"
-        elif type sudo &> /dev/null; then
-          sudo apt update
-          sudo apt install -y "$1"
+        if type sudo &> /dev/null; then
+          sudo apt-get update
+          sudo apt-get install -y "$1"
         else
           apt-get update
           apt-get install -y "$1"
         fi
       elif [ -f "/etc/arch-release" ]; then
-        if [ "$USER" == "root" ]; then
-          pacman update
-          pacman -S "$1"
-        elif type sudo &> /dev/null && sudo -n true; then
-          sudo pacman update
-          sudo pacman -S "$1"
-        elif type sudo &> /dev/null; then
+        if type sudo &> /dev/null; then
           sudo pacman update
           sudo pacman -S "$1"
         else
@@ -221,11 +222,7 @@ function ensurePackageInstalled() {
           pacman -S "$1"
         fi
       elif [ -f "/etc/alpine-release" ]; then
-        if [ "$USER" == "root" ]; then
-          apk --no-cache add "$1"
-        elif type sudo &> /dev/null && sudo -n true; then
-          sudo apk --no-cache add "$1"
-        elif type sudo &> /dev/null; then
+        if type sudo &> /dev/null; then
           sudo apk --no-cache add "$1"
         else
           apk --no-cache add "$1"
@@ -419,7 +416,8 @@ function ensureTaskfiles() {
     curl -sSL https://gitlab.com/megabyte-labs/common/shared/-/archive/master/shared-master.tar.gz > shared-master.tar.gz
     tar -xzvf shared-master.tar.gz
     rm shared-master.tar.gz
-    mv shared-master/common/.config .config
+    rm -rf .config/taskfiles
+    mv shared-master/common/.config/taskfiles .config/taskfiles
     mv shared-master/common/.editorconfig .editorconfig
     mv shared-master/common/.gitignore .gitignore
     rm -rf shared-master
@@ -517,6 +515,7 @@ if [ -d .git ] && type git &> /dev/null; then
   if [ "$TIME_DIFF" -gt 900 ] || [ "$TIME_DIFF" -lt 5 ]; then
     date +%s > .cache/start.sh/git-pull-time
     HTTPS_VERSION="$(git remote get-url origin | sed 's/git@gitlab.com:/https:\/\/gitlab.com\//')"
+    logger info 'Current branch is `'"$(git rev-parse --abbrev-ref HEAD)"'`'
     if [ "$(git rev-parse --abbrev-ref HEAD)" == 'synchronize' ]; then
       git reset --hard master
     fi
@@ -541,7 +540,7 @@ fi
 ensureTaskInstalled
 
 # @description Run the start logic, if appropriate
-if [ -z "$CI" ] && [ -z "$INIT_CWD" ]; then
+if [ -z "$CI" ] && [ -z "$START" ] && [ -z "$INIT_CWD" ]; then
   # shellcheck disable=SC1091
   . "$HOME/.profile"
   ensureProjectBootstrapped
