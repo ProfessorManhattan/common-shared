@@ -125,8 +125,8 @@ vars:
   # yamllint disable rule:line-length
   PROJECT_TYPE:
     sh: |
-      if type jq &> /dev/null && [ -f package.json ]; then VER="$(jq -r '.blueprint.group' package.json)"; if [ "$VER" == 'null' ]; then echo TYPE="common"; else TYPE="$VER"; fi; else TYPE="common"; fi
-      if type jq &> /dev/null && [ -f package.json ]; then VER="$(jq -r '.blueprint.subgroup' package.json)"; if [ "$VER" == 'null' ]; then SUBTYPE="shared"; else SUBTYPE="$VER"; fi; else SUBTYPE="shared"; fi
+      if type jq &> /dev/null && [ -f package.json ]; then VER="$(jq -r '.blueprint.group' package.json)"; if [ "$VER" == 'null' ]; then echo TYPE="$GROUP_TYPE"; else TYPE="$VER"; fi; else TYPE="$GROUP_TYPE"; fi
+      if type jq &> /dev/null && [ -f package.json ]; then VER="$(jq -r '.blueprint.subgroup' package.json)"; if [ "$VER" == 'null' ]; then SUBTYPE="$REPOSITORY_TYPE"; else SUBTYPE="$VER"; fi; else SUBTYPE="$REPOSITORY_TYPE"; fi
       if [ "$TYPE" == 'common' ] && [ "$SUBTYPE" == 'shared' ]; then
         echo 'shared'
       elif [ "$TYPE" == 'common' ]; then
