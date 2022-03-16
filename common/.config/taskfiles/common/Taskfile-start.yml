@@ -57,9 +57,6 @@ tasks:
       - '[ ! -f /.dockerenv ]'
 
   docker:taskfile:
-    log:
-      start: Detected `Taskfile.yml` so attempting to run the `deps:docker` task
-      error: The `deps:docker` task was not present!
     cmds:
       - task: :deps:run:parallel
     status:
