@@ -69,7 +69,7 @@ tasks:
       success: Completed `Taskfile.yml` update logic for deps task named `deps:{{.TAG}}`
     cmds:
       - |
-        RESULT="  deps:{{.TAG}}:\n    deps:\n"
+        RESULT="  deps:run:parallel:\n    deps:\n"
         COUNT="0"
         jq -cr '(.. | select(.tags?[]? == "{{.TAG}}")) | ._task' {{.MAP_FILE}} | while read i; do
           COUNT="$(("$COUNT" + 1))"
