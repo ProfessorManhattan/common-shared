@@ -642,7 +642,7 @@
       "command": "bash start.sh && task shell"
     },
     {
-      "label": "(start): Set up the project and refresh it with the latest changes",
+      "label": "(start): Start the project by installing / updating dependencies, repairing issues, and opening a tutorial",
       "type": "shell",
       "command": "bash start.sh && task start"
     },

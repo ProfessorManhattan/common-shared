@@ -1,13 +1,19 @@
 ---
 version: '3'
 
+vars:
+  MAP_FILE: .cache/task-map/Taskfile.json
+
 tasks:
   task:map:generate:
     deps:
       - :install:software:jq
       - :install:software:yq
     vars:
-      MAP_FILE: .cache/task-map/Taskfile.json
+      MAP_FILE_QUERY: >-
+        [.includes | with_entries(select(.value.optional == true)) | to_entries | .[] |
+        { "key": .key, "value": .value.taskfile }] + (.includes | with_entries(select(.value.optional == null)) |
+        to_entries) + { "key": "", "value": "Taskfile.yml" }
     log:
       error: Encountered error while generating Taskfile task map array
       start: Generating Taskfile task map array
@@ -19,10 +25,11 @@ tasks:
         TMP_COMBINED="$(mktemp)"
         TMP_JQ="$(mktemp)"
         TMP_YQ="$(mktemp)"
-        yq -o=j '[.includes | with_entries(select(.value.optional == true)) | to_entries | .[] | { "key": .key, "value": .value.taskfile }] + (.includes | with_entries(select(.value.optional == null)) | to_entries) + { "key": "", "value": "Taskfile.yml" }' Taskfile.yml > "{{.MAP_FILE}}"
+        mkdir -p "$(dirname '{{.MAP_FILE}}')"
+        yq -o=j '{{.MAP_FILE_QUERY}}' Taskfile.yml > "{{.MAP_FILE}}"
         jq -c '.[]' "{{.MAP_FILE}}" | while read i; do
-          PREFIX="$(jq -r '.key' < "$i")"
-          FILE="$(jq -r '.value' "$i")"
+          PREFIX="$(echo "$i" | jq -r '.key')"
+          FILE="$(echo "$i" | jq -r '.value')"
           if [ -f "$FILE" ]; then
             yq -o=j '.tasks' "$FILE" > "$TMP_YQ"
             jq --arg prefix "$PREFIX:" '[to_entries | .[] | .key as $key | .value | ._task? = $prefix + $key]' "$TMP_YQ" > "$TMP_JQ"
@@ -32,14 +39,13 @@ tasks:
         done
         mv "$COMBINED" '{{.MAP_FILE}}'
     sources:
-      - .config/taskfiles/*.yml
+      - .config/taskfiles/**/*.yml
       - Taskfile.yml
 
   task:tag:command:
     deps:
       - task:map:generate
     vars:
-      MAP_FILE: '{{if .MAP_FILE}}{{.MAP_FILE}}{{else}}Taskfile.json{{end}}'
       TAG: '{{if .TAG}}{{.TAG}}{{else}}{{.CLI_ARGS}}{{end}}'
       TEMPLATE: 'task $i && '
     log:
@@ -61,17 +67,22 @@ tasks:
     deps:
       - task:map:generate
     vars:
-      MAP_FILE: '{{if .MAP_FILE}}{{.MAP_FILE}}{{else}}Taskfile.json{{end}}'
       TAG: '{{if .TAG}}{{.TAG}}{{else}}{{.CLI_ARGS}}{{end}}'
-      TEMPLATE: '      - $i\n'
+      TEMPLATE: '- task: $i\n'
     log:
       error: Encountered error while building Taskfile task deps file from tag named `{{.TAG}}`
       start: Selecting by Taskfile task tag named `{{.TAG}}` for deps file
-      success: Updated `Taskfile.yml` with deps list task named `deps:{{.TAG}}`
+      success: Completed `Taskfile.yml` update logic for deps task named `deps:{{.TAG}}`
     cmds:
       - |
-        RESULT="  deps:{{.TAG}}:\n    deps:\n"
-        jq -cr '(.. | select(.tags?[]? == "{{.TAG}}")) | ._task' {{.MAP_FILE}} | while read i; do
+        RESULT=""
+        COUNT="0"
+        jq -r '(.. | select(.tags?[]? == "{{.TAG}}")) | ._task' {{.MAP_FILE}} | while read i; do
+          COUNT="$(("$COUNT" + 1))"
           RESULT="$RESULT{{.TEMPLATE}}"
         done
-        echo -e "$RESULT" > Taskfile.yml
+        if [ "$COUNT" -gt 0 ]; then
+          ARR="$(echo -e "$RESULT")" yq e -e '.tasks["deps:run:parallel"].cmds = env(ARR)' Taskfile.yml
+        else
+          .config/log warn 'There were no results so nothing was added to the `Taskfile.yml`'
+        fi

@@ -15,6 +15,8 @@ tasks:
 
   ansible-lint:
     run: once
+    tags:
+      - semantic
     cmds:
       - task: install:pipx
         vars:
@@ -30,6 +32,7 @@ tasks:
         vars:
           INSTALL_TASK: '{{.TASK}}'
           PACKAGE: ansibler
+      - task: ansible
 
   black:
     tags:
@@ -81,6 +84,8 @@ tasks:
 
   mod-ansible-autodoc:
     run: once
+    tags:
+      - update
     cmds:
       - task: install:pipx
         vars:
@@ -100,8 +105,11 @@ tasks:
     cmds:
       - task: install:pipx
         vars:
+          BIN_NAME: check-toml
           INSTALL_TASK: '{{.TASK}}'
           PACKAGE: pre-commit-hooks
+    status:
+      - type check-toml &> /dev/null
 
   proselint:
     run: once
@@ -126,3 +134,21 @@ tasks:
         vars:
           INSTALL_TASK: '{{.TASK}}'
           PACKAGE: pytest-cov
+
+  toml-sort:
+    run: once
+    tags:
+      - update
+    cmds:
+      - task: install:pipx
+        vars:
+          INSTALL_TASK: '{{.TASK}}'
+          PACKAGE: toml-sort
+
+  yamllint:
+    run: once
+    cmds:
+      - task: install:yamllint
+        vars:
+          INSTALL_TASK: '{{.TASK}}'
+          PACKAGE: yamllint
