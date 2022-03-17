@@ -104,7 +104,6 @@ tasks:
         sh: if [[ $(jq -r '.private' package.json) == 'true' ]]; then echo '--private'; else echo '--public'; fi
       TMP:
         sh: mktemp
-    run: once
     log:
       error: Encountered error while creating GitLab repository
       start: Ensuring GitLab repository has been created
