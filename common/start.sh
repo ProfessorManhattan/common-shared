@@ -545,7 +545,6 @@ if [ -d .git ] && type git &> /dev/null; then
   # Only run if it has been at least 15 minutes since last attempt
   if [ "$TIME_DIFF" -gt 900 ] || [ "$TIME_DIFF" -lt 5 ]; then
     date +%s > .cache/start.sh/git-pull-time
-    HTTPS_VERSION="$(git remote get-url origin | sed 's/git@gitlab.com:/https:\/\/gitlab.com\//')"
     git fetch origin
     GIT_POS="$(git rev-parse --abbrev-ref HEAD)"
     logger info 'Current branch is `'"$GIT_POS"'`'
