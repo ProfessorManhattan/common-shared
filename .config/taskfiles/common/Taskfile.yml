@@ -1,6 +1,31 @@
 ---
 version: '3'
 
+vars:
+  DOCKER_BUILDING:
+    sh: |
+      if [ -f /.dockerenv ] || [ "$container" == 'docker' ]; then
+        if [ -n "$BUILD_DATE" ]; then
+          echo "true"
+        fi
+      fi
+  DOCKER_ENVIRONMENT:
+    sh: |
+      if [ -f /.dockerenv ] || [ "$container" == 'docker' ]; then
+        echo "true"
+      fi
+  ENVIRONMENT_TYPE:
+    sh: |
+      if [ -f /.dockerenv ] || [ "$container" == 'docker' ]; then
+        if [ -n "$BUILD_DATE" ]; then
+          echo "docker-build"
+        else
+          echo "docker"
+        fi
+      else
+        echo "unknown"
+      fi
+
 tasks:
   clean:
     deps:
@@ -45,13 +70,13 @@ tasks:
       - task: husky:install
       - task: husky:permissions
     status:
-      - '[[ "${container:=}" == "docker" ]]'
+      - '[ "{{.DOCKER_ENVIRONMENT}}" == "true" ]'
 
   husky:ci:
     cmds:
       - task: husky:permissions
     status:
-      - '[[ "${container:=}" != "docker" ]]'
+      - '[ "{{.DOCKER_ENVIRONMENT}}" != "true" ]'
 
   husky:install:
     deps:
@@ -68,7 +93,7 @@ tasks:
           .config/log warn 'Cannot run `husky install` because there is no `.git/` folder (or this is a Docker container)'
         fi
     status:
-      - '[ ! -d .git ] || [[ "${container:=}" == "docker" ]]'
+      - '[ ! -d .git ] || [ "{{.DOCKER_ENVIRONMENT}}" == "true" ]'
 
   husky:permissions:
     log:
@@ -102,6 +127,21 @@ tasks:
       - task: update
       - task: :lint:all
       - '{{.NPX_HANDLE}}standard-version --no-verify'
+
+  repair:
+    vars:
+      MODEL_TMP:
+        sh: mktemp
+    cmds:
+      - |
+        curl -sSL '{{.MODEL_TASKFILE}}' > '{{.MODEL_TMP}}'
+        TMP_BACKUP="$(mktemp)"
+        cp '{{.MODEL_TMP}}' "$TMP_BACKUP"
+        export ZXXXY="$(yq e '.' {{.MODEL_TMP}})"
+        yq e '. | .vars = (env(ZXXXY) | .vars) | .env = (env(ZXXXY) | .env)' Taskfile.yml > '{{.MODEL_TMP}}'
+        mv '{{.MODEL_TMP}}' Taskfile.yml
+        cp "$TMP_BACKUP" '{{.MODEL_TMP}}'
+      - yq eval-all -i 'select(fileIndex == 0) * select(fileIndex == 1)' '{{.MODEL_TMP}}' Taskfile.yml
 
   requirements:
     deps:
