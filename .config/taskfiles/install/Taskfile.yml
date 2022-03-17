@@ -35,7 +35,7 @@ tasks:
         .config/log info 'Installing `{{.SOFTWARE}}` by running `curl -sS https://install.doctor/{{.SOFTWARE}} | bash`'
         curl -sS https://install.doctor/{{.SOFTWARE}} | bash
     status:
-      - type {{.SOFTWARE}} &> /dev/null || [[ "${container:=}" == "docker" ]]
+      - type {{.SOFTWARE}} &> /dev/null || [[ '{{.DOCKER_ENVIRONMENT}}' == "true" ]]
 
   modules:global:
     deps:
@@ -62,12 +62,16 @@ tasks:
       - '[[ "${container:=}" == "docker" ]]'
 
   modules:local:
+    cmds:
+      - task: modules:local:init
+    status:
+      - '[ -n "$BUILD_DATE" ] && [ -f /.dockerenv ]'
+
+  modules:local:init:
     deps:
       - :install:npm:{{.NPM_PROGRAM_LOCAL}}
       - :install:software:jq
-    env:
-      DEPS:
-        sh: jq -r -S '.dependencies + .devDependencies + .optionalDependencies + .peerDependencies' package.json
+    vars:
       PREVIOUS_DEPS:
         sh: |
           if [ -f .task/npm-deps ]; then
@@ -75,8 +79,12 @@ tasks:
           else
             echo ""
           fi
+    env:
+      DEPS:
+        sh: jq -r -S '.dependencies + .devDependencies + .optionalDependencies + .peerDependencies' package.json
+      PREVIOUS_DEPS: '{{.PREVIOUS_DEPS}}'
       SEMANTIC_PYTHON_POST_INSTALL: '{{if eq .SEMANTIC_RELEASE "true"}}true{{else}}false{{end}}'
-    run: once
+    run: when_changed
     log:
       error: Encountered error while installing local NPM dependencies
       start: Installing local NPM dependencies

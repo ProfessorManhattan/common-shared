@@ -5,8 +5,6 @@ vars:
   DOCKER_IMAGE:
     sh: |
       echo "{{.DOCKERHUB_PROFILE}}/{{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}$(jq -r '.blueprint.slug' package.json){{end}}"
-  SLIM_ENABLED:
-    sh: jq -r '.blueprint.dockerSlimCommand' package.json | sed 's/null/false/'
 
 tasks:
   build:
@@ -36,11 +34,19 @@ tasks:
           if echo "$TESTS" | grep '.yml'; then
             for TEST_FILE in $TESTS; do
               TARGET="$(echo "$TEST_FILE" | sed 's/.*\/\([^\/]*\).yml$/\1/')"
-              if [ "$(jq --arg slug "$TARGET" '.blueprint.dockerSlimCommand[$slug]' package.json)" != 'null' ]; then
-                task docker:build:slim -- "$TARGET"
+              if [ "$(jq --arg slug "$TARGET" '.blueprint.dockerSlimCommand | type' package.json)" == 'object' ]; then
+                if [ "$(jq --arg slug "$TARGET" '.blueprint.dockerSlimCommand[$slug]' package.json)" != 'null' ]; then
+                  task docker:build:slim -- "$TARGET"
+                else
+                  .config/log warn 'The `.blueprint.dockerSlimCommand` is missing - skipping slim build and building just a regular image'
+                  task docker:build:fat -- "$TARGET"
+                fi
               else
-                .config/log warn 'The `.blueprint.dockerSlimCommand` is missing - skipping slim build and building just a regular image'
-                task docker:build:fat -- "$TARGET"
+                if [ "$(jq --arg slug "$TARGET" '.blueprint.dockerSlimCommand' package.json)" != 'null' ]; then
+                  task docker:build:slim -- "$TARGET"
+                else
+                  task docker:build:fat -- "$TARGET"
+                fi
               fi
             done
           else
@@ -113,6 +119,16 @@ tasks:
       - task: pushrm
 
   publish:image:
+    vars:
+      SLIM_ENABLED:
+        sh: |
+          TYPE="$(jq -r '.blueprint.dockerSlimCommand | type' package.json)"
+          if [ "$TYPE" != 'object' ]; then
+            jq -r '.blueprint.dockerSlimCommand' package.json | sed 's/null/false/'
+          else
+            TARGET="{{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}{{.TARGET}}{{end}}"
+            jq --arg target "$TARGET" -r '.blueprint.dockerSlimCommand[$target]' package.json | sed 's/null/false/'
+          fi
     log:
       error: Failed to tag / push `{{.DOCKER_IMAGE}}:{{.TARGET_TAG}}`
       start: Tagging and pushing `{{.DOCKER_IMAGE}}:{{.TARGET_TAG}}`
@@ -121,13 +137,15 @@ tasks:
       - docker tag {{.DOCKER_IMAGE}}:{{.SOURCE_TAG}} {{.DOCKER_IMAGE}}:{{.TARGET_TAG}}
       - docker push {{.DOCKER_IMAGE}}:{{.TARGET_TAG}}
     status:
-      - if [[ '{{.SOURCE_TAG}}' == 'slim' ]]; then [[ '{{.SLIM_ENABLED}}' == 'false' ]]; fi
+      - '[[ "{{.SOURCE_TAG}}" == "slim" ]]'
+      - '[[ "{{.SLIM_ENABLED}}" == "false" ]]'
 
   publish:images:
     vars:
       MAJOR_VERSION:
         sh: jq -r '.version' package.json | sed 's/\..*\..*$//'
       TAG_POST: '{{if (contains "codeclimate" .CLI_ARGS)}}-codeclimate{{end}}'
+      TARGET: '{{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}{{.TARGET}}{{end}}'
       VERSION:
         sh: jq -r ".version" package.json
     log:
