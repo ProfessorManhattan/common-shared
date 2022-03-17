@@ -21,6 +21,7 @@ vars:
           echo "docker-build"
         else
           echo "docker"
+        fi
       else
         echo "unknown"
       fi
