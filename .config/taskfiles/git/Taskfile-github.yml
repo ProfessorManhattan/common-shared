@@ -66,6 +66,7 @@ tasks:
       - ids
       - variables
 
+    run: once
   update:meta:
     deps:
       - :install:software:gh

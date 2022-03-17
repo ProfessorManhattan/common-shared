@@ -341,6 +341,7 @@ tasks:
       - update:meta
       - wiki
 
+    run: once
   update:meta:
     deps:
       - :install:software:glab

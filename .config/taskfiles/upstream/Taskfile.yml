@@ -3,6 +3,7 @@ version: '3'
 
 tasks:
   common:
+    run: once
     log:
       error: Error updating common repository
       start: Updating common repository
@@ -22,6 +23,7 @@ tasks:
       - task: :git:push:all
 
   commondocs:
+    run: once
     log:
       error: Error updating common documents repository
       start: Updating common documents repository
@@ -38,6 +40,7 @@ tasks:
       - task: :git:push:all
 
   docs:
+    run: once
     todo: Remove the git:commit:automated tasks
     log:
       error: Error updating document repository
@@ -56,6 +59,7 @@ tasks:
       - task: :git:push:all
 
   project:
+    run: once
     log:
       error: Error updating project repository
       start: Running project update logic
@@ -77,6 +81,7 @@ tasks:
       - task: :{{if eq .REPOSITORY_SUBTYPE "role"}}ansible:galaxy:import{{else}}donothing{{end}}
 
   project:scaffold-only:
+    run: once
     log:
       error: Error scaffolding project
       start: Scaffolding project
@@ -97,6 +102,7 @@ tasks:
   pull:
     deps:
       - :install:software:git
+    run: once
     log:
       error: Error executing initial `git pull` logic
       start: Determining whether or not to `git pull`
@@ -117,6 +123,7 @@ tasks:
         ignore_error: true
 
   shared:
+    run: once
     log:
       error: Error running shared repository update logic
       start: Running shared repository update logic
@@ -133,6 +140,7 @@ tasks:
       - task: :git:push:all
 
   template:
+    run: once
     cmds:
       - task: template:liquidjs
 
@@ -147,6 +155,7 @@ tasks:
     env:
       TMP:
         sh: mktemp
+    run: once
     log:
       error: Error encountered while generating files from `liquid` template files
       start: Generating files from `liquid` template files
@@ -199,6 +208,7 @@ tasks:
       - task: template:pyproject
 
   template:pyproject:
+    run: once
     cmds:
       - task: :install:github:fusion
       - task: template:pyproject:config
@@ -260,6 +270,7 @@ tasks:
         sh: if [ -f '{{.INPUT_FILE}}' ]; then echo {{.INPUT_FILE}}; else echo ".variables.json"; fi
       TMP:
         sh: mktemp
+    run: once
     log:
       error: Encountered error while injecting `{{.OUTPUT_FILE}}` with variables
       start: Injecting `{{.OUTPUT_FILE}}` with variables

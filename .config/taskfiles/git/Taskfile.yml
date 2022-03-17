@@ -264,6 +264,7 @@ tasks:
         fi
 
   update:
+    run: once
     cmds:
       - task: :git:gitlab:create
       - task: :git:github:create
@@ -273,3 +274,4 @@ tasks:
     deps:
       - :git:gitlab:update
       - :git:github:update
+    run: once
