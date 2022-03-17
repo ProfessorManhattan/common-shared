@@ -11,6 +11,7 @@
 
 set -eo pipefail
 
+DELAYED_CI_SYNC=""
 ENSURED_TASKFILES=""
 
 # @description Ensure permissions in CI environments
@@ -551,8 +552,10 @@ if [ -d .git ] && type git &> /dev/null; then
     if [ "$GIT_POS" == 'synchronize' ] || [ "$CI_COMMIT_REF_NAME" == 'synchronize' ]; then
       git reset --hard origin/master
       git push --force origin synchronize || FORCE_SYNC_ERR=$?
-      if [ -n "$FORCE_SYNC_ERR" ]; then
+      if [ -n "$FORCE_SYNC_ERR" ] && type task &> /dev/null; then
         task ci:synchronize
+      else
+        DELAYED_CI_SYNC=true
       fi
     elif [ "$GIT_POS" == 'HEAD' ]; then
       if [ -n "$GITLAB_CI" ]; then
@@ -582,6 +585,11 @@ ensureTaskInstalled
 # @description Ensures Taskfiles are up-to-date
 logger info 'Ensuring Taskfile.yml files are all in good standing'
 ensureTaskfiles
+
+# @description Try synchronizing again (in case Task was not available yet)
+if [ "$DELAYED_CI_SYNC" == 'true' ]; then
+  task ci:synchronize
+fi
 
 # @description Run the start logic, if appropriate
 if [ -z "$CI" ] && [ -z "$START" ] && [ -z "$INIT_CWD" ]; then
