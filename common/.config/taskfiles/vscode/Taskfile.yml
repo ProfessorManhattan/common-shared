@@ -71,7 +71,6 @@ tasks:
       - task: extensions:devcontainer
 
   tasks:
-    run: once
     deps:
       - :install:npm:prettier
       - :install:software:jq
