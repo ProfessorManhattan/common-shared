@@ -545,11 +545,21 @@ if [ -d .git ] && type git &> /dev/null; then
   if [ "$TIME_DIFF" -gt 900 ] || [ "$TIME_DIFF" -lt 5 ]; then
     date +%s > .cache/start.sh/git-pull-time
     HTTPS_VERSION="$(git remote get-url origin | sed 's/git@gitlab.com:/https:\/\/gitlab.com\//')"
-    logger info 'Current branch is `'"$(git rev-parse --abbrev-ref HEAD)"'`'
-    if [ "$(git rev-parse --abbrev-ref HEAD)" == 'synchronize' ]; then
-      git reset --hard master
+    git fetch origin
+    GIT_POS="$(git rev-parse --abbrev-ref HEAD)"
+    logger info 'Current branch is `'"$GIT_POS"'`'
+    if [ "$GIT_POS" == 'synchronize' ] || [ "$CI_COMMIT_REF_NAME" == 'synchronize' ]; then
+      git reset --hard origin/master
+      git push --force origin synchronize || FORCE_SYNC_ERR=$?
+      if [ -n "$FORCE_SYNC_ERR" ]; then
+        task ci:synchronize
+      fi
+    elif [ "$GIT_POS" == 'HEAD' ]; then
+      if [ -n "$GITLAB_CI" ]; then
+        printenv
+      fi
     fi
-    git pull "$HTTPS_VERSION" master --ff-only
+    git pull --force origin master --ff-only || true
     ROOT_DIR="$PWD"
     if ls .modules/*/ > /dev/null 2>&1; then
       for SUBMODULE_PATH in .modules/*/; do
