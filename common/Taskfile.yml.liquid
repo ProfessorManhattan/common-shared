@@ -96,7 +96,7 @@ vars:
   # yamllint enable rule:line-length
   PYTHON_HANDLE:
     sh: |
-      if type poetry > /dev/null && [ -z "$NO_INSTALL_POETRY" ]; then
+      if type poetry > /dev/null; then
         echo 'poetry run '
       else
         echo ''
