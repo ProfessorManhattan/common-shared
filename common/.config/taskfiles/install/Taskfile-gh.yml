@@ -159,7 +159,7 @@ tasks:
             {{.COMMANDS}}
           fi
         fi
-      - chmod +x "$TMP"/{{.BIN_NAME}}
+      - chmod +x {{.BIN_FOLDER}}/{{.BIN_NAME}}
     status:
       - '[ -f ./bin/{{.BIN_NAME}} ]'
 
