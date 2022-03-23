@@ -1,5 +1,5 @@
 #!/bin/sh
-# shellcheck disable
+# shellcheck disable=SC1000-SC9999
 # POSIX SH portable semver 2.0 comparition tool.
 
 # This bash script compares pre-releases alphabetically as well (number < lowerCaseLetter < upperCaseLetter)
