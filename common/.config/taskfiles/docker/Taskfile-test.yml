@@ -4,14 +4,14 @@ version: '3'
 vars:
   SCENARIO:
     sh: |
-      '{{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}
+      {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}
       SCENARIO="$(jq -r '.blueprint.dockerBaseTag' package.json)"
       if [ "$SCENARIO" != 'null' ]; then
         echo "$SCENARIO"
       else
         echo 'default'
       fi
-      {{end}}'
+      {{end}}
 
 tasks:
   codeclimate:
