@@ -70,7 +70,7 @@
   ],
   "forwardPorts": [2222, 5901, 6080, 8001, 8014],
   "hostRequirements": {
-    "cpus": 2,
+    "cpus": 1,
     "memory": "4gb",
     "storage": "16gb"
   },
