@@ -1,15 +1,3 @@
 ---
-stages:
-  - update
-  - lint
-  - deploy
-
 include:
-  - remote: https://gitlab.com/megabyte-labs/gitlab-ci/-/raw/master/lint/codeclimate.gitlab-ci.yml
-  - remote: https://gitlab.com/megabyte-labs/gitlab-ci/-/raw/master/lint/eslint.gitlab-ci.yml
-  - remote: https://gitlab.com/megabyte-labs/gitlab-ci/-/raw/master/lint/prettier.gitlab-ci.yml
-  - remote: https://gitlab.com/megabyte-labs/gitlab-ci/-/raw/master/lint/shellcheck.gitlab-ci.yml
-  - remote: https://gitlab.com/megabyte-labs/gitlab-ci/-/raw/master/lint/yamllint.gitlab-ci.yml
-  - remote: https://gitlab.com/megabyte-labs/gitlab-ci/-/raw/master/propagate/groups.gitlab-ci.yml
-  - remote: https://gitlab.com/megabyte-labs/gitlab-ci/-/raw/master/propagate/projects.gitlab-ci.yml
-  - remote: https://gitlab.com/megabyte-labs/gitlab-ci/-/raw/master/update/common.gitlab-ci.yml
+  - remote: https://gitlab.com/megabyte-labs/gitlab-ci/-/raw/master/all.gitlab-ci.yml
