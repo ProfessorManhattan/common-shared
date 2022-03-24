@@ -634,6 +634,26 @@ tasks:
     cmds:
       - task: common:reset
 
+  prepare:
+    cmds:
+      - task: \{{.REPOSITORY_TYPE}}:prepare
+    status:
+      - '[ "\{{.REPOSITORY_TYPE}}" != "ansible" ]'
+      - '[ "\{{.REPOSITORY_TYPE}}" != "docker" ]'
+      - '[ "\{{.REPOSITORY_TYPE}}" != "npm" ]'
+      - '[ "\{{.REPOSITORY_TYPE}}" != "packer" ]'
+      - '[ "\{{.REPOSITORY_TYPE}}" != "python" ]'
+
+  publish:
+    cmds:
+      - task: \{{.REPOSITORY_TYPE}}:publish
+    status:
+      - '[ "\{{.REPOSITORY_TYPE}}" != "ansible" ]'
+      - '[ "\{{.REPOSITORY_TYPE}}" != "docker" ]'
+      - '[ "\{{.REPOSITORY_TYPE}}" != "npm" ]'
+      - '[ "\{{.REPOSITORY_TYPE}}" != "packer" ]'
+      - '[ "\{{.REPOSITORY_TYPE}}" != "python" ]'
+
   pull:upstream:
     desc: Pull from upstream repositories
     summary: |
@@ -891,3 +911,13 @@ tasks:
       - task: common:start
         env:
           UPDATE_PROJECT: 'true'
+
+  verify:
+    cmds:
+      - task: \{{.REPOSITORY_TYPE}}:verify
+    status:
+      - '[ "\{{.REPOSITORY_TYPE}}" != "ansible" ]'
+      - '[ "\{{.REPOSITORY_TYPE}}" != "docker" ]'
+      - '[ "\{{.REPOSITORY_TYPE}}" != "npm" ]'
+      - '[ "\{{.REPOSITORY_TYPE}}" != "packer" ]'
+      - '[ "\{{.REPOSITORY_TYPE}}" != "python" ]'
