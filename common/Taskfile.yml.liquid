@@ -205,10 +205,6 @@ tasks:
           [[ $- == *i* ]] && task prepare || (.config/log error '\{{.NONINTERACTIVE_MISSING_BUILD_CMD}}' && exit 1)
         fi
 
-  build:release:
-    cmds:
-      - task: release:build
-
   clean:
     desc: Removes optional folders that are cached during various tasks
     summary: |
@@ -638,14 +634,6 @@ tasks:
     cmds:
       - task: common:reset
 
-  prepare:
-    cmds:
-      - task: release:prepare
-
-  publish:
-    cmds:
-      - task: release:publish
-
   pull:upstream:
     desc: Pull from upstream repositories
     summary: |
@@ -903,7 +891,3 @@ tasks:
       - task: common:start
         env:
           UPDATE_PROJECT: 'true'
-
-  verify:
-    cmds:
-      - task: release:verify
