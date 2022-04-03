@@ -11,6 +11,7 @@
 
 set -eo pipefail
 
+DELAYED_CI_SYNC=""
 ENSURED_TASKFILES=""
 
 # @description Ensure permissions in CI environments
@@ -33,10 +34,10 @@ chmod +x .config/log
 
 # @description Acquire unique ID for this script
 if [ -z "$CI" ]; then
-  if type m5sum &> /dev/null; then
+  if type md5sum &> /dev/null; then
     FILE_HASH="$(md5sum "$0" | sed 's/\s.*$//')"
   else
-    FILE_HASH="$(date +%s -r "$0")"
+    FILE_HASH="$(date -r "$0" +%s)"
   fi
 else
   FILE_HASH="none"
@@ -134,7 +135,7 @@ function ensureRootPackageInstalled() {
 # @description If the user is running this script as root, then create a new user named
 # megabyte and restart the script with that user. This is required because Homebrew
 # can only be invoked by non-root users.
-if [ "$USER" == "root" ] && [ -z "$INIT_CWD" ] && type useradd &> /dev/null; then
+if [ -z "$NO_INSTALL_HOMEBREW" ] && [ "$USER" == "root" ] && [ -z "$INIT_CWD" ] && type useradd &> /dev/null; then
   # shellcheck disable=SC2016
   logger info 'Running as root - creating seperate user named `megabyte` to run script with'
   echo "megabyte ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
@@ -273,7 +274,8 @@ function ensureTaskInstalled() {
       TASK_UPDATE_TIME="$(date +%s)"
       echo "$TASK_UPDATE_TIME" > "$HOME/.cache/megabyte/start.sh/bodega-update-check"
     fi
-    TIME_DIFF="$(($(date +%s) - "$TASK_UPDATE_TIME"))"
+    # shellcheck disable=SC2004
+    TIME_DIFF="$(($(date +%s) - $TASK_UPDATE_TIME))"
     # Only run if it has been at least 15 minutes since last attempt
     if [ "$TIME_DIFF" -gt 900 ] || [ "$TIME_DIFF" -lt 5 ]; then
       date +%s > "$HOME/.cache/megabyte/start.sh/bodega-update-check"
@@ -437,7 +439,7 @@ function ensureTaskfiles() {
       else
         mkdir -p .config/taskfiles
         curl -sSL https://gitlab.com/megabyte-labs/common/shared/-/archive/master/shared-master.tar.gz > shared-master.tar.gz
-        tar -xzvf shared-master.tar.gz
+        tar -xzvf shared-master.tar.gz > /dev/null
         rm shared-master.tar.gz
         rm -rf .config/taskfiles
         mv shared-master/common/.config/taskfiles .config/taskfiles
@@ -482,8 +484,6 @@ ensureLocalPath
 if [[ "$OSTYPE" == 'darwin'* ]]; then
   if ! type curl &> /dev/null && type brew &> /dev/null; then
     brew install curl
-  else
-    logger error "Neither curl nor brew are installed. Install one of them manually and try again."
   fi
   if ! type git &> /dev/null; then
     # shellcheck disable=SC2016
@@ -537,19 +537,31 @@ if [ -d .git ] && type git &> /dev/null; then
   if [ -f .cache/start.sh/git-pull-time ]; then
     GIT_PULL_TIME="$(cat .cache/start.sh/git-pull-time)"
   else
-    GIT_PULL_TIME="$(date +%s)"
+    GIT_PULL_TIME=$(date +%s)
     echo "$GIT_PULL_TIME" > .cache/start.sh/git-pull-time
   fi
-  TIME_DIFF="$(($(date +%s) - "$GIT_PULL_TIME"))"
+  # shellcheck disable=SC2004
+  TIME_DIFF="$(($(date +%s) - $GIT_PULL_TIME))"
   # Only run if it has been at least 15 minutes since last attempt
   if [ "$TIME_DIFF" -gt 900 ] || [ "$TIME_DIFF" -lt 5 ]; then
     date +%s > .cache/start.sh/git-pull-time
-    HTTPS_VERSION="$(git remote get-url origin | sed 's/git@gitlab.com:/https:\/\/gitlab.com\//')"
-    logger info 'Current branch is `'"$(git rev-parse --abbrev-ref HEAD)"'`'
-    if [ "$(git rev-parse --abbrev-ref HEAD)" == 'synchronize' ]; then
-      git reset --hard master
+    git fetch origin
+    GIT_POS="$(git rev-parse --abbrev-ref HEAD)"
+    logger info 'Current branch is `'"$GIT_POS"'`'
+    if [ "$GIT_POS" == 'synchronize' ] || [ "$CI_COMMIT_REF_NAME" == 'synchronize' ]; then
+      git reset --hard origin/master
+      git push --force origin synchronize || FORCE_SYNC_ERR=$?
+      if [ -n "$FORCE_SYNC_ERR" ] && type task &> /dev/null; then
+        NO_GITLAB_SYNCHRONIZE=true task ci:synchronize
+      else
+        DELAYED_CI_SYNC=true
+      fi
+    elif [ "$GIT_POS" == 'HEAD' ]; then
+      if [ -n "$GITLAB_CI" ]; then
+        printenv
+      fi
     fi
-    git pull "$HTTPS_VERSION" master --ff-only
+    git pull --force origin master --ff-only || true
     ROOT_DIR="$PWD"
     if ls .modules/*/ > /dev/null 2>&1; then
       for SUBMODULE_PATH in .modules/*/; do
@@ -572,6 +584,12 @@ ensureTaskInstalled
 # @description Ensures Taskfiles are up-to-date
 logger info 'Ensuring Taskfile.yml files are all in good standing'
 ensureTaskfiles
+
+# @description Try synchronizing again (in case Task was not available yet)
+if [ "$DELAYED_CI_SYNC" == 'true' ]; then
+  logger info 'Attempting to synchronize CI..'
+  task ci:synchronize
+fi
 
 # @description Run the start logic, if appropriate
 if [ -z "$CI" ] && [ -z "$START" ] && [ -z "$INIT_CWD" ]; then

@@ -7,8 +7,15 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: autocannon
+
+  bitwarden:
+    run: once
+    cmds:
+      - task: install:npm
+        vars:
+          BIN_NAME: bw
+          PACKAGE: '@bitwarden/cli'
 
   bundle:
     cmds:
@@ -19,7 +26,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: clinic
 
   codecov:
@@ -27,7 +33,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: codecov
 
   commitizen:
@@ -37,8 +42,9 @@ tasks:
         vars:
           BIN_NAME: git-cz
           FORCE_INSTALL: true
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: commitizen
+    status:
+      - '[ -n "$CI" ]'
 
   commitlint:
     run: once
@@ -46,15 +52,15 @@ tasks:
       - task: install:npm
         vars:
           BIN_NAME: commitlint
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: '@commitlint/cli'
+    status:
+      - '[ -n "$CI" ]'
 
   cspell:
     run: once
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: cspell
 
   depcheck:
@@ -62,7 +68,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: depcheck
 
   devcontainer:
@@ -71,7 +76,6 @@ tasks:
       - task: install:npm
         vars:
           BIN_NAME: devcontainer
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: '@vscode/dev-container-cli'
 
   dockerfilelint:
@@ -79,7 +83,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: dockerfilelint
 
   esbuild:
@@ -89,7 +92,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: esbuild
 
   eslint:
@@ -99,7 +101,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: eslint
 
   esprint:
@@ -107,7 +108,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: esprint
 
   fuite:
@@ -115,7 +115,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: fuite
 
   git-notify:
@@ -123,7 +122,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: git-notify
 
   global:library:
@@ -144,6 +142,8 @@ tasks:
       start: Installing NPM global library `{{.PACKAGE}}` which does not have a CLI
       success: '`{{.PACKAGE}}` has been installed globally'
     cmds:
+      - |
+        if [ -n "$CI" ]; then echo "*************** npm global --> {{.PACKAGE}}"; fi
       - '{{.NPM_PROGRAM}} install -g {{.PACKAGE}}'
     status:
       - '[[ "$PACKAGE_EXISTS" == "true" ]]'
@@ -156,36 +156,38 @@ tasks:
       success: Successfully installed `{{.NPM_PROGRAM}}`
     cmds:
       - task: :install:software:node
+      - |
+        if [ -n "$CI" ]; then echo "*************** npm global --> {{.PACKAGE}}"; fi
       - npm install -g {{.NPM_PROGRAM}}
     status:
       - type {{.NPM_PROGRAM}} > /dev/null
+
+  htmlhint:
+    run: once
+    cmds:
+      - task: install:npm
+        vars:
+          PACKAGE: htmlhint
 
   husky:
     run: once
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: husky
 
   install:npm:
-    deps:
-      - global:package-manager
     vars:
       BIN: '{{if .BIN_NAME}}{{.BIN_NAME}}{{else}}{{.PACKAGE}}{{end}}'
-      INSTALL_RECORD:
-        sh: |
-          if [ -n "$RECORD_INSTALL" ]; then
-            mkdir -p local/slim
-            echo '{{.PACKAGE_BIN}}' >> local/slim/exe.txt
-            echo '{{.INSTALL_TASK}}' >> local/slim/install.txt
-          fi
     run: when_changed
     log:
       error: Failed to install NPM package `{{.PACKAGE}}` globally
       start: Installing NPM package `{{.PACKAGE}}` globally
       success: Installed NPM package `{{.PACKAGE}}` globally
     cmds:
+      - task: global:package-manager
+      - |
+        if [ -n "$CI" ]; then echo "*************** npm global --> {{.PACKAGE}}"; fi
       - '{{.NPM_PROGRAM}} install -g {{.PACKAGE}}'
     status:
       - type {{.BIN}} > /dev/null
@@ -198,7 +200,6 @@ tasks:
       - task: install:npm
         vars:
           BIN_NAME: ionic
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: '@ionic/cli'
 
   jest:
@@ -206,7 +207,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: jest
 
   leasot:
@@ -216,7 +216,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: leasot
 
   lint-staged:
@@ -224,7 +223,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: lint-staged
 
   liquidjs:
@@ -235,7 +233,6 @@ tasks:
       - task: install:npm
         vars:
           BIN_NAME: hbs
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: hbs-cli
       - task: liquidjs:install
 
@@ -245,7 +242,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: liquidjs
 
   majestic:
@@ -253,7 +249,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: majestic
 
   markdown-link-check:
@@ -261,7 +256,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: markdown-link-check
 
   markdown-table-formatter:
@@ -269,7 +263,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: markdown-table-formatter
 
   modclean:
@@ -280,7 +273,6 @@ tasks:
       - task: install:npm
         vars:
           BIN_NAME: modclean
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: modclean@2
 
   ndb:
@@ -288,7 +280,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: ndb
 
   nest:
@@ -299,7 +290,6 @@ tasks:
       - task: install:npm
         vars:
           BIN_NAME: nest
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: '@nestjs/cli'
 
   nodemon:
@@ -307,7 +297,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: nodemon
 
   npm:
@@ -315,7 +304,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: npm
 
   ntl:
@@ -323,7 +311,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: ntl
 
   nx:
@@ -333,7 +320,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: nx
 
   only-allow:
@@ -341,7 +327,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: only-allow
 
   open-cli:
@@ -349,7 +334,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: open-cli
 
   pac:
@@ -357,7 +341,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: pac
 
   pkg:
@@ -367,7 +350,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: pkg
 
   pnpm:
@@ -377,7 +359,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: pnpm
       - task: pnpm:import
     status:
@@ -388,7 +369,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: pnpm-lock-export
 
   pnpm:import:
@@ -409,7 +389,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: prettier
 
   readme:
@@ -421,7 +400,6 @@ tasks:
         vars:
           BIN_NAME: readme
 
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: '@appnest/readme'
   remark:
     run: once
@@ -431,8 +409,14 @@ tasks:
       - task: install:npm
         vars:
           BIN_NAME: remark
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: remark-cli
+
+  secretlint:
+    run: once
+    cmds:
+      - task: install:npm
+        vars:
+          PACKAGE: secretlint
 
   semantic-release:
     run: once
@@ -441,7 +425,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: semantic-release
 
   sharp:
@@ -450,7 +433,6 @@ tasks:
       - task: install:npm
         vars:
           BIN_NAME: sharp
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: sharp-cli
 
   shellcheck:
@@ -458,7 +440,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: shellcheck
 
   snyk:
@@ -466,7 +447,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: snyk
 
   standard:
@@ -474,7 +454,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: standard
 
   standard-version:
@@ -482,8 +461,14 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: standard-version
+
+  stylelint:
+    run: once
+    cmds:
+      - task: install:npm
+        vars:
+          PACKAGE: stylelint
 
   synp:
     run: once
@@ -492,7 +477,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: synp
 
   tinypng:
@@ -501,7 +485,6 @@ tasks:
       - task: install:npm
         vars:
           BIN_NAME: tinypng
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: tinypng-cli
 
   ts-node:
@@ -509,7 +492,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: ts-node
 
   typedoc:
@@ -519,7 +501,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: typedoc
 
   typescript:
@@ -530,7 +511,6 @@ tasks:
       - task: install:npm
         vars:
           BIN_NAME: tsc
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: typescript
 
   typesync:
@@ -538,7 +518,6 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: typesync
 
   yarnhook:
@@ -546,5 +525,4 @@ tasks:
     cmds:
       - task: install:npm
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: yarnhook

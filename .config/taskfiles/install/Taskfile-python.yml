@@ -5,20 +5,14 @@ tasks:
   pip:
     deps:
       - :install:software:python
-    vars:
-      INSTALL_RECORD:
-        sh: |
-          if [ -n "$RECORD_INSTALL" ]; then
-            mkdir -p local/slim
-            echo '{{.PACKAGE}}' >> local/slim/exe.txt
-            echo '{{.INSTALL_TASK}}' >> local/slim/install.txt
-          fi
     run: when_changed
     log:
       error: Failed to install pip3 package `{{.PACKAGE}}`
       start: Installing pip3 package `{{.PACKAGE}}`
       success: Installed pip3 package `{{.PACKAGE}}`
     cmds:
+      - |
+        if [ -n "$CI" ]; then echo "*************** pip3 --> {{.PACKAGE}}"; fi
       - pip3 install {{.PACKAGE}}
     status:
       - type {{.PACKAGE}} > /dev/null
@@ -28,7 +22,6 @@ tasks:
       - task: :install:pipx:install
         vars:
           BIN_NAME: '{{.BIN_NAME}}'
-          INSTALL_TASK: '{{.INSTALL_TASK}}'
           PACKAGE: '{{.PACKAGE}}'
 
   pytest:
@@ -51,7 +44,7 @@ tasks:
       - task: requirements:poetry:prereqs
       - task: requirements:poetry:install
     status:
-      - '[ ! -f pyproject.toml ] || ([ -n "$BUILD_DATE" ] && [ -f /.dockerenv ])'
+      - '[ ! -f pyproject.toml ] || ! type poetry &> /dev/null'
 
   requirements:poetry:install:
     summary: |
@@ -65,7 +58,7 @@ tasks:
       success: Successfully ran `poetry install`
     cmds:
       - task: :install:software:poetry
-      - poetry env use "$(which python3.10)"
+      - poetry env use "$(which python3)"
       - poetry config virtualenvs.create {{if .PYTHON_VIRTUALENV}}{{.PYTHON_VIRTUALENV}}{{else}}false{{end}}
       - poetry config virtualenvs.in-project true
       - |

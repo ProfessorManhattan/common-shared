@@ -21,7 +21,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: act
 
   allure:
@@ -29,7 +28,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: allure
 
   ansifilter:
@@ -39,7 +37,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: ansifilter
 
   brew:
@@ -62,6 +59,8 @@ tasks:
       success: Successfully installed `{{.CASK}}`
     cmds:
       - task: brew
+      - |
+        if [ -n "$CI" ]; then echo "*************** brew cask --> {{.CASK}}"; fi
       - brew install --cask {{.CASK}}
     status:
       - type {{.CASK}} &> /dev/null
@@ -89,7 +88,6 @@ tasks:
       - task: install:software
         vars:
           BIN_NAME: '{{.BIN_NAME}}'
-          INSTALL_TASK: '{{.INSTALL_TASK}}'
           PACKAGE: '{{.PACKAGE}}'
 
   brew:linux:
@@ -179,7 +177,7 @@ tasks:
             echo "redhat"
           elif [ -f "/etc/arch-release" ]; then
             echo "archlinux"
-          else [ -f "/etc/alpine-release" ]; then
+          elif [ -f "/etc/alpine-release" ]; then
             echo "alpine"
           else
             echo "unknown"
@@ -395,7 +393,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: findutils
     status:
       - type gfind > /dev/null
@@ -404,7 +401,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: gawk
     status:
       - type gawk > /dev/null
@@ -413,7 +409,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: gnu-sed
     status:
       - type gsed > /dev/null
@@ -422,7 +417,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: gnu-tar
     status:
       - type gtar > /dev/null
@@ -431,7 +425,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: grep
     status:
       - type ggrep > /dev/null
@@ -441,14 +434,12 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: container-structure-test
 
   coreutils:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: coreutils
     status:
       - type gcp > /dev/null || [ "{{OS}}" != "darwin" ]
@@ -459,8 +450,14 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: dasel
+
+  deno:
+    run: once
+    cmds:
+      - task: install:software
+        vars:
+          PACKAGE: deno
 
   docker:
     run: once
@@ -476,7 +473,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: docker-slim
 
   docker:darwin:
@@ -494,7 +490,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: docker
       - task: exit:notice:restart
     status:
@@ -509,7 +504,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: goodwithtech/r/dockle
 
   exiftool:
@@ -520,7 +514,6 @@ tasks:
           PACKAGE: exiftool
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: exiftool
     status:
       - type exiftool > /dev/null
@@ -530,12 +523,16 @@ tasks:
       - .config/log warn 'Software was installed that requires a terminal session reload'
       - .config/log info 'Please close and re-open the terminal. Then, re-run the same command to continue.'
       - exit 1
+    status:
+      - '[ -f /.dockerenv ]'
 
   exit:notice:restart:
     cmds:
       - .config/log warn 'Software was installed that requires a system reboot'
       - .config/log info 'Please reboot the system and re-run the same command after rebooting'
       - exit 1
+    status:
+      - '[ -f /.dockerenv ]'
 
   expect:
     run: once
@@ -545,7 +542,6 @@ tasks:
           PACKAGE: expect
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: expect
     status:
       - type expect > /dev/null
@@ -587,8 +583,9 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: gh
+    status:
+      - type gh &> /dev/null
 
   git:
     run: once
@@ -605,7 +602,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: gitlab-runner
 
   gitleaks:
@@ -613,7 +609,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: gitleaks
 
   glab:
@@ -621,7 +616,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: glab
 
   go:
@@ -657,7 +651,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: go
 
   golangci-lint:
@@ -665,7 +658,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: golangci-lint
 
   grype:
@@ -673,7 +665,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: anchore/grype/grype
 
   gzip:
@@ -684,7 +675,6 @@ tasks:
           PACKAGE: gzip
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: gzip
     status:
       - type gzip > /dev/null
@@ -692,13 +682,6 @@ tasks:
   install:software:
     vars:
       BIN: '{{if .BIN_NAME}}{{.BIN_NAME}}{{else}}{{last (splitList "/" .PACKAGE)}}{{end}}'
-      INSTALL_RECORD:
-        sh: |
-          if [ -n "$RECORD_INSTALL" ]; then
-            mkdir -p local/slim
-            echo '{{if .BIN_NAME}}{{.BIN_NAME}}{{else}}{{last (splitList "/" .PACKAGE)}}{{end}}' >> local/slim/exe.txt
-            echo '{{.INSTALL_TASK}}' >> local/slim/install.txt
-          fi
     run: when_changed
     log:
       error: Failed to install `{{.PACKAGE}}`
@@ -706,6 +689,8 @@ tasks:
       success: Successfully installed `{{.PACKAGE}}`
     cmds:
       - task: brew
+      - |
+        if [ -n "$CI" ]; then echo "*************** brew formulae --> {{.PACKAGE}}"; fi
       - brew install {{.PACKAGE}}
     status:
       - type {{.BIN}} &> /dev/null || [ -n "$NO_INSTALL_HOMEBREW" ]
@@ -720,7 +705,6 @@ tasks:
           PACKAGE: jq
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: jq
     status:
       - type jq > /dev/null
@@ -740,7 +724,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: node
 
   packer:
@@ -750,7 +733,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: packer
 
   parallels:
@@ -801,14 +783,13 @@ tasks:
       - task: poetry:{{OS}}
       - task: exit:notice:reload
     status:
-      - type poetry > /dev/null
+      - type poetry > /dev/null || [ -n "$NO_INSTALL_POETRY" ]
 
   poetry:darwin:
     run: once
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: poetry
 
   poetry:linux:
@@ -816,7 +797,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: poetry
 
   poetry:windows:
@@ -838,7 +818,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: python@3.10
     status:
       - type python3 > /dev/null
@@ -848,7 +827,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: python@3.10
     status:
       - type python3 > /dev/null
@@ -869,7 +847,6 @@ tasks:
           PACKAGE: rsync
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: rsync
     status:
       - type rsync > /dev/null
@@ -879,7 +856,7 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
+          BIN_NAME: cargo
           PACKAGE: rust
 
   sentry:
@@ -893,7 +870,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: snapcraft
 
   sshfs:
@@ -908,7 +884,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: hudochenkov/sshpass/sshpass
 
   subrepo:
@@ -916,7 +891,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: git-subrepo
     status:
       - git subrepo --version > /dev/null || [[ "${container:=}" == "docker" ]]
@@ -1053,7 +1027,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: tokei
 
   trivy:
@@ -1061,7 +1034,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: aquasecurity/trivy/trivy
 
   vagrant:
@@ -1133,7 +1105,6 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: yarn
 
   yq:
@@ -1143,5 +1114,4 @@ tasks:
     cmds:
       - task: install:software
         vars:
-          INSTALL_TASK: '{{.TASK}}'
           PACKAGE: yq
