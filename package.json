@@ -58,8 +58,7 @@
     "package",
     "professormanhattan",
     "shared",
-    "taskfiles",
-    "washingtondc"
+    "taskfiles"
   ],
   "engines": {
     "node": ">=14.18.0"
