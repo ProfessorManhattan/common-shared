@@ -28,7 +28,8 @@
     "start": "test -z $SKIP_NPM_START && bash start.sh || true",
     "test": "bash start.sh && task donothing",
     "unpack": "bash start.sh && task npm:bundle:unpack",
-    "update": "bash start.sh && task update"
+    "update": "bash start.sh && task update",
+    "vscode": "bash start.sh && task vscode"
   },
   "config": {
     "commitizen": {
@@ -64,8 +65,11 @@
     "node": ">=14.18.0"
   },
   "publishConfig": {
+    "@gitlab:registry": "https://gitlab.com/api/v4/projects/24729680/packages/npm/",
     "@megabyte:registry": "https://gitlab.com/api/v4/projects/24729680/packages/npm/",
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/",
+    "tag": "edge"
   },
   "blueprint": {
     "description": "Includes common files used across different types of common file repositories (e.g. Go, Python, TypeScript, Go, more..)",
@@ -219,7 +223,8 @@
     "peerDependencyRules": {
       "ignoreMissing": [
         "eslint",
-        "prettier"
+        "prettier",
+        "puppeteer"
       ]
     }
   },

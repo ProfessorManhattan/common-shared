@@ -11,6 +11,7 @@
 
 set -eo pipefail
 
+# @description Initialize variables
 DELAYED_CI_SYNC=""
 ENSURED_TASKFILES=""
 
@@ -165,9 +166,9 @@ fi
 function ensureLocalPath() {
   if [[ "$OSTYPE" == 'darwin'* ]] || [[ "$OSTYPE" == 'linux'* ]]; then
     # shellcheck disable=SC2016
-    PATH_STRING='PATH="$HOME/.local/bin:$PATH"'
+    PATH_STRING='export PATH="$HOME/.local/bin:$PATH"'
     mkdir -p "$HOME/.local/bin"
-    if grep -L "$PATH_STRING" "$HOME/.profile" > /dev/null; then
+    if ! grep -L "$PATH_STRING" "$HOME/.profile" > /dev/null; then
       echo -e "${PATH_STRING}\n" >> "$HOME/.profile"
       logger info "Updated the PATH variable to include ~/.local/bin in $HOME/.profile"
     fi
@@ -335,7 +336,7 @@ function installTask() {
   sha256 "$DOWNLOAD_DESTINATION" "$DOWNLOAD_SHA256" > /dev/null
   logger success "Validated checksum"
   mkdir -p "$TMP_DIR/task"
-  tar -xzvf "$DOWNLOAD_DESTINATION" -C "$TMP_DIR/task" > /dev/null
+  tar -xzf "$DOWNLOAD_DESTINATION" -C "$TMP_DIR/task" > /dev/null
   if type task &> /dev/null && [ -w "$(which task)" ]; then
     TARGET_BIN_DIR="."
     TARGET_DEST="$(which task)"
@@ -423,7 +424,8 @@ function ensureTaskfiles() {
       TASK_UPDATE_TIME="$(date +%s)"
       echo "$TASK_UPDATE_TIME" > "$HOME/.cache/megabyte/start.sh/ensure-taskfiles"
     fi
-    TIME_DIFF="$(($(date +%s) - "$TASK_UPDATE_TIME"))"
+    # shellcheck disable=SC2004
+    TIME_DIFF="$(($(date +%s) - $TASK_UPDATE_TIME))"
     # Only run if it has been at least 15 minutes since last attempt
     if [ -n "$BOOTSTRAP_EXIT_CODE" ] || [ "$TIME_DIFF" -gt 900 ] || [ "$TIME_DIFF" -lt 5 ] || [ -n "$FORCE_TASKFILE_UPDATE" ]; then
       logger info 'Grabbing latest Taskfiles by downloading shared-master.tar.gz'
@@ -439,7 +441,7 @@ function ensureTaskfiles() {
       else
         mkdir -p .config/taskfiles
         curl -sSL https://gitlab.com/megabyte-labs/common/shared/-/archive/master/shared-master.tar.gz > shared-master.tar.gz
-        tar -xzvf shared-master.tar.gz > /dev/null
+        tar -xzf shared-master.tar.gz > /dev/null
         rm shared-master.tar.gz
         rm -rf .config/taskfiles
         mv shared-master/common/.config/taskfiles .config/taskfiles

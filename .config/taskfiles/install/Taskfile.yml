@@ -133,6 +133,8 @@ tasks:
       - pnpm-lock.yaml
 
   modules:local:sync:
+    deps:
+      - modules:local
     log:
       error: Error while synchronizing `NPM_KEEP_UPDATED` packages with the latest version(s)
       start: Ensuring `NPM_KEEP_UPDATED` NPM packages are the latest version
@@ -261,6 +263,20 @@ tasks:
         else
           .config/log error "System type not recognized"
         fi
+
+  scoop:scan:
+    deps:
+      - :install:software:jq
+    env:
+      TMP:
+        sh: mktemp
+    log:
+      error: Error while extracting Scoop information
+      start: Extracting Scoop information
+      success: Successfully extracted Scoop information
+    cmds:
+      - jq --arg scoops "$(jq -n '[["Project", "Description"], (inputs | ["**[" + .homepage + "](" + .homepage + ")**", .description ])]' Scoops/*.json)"
+        '.scoops = $scoops' .variables.json > "$TMP" && mv "$TMP" .variables.json
 
   tslib:
     vars:

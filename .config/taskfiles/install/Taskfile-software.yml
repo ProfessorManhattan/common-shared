@@ -546,6 +546,16 @@ tasks:
     status:
       - type expect > /dev/null
 
+  fury:
+    run: once
+    cmds:
+      - task: install:software
+        vars:
+          BIN_NAME: fury
+          PACKAGE: gemfury/tap/gemfury
+    status:
+      - type fury > /dev/null
+
   gcc:
     run: once
     cmds:
@@ -596,6 +606,15 @@ tasks:
       - task: common
     status:
       - type git > /dev/null
+
+  git-issue:admin:
+    run: once
+    cmds:
+      - git clone https://github.com/dspinellis/git-issue.git .git-issue
+      - |
+        cd .git-issue
+        sudo make install
+      - rm -rf .git-issue
 
   gitlab-runner:
     run: once
@@ -868,9 +887,22 @@ tasks:
     tags:
       - semantic
     cmds:
+      - task: snapcraft:snap
       - task: install:software
         vars:
           PACKAGE: snapcraft
+    status:
+      - type snapcraft > /dev/null
+
+  snapcraft:snap:
+    log:
+      error: Failed to run `sudo snap install snapcraft --classic`
+      start: Running `sudo snap install snapcraft --classic`
+      success: Successfully installed `snapcraft`
+    cmds:
+      - sudo snap install snapcraft --classic
+    status:
+      - '! type snap > /dev/null'
 
   sshfs:
     run: once
@@ -1035,6 +1067,16 @@ tasks:
       - task: install:software
         vars:
           PACKAGE: aquasecurity/trivy/trivy
+
+  unbuffer:
+    run: once
+    cmds:
+      - task: install:software
+        vars:
+          BIN_NAME: unbuffer
+          PACKAGE: expect
+    status:
+      - type unbuffer > /dev/null
 
   vagrant:
     cmds:

@@ -8,6 +8,7 @@ ansible_variables.json
 .AppleDB
 .AppleDesktop
 .AppleDouble
+artifacts/
 .autodoc/
 *.box
 build/
@@ -48,6 +49,7 @@ htmlcov/
 .hypothesis/
 Icon
 .idea/
+.issues/
 .jest-cache/
 .junit/
 *.launch
@@ -72,6 +74,7 @@ pip-log.txt
 __pycache__/
 .pytest_cache/
 pytestdebug.log
+.release.json
 *.retry
 .sass-cache/
 .settings/
