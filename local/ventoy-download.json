@@ -62,6 +62,13 @@
             "path": "/iso/deepin/deepin-desktop-community-20.5-amd64.iso"
         },
         {
+          "url": "https://atxfiles.netgate.com/mirror/downloads/pfSense-CE-2.6.0-RELEASE-amd64.iso.gz",
+          "url_axel": "https://{atxfiles,sgpfiles,frafiles}.netgate.com/mirror/downloads/pfSense-CE-2.6.0-RELEASE-amd64.iso.gz",
+          "sha256": "941a68c7f20c4b635447cceda429a027f816bdb78d54b8252bb87abf1fc22ee3",
+          "sha256_url": "https://www.pfsense.org/hashes/pfSense-CE-2.6.0-RELEASE-amd64.iso.gz.sha256",
+          "path": "/iso/pfsense/pfsense-2.6.0-amd64.iso"
+        },
+        {
             "url": "https://ftp.qubes-os.org/iso/Qubes-R4.1.0-x86_64.iso",
             "url_axel": "https://{ftp.qubes-os.org,mirrors.edge.kernel.org/qubes,mirror.linux.pizza/qubes-os.org,mirrors.ocf.berkeley.edu/qubes}/iso/Qubes-R4.1.0-x86_64.iso",
             "comment": "more advanced verification details available at https://www.qubes-os.org/downloads/",
@@ -91,10 +98,6 @@
         {
             "url": "https://software.download.prss.microsoft.com/db/Win11_English_x64.iso?t=c15e0cba-9c8d-4984-b30f-43c42425733d&e=1650582458&h=960d57d2c6a0243e32d3106c0d8f82387966ddf9a9bfce82f89e66866457c014",
             "path": "/iso/windows/windows-11.iso"
-        },
-        {
-            "url": "",
-            "path": "/iso/zorin/zorin-amd64.iso"
         }
     ]
 }
