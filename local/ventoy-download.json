@@ -1,8 +1,14 @@
 {
     "distros": [
         {
-          "url_axel": "",
-          "url": ""
+            "url": "https://mirror.arizona.edu/archlinux/iso/2022.04.05/archlinux-2022.04.05-x86_64.iso",
+            "url_axel": "https://{mirror.arizona.edu,mirrors.ocf.berkeley.edu,ftp-nyc.osuosl.org/pub}/archlinux/iso/2022.04.05/archlinux-2022.04.05-x86_64.iso",
+            "md5": "39bab24566003fd8a270eb0865322f85",
+            "md5_url": "https://mirror.arizona.edu/archlinux/iso/2022.04.05/md5sums.txt",
+            "sha256": "5934a1561f33a49574ba8bf6dbbdbd18c933470de4e2f7562bec06d24f73839b",
+            "sha256_url": "https://mirror.arizona.edu/archlinux/iso/2022.04.05/sha256sums.txt",
+            "path": "/iso/archlinux/archlinux-2022.04.05-amd64.iso",
+            "live": true
         },
         {
             "url_axel": "https://{download.fedoraproject.org/pub,mirror.arizona.edu,ftp-nyc.osuosl.org/pub,mirrors.ocf.berkeley.edu}/fedora/linux/releases/35/Server/x86_64/iso/Fedora-Server-dvd-x86_64-35-1.2.iso",
@@ -85,6 +91,10 @@
         {
             "url": "https://software.download.prss.microsoft.com/db/Win11_English_x64.iso?t=c15e0cba-9c8d-4984-b30f-43c42425733d&e=1650582458&h=960d57d2c6a0243e32d3106c0d8f82387966ddf9a9bfce82f89e66866457c014",
             "path": "/iso/windows/windows-11.iso"
+        },
+        {
+            "url": "",
+            "path": "/iso/zorin/zorin-amd64.iso"
         }
     ]
 }
