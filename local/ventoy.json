@@ -1,0 +1,67 @@
+{
+  "control": [
+        { "VTOY_DEFAULT_SEARCH_ROOT": "/iso" },
+        { "VTOY_MENU_TIMEOUT": "30" },
+        { "VTOY_DEFAULT_IMAGE": "/iso/default.iso" }
+    ],
+    "theme": {
+        "file": [
+          "/ventoy/theme/distro-grub-themes/customize/ventoy/theme.txt"
+        ],
+        "default_file": 1,
+        "gfxmode": "1920x1080",
+        "display_mode": "GUI",
+        "serial_param": "--unit=0 --speed=9600",
+        "ventoy_left": "5%",
+        "ventoy_top": "95%",
+        "ventoy_color": "#0000ff",
+        "fonts": [
+            "/ventoy/theme/ventoy/terminus-12.pf2",
+            "/ventoy/theme/ventoy/terminus-14.pf2",
+            "/ventoy/theme/ventoy/terminus-16.pf2",
+            "/ventoy/theme/ventoy/terminus-18.pf2"
+        ]
+    },
+    "auto_install": [
+        {
+            "parent": "/iso/centos",
+            "template": [
+              "/ventoy/scripts/centos/preseed-server.cfg",
+              "/ventoy/scripts/centos/preseed-desktop-minimal.cfg",
+              "/ventoy/scripts/centos/preseed-desktop-full.cfg"
+            ]
+        },
+        {
+          "parent": "/iso/debian",
+          "template": [
+            "/ventoy/scripts/debian/preseed-desktop-minimal.cfg",
+            "/ventoy/scripts/debian/preseed-desktop-full.cfg"
+          ]
+        },
+        {
+          "parent": "/iso/fedora",
+          "template": [
+            "/ventoy/scripts/fedora/kickstart-server.cfg",
+            "/ventoy/scripts/fedora/kickstart-workstation-minimal.cfg",
+            "/ventoy/scripts/fedora/kickstart-workstation-full.cfg"
+          ],
+          "autosel": 3,
+          "timeout": 30
+        },
+        {
+          "parent": "/iso/ubuntu",
+          "template": [
+            "/ventoy/scripts/ubuntu/cloud-config-server",
+            "/ventoy/scripts/ubuntu/cloud-config-desktop-minimal",
+            "/ventoy/scripts/ubuntu/cloud-config-desktop-full"
+          ]
+        },
+        {
+            "parent": "/iso/windows",
+            "template": [
+                "/ventoy/scripts/windows-11-minimal.xml",
+                "/ventoy/scripts/windows-11-full.xml"
+            ]
+        }
+    ]
+}
