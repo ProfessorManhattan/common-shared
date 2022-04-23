@@ -48,6 +48,11 @@
             "live": true
         },
         {
+            "url": "https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_21_x86-64_0.32.023/shredos-2021.08.2_21_x86-64_0.32.023_20220126.iso",
+            "path": "/iso/misc/shredos-amd64.iso",
+            "live": true
+        },
+        {
             "url": "https://iweb.dl.sourceforge.net/project/clonezilla/clonezilla_live_stable/2.8.1-12/clonezilla-live-2.8.1-12-amd64.iso",
             "md5": "65f3ebc0f2e19841bb5b572cbe4b9261",
             "comment": "md5 sum is retrievable from https://clonezilla.org/downloads/stable/checksums.php",
