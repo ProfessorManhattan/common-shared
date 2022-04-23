@@ -19,8 +19,8 @@ tasks:
       - Dockerfile
       - package.json
     preconditions:
-      - sh: test -f Dockerfile || test -f docker-compose.yml || test -f docker-stack.yml
-        msg: A `Dockerfile` is not present in the root of this project! Neither is a `docker-compose.yml` or a `docker-stack.yml` file
+      - sh: test -f Dockerfile
+        msg: A `Dockerfile` is not present in the root of this project!
       - sh: test -f .variables.json
         msg: The `.variables.json` file is not present in the root of this project!
       - sh: test -f package.json

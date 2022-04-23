@@ -295,7 +295,7 @@ tasks:
       - task: start
       - task: all
       - |
-        if [ -f Dockerfile ] || [ -f docker-compose.yml ] || [ -f docker-stack.yml ]; then
+        if [ -f Dockerfile ]; then
           task {{if eq .REPOSITORY_TYPE "docker"}}docker:update:labels{{else}}donothing{{end}}
         fi
 
