@@ -73,6 +73,7 @@
     "**/*.(yml|yaml)": ["task fix:yaml --", "task lint:yaml --"],
     "(Brewfile|composer.lock|Gemfile|Gopkg.lock|Pipfile.lock)": ["task fix:prettier --"],
     "logo.png": ["task image:resize -- 200 200", "task image:compress --"],
+    "logo.(gif|jpg|jpeg|webp)": ["task image:convert:logo --"],
     "Dockerfile": ["task fix:prettier --", "task lint:docker --"],
     "Vagrantfile": ["task fix:prettier --", "task lint:vagrant"]
   },
