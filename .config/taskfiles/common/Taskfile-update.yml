@@ -46,7 +46,7 @@ tasks:
     cmds:
       - mkdir -p docs
       - >
-        {{.NPX_HANDLE}}readme generate --silent --headingPrefix '{}' --config .variables.json
+        readme generate --silent --headingPrefix '{}' --config .variables.json
         --input "{{.CONTRIB_TEMPLATE}}" --output docs/CONTRIBUTING.md
       - task: markdown:scrub
         vars:
@@ -65,21 +65,24 @@ tasks:
         msg: '`@appnest/readme` is not installed globally.'
 
   files:
-    vars:
-      CONTAINER:
-        sh: if [ "{{.DOCKER_ENVIRONMENT}}" == "true" ]; then echo "docker"; fi
-      FIRST_LINE:
-        sh: if [ -f Dockerfile ]; then head -n 1 Dockerfile; fi
+    deps:
+      - files:ansible:keywords:sync
+      - files:dockerignore
+      - files:docs
+      - files:go:dummy
+      - files:husky
+      - files:initctl
     log:
       error: Encountered error while updating miscellaneous files
       start: Updating miscellaneous files
       success: Updated miscellaneous files
+
+  files:ansible:keywords:sync:
     cmds:
-      - |
-        if [ -f initctl ] && [ -f .config/initctl ]; then
-          cp .config/initctl initctl
-          .config/log info 'Ensured that the `initctl` polyfill file is synchronized with the upstream version'
-        fi
+      - task: :{{if eq .REPOSITORY_SUBTYPE "role"}}ansible:keywords:sync{{else}}donothing{{end}}
+
+  files:dockerignore:
+    cmds:
       - |
         if [ -f .dockerignore ]; then
           TMP="$(mktemp)"
@@ -97,8 +100,33 @@ tasks:
             rm .config/dockerignore
           fi
         fi
+
+  files:docs:
+    cmds:
+      - mkdir -p docs/partials && echo '<!-- Add content in this file to include it in automatically generated README.md -->' > docs/partials/guide.md
+    status:
+      - '[ -f docs/partials/guide.md ]'
+
+  files:go:dummy:
+    cmds:
+      - echo -e 'package main\n\nfunc main() {\n}\n' > .config/dummy.go
+    status:
+      - '[ "{{.REPOSITORY_SUBTYPE}}" != "cli" ] || [ "{{.REPOSITORY_TYPE}}" == "go" ]'
+
+  files:husky:
+    vars:
+      CONTAINER:
+        sh: if [ "{{.DOCKER_ENVIRONMENT}}" == "true" ]; then echo "docker"; fi
+    cmds:
       - task: :common:{{if eq .CONTAINER "docker"}}husky:ci{{else}}husky{{end}}
-      - task: :{{if eq .REPOSITORY_SUBTYPE "role"}}ansible:keywords:sync{{else}}donothing{{end}}
+
+  files:initctl:
+    cmds:
+      - |
+        if [ -f initctl ] && [ -f .config/initctl ]; then
+          cp .config/initctl initctl
+          .config/log info 'Ensured that the `initctl` polyfill file is synchronized with the upstream version'
+        fi
 
   finish:
     cmds:
@@ -129,7 +157,7 @@ tasks:
     cmds:
       - |
         if test -f ".config/docs/{{.MAN_TEMPLATE}}"; then
-          {{.NPX_HANDLE}}readme generate --headingPrefix '{}' --silent --config .variables.json --input ".config/docs/{{.MAN_TEMPLATE}}" --output MAN.md
+          readme generate --headingPrefix '{}' --silent --config .variables.json --input ".config/docs/{{.MAN_TEMPLATE}}" --output MAN.md
           {{.NPX_HANDLE}}prettier --write MAN.md > /dev/null
           .config/log info 'Generated MAN.md'
           mkdir -p dist
@@ -187,8 +215,8 @@ tasks:
             git reset --hard HEAD
             git checkout "$DEFAULT_BRANCH"
             git pull origin "$DEFAULT_BRANCH" --ff-only || true
+            cd "$ROOT_DIR"
           done
-          cd "$ROOT_DIR"
           .config/log success 'Ensured submodules in the `.modules` folder are pointing to the master branch'
         fi
     status:
@@ -217,7 +245,7 @@ tasks:
       success: Generated README.md successfully
     cmds:
       - >
-        {{.NPX_HANDLE}}readme generate --headingPrefix '{}' --silent --config .variables.json
+        readme generate --headingPrefix '{}' --silent --config .variables.json
         --input ".config/docs/{{.README_TEMPLATE}}"
       - task: markdown:scrub
         vars:
@@ -266,7 +294,10 @@ tasks:
     cmds:
       - task: start
       - task: all
-      - task: ':{{if eq .REPOSITORY_TYPE "docker"}}docker:update:labels{{else}}donothing{{end}}'
+      - |
+        if [ -f Dockerfile ]; then
+          task {{if eq .REPOSITORY_TYPE "docker"}}docker:update:labels{{else}}donothing{{end}}
+        fi
 
   upstream:remotes:
     deps:

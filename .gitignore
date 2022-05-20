@@ -24,6 +24,7 @@ build/
 *.code-workspace
 .com.apple.timemachine.donotpresent
 common-shared/
+.config/dummy.go
 .config-old/
 connect.lock
 *.cover
@@ -101,6 +102,7 @@ typings/
 .variables.json
 .vault_pass
 .venv/
+.ventoy.json
 venv/
 venv.bak/
 .VolumeIcon.icns
@@ -110,3 +112,4 @@ venv.bak/
 !.vscode/settings.json
 !.vscode/tasks.json
 yarn-error.log
+.yubi.json
