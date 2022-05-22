@@ -30,10 +30,26 @@ tasks:
 
   bw:
     cmds:
-      - task: install:gh
-        vars:
-          BIN_NAME: bw
-          PACKAGE: bitwarden/cli
+      - task: bw:{{OS}}
+    status:
+      - '[ -f ./bin/bw ]'
+
+  bw:darwin:
+    cmds:
+      - gh release download -R bitwarden/cli -p "bw-macos*.zip"
+      - mkdir -p ./bin && unzip bw-macos*.zip -d ./bin && rm -f bw-macos*.zip
+      - chmod +x ./bin/bw
+
+  bw:linux:
+    cmds:
+      - gh release download -R bitwarden/cli -p "bw-linux*.zip"
+      - mkdir -p ./bin && unzip bw-linux*.zip -d ./bin && rm -f bw-linux*.zip
+      - chmod +x ./bin/bw
+
+  bw:windows:
+    cmds:
+      - gh release download -R bitwarden/cli -p "bw-windows*.zip"
+      - md ./bin && unzip bw-windows*.zip -d ./bin && del bw-windows*.zip
 
   croc:
     cmds:
@@ -92,14 +108,6 @@ tasks:
           BIN_NAME: docker-pushrm
           PACKAGE: christian-korneck/docker-pushrm
 
-  docker-slim:
-    cmds:
-      - task: install:gh
-        vars:
-          BIN_NAME: docker-slim
-          PACKAGE: docker-slim/docker-slim
-          TAR_OPTIONS: ' --strip-components 1'
-
   dockle:
     cmds:
       - task: install:gh
@@ -120,7 +128,6 @@ tasks:
         vars:
           BIN_NAME: duf
           PACKAGE: muesli/duf
-          TAR_OPTIONS: ' --strip-components 1'
 
   dust:
     cmds:
@@ -175,6 +182,29 @@ tasks:
           PACKAGE: profclems/glab
           TAR_OPTIONS: ' --strip-components 1'
 
+  hey:
+    cmds:
+      - task: hey:{{OS}}
+    status:
+      - '[ -f ./bin/hey ]'
+
+  hey:darwin:
+    cmds:
+      - mkdir -p ./bin
+      - curl https://hey-release.s3.us-east-2.amazonaws.com/hey_darwin_amd64 -o ./bin/hey
+      - chmod +x ./bin/hey
+
+  hey:linux:
+    cmds:
+      - mkdir -p ./bin
+      - curl https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64 -o ./bin/hey
+      - chmod +x ./bin/hey
+
+  hey:windows:
+    cmds:
+      - mkdir -p ./bin
+      - curl https://hey-release.s3.us-east-2.amazonaws.com/hey_windows_amd64 -o ./bin/hey
+
   install:gh:
     deps:
       - :install:software:gh
@@ -184,15 +214,80 @@ tasks:
           BIN_NAME: '{{.BIN_NAME}}'
           PACKAGE: '{{.PACKAGE}}'
           TAR_OPTIONS: '{{.TAR_OPTIONS}}'
+          ZIP_OPTIONS: '{{.ZIP_OPTIONS}}'
 
   install:gh:darwin:
     deps:
       - :install:software:gh
+    vars:
+      BIN_FOLDER:
+        sh: echo "${PWD}/bin"
+      LOG_SCRIPT:
+        sh: echo "${PWD}/.config/log"
+      PATTERNS:
+        sh: |-
+          if [[ {{ARCH}} == "arm" ]]; then
+            echo "-p \"*Darwin_arm64\" -p \"*Darwin_arm64.tar.gz\" -p \"*darwin_arm64\" -p \"*darwin_arm64.tar.gz\" -p \"*darwin-arm64.tar.gz\" \
+              -p \"*darwin-arm64\" -p \"*Darwin-64bit.tar.gz\" -p \"*darwin_x64.tar.gz\" -p \"*darwin.tar.gz\" -p \"*macOS-ARM64.tar.gz\" \
+              -p \"*aarch64-apple-darwin.zip\" -p \"*-macos\" -p \"*darwin_arm64.zip\""
+          else
+            echo "-p \"*Darwin_x86_64\" -p \"*Darwin_x86_64.tar.gz\" -p \"*Darwin_amd64.tar.gz\" -p \"*darwin_amd64\" -p \"*darwin_amd64.tar.gz\" \
+            -p \"*darwin-amd64.tar.gz\" -p \"*darwin-amd64\" -p \"*Darwin-64bit.tar.gz\" -p \"*darwin-x64\" -p \"*darwin_x64.tar.gz\" \
+            -p \"*darwin-x86_64\" -p \"*darwin_x86_64.tar.gz\" -p \"*darwin.tar.gz\" -p \"*macOS-64bit.tar.gz\" -p \"*x86_64-apple-darwin.zip\" \
+            -p \"*-macos\" -p \"*macOS_amd64.tar.gz\" -p \"*macOS_x86_64.tar.gz\" -p \"*darwin_amd64.zip\""
+          fi
     env:
       TMP:
         sh: mktemp -d
     cmds:
-      - echo TODO
+      - gh release download -R "{{.PACKAGE}}" {{.PATTERNS}} -D "$TMP"
+      - |
+        cd "$TMP"
+        COUNT=0
+        while read FILE; do
+          COUNT=$((COUNT + 1))
+          if [ "$COUNT" == "1" ]; then
+            if [[ "$FILE" == *.tar.gz ]]; then
+              tar -xzf "$FILE"{{.TAR_OPTIONS}}
+              #rm "$FILE"
+            elif [[ "$FILE" == *.zip ]]; then
+              unzip{{.ZIP_OPTIONS}} "$FILE"
+              #rm "$FILE"
+            fi
+          else
+            {{.LOG_SCRIPT}} warn 'Multiple releases have possibly been downloaded'
+          fi
+        done < <(find . -type f)
+        pwd
+        ls -la
+        rm -rf CHANGELOG.md LICENSE LICENSE* README.md autocomplete completion* *.1 *.sh *_autocomplete contrib Changes manpages
+        mkdir -p {{.BIN_FOLDER}}
+        if [ "$(ls 2>/dev/null * | wc -l | tr -d ' ')" == "1" ]; then
+          {{.LOG_SCRIPT}} info 'Moving `{{.BIN_NAME}}` from its default location'
+          mv * {{.BIN_FOLDER}}/{{.BIN_NAME}}
+        else
+          if [ -d bin ]; then
+            cd bin
+            if [ "$(ls 2>/dev/null * | wc -l | tr -d ' ')" == "1" ]; then
+              {{.LOG_SCRIPT}} info 'Moving `{{.BIN_NAME}}` from the `bin` folder'
+              mv * {{.BIN_FOLDER}}/{{.BIN_NAME}}
+            else
+              {{.LOG_SCRIPT}} warn 'Unmatched binary named `{{.BIN_NAME}}` from `*.tar.gz` with a `bin` folder'
+              {{.COMMANDS}}
+            fi
+            cd ..
+          elif [ "$(ls 2>/dev/null {{.BIN_NAME}} | wc -l | tr -d ' ')" == "1" ]; then
+            {{.LOG_SCRIPT}} warn 'Moving `{{.BIN_NAME}}` from its default location, but, there are other files that are not moved'
+            mv {{.BIN_NAME}} {{.BIN_FOLDER}}/{{.BIN_NAME}}
+          else
+            echo "$(ls 2>/dev/null {{.BIN_NAME}} | wc -l | tr -d ' ')"
+            {{.LOG_SCRIPT}} warn 'Unmatched binary named `{{.BIN_NAME}}`'
+            {{.COMMANDS}}
+          fi
+        fi
+      - chmod +x {{.BIN_FOLDER}}/{{.BIN_NAME}}
+    status:
+      - '[ -f ./bin/{{.BIN_NAME}} ]'
 
   install:gh:linux:
     deps:
@@ -202,7 +297,7 @@ tasks:
         sh: echo "${PWD}/bin"
       LOG_SCRIPT:
         sh: echo "${PWD}/.config/log"
-      PATTERNS: -p "*Linux_x86_64" -p "*Linux_x86_64.tar.gz" -p "*Linux_amd64.tar.gz" -p "*linux_amd64" -p "*linux_amd64.tar.gz"
+      PATTERNS: -p "*Linux_x86_64" -p "*Linux_x86_64.tar.gz" -p "*Linux_amd64.tar.gz" -p "*linux_amd64" -p "*linux_amd64.tar.gz" -p "*linux-amd64.tar.gz"
         -p "*linux-amd64" -p "*Linux-64bit.tar.gz" -p "*linux-x64" -p "*linux_x64.tar.gz" -p "*linux-x86_64" -p "*linux_x86_64.tar.gz"
       PATTERNS_GNU: -p "*x86_64-unknown-linux-gnu.tar.gz" -p "*x86_64-unknown-linux-gnu.zip"
       PATTERNS_MUSL: -p "*x86_64-unknown-linux-musl.tar.gz"
@@ -210,7 +305,6 @@ tasks:
       TMP:
         sh: mktemp -d
     cmds:
-      - mkdir -p {{.BIN_FOLDER}}
       - gh release download -R "{{.PACKAGE}}" {{.PATTERNS}} {{.PATTERNS_GNU}} -D "$TMP"
       - |
         cd "$TMP"
@@ -222,7 +316,7 @@ tasks:
               tar -xzf "$FILE"{{.TAR_OPTIONS}}
               rm "$FILE"
             elif [[ "$FILE" == *.zip ]]; then
-              unzip "$FILE"
+              unzip{{.ZIP_OPTIONS}} "$FILE"
               rm "$FILE"
             fi
           else
@@ -230,7 +324,8 @@ tasks:
           fi
         done < <(find . -type f)
         ls -la
-        rm -rf CHANGELOG.md LICENSE LICENSE* README.md autocomplete completion *.1 *.sh *_autocomplete contrib
+        rm -rf CHANGELOG.md LICENSE LICENSE* README.md autocomplete completion* *.1 *.sh *_autocomplete contrib Changes manpages
+        mkdir -p {{.BIN_FOLDER}}
         if [ "$(ls 2>/dev/null * | wc -l)" == "1" ]; then
           {{.LOG_SCRIPT}} info 'Moving `{{.BIN_NAME}}` from its default location'
           mv * {{.BIN_FOLDER}}/{{.BIN_NAME}}
@@ -245,6 +340,9 @@ tasks:
               {{.COMMANDS}}
             fi
             cd ..
+          elif [ "$(ls 2>/dev/null {{.BIN_NAME}} | wc -l)" == "1" ]; then
+            {{.LOG_SCRIPT}} warn 'Moving `{{.BIN_NAME}}` from its default location, but, there are other files that are not moved'
+            mv {{.BIN_NAME}} {{.BIN_FOLDER}}/{{.BIN_NAME}}
           else
             {{.LOG_SCRIPT}} warn 'Unmatched binary named `{{.BIN_NAME}}`'
             {{.COMMANDS}}
@@ -265,10 +363,26 @@ tasks:
 
   jq:
     cmds:
-      - task: install:gh
-        vars:
-          BIN_NAME: jq
-          PACKAGE: stedolan/jq
+      - task: jq:{{OS}}
+    status:
+      - '[ -f ./bin/jq ]'
+
+  jq:darwin:
+    cmds:
+      - gh release download -R stedolan/jq -p "jq-osx-amd64"
+      - mkdir -p ./bin && mv jq-osx-amd64 ./bin/jq
+      - chmod +x ./bin/jq
+
+  jq:linux:
+    cmds:
+      - gh release download -R stedolan/jq -p "jq-linux64"
+      - mkdir -p ./bin && mv jq-linux64 ./bin/jq
+      - chmod +x ./bin/jq
+
+  jq:windows:
+    cmds:
+      - gh release download -R stedolan/jq -p "jq-win64.exe"
+      - md ./bin && mv jq-win64.exe ./bin/jq.exe
 
   kubectx:
     cmds:
@@ -304,13 +418,15 @@ tasks:
         vars:
           BIN_NAME: peco
           PACKAGE: peco/peco
+          TAR_OPTIONS: ' --strip-components 1'
+          ZIP_OPTIONS: ' -j'
 
   shfmt:
     cmds:
       - task: install:gh
         vars:
           BIN_NAME: shfmt
-          PACKAGE: mvdan/shfmt
+          PACKAGE: mvdan/sh
 
   task:
     cmds:
@@ -357,15 +473,45 @@ tasks:
 
   ventoy:
     cmds:
-      - gh release download -R ventoy/Ventoy -p "*linux.tar.gz"
-      - mkdir -p ./bin && mv ./ventoy-*/VentoyGUI.x86_64 ./bin/ventoy
-      - chmod +x ./bin/ventoy
+      - task: ventoy:{{OS}}
     status:
-      - '[ -f ./bin/ventoy ]'
+      - '[ -f ./bin/ventoy-*/VentoyGUI.x86_64 ]'
+
+  ventoy:darwin:
+    cmds:
+      - echo "Ventoy is not available for MacOS"
+
+  ventoy:linux:
+    cmds:
+      - gh release download -R ventoy/Ventoy -p "*linux.tar.gz"
+      - ls *linux.tar.gz | xargs tar -xvf
+      - rm -f *.tar.gz
+      - mkdir -p ./bin && mv ./ventoy-* ./bin/
+
+  ventoy:windows:
+    cmds:
+      - gh release download -R mikefarah/ventoy -p "ventoy_windows_amd64.exe"
+      - md ./bin && mv ventoy_windows_amd64.exe ./bin/ventoy.exe
 
   yq:
     cmds:
-      - task: install:gh
-        vars:
-          BIN_NAME: yq
-          PACKAGE: mikefarah/yq
+      - task: yq:{{OS}}
+    status:
+      - '[ -f ./bin/yq ]'
+
+  yq:darwin:
+    cmds:
+      - gh release download -R mikefarah/yq -p "yq_darwin_amd64"
+      - mkdir -p ./bin && mv yq_darwin_amd64 ./bin/yq
+      - chmod +x ./bin/yq
+
+  yq:linux:
+    cmds:
+      - gh release download -R mikefarah/yq -p "yq_linux_amd64"
+      - mkdir -p ./bin && mv yq_linux_amd64 ./bin/yq
+      - chmod +x ./bin/yq
+
+  yq:windows:
+    cmds:
+      - gh release download -R mikefarah/yq -p "yq_windows_amd64.exe"
+      - md ./bin && mv yq_windows_amd64.exe ./bin/yq.exe
