@@ -20,6 +20,13 @@ tasks:
           BIN_NAME: act
           PACKAGE: nektos/act
 
+  askgit:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: askgit
+          PACKAGE: askgitdev/askgit
+
   bat:
     cmds:
       - task: install:gh
@@ -27,6 +34,39 @@ tasks:
           BIN_NAME: bat
           PACKAGE: sharkdp/bat
           TAR_OPTIONS: ' --strip-components 1'
+
+  betwixt:
+    cmds:
+      - task: betwixt:{{OS}}
+
+  betwixt:darwin:
+    cmds:
+      - gh release download -R kdzwinel/betwixt -p "*darwin-x64.zip"
+      - unzip Betwixt-linux-x64.zip
+      - mv Betwixt-linux-x64 /Applications
+    status:
+      - '[ -f /Applications/Betwixt-linux-x64 ]'
+
+  betwixt:linux:
+    cmds:
+      - gh release download -R kdzwinel/betwixt -p "*linux-x64.zip"
+      - unzip Betwixt-linux-x64.zip
+      - mv Betwixt-linux-x64 /opt
+      - ln -s /opt/Betwixt-linux-x64/Betwixt /usr/local/bin/betwixt
+    status:
+      - '[ -f /opt/Betwixt-linux-x64/Betwixt ]'
+
+  betwixt:windows:
+    cmds:
+      - gh release download -R kdzwinel/betwixt -p "win32-x64.zip"
+      - unzip Betwixt-linux-x64.zip
+
+  bivac:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: bivac
+          PACKAGE: camptocamp/bivac
 
   bw:
     cmds:
@@ -51,6 +91,33 @@ tasks:
       - gh release download -R bitwarden/cli -p "bw-windows*.zip"
       - md ./bin && unzip bw-windows*.zip -d ./bin && del bw-windows*.zip
 
+  cerebro:
+    cmds:
+      - task: cerebro:{{OS}}
+
+  cerebro:darwin:
+    cmds:
+      - echo 'Install Cerebro using Homebrew.'
+
+  cerebro:linux:
+    cmds:
+      - task: install:appimage
+        vars:
+          DEST_APPIMAGE_NAME: Cerebro
+          PACKAGE: cerebroapp/cerebro
+
+  cerebro:windows:
+    cmds:
+      - echo 'Cerebro is not available for Windows.'
+
+  consul-cli:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: consul-cli
+          PACKAGE: mantl/consul-cli
+          TAR_OPTIONS: ' --strip-components 1'
+
   croc:
     cmds:
       - task: install:gh
@@ -65,12 +132,24 @@ tasks:
           BIN_NAME: ctop
           PACKAGE: bcicen/ctop
 
+  cumulus:
+    cmds:
+      - echo 'Cerebro is available only for MacOS, install using Homebrew.'
+
   dasel:
     cmds:
       - task: install:gh
         vars:
           BIN_NAME: dasel
           PACKAGE: TomWright/dasel
+
+  dat:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: dat
+          PACKAGE: dat-ecosystem-archive/dat
+          ZIP_OPTIONS: ' -j'
 
   delta:
     cmds:
@@ -86,6 +165,13 @@ tasks:
         vars:
           BIN_NAME: deno
           PACKAGE: denoland/deno
+
+  deta:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: deta
+          PACKAGE: deta/deta-cli
 
   direnv:
     cmds:
@@ -144,6 +230,13 @@ tasks:
           BIN_NAME: fd
           PACKAGE: sharkdp/fd
           TAR_OPTIONS: ' --strip-components 1'
+  # Fails with the error HTTP 404: Not Found (https://api.github.com/repos/henryboldi/felony/releases/latest) because there is no 'latest' release
+  # felony:
+  #   cmds:
+  #     - task: install:gh
+  #       vars:
+  #         BIN_NAME: felony
+  #         PACKAGE: henryboldi/felony
 
   ffsend:
     cmds:
@@ -152,12 +245,45 @@ tasks:
           BIN_NAME: ffsend
           PACKAGE: timvisee/ffsend
 
+  fuego:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: fuego
+          PACKAGE: sgarciac/fuego
+          TAR_OPTIONS: ' --strip-components 1'
+
   fusion:
     cmds:
       - task: install:gh
         vars:
           BIN_NAME: fusion
           PACKAGE: edgelaboratories/fusion
+
+  ganache:
+    cmds:
+      - task: ganache:{{OS}}
+
+  ganache:darwin:
+    cmds:
+      - task: install:dmg
+        vars:
+          DMG_NAME: Ganache
+          PACKAGE: trufflesuite/ganache-ui
+
+  ganache:linux:
+    cmds:
+      - task: install:appimage
+        vars:
+          DEST_APPIMAGE_NAME: Ganache
+          PACKAGE: trufflesuite/ganache-ui
+
+  ganache:windows:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: Ganache
+          PACKAGE: trufflesuite/ganache-ui
 
   gh:
     cmds:
@@ -167,12 +293,44 @@ tasks:
           PACKAGE: cli/cli
           TAR_OPTIONS: ' --strip-components 1'
 
+  gitify:
+    cmds:
+      - task: gitify:{{OS}}
+
+  gitify:darwin:
+    cmds:
+      - task: install:dmg
+        vars:
+          DMG_NAME: gitify
+          PACKAGE: manosim/gitify
+
+  gitify:linux:
+    cmds:
+      - task: install:appimage
+        vars:
+          DEST_APPIMAGE_NAME: Gitify
+          PACKAGE: manosim/gitify
+
+  gitify:windows:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: gitify
+          PACKAGE: manosim/gitify
+
   gitleaks:
     cmds:
       - task: install:gh
         vars:
           BIN_NAME: gitleaks
           PACKAGE: zricethezav/gitleaks
+
+  gitomatic:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: gitomatic
+          PACKAGE: muesli/gitomatic
 
   glab:
     cmds:
@@ -216,12 +374,47 @@ tasks:
           TAR_OPTIONS: '{{.TAR_OPTIONS}}'
           ZIP_OPTIONS: '{{.ZIP_OPTIONS}}'
 
+  install:dmg:
+    vars:
+      LOG_SCRIPT:
+        sh: echo "${PWD}/.config/log"
+    cmds:
+      - gh release download -R '{{.PACKAGE}}' -p "*(64)*.dmg"
+      - |
+        if (type sudo &> /dev/null && sudo -n true); then
+          COUNT=0
+          while read FILE; do
+            COUNT=$((COUNT + 1))
+            if [ "$COUNT" == "1" ]; then
+              sudo hdiutil attach "$FILE" -nobrowse -mountpoint /tmp/{{.DMG_NAME}}
+              mv /tmp/{{.DMG_NAME}}/*.app /Applications/
+              sudo hdiutil detach /tmp/{{.DMG_NAME}}
+              rm "$FILE"
+            else
+              {{.LOG_SCRIPT}} warn 'Multiple releases have possibly been downloaded'
+            fi
+          done < <(find . -type f)
+        else
+          {{.LOG_SCRIPT}} warn 'Run with sudo privileges to install DMG files'
+        fi
+    status:
+      - '[ -f /Applications/{{.DMG_NAME}}.app ]'
+
+  install:appimage:
+    cmds:
+      - gh release download -R '{{.PACKAGE}}' -p "*.AppImage"
+      - mv *.AppImage /opt/{{.DEST_APPIMAGE_NAME}}.AppImage
+      - chmod +x /opt/{{.DEST_APPIMAGE_NAME}}.AppImage
+      - ln -s /opt/{{.DEST_APPIMAGE_NAME}}.AppImage /usr/local/bin/{{.DEST_APPIMAGE_NAME}}
+    status:
+      - '[ -f /opt/{{.DEST_APPIMAGE_NAME}}.AppImage ]'
+
   install:gh:darwin:
     deps:
       - :install:software:gh
     vars:
       BIN_FOLDER:
-        sh: echo "${PWD}/bin"
+        sh: echo "/usr/local/bin"
       LOG_SCRIPT:
         sh: echo "${PWD}/.config/log"
       PATTERNS:
@@ -229,12 +422,12 @@ tasks:
           if [[ {{ARCH}} == "arm" ]]; then
             echo "-p \"*Darwin_arm64\" -p \"*Darwin_arm64.tar.gz\" -p \"*darwin_arm64\" -p \"*darwin_arm64.tar.gz\" -p \"*darwin-arm64.tar.gz\" \
               -p \"*darwin-arm64\" -p \"*Darwin-64bit.tar.gz\" -p \"*darwin_x64.tar.gz\" -p \"*darwin.tar.gz\" -p \"*macOS-ARM64.tar.gz\" \
-              -p \"*aarch64-apple-darwin.zip\" -p \"*-macos\" -p \"*darwin_arm64.zip\""
+              -p \"*aarch64-apple-darwin.zip\" -p \"*-macos\" -p \"*darwin_arm64.zip\" -p \"*arm64-darwin.zip\""
           else
             echo "-p \"*Darwin_x86_64\" -p \"*Darwin_x86_64.tar.gz\" -p \"*Darwin_amd64.tar.gz\" -p \"*darwin_amd64\" -p \"*darwin_amd64.tar.gz\" \
-            -p \"*darwin-amd64.tar.gz\" -p \"*darwin-amd64\" -p \"*Darwin-64bit.tar.gz\" -p \"*darwin-x64\" -p \"*darwin_x64.tar.gz\" \
+            -p \"*darwin-amd64.tar.gz\" -p \"*darwin-amd64\" -p \"*Darwin-64bit.tar.gz\" -p \"*darwin-x64\" -p \"*darwin_x64.tar.gz\" -p \"*MacOS_64-bit.tar.gz\" \
             -p \"*darwin-x86_64\" -p \"*darwin_x86_64.tar.gz\" -p \"*darwin.tar.gz\" -p \"*macOS-64bit.tar.gz\" -p \"*x86_64-apple-darwin.zip\" \
-            -p \"*-macos\" -p \"*macOS_amd64.tar.gz\" -p \"*macOS_x86_64.tar.gz\" -p \"*darwin_amd64.zip\""
+            -p \"*-macos\" -p \"*macOS_amd64.tar.gz\" -p \"*macOS_x86_64.tar.gz\" -p \"*darwin_amd64.zip\" -p \"*macos-x64.zip\" -p \"*x86_64-darwin.zip\""
           fi
     env:
       TMP:
@@ -249,10 +442,10 @@ tasks:
           if [ "$COUNT" == "1" ]; then
             if [[ "$FILE" == *.tar.gz ]]; then
               tar -xzf "$FILE"{{.TAR_OPTIONS}}
-              #rm "$FILE"
+              rm "$FILE"
             elif [[ "$FILE" == *.zip ]]; then
               unzip{{.ZIP_OPTIONS}} "$FILE"
-              #rm "$FILE"
+              rm "$FILE"
             fi
           else
             {{.LOG_SCRIPT}} warn 'Multiple releases have possibly been downloaded'
@@ -294,11 +487,12 @@ tasks:
       - :install:software:gh
     vars:
       BIN_FOLDER:
-        sh: echo "${PWD}/bin"
+        sh: echo "/usr/local/bin"
       LOG_SCRIPT:
         sh: echo "${PWD}/.config/log"
       PATTERNS: -p "*Linux_x86_64" -p "*Linux_x86_64.tar.gz" -p "*Linux_amd64.tar.gz" -p "*linux_amd64" -p "*linux_amd64.tar.gz" -p "*linux-amd64.tar.gz"
-        -p "*linux-amd64" -p "*Linux-64bit.tar.gz" -p "*linux-x64" -p "*linux_x64.tar.gz" -p "*linux-x86_64" -p "*linux_x86_64.tar.gz"
+        -p "*linux-amd64" -p "*Linux-64bit.tar.gz" -p "*linux-x64" -p "*linux_x64.tar.gz" -p "*linux-x86_64" -p "*linux_x86_64.tar.gz" -p "*linux_amd64.zip"
+        -p "*linux-x64.zip" -p "*linux-x64.tar.gz" -p "*x86_64-linux.zip" -p "*Linux_64-bit.tar.gz" -p "*linux-amd64.zip"
       PATTERNS_GNU: -p "*x86_64-unknown-linux-gnu.tar.gz" -p "*x86_64-unknown-linux-gnu.zip"
       PATTERNS_MUSL: -p "*x86_64-unknown-linux-musl.tar.gz"
     env:
@@ -350,7 +544,7 @@ tasks:
         fi
       - chmod +x {{.BIN_FOLDER}}/{{.BIN_NAME}}
     status:
-      - '[ -f ./bin/{{.BIN_NAME}} ]'
+      - '[ -f {{.BIN_FOLDER}}/{{.BIN_NAME}} ]'
 
   install:gh:windows:
     deps:
@@ -358,8 +552,36 @@ tasks:
     env:
       TMP:
         sh: mktemp -d
+      PATTERNS: -p "*x86_64-windows.zip" -p "*Windows_64-bit.tar.gz"
     cmds:
       - echo TODO
+
+  jitsi-meet-electron:
+    cmds:
+      - task: jitsi-meet-electron:{{OS}}
+    status:
+      - '[ -f /usr/local/bin/jitsi-meet-electron ]'
+
+  jitsi-meet-electron:darwin:
+    cmds:
+      - task: install:dmg
+        vars:
+          DMG_NAME: jitsi-meet
+          PACKAGE: jitsi/jitsi-meet-electron
+
+  jitsi-meet-electron:linux:
+    cmds:
+      - gh release download -R jitsi/jitsi-meet-electron -p "*.AppImage"
+      - mv *.AppImage /opt/jitsi-meet.AppImage
+      - chmod +x /opt/jitsi-meet.AppImage
+      - ln -s /opt/jitsi-meet.AppImage /usr/local/bin/jitsi-meet-electron
+
+  jitsi-meet-electron:windows:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: jitsi-meet
+          PACKAGE: jitsi/jitsi-meet-electron
 
   jq:
     cmds:
@@ -391,12 +613,129 @@ tasks:
           BIN_NAME: kubectx
           PACKAGE: ahmetb/kubectx
 
+  kubenav:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: kubenav
+          PACKAGE: kubenav/kubenav
+
+  linuxkit:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: linuxkit
+          PACKAGE: linuxkit/linuxkit
+
+  manta:
+    cmds:
+      - task: manta:{{OS}}
+
+  manta:darwin:
+    cmds:
+      - task: install:dmg
+        vars:
+          DMG_NAME: Manta
+          PACKAGE: hql287/manta
+
+  manta:linux:
+    cmds:
+      - task: install:appimage
+        vars:
+          DEST_APPIMAGE_NAME: Manta
+          PACKAGE: hql287/manta
+
+  manta:windows:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: Manta
+          PACKAGE: hql287/manta
+
+  mark-text:
+    cmds:
+      - task: marktext:{{OS}}
+
+  marktext:darwin:
+    cmds:
+      - echo 'Install Marktext using Homebrew.'
+
+  marktext:linux:
+    cmds:
+      - task: install:appimage
+        vars:
+          DEST_APPIMAGE_NAME: Marktext
+          PACKAGE: marktext/marktext
+
+  marktext:windows:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: marktext
+          PACKAGE: marktext/marktext
+
+  masscode:
+    cmds:
+      - task: masscode:{{OS}}
+    status:
+      - '[ -f /usr/local/bin/masscode ]'
+
+  masscode:darwin:
+    cmds:
+      - echo 'Install MassCode using Homebrew.'
+
+  masscode:linux:
+    cmds:
+      - task: install:appimage
+        vars:
+          DEST_APPIMAGE_NAME: MassCode
+          PACKAGE: antonreshetov/masscode
+
+  masscode:windows:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: masscode
+          PACKAGE: antonreshetov/masscode
+
+  mergestat:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: mergestat
+          PACKAGE: mergestat/mergestat
+
   mkcert:
     cmds:
       - task: install:gh
         vars:
           BIN_NAME: mkcert
           PACKAGE: FiloSottile/mkcert
+
+  motrix:
+    cmds:
+      - task: motrix:{{OS}}
+
+  motrix:darwin:
+    cmds:
+      - task: install:dmg
+        vars:
+          DMG_NAME: Motrix
+          PACKAGE: agalwood/motrix
+
+  motrix:linux:
+    cmds:
+      - task: install:appimage
+        vars:
+          DEST_APPIMAGE_NAME: Motrix
+          PACKAGE: agalwood/motrix
+
+  motrix:windows:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: Motrix
+          PACKAGE: agalwood/motrix
 
   nfpm:
     cmds:
@@ -412,6 +751,36 @@ tasks:
           BIN_NAME: oq
           PACKAGE: Blacksmoke16/oq
 
+  osquery:
+    cmds:
+      - task: osquery:{{OS}}
+
+  osquery:darwin:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: osquery
+          PACKAGE: osquery/osquery
+
+  osquery:linux:
+    env:
+      TMP:
+        sh: mktemp -d
+    cmds:
+      - gh release download -R osquery/osquery -p "*linux_x86_64.tar.gz" -D "$TMP"
+      - |
+        cd "$TMP"
+        FILE=$(find . -type f)
+        tar -xzf "$FILE"
+        rm "$FILE"
+        cp -r * /
+    status:
+      - '[ -f /usr/bin/osqueryd]'
+
+  osquery:windows:
+    cmds:
+      - echo 'osquery is not available for Windows.'
+
   peco:
     cmds:
       - task: install:gh
@@ -421,12 +790,129 @@ tasks:
           TAR_OPTIONS: ' --strip-components 1'
           ZIP_OPTIONS: ' -j'
 
+  responsively:
+    cmds:
+      - task: responsively:{{OS}}
+
+  responsively:darwin:
+    cmds:
+      - task: install:dmg
+        vars:
+          DMG_NAME: ResponsivelyApp
+          PACKAGE: responsively-org/responsively-app
+
+  responsively:linux:
+    cmds:
+      - task: install:appimage
+        vars:
+          DEST_APPIMAGE_NAME: Responsively
+          PACKAGE: responsively-org/responsively-app
+
+  responsively:windows:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: ResponsivelyApp
+          PACKAGE: responsively-org/responsively-app
+
+  runjs:
+    cmds:
+      - task: runjs:{{OS}}
+
+  runjs:darwin:
+    cmds:
+      - task: install:dmg
+        vars:
+          DMG_NAME: runjs
+          PACKAGE: lukehaas/RunJS
+
+  runjs:linux:
+    cmds:
+      - task: install:appimage
+        vars:
+          DEST_APPIMAGE_NAME: RunJS
+          PACKAGE: lukehaas/RunJS
+
+  runjs:windows:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: runjs
+          PACKAGE: lukehaas/RunJS
+
   shfmt:
     cmds:
       - task: install:gh
         vars:
           BIN_NAME: shfmt
           PACKAGE: mvdan/sh
+
+  ssl-proxy:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: ssl-proxy
+          PACKAGE: suyashkumar/ssl-proxy
+
+  switchhosts:
+    cmds:
+      - task: switchhosts:{{OS}}
+
+  switchhosts:darwin:
+    cmds:
+      - task: install:dmg
+        vars:
+          DMG_NAME: SwitchHosts
+          PACKAGE: oldj/SwitchHosts
+
+  switchhosts:linux:
+    cmds:
+      - task: install:appimage
+        vars:
+          DEST_APPIMAGE_NAME: SwitchHosts
+          PACKAGE: oldj/SwitchHosts
+
+  switchhosts:windows:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: SwitchHosts
+          PACKAGE: oldj/SwitchHosts
+
+  tabby:
+    cmds:
+      - task: tabby:{{OS}}
+
+  tabby:darwin:
+    cmds:
+      - task: install:dmg
+        vars:
+          DMG_NAME: tabby
+          PACKAGE: Eugeny/tabby
+
+  tabby:linux:
+    env:
+      TMP:
+        sh: mktemp -d
+    cmds:
+      - gh release download -R Eugeny/tabby -p "*linux-x64.tar.gz" -D "$TMP"
+      - |
+        cd "$TMP"
+        FILE=$(find . -type f)
+        mkdir Tabby
+        tar -xzf "$FILE" -C Tabby --strip-components 1
+        rm "$FILE"
+        mv Tabby /opt/
+        ln -s /opt/Tabby/tabby /usr/local/bin/tabby
+    status:
+      - '[ -f /usr/local/bin/tabby]'
+
+  tabby:windows:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: tabby
+          PACKAGE: jackd248/tabby
 
   task:
     cmds:
@@ -435,6 +921,39 @@ tasks:
           BIN_NAME: task
           PACKAGE: go-task/task
 
+  temps:
+    cmds:
+      - task: temps:{{OS}}
+
+  temps:darwin:
+    cmds:
+      - task: install:dmg
+        vars:
+          DMG_NAME: Temps
+          PACKAGE: jackd248/temps
+
+  temps:linux:
+    env:
+      TMP:
+        sh: mktemp -d
+    cmds:
+      - gh release download -R jackd248/temps -p "*linux-x64.zip" -D "$TMP"
+      - |
+        cd "$TMP"
+        unzip "Temps-linux-x64.zip"
+        rm "Temps-linux-x64.zip"
+        mv Temps-linux-x64 /opt/
+        ln -s /opt/Temps-linux-x64/Temps /usr/local/bin/Temps
+    status:
+      - '[ -f /usr/local/bin/Temps]'
+
+  temps:windows:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: Temps
+          PACKAGE: jackd248/temps
+
   tokei:
     cmds:
       - task: install:gh
@@ -442,12 +961,44 @@ tasks:
           BIN_NAME: tokei
           PACKAGE: XAMPPRocky/tokei
 
+  transfer:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: transfer
+          PACKAGE: rinetd/transfer
+
   trivy:
     cmds:
       - task: install:gh
         vars:
           BIN_NAME: trivy
           PACKAGE: aquasecurity/trivy
+
+  udemy-downloader-gui:
+    cmds:
+      - task: udemy-downloader-gui:{{OS}}
+
+  udemy-downloader-gui:darwin:
+    cmds:
+      - task: install:dmg
+        vars:
+          DMG_NAME: udemy-downloader-gui
+          PACKAGE: FaisalUmair/udemy-downloader-gui
+
+  udemy-downloader-gui:linux:
+    cmds:
+      - task: install:appimage
+        vars:
+          DEST_APPIMAGE_NAME: UdemyDownloadedGUI
+          PACKAGE: FaisalUmair/udemy-downloader-gui
+
+  udemy-downloader-gui:windows:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: udemy-downloader-gui
+          PACKAGE: FaisalUmair/udemy-downloader-gui
 
   up:
     cmds:
@@ -490,8 +1041,42 @@ tasks:
 
   ventoy:windows:
     cmds:
-      - gh release download -R mikefarah/ventoy -p "ventoy_windows_amd64.exe"
+      - gh release download -R ventoy/ventoy -p "ventoy_windows_amd64.exe"
       - md ./bin && mv ventoy_windows_amd64.exe ./bin/ventoy.exe
+
+  webtorrent:
+    cmds:
+      - task: webtorrent:{{OS}}
+
+  webtorrent:darwin:
+    cmds:
+      - task: install:dmg
+        vars:
+          DMG_NAME: WebTorrent
+          PACKAGE: webtorrent/webtorrent-desktop
+
+  webtorrent:linux:
+    env:
+      TMP:
+        sh: mktemp -d
+    cmds:
+      - gh release download -R webtorrent/webtorrent-desktop -p "*linux-x64.zip" -D "$TMP"
+      - |
+        cd "$TMP"
+        FILE=$(find . -type f)
+        unzip $FILE
+        rm "$FILE"
+        mv WebTorrent-linux-x64 /opt/
+        ln -s /opt/WebTorrent-linux-x64/WebTorrent /usr/local/bin/webtorrent
+    status:
+      - '[ -f /usr/local/bin/webtorrent]'
+
+  webtorrent:windows:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: WebTorrent
+          PACKAGE: webtorrent/webtorrent-desktop
 
   yq:
     cmds:
