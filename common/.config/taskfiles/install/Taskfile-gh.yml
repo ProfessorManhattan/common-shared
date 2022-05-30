@@ -42,15 +42,16 @@ tasks:
   betwixt:darwin:
     cmds:
       - gh release download -R kdzwinel/betwixt -p "*darwin-x64.zip"
-      - unzip Betwixt-linux-x64.zip
-      - mv Betwixt-linux-x64 /Applications
+      - unzip -q Betwixt-darwin-x64.zip
+      - mv Betwixt-darwin-x64/Betwixt.app /Applications
+      - rm Betwixt-darwin-x64.zip && rm -rf Betwixt-darwin-x64
     status:
-      - '[ -f /Applications/Betwixt-linux-x64 ]'
+      - '[ -f /Applications/Betwixt.app ]'
 
   betwixt:linux:
     cmds:
       - gh release download -R kdzwinel/betwixt -p "*linux-x64.zip"
-      - unzip Betwixt-linux-x64.zip
+      - unzip -q Betwixt-linux-x64.zip
       - mv Betwixt-linux-x64 /opt
       - ln -s /opt/Betwixt-linux-x64/Betwixt /usr/local/bin/betwixt
     status:
@@ -59,7 +60,7 @@ tasks:
   betwixt:windows:
     cmds:
       - gh release download -R kdzwinel/betwixt -p "win32-x64.zip"
-      - unzip Betwixt-linux-x64.zip
+      - unzip -q Betwixt-linux-x64.zip
 
   bivac:
     cmds:
@@ -68,7 +69,7 @@ tasks:
           BIN_NAME: bivac
           PACKAGE: camptocamp/bivac
 
-  bw:
+  bitwarden:
     cmds:
       - task: bw:{{OS}}
     status:
@@ -77,19 +78,19 @@ tasks:
   bw:darwin:
     cmds:
       - gh release download -R bitwarden/cli -p "bw-macos*.zip"
-      - mkdir -p ./bin && unzip bw-macos*.zip -d ./bin && rm -f bw-macos*.zip
+      - mkdir -p ./bin && unzip -q bw-macos*.zip -d ./bin && rm -f bw-macos*.zip
       - chmod +x ./bin/bw
 
   bw:linux:
     cmds:
       - gh release download -R bitwarden/cli -p "bw-linux*.zip"
-      - mkdir -p ./bin && unzip bw-linux*.zip -d ./bin && rm -f bw-linux*.zip
+      - mkdir -p ./bin && unzip -q bw-linux*.zip -d ./bin && rm -f bw-linux*.zip
       - chmod +x ./bin/bw
 
   bw:windows:
     cmds:
       - gh release download -R bitwarden/cli -p "bw-windows*.zip"
-      - md ./bin && unzip bw-windows*.zip -d ./bin && del bw-windows*.zip
+      - md ./bin && unzip -q bw-windows*.zip -d ./bin && del bw-windows*.zip
 
   cerebro:
     cmds:
@@ -251,7 +252,6 @@ tasks:
         vars:
           BIN_NAME: fuego
           PACKAGE: sgarciac/fuego
-          TAR_OPTIONS: ' --strip-components 1'
 
   fusion:
     cmds:
@@ -379,21 +379,22 @@ tasks:
       LOG_SCRIPT:
         sh: echo "${PWD}/.config/log"
     cmds:
-      - gh release download -R '{{.PACKAGE}}' -p "*(64)*.dmg"
+      - gh release download -R '{{.PACKAGE}}' -p "*64*.dmg"  -p "*.dmg"
       - |
         if (type sudo &> /dev/null && sudo -n true); then
           COUNT=0
           while read FILE; do
             COUNT=$((COUNT + 1))
+            echo $COUNT
             if [ "$COUNT" == "1" ]; then
-              sudo hdiutil attach "$FILE" -nobrowse -mountpoint /tmp/{{.DMG_NAME}}
-              mv /tmp/{{.DMG_NAME}}/*.app /Applications/
-              sudo hdiutil detach /tmp/{{.DMG_NAME}}
+              hdiutil attach "$FILE" -nobrowse -mountpoint /tmp/{{.DMG_NAME}}
+              cp -r /tmp/{{.DMG_NAME}}/*.app /Applications/
+              hdiutil detach /tmp/{{.DMG_NAME}}
               rm "$FILE"
             else
               {{.LOG_SCRIPT}} warn 'Multiple releases have possibly been downloaded'
             fi
-          done < <(find . -type f)
+          done < <(find . -type f -iname "*.dmg")
         else
           {{.LOG_SCRIPT}} warn 'Run with sudo privileges to install DMG files'
         fi
@@ -422,12 +423,12 @@ tasks:
           if [[ {{ARCH}} == "arm" ]]; then
             echo "-p \"*Darwin_arm64\" -p \"*Darwin_arm64.tar.gz\" -p \"*darwin_arm64\" -p \"*darwin_arm64.tar.gz\" -p \"*darwin-arm64.tar.gz\" \
               -p \"*darwin-arm64\" -p \"*Darwin-64bit.tar.gz\" -p \"*darwin_x64.tar.gz\" -p \"*darwin.tar.gz\" -p \"*macOS-ARM64.tar.gz\" \
-              -p \"*aarch64-apple-darwin.zip\" -p \"*-macos\" -p \"*darwin_arm64.zip\" -p \"*arm64-darwin.zip\""
+              -p \"*aarch64-apple-darwin.zip\" -p \"*-macos\" -p \"*darwin_arm64.zip\" -p \"*arm64-darwin.zip\" -p \"*darwin-amd64.zip\""
           else
             echo "-p \"*Darwin_x86_64\" -p \"*Darwin_x86_64.tar.gz\" -p \"*Darwin_amd64.tar.gz\" -p \"*darwin_amd64\" -p \"*darwin_amd64.tar.gz\" \
             -p \"*darwin-amd64.tar.gz\" -p \"*darwin-amd64\" -p \"*Darwin-64bit.tar.gz\" -p \"*darwin-x64\" -p \"*darwin_x64.tar.gz\" -p \"*MacOS_64-bit.tar.gz\" \
-            -p \"*darwin-x86_64\" -p \"*darwin_x86_64.tar.gz\" -p \"*darwin.tar.gz\" -p \"*macOS-64bit.tar.gz\" -p \"*x86_64-apple-darwin.zip\" \
-            -p \"*-macos\" -p \"*macOS_amd64.tar.gz\" -p \"*macOS_x86_64.tar.gz\" -p \"*darwin_amd64.zip\" -p \"*macos-x64.zip\" -p \"*x86_64-darwin.zip\""
+            -p \"*darwin-x86_64\" -p \"*darwin_x86_64.tar.gz\" -p \"*darwin.tar.gz\" -p \"*macOS-64bit.tar.gz\" -p \"*x86_64-apple-darwin.zip\" -p \"*-darwin.zip\" \
+            -p \"*-macos\" -p \"*macOS_amd64.tar.gz\" -p \"*macOS_x86_64.tar.gz\" -p \"*darwin_amd64.zip\" -p \"*macos-x64.zip\" -p \"*x86_64-darwin.zip\" -p \"*darwin-arm64.zip\""
           fi
     env:
       TMP:
@@ -444,6 +445,7 @@ tasks:
               tar -xzf "$FILE"{{.TAR_OPTIONS}}
               rm "$FILE"
             elif [[ "$FILE" == *.zip ]]; then
+              echo 'zip'
               unzip{{.ZIP_OPTIONS}} "$FILE"
               rm "$FILE"
             fi
@@ -552,7 +554,7 @@ tasks:
     env:
       TMP:
         sh: mktemp -d
-      PATTERNS: -p "*x86_64-windows.zip" -p "*Windows_64-bit.tar.gz"
+      PATTERNS: -p "*x86_64-windows.zip" -p "*Windows_64-bit.tar.gz" -p "*windows-amd64.zip"
     cmds:
       - echo TODO
 
@@ -615,10 +617,59 @@ tasks:
 
   kubenav:
     cmds:
-      - task: install:gh
-        vars:
-          BIN_NAME: kubenav
-          PACKAGE: kubenav/kubenav
+      - task: kubenav:{{OS}}
+
+  kubenav:darwin:
+    vars:
+      PATTERNS:
+        sh: |-
+          if [[ {{ARCH}} == "arm" ]]; then
+            echo "-p \"*darwin-arm64.zip\""
+          else
+            echo "-p \"*darwin-amd64.zip\""
+          fi
+    env:
+      TMP:
+        sh: mktemp -d
+    cmds:
+      - gh release download -R kubenav/kubenav {{.PATTERNS}} -D "$TMP"
+      - |
+        cd "$TMP"
+        FILE=$(find . -type f -iname *.zip)
+        unzip -q "$FILE"
+        rm "$FILE"
+        mv kubenav.app /Applications/
+    status:
+      - '[ -f /Applications/kubenav.app ]'
+
+  kubenav:linux:
+    vars:
+      PATTERNS:
+        sh: |-
+          if [[ {{ARCH}} == "arm" ]]; then
+            echo "-p \"*linux-arm64.zip\""
+          else
+            echo "-p \"*linux-amd64.zip\""
+          fi
+    env:
+      TMP:
+        sh: mktemp -d
+    cmds:
+      - gh release download -R kubenav/kubenav {{.PATTERNS}} -D "$TMP"
+      - |
+        cd "$TMP"
+        FILE=$(find . -type f -iname *.zip)
+        unzip -q "$FILE"
+        rm "$FILE"
+        mv kubenav /usr/local/bin
+        chmod +x /usr/local/bin/kubenav
+    status:
+      - '[ -f /usr/local/bin/kubenav ]'
+
+  kubenav:windows:
+    cmds:
+      - gh release download -R kubenav/kubenav -p "kubenav-win64.exe"
+      - md ./bin && mv kubenav-win64.exe ./bin/kubenav.exe
 
   linuxkit:
     cmds:
@@ -737,6 +788,13 @@ tasks:
           BIN_NAME: Motrix
           PACKAGE: agalwood/motrix
 
+  nebula:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: nebula
+          PACKAGE: slackhq/nebula
+
   nfpm:
     cmds:
       - task: install:gh
@@ -789,6 +847,25 @@ tasks:
           PACKAGE: peco/peco
           TAR_OPTIONS: ' --strip-components 1'
           ZIP_OPTIONS: ' -j'
+
+  pretzel:
+    cmds:
+      - task: pretzel:{{OS}}
+
+  pretzel:darwin:
+    cmds:
+      - task: install:dmg
+        vars:
+          DMG_NAME: Pretzel
+          PACKAGE: amiechen/pretzel
+
+  pretzel:linux:
+    cmds:
+      - echo 'Pretzel is not available for Linux'
+
+  pretzel:windows:
+    cmds:
+      - echo 'Pretzel is not available for Windows'
 
   responsively:
     cmds:
@@ -926,11 +1003,18 @@ tasks:
       - task: temps:{{OS}}
 
   temps:darwin:
+    env:
+      TMP:
+        sh: mktemp -d
     cmds:
-      - task: install:dmg
-        vars:
-          DMG_NAME: Temps
-          PACKAGE: jackd248/temps
+      - gh release download -R jackd248/temps -p "*darwin-x64.zip" -D "$TMP"
+      - |
+        cd "$TMP"
+        unzip -q "Temps-darwin-x64.zip"
+        rm "Temps-darwin-x64.zip"
+        mv Temps-darwin-x64/*.app /Applications/
+    status:
+      - '[ -f /Applications/Temps.app]'
 
   temps:linux:
     env:
@@ -940,7 +1024,7 @@ tasks:
       - gh release download -R jackd248/temps -p "*linux-x64.zip" -D "$TMP"
       - |
         cd "$TMP"
-        unzip "Temps-linux-x64.zip"
+        unzip -q "Temps-linux-x64.zip"
         rm "Temps-linux-x64.zip"
         mv Temps-linux-x64 /opt/
         ln -s /opt/Temps-linux-x64/Temps /usr/local/bin/Temps
@@ -983,7 +1067,7 @@ tasks:
     cmds:
       - task: install:dmg
         vars:
-          DMG_NAME: udemy-downloader-gui
+          DMG_NAME: Udeler
           PACKAGE: FaisalUmair/udemy-downloader-gui
 
   udemy-downloader-gui:linux:
@@ -1064,7 +1148,7 @@ tasks:
       - |
         cd "$TMP"
         FILE=$(find . -type f)
-        unzip $FILE
+        unzip -q $FILE
         rm "$FILE"
         mv WebTorrent-linux-x64 /opt/
         ln -s /opt/WebTorrent-linux-x64/WebTorrent /usr/local/bin/webtorrent
@@ -1077,6 +1161,29 @@ tasks:
         vars:
           BIN_NAME: WebTorrent
           PACKAGE: webtorrent/webtorrent-desktop
+
+  whaler:
+    cmds:
+      - task: whaler:{{OS}}
+    status:
+      - '[ -f /usr/local/bin/whaler ]'
+
+  whaler:darwin:
+    cmds:
+      - gh release download -R P3GLEG/whaler -p "Whaler_MacOS"
+      - mkdir -p ./bin && mv Whaler_MacOS /usr/local/bin/whaler
+      - chmod +x /usr/local/bin/whaler
+
+  whaler:linux:
+    cmds:
+      - gh release download -R P3GLEG/whaler -p "Whaler_linux_amd64"
+      - mkdir -p ./bin && mv Whaler_linux_amd64 /usr/local/bin/whaler
+      - chmod +x /usr/local/bin/whaler
+
+  whaler:windows:
+    cmds:
+      - gh release download -R P3GLEG/whaler -p "Whaler_windows.exe"
+      - md ./bin && mv Whaler_windows.exe /usr/local/bin/whaler.exe
 
   yq:
     cmds:
