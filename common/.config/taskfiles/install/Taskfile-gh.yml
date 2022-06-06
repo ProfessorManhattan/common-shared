@@ -20,13 +20,6 @@ tasks:
           BIN_NAME: act
           PACKAGE: nektos/act
 
-  askgit:
-    cmds:
-      - task: install:gh
-        vars:
-          BIN_NAME: askgit
-          PACKAGE: askgitdev/askgit
-
   bat:
     cmds:
       - task: install:gh
@@ -59,8 +52,13 @@ tasks:
 
   betwixt:windows:
     cmds:
-      - gh release download -R kdzwinel/betwixt -p "win32-x64.zip"
-      - unzip -q Betwixt-linux-x64.zip
+      - gh release download -R kdzwinel/betwixt -p "*win32-x64.zip"
+      - cmd /C powershell 'md "C:\Program Files\Betwixt" -Force'
+      - tar -xf Betwixt-win32-x64.zip -C "C:\Program Files\Betwixt" --strip-components 1
+      - cmd /C del Betwixt-win32-x64.zip
+      - cmd /C powershell 'New-Item -Value "C:\Program Files\Betwixt\Betwixt.exe" -Path "C:\Users\Public\Desktop\Betwixt" -ItemType SymbolicLink -Force'
+    status:
+      - '[ -f "C:\Program Files\Betwixt\Betwixt.exe" ]'
 
   bivac:
     cmds:
@@ -73,24 +71,24 @@ tasks:
     cmds:
       - task: bw:{{OS}}
     status:
-      - '[ -f ./bin/bw ]'
+      - '[ -f /usr/local/bin/bw ]'
 
   bw:darwin:
     cmds:
       - gh release download -R bitwarden/cli -p "bw-macos*.zip"
-      - mkdir -p ./bin && unzip -q bw-macos*.zip -d ./bin && rm -f bw-macos*.zip
-      - chmod +x ./bin/bw
+      - mkdir -p /usr/local/bin && unzip -q bw-macos*.zip -d /usr/local/bin && rm -f bw-macos*.zip
+      - chmod +x /usr/local/bin/bw
 
   bw:linux:
     cmds:
       - gh release download -R bitwarden/cli -p "bw-linux*.zip"
-      - mkdir -p ./bin && unzip -q bw-linux*.zip -d ./bin && rm -f bw-linux*.zip
-      - chmod +x ./bin/bw
+      - mkdir -p /usr/local/bin && unzip -q bw-linux*.zip -d /usr/local/bin && rm -f bw-linux*.zip
+      - chmod +x /usr/local/bin/bw
 
   bw:windows:
     cmds:
       - gh release download -R bitwarden/cli -p "bw-windows*.zip"
-      - md ./bin && unzip -q bw-windows*.zip -d ./bin && del bw-windows*.zip
+      - powershell 'md C:/ProgramData/bin -Force; tar -xf bw-windows*.zip -C C:/ProgramData/bin; del bw-windows*.zip -Force'
 
   cerebro:
     cmds:
@@ -135,7 +133,7 @@ tasks:
 
   cumulus:
     cmds:
-      - echo 'Cerebro is available only for MacOS, install using Homebrew.'
+      - echo 'Cumulus is available only for MacOS, install using Homebrew on MacOS.'
 
   dasel:
     cmds:
@@ -151,6 +149,7 @@ tasks:
           BIN_NAME: dat
           PACKAGE: dat-ecosystem-archive/dat
           ZIP_OPTIONS: ' -j'
+          TAR_OPTIONS: ' --strip-components 1'
 
   delta:
     cmds:
@@ -159,6 +158,13 @@ tasks:
           BIN_NAME: delta
           PACKAGE: dandavison/delta
           TAR_OPTIONS: ' --strip-components 1'
+
+  dog:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: dog
+          PACKAGE: ogham/dog
 
   deno:
     cmds:
@@ -246,6 +252,20 @@ tasks:
           BIN_NAME: ffsend
           PACKAGE: timvisee/ffsend
 
+  filebrowser:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: filebrowser
+          PACKAGE: filebrowser/filebrowser
+
+  fq:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: fq
+          PACKAGE: wader/fq
+
   fuego:
     cmds:
       - task: install:gh
@@ -284,6 +304,7 @@ tasks:
         vars:
           BIN_NAME: Ganache
           PACKAGE: trufflesuite/ganache-ui
+          EXE_PATTERN: "-p *setup.exe"
 
   gh:
     cmds:
@@ -317,6 +338,7 @@ tasks:
         vars:
           BIN_NAME: gitify
           PACKAGE: manosim/gitify
+          EXE_PATTERN: "-p *Setup*.exe"
 
   gitleaks:
     cmds:
@@ -340,28 +362,37 @@ tasks:
           PACKAGE: profclems/glab
           TAR_OPTIONS: ' --strip-components 1'
 
+  gojq:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: gojq
+          PACKAGE: itchyny/gojq
+          TAR_OPTIONS: ' --strip-components 1'
+
   hey:
     cmds:
       - task: hey:{{OS}}
-    status:
-      - '[ -f ./bin/hey ]'
 
   hey:darwin:
     cmds:
-      - mkdir -p ./bin
-      - curl https://hey-release.s3.us-east-2.amazonaws.com/hey_darwin_amd64 -o ./bin/hey
-      - chmod +x ./bin/hey
+      - curl https://hey-release.s3.us-east-2.amazonaws.com/hey_darwin_amd64 -o /usr/local/bin/hey
+      - chmod +x /usr/local/bin/hey
+    status:
+      - '[ -f /usr/local/bin/hey ]'
 
   hey:linux:
     cmds:
-      - mkdir -p ./bin
-      - curl https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64 -o ./bin/hey
-      - chmod +x ./bin/hey
+      - curl https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64 -o /usr/local/bin/hey
+      - chmod +x /usr/local/bin/hey
+    status:
+      - '[ -f /usr/local/bin/hey ]'
 
   hey:windows:
     cmds:
-      - mkdir -p ./bin
-      - curl https://hey-release.s3.us-east-2.amazonaws.com/hey_windows_amd64 -o ./bin/hey
+      - curl https://hey-release.s3.us-east-2.amazonaws.com/hey_windows_amd64 -o C:/ProgramData/bin/hey.exe
+    status:
+      - '[ -f C:/ProgramData/bin/hey.exe ]'
 
   install:gh:
     deps:
@@ -482,7 +513,7 @@ tasks:
         fi
       - chmod +x {{.BIN_FOLDER}}/{{.BIN_NAME}}
     status:
-      - '[ -f ./bin/{{.BIN_NAME}} ]'
+      - '[ -f /usr/local/bin/{{.BIN_NAME}} ]'
 
   install:gh:linux:
     deps:
@@ -551,12 +582,63 @@ tasks:
   install:gh:windows:
     deps:
       - :install:software:gh
+    vars:
+      BIN_FOLDER: C:/ProgramData/bin
+      PATTERNS: -p "*x86_64-windows.zip" -p "*Windows_64-bit.tar.gz" -p "*windows-amd64*.zip" -p "*windows_amd64.zip" -p "*windows_amd64.tar.gz" -p "*windows-amd64*"
+        -p "*win-x64.zip" -p "*Windows-64bit.zip" -p "*64*windows-msvc.zip" -p "*windows_x64.zip" -p "*Windows_x86_64.tar.gz" -p "*win-*.exe" -p "*setup*.exe" -p "*Setup*.exe"
+        -p "*installer*64*.exe"
     env:
-      TMP:
-        sh: mktemp -d
-      PATTERNS: -p "*x86_64-windows.zip" -p "*Windows_64-bit.tar.gz" -p "*windows-amd64.zip"
+      TMPD:
+        sh: powershell '$rnd=Get-Random; while(! (Test-Path $env:tmp/tmp.$rnd) -and ! ($created)){$ret=(md $env:tmp/tmp.$rnd -Force).FullName; $created=$true}$ret'
     cmds:
-      - echo TODO
+      - gh release download -R "{{.PACKAGE}}" {{.PATTERNS}} {{.EXE_PATTERN}} -D "$TMPD"
+      - cd "$TMPD" && powershell '
+        $COUNT = 0;
+        $installer=$false;
+        Get-ChildItem -File | %{
+          $FILE = $_.Name;
+          $COUNT = $COUNT + 1;
+          if($COUNT -eq 1 ){
+            if (("$FILE" -like "*.tar.gz") -or ("$FILE" -like "*.zip")){
+              tar -xzf "$FILE"{{.TAR_OPTIONS}};
+              Remove-Item "$FILE" -Force;
+            }elseif((! $installer) -and (("$FILE" -like "*setup*64*.exe") -or ("$FILE" -like "*setup*.exe") -or ("$FILE" -like "*installer*64*.exe") -or ("$FILE" -like "*64*installer*.exe"))){
+              $installer=$true;
+              Start-Process "$FILE" /S -NoNewWindow -Wait -PassThru;
+              Remove-Item "$FILE" -Force;
+            }
+          }else{
+            Write-Host 'Multiple releases have possibly been downloaded' -ForegroundColor Yellow;
+          }
+        };
+        Get-ChildItem;
+        Remove-Item "CHANGELOG.md", "LICENSE", "LICENSE*", "README.md", "autocomplete", "completion*", "*_autocomplete", "contrib", "Changes" -EA SilentlyContinue -Force;
+        mkdir {{.BIN_FOLDER}} -EA SilentlyContinue;
+        pwd;
+        if($installer){
+          Write-Host '{{.BIN_NAME}} installed using the installer';
+        }elseif((Get-ChildItem -File | Measure).Count -eq 1){
+          Write-Host 'Moving {{.BIN_NAME}} from its default location';
+          Move-Item -Force * {{.BIN_FOLDER}}/{{.BIN_NAME}}.exe;
+        }else{
+          if(Test-Path .\bin){
+            cd bin;
+            if((Get-ChildItem -File | Measure).Count -eq 1){
+              Write-Host 'Moving {{.BIN_NAME}} from the bin folder';
+              Move-Item -Force * {{.BIN_FOLDER}}/{{.BIN_NAME}}.exe;
+            }else{
+              Write-Host 'Unmatched binary named {{.BIN_NAME}} from *.tar.gz with a bin folder' -ForegroundColor Yellow;
+            }
+            cd ..;
+          }elseif((Get-ChildItem -File {{.BIN_NAME}}* -ea SilentlyContinue | Measure).Count -gt 0){
+            Write-Host 'Moving {{.BIN_NAME}} from its default location, but, there are other files that are not moved' -ForeGroundColor Yellow;
+            Move-Item -Force {{.BIN_NAME}}*.exe {{.BIN_FOLDER}}/;
+          }else{
+            Write-Host 'Unmatched binary named {{.BIN_NAME}}' -ForegroundColor Yellow;
+          }
+        }'
+    status:
+      - '[ -f {{.BIN_FOLDER}}/{{.BIN_NAME}}.exe ]'
 
   jitsi-meet-electron:
     cmds:
@@ -589,24 +671,24 @@ tasks:
     cmds:
       - task: jq:{{OS}}
     status:
-      - '[ -f ./bin/jq ]'
+      - '[ -f /usr/local/bin/jq ]'
 
   jq:darwin:
     cmds:
       - gh release download -R stedolan/jq -p "jq-osx-amd64"
-      - mkdir -p ./bin && mv jq-osx-amd64 ./bin/jq
-      - chmod +x ./bin/jq
+      - mkdir -p /usr/local/bin && mv jq-osx-amd64 /usr/local/bin/jq
+      - chmod +x /usr/local/bin/jq
 
   jq:linux:
     cmds:
       - gh release download -R stedolan/jq -p "jq-linux64"
-      - mkdir -p ./bin && mv jq-linux64 ./bin/jq
-      - chmod +x ./bin/jq
+      - mkdir -p /usr/local/bin && mv jq-linux64 /usr/local/bin/jq
+      - chmod +x /usr/local/bin/jq
 
   jq:windows:
     cmds:
       - gh release download -R stedolan/jq -p "jq-win64.exe"
-      - md ./bin && mv jq-win64.exe ./bin/jq.exe
+      - powershell 'md C:/ProgramData/bin -Force; Move-Item jq-win64.exe C:/ProgramData/bin/jq.exe -Force'
 
   kubectx:
     cmds:
@@ -668,8 +750,12 @@ tasks:
 
   kubenav:windows:
     cmds:
-      - gh release download -R kubenav/kubenav -p "kubenav-win64.exe"
-      - md ./bin && mv kubenav-win64.exe ./bin/kubenav.exe
+      - gh release download -R kubenav/kubenav -p "*windows-amd64.zip"
+      - tar -xf *windows-amd64.zip
+      - cmd /C move kubenav.exe C:/ProgramData/bin/kubenav.exe
+      - cmd /C del /Q *windows-amd64.zip
+    status:
+      - '[ -f C:/ProgramData/bin/kubenav.exe ]'
 
   linuxkit:
     cmds:
@@ -702,6 +788,7 @@ tasks:
         vars:
           BIN_NAME: Manta
           PACKAGE: hql287/manta
+          EXE_PATTERN: "*Setup*.exe"
 
   mark-text:
     cmds:
@@ -733,7 +820,7 @@ tasks:
 
   masscode:darwin:
     cmds:
-      - echo 'Install MassCode using Homebrew.'
+      - echo 'Install MassCode using Homebrew on MacOS.'
 
   masscode:linux:
     cmds:
@@ -748,6 +835,7 @@ tasks:
         vars:
           BIN_NAME: masscode
           PACKAGE: antonreshetov/masscode
+          EXE_PATTERN: "*Setup*.exe"
 
   mergestat:
     cmds:
@@ -787,6 +875,14 @@ tasks:
         vars:
           BIN_NAME: Motrix
           PACKAGE: agalwood/motrix
+
+  mqttx:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: mqttx
+          PACKAGE: agalwood/mqttx
+          EXE_PATTERN: "*Setup*x64.exe"
 
   nebula:
     cmds:
@@ -866,6 +962,13 @@ tasks:
   pretzel:windows:
     cmds:
       - echo 'Pretzel is not available for Windows'
+
+  q:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: q
+          PACKAGE: harelba/q
 
   responsively:
     cmds:
@@ -1033,10 +1136,7 @@ tasks:
 
   temps:windows:
     cmds:
-      - task: install:gh
-        vars:
-          BIN_NAME: Temps
-          PACKAGE: jackd248/temps
+      - echo 'Temps does not work on Windows'
 
   tokei:
     cmds:
@@ -1088,29 +1188,29 @@ tasks:
     cmds:
       - task: up:{{OS}}
     status:
-      - '[ -f ./bin/up ]'
+      - '[ -f /usr/local/bin/up ]'
 
   up:darwin:
     cmds:
       - gh release download -R akavel/up -p "up-darwin"
-      - mkdir -p ./bin && mv up-darwin ./bin/up
-      - chmod +x ./bin/up
+      - mkdir -p /usr/local/bin && mv up-darwin /usr/local/bin/up
+      - chmod +x /usr/local/bin/up
 
   up:linux:
     cmds:
       - gh release download -R akavel/up -p "up"
-      - mkdir -p ./bin && mv up ./bin/up
-      - chmod +x ./bin/up
+      - mkdir -p /usr/local/bin && mv up /usr/local/bin/up
+      - chmod +x /usr/local/bin/up
 
   up:windows:
     cmds:
-      - .config/log warn '`up` is not available for Windows from GitHub Releases'
+      - echo 'up is not available for Windows from GitHub Releases'
 
   ventoy:
     cmds:
       - task: ventoy:{{OS}}
     status:
-      - '[ -f ./bin/ventoy-*/VentoyGUI.x86_64 ]'
+      - '[ -f /opt/ventoy/VentoyGUI.x86_64 ]'
 
   ventoy:darwin:
     cmds:
@@ -1121,12 +1221,12 @@ tasks:
       - gh release download -R ventoy/Ventoy -p "*linux.tar.gz"
       - ls *linux.tar.gz | xargs tar -xvf
       - rm -f *.tar.gz
-      - mkdir -p ./bin && mv ./ventoy-* ./bin/
+      - mkdir -p /opt/ventoy && mv ./ventoy-* /opt/ventoy/
 
   ventoy:windows:
     cmds:
       - gh release download -R ventoy/ventoy -p "ventoy_windows_amd64.exe"
-      - md ./bin && mv ventoy_windows_amd64.exe ./bin/ventoy.exe
+      - powershell 'md C:/ProgramData/bin -Force; Move-Item ventoy_windows_amd64.exe C:/ProgramData/bin/ventoy.exe -Force'
 
   webtorrent:
     cmds:
@@ -1171,39 +1271,39 @@ tasks:
   whaler:darwin:
     cmds:
       - gh release download -R P3GLEG/whaler -p "Whaler_MacOS"
-      - mkdir -p ./bin && mv Whaler_MacOS /usr/local/bin/whaler
+      - mkdir -p /usr/local/bin && mv Whaler_MacOS /usr/local/bin/whaler
       - chmod +x /usr/local/bin/whaler
 
   whaler:linux:
     cmds:
       - gh release download -R P3GLEG/whaler -p "Whaler_linux_amd64"
-      - mkdir -p ./bin && mv Whaler_linux_amd64 /usr/local/bin/whaler
+      - mkdir -p /usr/local/bin && mv Whaler_linux_amd64 /usr/local/bin/whaler
       - chmod +x /usr/local/bin/whaler
 
   whaler:windows:
     cmds:
       - gh release download -R P3GLEG/whaler -p "Whaler_windows.exe"
-      - md ./bin && mv Whaler_windows.exe /usr/local/bin/whaler.exe
+      - powershell 'md C:/ProgramData/bin -Force; Move-Item Whaler_windows.exe C:/ProgramData/bin/whaler.exe -Force'
 
   yq:
     cmds:
       - task: yq:{{OS}}
     status:
-      - '[ -f ./bin/yq ]'
+      - '[ -f /usr/local/bin/yq ]'
 
   yq:darwin:
     cmds:
       - gh release download -R mikefarah/yq -p "yq_darwin_amd64"
-      - mkdir -p ./bin && mv yq_darwin_amd64 ./bin/yq
-      - chmod +x ./bin/yq
+      - mkdir -p /usr/local/bin && mv yq_darwin_amd64 /usr/local/bin/yq
+      - chmod +x /usr/local/bin/yq
 
   yq:linux:
     cmds:
       - gh release download -R mikefarah/yq -p "yq_linux_amd64"
-      - mkdir -p ./bin && mv yq_linux_amd64 ./bin/yq
-      - chmod +x ./bin/yq
+      - mkdir -p /usr/local/bin && mv yq_linux_amd64 /usr/local/bin/yq
+      - chmod +x /usr/local/bin/yq
 
   yq:windows:
     cmds:
       - gh release download -R mikefarah/yq -p "yq_windows_amd64.exe"
-      - md ./bin && mv yq_windows_amd64.exe ./bin/yq.exe
+      - powershell 'md C:/ProgramData/bin -Force; Move-Item yq_windows_amd64.exe C:/ProgramData/bin/yq.exe -Force'
