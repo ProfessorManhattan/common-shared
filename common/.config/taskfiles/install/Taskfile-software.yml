@@ -784,8 +784,13 @@ tasks:
       - type qemu-system-x86_64 > /dev/null
 
   node:
+    deps:
+      - volta
     run: once
     cmds:
+      -
+    status:
+      - type node &> /dev/null
       - task: install:software
         vars:
           PACKAGE: node
