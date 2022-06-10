@@ -20,6 +20,28 @@ tasks:
           BIN_NAME: act
           PACKAGE: nektos/act
 
+  azurefunctions:
+    cmds:
+      - task: azurefunctions:{{OS}}
+
+  azurefunctions:darwin:
+    cmds:
+      - echo 'Install azure-functions-core-tools using Homebrew on MacOS'
+
+  azurefunctions:linux:
+    cmds:
+      - gh release download -R Azure/azure-functions-core-tools -p "*linux-x64*.zip"
+      - unzip -q -d azure-functions-cli Azure.Functions.Cli.linux-x64*.zip
+      - mv azure-functions-cli /opt
+      - ln -s /opt/azure-functions-cli/func /usr/local/bin/func
+      - ln -s /opt/azure-functions-cli/gozip /usr/local/bin/gozip
+    status:
+      - '[ -f /usr/local/bin/func ]'
+
+  azurefunctions:windows:
+    cmds:
+      - echo 'Install azure-functions-core-tools using Chocolatey on Windows'
+      
   bat:
     cmds:
       - task: install:gh
@@ -969,6 +991,29 @@ tasks:
         vars:
           BIN_NAME: q
           PACKAGE: harelba/q
+
+  raindrop:
+    cmds:
+      - task: raindrop:{{OS}}
+
+  raindrop:darwin:
+    cmds:
+      - task: install:dmg
+        vars:
+          DMG_NAME: raindrop
+          PACKAGE: raindropio/raindrop
+
+  raindrop:linux:
+    cmds:
+      - echo 'Raindrop is not available for Linux'
+
+  raindrop:windows:
+    cmds:
+      - task: install:gh
+        vars:
+          BIN_NAME: raindrop
+          PACKAGE: raindropio/raindrop
+          EXE_PATTERN: "*Installer.exe"
 
   responsively:
     cmds:
