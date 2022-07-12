@@ -864,8 +864,17 @@ tasks:
 
   pipx:linux:
     cmds:
+      - task: pipx:linux:system-pip
       - python3 -m ensurepip && python3 -m pip install --user pipx
       - python3 -m pipx ensurepath
+
+  pipx:linux:system-pip:
+    cmds:
+      - task: system
+        vars:
+          PACKAGE: python3-pip
+    status:
+      - '[ "$(which python3)" != "/usr/bin/python3 ]"
 
   pipx:windows:
     log:
