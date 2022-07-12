@@ -882,6 +882,9 @@ tasks:
       - task: system
         vars:
           PACKAGE: python3-pip
+      - task: system
+        vars:
+          PACKAGE: python3-venv
     status:
       - '[ "$(which python3)" != "/usr/bin/python3" ]'
 
