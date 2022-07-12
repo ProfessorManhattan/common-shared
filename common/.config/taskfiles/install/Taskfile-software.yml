@@ -863,18 +863,27 @@ tasks:
       - pipx ensurepath
 
   pipx:linux:
+    deps:
+      - pipx:linux:brew
+      - pipx:linux:system
+
+  pipx:linux:brew:
     cmds:
-      - task: pipx:linux:system-pip
       - python3 -m ensurepip && python3 -m pip install --user pipx
       - python3 -m pipx ensurepath
+    status:
+      - '[ "$(which python3)" == "/usr/bin/python3" ]'
 
-  pipx:linux:system-pip:
+  pipx:linux:system:
     cmds:
+      - task: system
+        vars:
+          PACKAGE: pipx
       - task: system
         vars:
           PACKAGE: python3-pip
     status:
-      - '[ "$(which python3)" != "/usr/bin/python3 ]"
+      - '[ "$(which python3)" != "/usr/bin/python3" ]'
 
   pipx:windows:
     log:
