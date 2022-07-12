@@ -1263,6 +1263,7 @@ tasks:
   volta:
     cmds:
       - curl https://get.volta.sh | bash
+      - volta setup
     status:
       - type volta > /dev/null
 
