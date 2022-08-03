@@ -543,6 +543,7 @@ if [ -z "$NO_INSTALL_HOMEBREW" ]; then
       if ! type volta &> /dev/null; then
         # shellcheck disable=SC2016
         curl https://get.volta.sh | bash
+      fi
     fi
   fi
 fi
