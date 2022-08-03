@@ -806,7 +806,7 @@ tasks:
   node:install:
     cmds:
       - |
-        source ~/.profile
+        . "$HOME/.profile" &> /dev/null || true
         volta install node
 
   p7zip:
@@ -1285,10 +1285,12 @@ tasks:
 
   volta:
     cmds:
+      - .config/log info 'Installing Volta'
       - curl https://get.volta.sh | bash
       - |
-        source ~/.profile
+        . "$HOME/.profile" &> /dev/null || true
         volta setup
+      - .config/log success 'Successfully setup Volta'
     status:
       - type volta > /dev/null
 

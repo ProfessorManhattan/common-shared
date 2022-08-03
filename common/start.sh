@@ -526,7 +526,7 @@ if [ -z "$NO_INSTALL_HOMEBREW" ]; then
       fi
       if [ -f "$HOME/.profile" ]; then
         # shellcheck disable=SC1091
-        . "$HOME/.profile"
+        . "$HOME/.profile" &> /dev/null || true
       fi
       if ! type poetry &> /dev/null; then
         # shellcheck disable=SC2016
@@ -629,7 +629,7 @@ fi
 # @description Run the start logic, if appropriate
 if [ -z "$CI" ] && [ -z "$START" ] && [ -z "$INIT_CWD" ]; then
   # shellcheck disable=SC1091
-  . "$HOME/.profile"
+  . "$HOME/.profile" &> /dev/null || true
   ensureProjectBootstrapped
   if task donothing &> /dev/null; then
     task -vvv start
