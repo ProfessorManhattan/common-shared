@@ -362,7 +362,8 @@ tasks:
       - .config/log info 'Clearing GitLab SSH keys'
       - |
         KEY_URL='https://gitlab.com/api/v4/user/keys'
-        for KEYID in $(curl -sSL --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$KEY_URL" | jq '.[].id'); do
+        KEYIDS="$(curl -sSL --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$KEY_URL" | jq '.[].id')"
+        for KEYID in $KEYIDS; do
           curl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" -X DELETE "$KEY_URL/$KEYID"
         done
       - .config/log start 'Syncing SSH keys with GitLab'
