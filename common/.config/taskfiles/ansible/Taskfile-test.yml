@@ -30,6 +30,7 @@ tasks:
       - allure generate molecule/.results/junit --output allure-reports --clean
       - mkdir -p molecule/.results/junit
       - cp -rf allure-reports/history/ molecule/.results/junit/
+      - .config/log info 'Opening JUnit results with Allure in the default browser'
       - allure open allure-reports
 
   ansifilter:
