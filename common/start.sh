@@ -317,10 +317,10 @@ function ensureTaskInstalled() {
           logger info "Task is not available in the PATH"
           installTask
         else
-          if rm "$(which task)"; then
+          if rm -f "$(which task)"; then
             logger info "Removing task was successfully done without sudo"
             installTask
-          elif sudo rm "$(which task)"; then
+          elif sudo rm -f "$(which task)"; then
             logger info "Removing task was successfully done with sudo"
             installTask
           else
