@@ -185,15 +185,25 @@ tasks:
       LINUX_FAMILY:
         sh: |
           if [ -f "/etc/debian_version" ]; then
-            echo "debian"
+            echo 'debian'
           elif [ -f "/etc/redhat-release" ]; then
-            echo "redhat"
+            echo 'redhat'
           elif [ -f "/etc/arch-release" ]; then
-            echo "archlinux"
+            echo 'archlinux'
           elif [ -f "/etc/alpine-release" ]; then
-            echo "alpine"
+            echo 'alpine'
+          elif type apk &> /dev/null; then
+            echo 'alpine'
+          elif type apt-get &> /dev/null; then
+            echo 'debian'
+          elif type dnf &> /dev/null || type yum &> /dev/null; then
+            echo 'redhat'
+          elif type pacman &> /dev/null; then
+            echo 'archlinux'
+          elif type yum &> /dev/null; then
+            echo 'redhat'
           else
-            echo "unknown"
+            echo 'unknown'
           fi
     log:
       error: Failed to ensure basic system dependencies are installed
@@ -673,7 +683,16 @@ tasks:
         vars:
           PACKAGE: glab
     status:
-      - type
+      - type glab > /dev/null
+
+  glow:
+    run: once
+    cmds:
+      - task: install:software
+        vars:
+          PACKAGE: glow
+    status:
+      - type glow > /dev/null
 
   go:
     run: once
@@ -724,6 +743,13 @@ tasks:
         vars:
           PACKAGE: anchore/grype/grype
 
+  gum:
+    run: once
+    cmds:
+      - task: install:software
+        vars:
+          PACKAGE: gum
+
   gzip:
     run: once
     cmds:
@@ -735,6 +761,13 @@ tasks:
           PACKAGE: gzip
     status:
       - type gzip > /dev/null
+
+  heroku:
+    run: once
+    cmds:
+      - task: install:software
+        vars:
+          PACKAGE: heroku/brew/heroku
 
   hey:
     run: once
@@ -784,11 +817,27 @@ tasks:
       - type qemu-system-x86_64 > /dev/null
 
   node:
+    deps:
+      - common
+      - volta
+    run: once
+    cmds:
+      - task: node:install
+    status:
+      - type node &> /dev/null
+
+  node:install:
+    cmds:
+      - |
+        . "$HOME/.profile" &> /dev/null || true
+        volta install node
+
+  openssl:
     run: once
     cmds:
       - task: install:software
         vars:
-          PACKAGE: node
+          PACKAGE: openssl
 
   p7zip:
     run: once
@@ -846,9 +895,35 @@ tasks:
       - pipx ensurepath
 
   pipx:linux:
+    deps:
+      - pipx:linux:brew
+      - pipx:linux:system
+
+  pipx:linux:brew:
     cmds:
+      - brew install pipx
+      - pipx ensurepath
+    status:
+      - '! type brew > /dev/null'
+
+  pipx:linux:system:
+    deps:
+      - python
+    cmds:
+      - task: system
+        vars:
+          PACKAGE: python3-pip
+      - task: system
+        vars:
+          PACKAGE: python3-venv
+      - |
+        if ! type pip3; then
+          python3 -m ensurepip > /dev/null
+        fi
       - python3 -m pip install --user pipx
       - python3 -m pipx ensurepath
+    status:
+      - type brew > /dev/null
 
   pipx:windows:
     log:
@@ -887,6 +962,8 @@ tasks:
       - exit 1
 
   python:
+    deps:
+      - common
     run: once
     cmds:
       - task: brew
@@ -911,6 +988,57 @@ tasks:
           PACKAGE: python@3.10
     status:
       - type python3 > /dev/null
+
+
+  python:pip:
+    run: once
+    cmds:
+      - |
+        PIP_LOCATION="$(which pip)"
+        PIP3_LOCATION="$(which pip3)"
+        if [ "$USER" == "root" ]; then
+          if type pip &> /dev/null && type pip3 &> /dev/null; then
+            rm "$PIP_LOCATION"
+            ln -s "$PIP3_LOCATION" "$PIP_LOCATION"
+          elif type pip3 &> /dev/null; then
+            ln -s "$PIP3_LOCATION" /usr/bin/pip
+          elif type pip &> /dev/null; then
+            ln -s "$PIP_LOCATION" /usr/bin/pip3
+          else
+            .config/log warn 'Both `pip` and `pip3` appear to be missing'
+          fi
+        elif type sudo &> /dev/null && sudo -n true; then
+          if type pip &> /dev/null && type pip3 &> /dev/null; then
+            sudo rm "$PIP_LOCATION"
+            sudo ln -s "$PIP3_LOCATION" "$PIP_LOCATION"
+          elif type pip3 &> /dev/null; then
+            sudo ln -s "$PIP3_LOCATION" /usr/bin/pip
+          elif type pip &> /dev/null; then
+            sudo ln -s "$PIP_LOCATION" /usr/bin/pip3
+          else
+            .config/log warn 'Both `pip` and `pip3` appear to be missing'
+          fi
+        elif type sudo &> /dev/null; then
+          if type pip &> /dev/null && type pip3 &> /dev/null; then
+            .config/log info 'Running `sudo rm $(which pip)`'
+            sudo rm "$PIP_LOCATION"
+            sudo ln -s "$PIP3_LOCATION" "$PIP_LOCATION"
+          elif type pip3 &> /dev/null; then
+            .config/log info 'Running `sudo ln -s $(which pip3) /usr/bin/pip`'
+            sudo ln -s "$PIP3_LOCATION" /usr/bin/pip
+          elif type pip &> /dev/null; then
+            .config/log info 'Running `sudo ln -s $(which pip) /usr/bin/pip3`'
+            sudo ln -s "$PIP_LOCATION" /usr/bin/pip3
+          else
+            .config/log warn 'Both `pip` and `pip3` appear to be missing'
+          fi
+        else
+           .config/log warn '`sudo` unavailable and user has no permissions'
+        fi
+    status:
+      - which pip > /dev/null
+      - which pip3 > /dev/null
+      - '[ "$(which pip)" == "$(which pip3)" ]'
 
   python:windows:
     log:
@@ -1000,28 +1128,38 @@ tasks:
   system:
     vars:
       PACKAGE: '{{if .PACKAGE}}{{.PACKAGE}}{{else}}{{.CLI_ARGS}}{{end}}'
-    log:
-      error: Failed to install `{{.PACKAGE}}` with the system package manager
-      start: Attempting to install `{{.PACKAGE}}` using the system package manager
     cmds:
-      - task: system:apk
-        vars:
-          PACKAGE: '{{.PACKAGE}}'
-      - task: system:apt-get
-        vars:
-          PACKAGE: '{{.PACKAGE}}'
-      - task: system:dnf
-        vars:
-          PACKAGE: '{{.PACKAGE}}'
-      - task: system:pacman
-        vars:
-          PACKAGE: '{{.PACKAGE}}'
-      - task: system:yum
-        vars:
-          PACKAGE: '{{.PACKAGE}}'
-      - task: system:macos
-        vars:
-          PACKAGE: '{{.PACKAGE}}'
+      - .config/log start 'Attempting to install `{{.PACKAGE}}` using the system package manager'
+      - |
+        if [ -f "/etc/redhat-release" ]; then
+          if type dnf &> /dev/null; then
+            task install:software:system:dnf -- '{{.PACKAGE}}'
+          else
+            task install:software:system:yum -- '{{.PACKAGE}}'
+          fi
+        elif [ -f "/etc/debian_version" ]; then
+          task install:software:system:apt-get -- '{{.PACKAGE}}'
+        elif [ -f "/etc/arch-release" ]; then
+          task install:software:system:pacman -- '{{.PACKAGE}}'
+        elif [ -f "/etc/alpine-release" ]; then
+          task install:software:system:apk -- '{{.PACKAGE}}'
+        elif type dnf &> /dev/null; then
+          task install:software:system:dnf -- '{{.PACKAGE}}'
+        elif type yum &> /dev/null; then
+          task install:software:system:yum -- '{{.PACKAGE}}'
+        elif type apt-get &> /dev/null; then
+          task install:software:system:apt-get -- '{{.PACKAGE}}'
+        elif type pacman &> /dev/null; then
+          task install:software:system:pacman -- '{{.PACKAGE}}'
+        elif type apk &> /dev/null; then
+          task install:software:system:apk -- '{{.PACKAGE}}'
+        else
+          if [ '{{OS}}' == 'darwin' ]; then
+            task install:software:system:macos -- '{{.PACKAGE}}'
+          else
+            .config/log error 'No matching system. Cannot continue with installation.' && exit 1
+          fi
+        fi
     status:
       - type {{.PACKAGE}} > /dev/null || [ '{{.PACKAGE}}' == 'null' ]
 
@@ -1190,12 +1328,24 @@ tasks:
         vars:
           SOFTWARE: virtualbox
 
+  volta:
+    run: once
+    cmds:
+      - .config/log info 'Installing Volta'
+      - curl https://get.volta.sh | bash
+      - |
+        . "$HOME/.profile" &> /dev/null || true
+        volta setup
+      - .config/log success 'Successfully setup Volta'
+    status:
+      - type volta > /dev/null
+
   vmware:
     cmds:
       - task: vmware:{{OS}}
       - task: exit:notice:restart
     status:
-      - type vmware > /dev/null
+      - type vmrun > /dev/null
 
   vmware:darwin:
     run: once

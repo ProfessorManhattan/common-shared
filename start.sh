@@ -14,6 +14,7 @@ set -eo pipefail
 # @description Initialize variables
 DELAYED_CI_SYNC=""
 ENSURED_TASKFILES=""
+export HOMEBREW_NO_INSTALL_CLEANUP=true
 
 # @description Ensure permissions in CI environments
 if [ -n "$CI" ]; then
@@ -102,6 +103,54 @@ function logger() {
   fi
 }
 
+# @description Helper function for ensurePackageInstalled for Alpine installations
+function ensureAlpinePackageInstalled() {
+  if type sudo &> /dev/null && [ "$CAN_USE_SUDO" != 'false' ]; then
+    sudo apk --no-cache add "$1"
+  else
+    apk --no-cache add "$1"
+  fi
+}
+
+# @description Helper function for ensurePackageInstalled for ArchLinux installations
+function ensureArchPackageInstalled() {
+  if type sudo &> /dev/null && [ "$CAN_USE_SUDO" != 'false' ]; then
+    sudo pacman update
+    sudo pacman -S "$1"
+  else
+    pacman update
+    pacman -S "$1"
+  fi
+}
+
+# @description Helper function for ensurePackageInstalled for Debian installations
+function ensureDebianPackageInstalled() {
+  if type sudo &> /dev/null && [ "$CAN_USE_SUDO" != 'false' ]; then
+    sudo apt-get update
+    sudo apt-get install -y "$1"
+  else
+    apt-get update
+    apt-get install -y "$1"
+  fi
+}
+
+# @description Helper function for ensurePackageInstalled for RedHat installations
+function ensureRedHatPackageInstalled() {
+  if type sudo &> /dev/null && [ "$CAN_USE_SUDO" != 'false' ]; then
+    if type dnf &> /dev/null; then
+      sudo dnf install -y "$1"
+    else
+      sudo yum install -y "$1"
+    fi
+  else
+    if type dnf &> /dev/null; then
+      dnf install -y "$1"
+    else
+      yum install -y "$1"
+    fi
+  fi
+}
+
 # @description Installs package when user is root on Linux
 #
 # @example
@@ -112,22 +161,17 @@ function logger() {
 # @exitcode 0 The package was successfully installed
 # @exitcode 1+ If there was an error, the package needs to be installed manually, or if the OS is unsupported
 function ensureRootPackageInstalled() {
+  export CAN_USE_SUDO='false'
   if ! type "$1" &> /dev/null; then
     if [[ "$OSTYPE" == 'linux'* ]]; then
       if [ -f "/etc/redhat-release" ]; then
-        if type dnf &> /dev/null; then
-          dnf install -y "$1"
-        else
-          yum install -y "$1"
-        fi
-      elif [ -f "/etc/lsb-release" ]; then
-        apt-get update
-        apt-get install -y "$1"
+        ensureRedHatPackageInstalled "$1"
+      elif [ -f "/etc/debian_version" ] || [ -f "/etc/"]; then
+        ensureDebianPackageInstalled "$1"
       elif [ -f "/etc/arch-release" ]; then
-        pacman update
-        pacman -S "$1"
+        ensureArchPackageInstalled "$1"
       elif [ -f "/etc/alpine-release" ]; then
-        apk --no-cache add "$1"
+        ensureAlpinePackageInstalled "$1"
       fi
     fi
   fi
@@ -191,46 +235,27 @@ function ensureLocalPath() {
 # @exitcode 0 The package(s) were successfully installed
 # @exitcode 1+ If there was an error, the package needs to be installed manually, or if the OS is unsupported
 function ensurePackageInstalled() {
+  export CAN_USE_SUDO='true'
   if ! type "$1" &> /dev/null; then
     if [[ "$OSTYPE" == 'darwin'* ]]; then
       brew install "$1"
     elif [[ "$OSTYPE" == 'linux'* ]]; then
       if [ -f "/etc/redhat-release" ]; then
-        if type sudo &> /dev/null; then
-          if type dnf &> /dev/null; then
-            sudo dnf install -y "$1"
-          else
-            sudo yum install -y "$1"
-          fi
-        else
-          if type dnf &> /dev/null; then
-            dnf install -y "$1"
-          else
-            yum install -y "$1"
-          fi
-        fi
-      elif [ -f "/etc/lsb-release" ]; then
-        if type sudo &> /dev/null; then
-          sudo apt-get update
-          sudo apt-get install -y "$1"
-        else
-          apt-get update
-          apt-get install -y "$1"
-        fi
+        ensureRedHatPackageInstalled "$1"
+      elif [ -f "/etc/debian_version" ]; then
+        ensureDebianPackageInstalled "$1"
       elif [ -f "/etc/arch-release" ]; then
-        if type sudo &> /dev/null; then
-          sudo pacman update
-          sudo pacman -S "$1"
-        else
-          pacman update
-          pacman -S "$1"
-        fi
+        ensureArchPackageInstalled "$1"
       elif [ -f "/etc/alpine-release" ]; then
-        if type sudo &> /dev/null; then
-          sudo apk --no-cache add "$1"
-        else
-          apk --no-cache add "$1"
-        fi
+        ensureAlpinePackageInstalled "$1"
+      elif type dnf &> /dev/null || type yum &> /dev/null; then
+        ensureRedHatPackageInstalled "$1"
+      elif type apt-get &> /dev/null; then
+        ensureDebianPackageInstalled "$1"
+      elif type pacman &> /dev/null; then
+        ensureArchPackageInstalled "$1"
+      elif type apk &> /dev/null; then
+        ensureAlpinePackageInstalled "$1"
       else
         logger error "$1 is missing. Please install $1 to continue." && exit 1
       fi
@@ -508,7 +533,7 @@ elif [[ "$OSTYPE" == 'linux-gnu'* ]] || [[ "$OSTYPE" == 'linux-musl'* ]]; then
   fi
 fi
 
-# @description Ensures Homebrew and Poetry are installed
+# @description Ensures Homebrew, Poetry, and Volta are installed
 if [ -z "$NO_INSTALL_HOMEBREW" ]; then
   if [[ "$OSTYPE" == 'darwin'* ]] || [[ "$OSTYPE" == 'linux-gnu'* ]] || [[ "$OSTYPE" == 'linux-musl'* ]]; then
     if [ -z "$INIT_CWD" ]; then
@@ -526,7 +551,7 @@ if [ -z "$NO_INSTALL_HOMEBREW" ]; then
       fi
       if [ -f "$HOME/.profile" ]; then
         # shellcheck disable=SC1091
-        . "$HOME/.profile"
+        . "$HOME/.profile" &> /dev/null || true
       fi
       if ! type poetry &> /dev/null; then
         # shellcheck disable=SC2016
@@ -539,6 +564,13 @@ if [ -z "$NO_INSTALL_HOMEBREW" ]; then
       if ! type yq &> /dev/null; then
         # shellcheck disable=SC2016
         brew install yq || logger info 'There may have been an issue installing `yq` with `brew`'
+      fi
+      if ! type volta &> /dev/null || ! type node &> /dev/null; then
+        # shellcheck disable=SC2016
+        curl https://get.volta.sh | bash
+        . "$HOME/.profile" &> /dev/null || true
+        volta setup
+        volta install node
       fi
     fi
   fi
@@ -602,8 +634,8 @@ if [ -d .git ] && type git &> /dev/null; then
         git reset --hard HEAD
         git checkout "$DEFAULT_BRANCH"
         git pull origin "$DEFAULT_BRANCH" --ff-only || true
+        cd "$ROOT_DIR"
       done
-      cd "$ROOT_DIR"
       # shellcheck disable=SC2016
       logger success 'Ensured submodules in the `.modules` folder are pointing to the master branch'
     fi
@@ -625,8 +657,12 @@ fi
 
 # @description Run the start logic, if appropriate
 if [ -z "$CI" ] && [ -z "$START" ] && [ -z "$INIT_CWD" ]; then
+  if ! type pipx &> /dev/null; then
+    task install:software:pipx
+  fi
   # shellcheck disable=SC1091
-  . "$HOME/.profile"
+  logger info "Sourcing profile located in $HOME/.profile"
+  . "$HOME/.profile" &> /dev/null || true
   ensureProjectBootstrapped
   if task donothing &> /dev/null; then
     task -vvv start

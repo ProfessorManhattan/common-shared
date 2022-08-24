@@ -42,7 +42,9 @@ tasks:
       start: Linting project with Ansible Lint
       success: Validated project with Ansible Lint
     cmds:
-      - ansible-lint -c {{.ANSIBLE_LINT_CONFIG}}
+      - |
+        PATH="$PATH:$HOME/.local/bin"
+        ansible-lint -c {{.ANSIBLE_LINT_CONFIG}}
 
   any:
     deps:
@@ -53,11 +55,13 @@ tasks:
       error: Errors were reported by the global linters for `{{.CLI_ARGS}}`
       start: Linting `{{.CLI_ARGS}}` with global linters
     cmds:
-      - blocklint --wordlist blacklist,slave,whitelist {{.CLI_ARGS}}
-      - check-merge-conflict {{.CLI_ARGS}}
-      - check-added-large-files {{.CLI_ARGS}}
-      - check-symlinks {{.CLI_ARGS}}
-      - destroyed-symlinks {{.CLI_ARGS}}
+      - |
+        PATH="$PATH:$HOME/.local/bin"
+        blocklint --wordlist blacklist,slave,whitelist {{.CLI_ARGS}}
+      - PATH="$PATH:$HOME/.local/bin" && check-merge-conflict {{.CLI_ARGS}}
+      - PATH="$PATH:$HOME/.local/bin" && check-added-large-files {{.CLI_ARGS}}
+      - PATH="$PATH:$HOME/.local/bin" && check-symlinks {{.CLI_ARGS}}
+      - PATH="$PATH:$HOME/.local/bin" && destroyed-symlinks {{.CLI_ARGS}}
 
   codeclimate:
     deps:
@@ -125,7 +129,7 @@ tasks:
           TMP="$(mktemp)"
           COMMIT_MSG_NOEMOJI="$(sed 's/^..//' < '{{.CLI_ARGS}}' | xargs)"
           .config/log info 'Linting commit message (with emoji stripped)'
-          echo "$COMMIT_MSG_NOEMOJI" | {{.NPX_HANDLE}}commitlint || (mv '{{.CLI_ARGS}}.bak' '{{.CLI_ARGS}}' && exit 1)
+          echo "$COMMIT_MSG_NOEMOJI" | commitlint || (mv '{{.CLI_ARGS}}.bak' '{{.CLI_ARGS}}' && exit 1)
         elif [ '{{.CLI_ARGS}}' == '.git/MERGE_MSG' ]; then
           .config/log info 'Bypassing commitlint since the message is a merge message'
         fi
@@ -234,7 +238,7 @@ tasks:
       success: Successfully passed the ESLint test (please still address warnings)
     cmds:
       - >
-        {{.NPX_HANDLE}}eslint -c package.json --no-eslintrc --format {{.ESLINT_FORMATTER}} --cache
+        eslint -c package.json --no-eslintrc --format {{.ESLINT_FORMATTER}} --cache
         --cache-location .cache/eslintcache {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
 
   eslint:staged:
@@ -250,7 +254,7 @@ tasks:
       success: Successfully linted modified files with ESLint
     cmds:
       - >
-        {{.NPX_HANDLE}}eslint -c package.json --no-eslintrc --format {{.ESLINT_FORMATTER}} --cache
+        eslint -c package.json --no-eslintrc --format {{.ESLINT_FORMATTER}} --cache
         --cache-location .cache/eslintcache {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
 
   eslint:warn-all:
@@ -271,7 +275,7 @@ tasks:
       - >
         ESLINT_TMP="$(mktemp)"
 
-        {{.NPX_HANDLE}}eslint -c package.json --no-eslintrc --format summary --cache
+        eslint -c package.json --no-eslintrc --format summary --cache
         --cache-location .cache/eslintcache {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}} |
         tee "$ESLINT_TMP"
 
@@ -318,7 +322,7 @@ tasks:
       success: Successfully passed ESLint checks for {{if .CLI_ARGS}}`{{.CLI_ARGS}}`{{else}}JavaScript/TypeScript files{{end}}
     cmds:
       - >
-        {{.NPX_HANDLE}}eslint -c package.json --no-eslintrc --format pretty --ext .js,.jsx,.ts,.tsx --cache
+        eslint -c package.json --no-eslintrc --format pretty --ext .js,.jsx,.ts,.tsx --cache
         --cache-location .cache/eslintcache {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
 
   lint-staged:
@@ -331,7 +335,7 @@ tasks:
       success: The staged files appear to be good!
     cmds:
       - |
-        {{.NPX_HANDLE}}lint-staged || LINT_EXIT_CODE="$?"
+        lint-staged || LINT_EXIT_CODE="$?"
         if [ -n "$LINT_EXIT_CODE" ]; then
           .config/log error 'Linting failed!'
           .config/log info 'If necessary, you can bypass this pre-commit hook by running `git commit --no-verify`. Please try to fix the errors first.'
@@ -414,9 +418,9 @@ tasks:
       success: Prettier successfully finished
     cmds:
       - |
-        {{.NPX_HANDLE}}prettier --ignore-path {{.PRETTIERIGNORE_CONFIG}} --list-different {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}} || EXIT_CODE=$?
+        prettier --ignore-path {{.PRETTIERIGNORE_CONFIG}} --list-different {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}} || EXIT_CODE=$?
         if [ -n "$EXIT_CODE" ]; then
-          .config/log warn 'Failed to lint with `{{.NPX_HANDLE}}prettier` - falling back to `prettier`'
+          .config/log warn 'Failed to lint with `prettier` - falling back to `prettier`'
           prettier --ignore-path {{.PRETTIERIGNORE_CONFIG}} --list-different {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
         fi
 
@@ -460,7 +464,9 @@ tasks:
       start: Linting {{if .CLI_ARGS}}`{{.CLI_ARGS}}`{{else}}the project{{end}} with flake8
       success: flake8 validation was successful
     cmds:
-      - flake8 {{.CONFIG_COMMAND}}{{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
+      - |
+        PATH="$PATH:$HOME/.local/bin"
+        flake8 {{.CONFIG_COMMAND}}{{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
 
   python:deps:flake8:
     cmds:
@@ -509,10 +515,10 @@ tasks:
       - |
         .config/log info 'Linting with Shellcheck'
         {{if .CLI_ARGS}}
-          {{.NPX_HANDLE}}shellcheck -e {{.SHELLCHECK_EXCLUDE}} {{.CLI_ARGS}}
+          shellcheck -e {{.SHELLCHECK_EXCLUDE}} {{.CLI_ARGS}}
         {{else}}
           find . -type d \( {{.IGNORE_FOLDERS}} \) -prune -o -type f \( -name '*.sh' -o -name '*.sh.j2' \) \
-          -print0 | xargs -0 -r -n1 {{.NPX_HANDLE}}shellcheck -e {{.SHELLCHECK_EXCLUDE}}
+          -print0 | xargs -0 -r -n1 shellcheck -e {{.SHELLCHECK_EXCLUDE}}
         {{end}}
 
   spelling:
@@ -546,7 +552,7 @@ tasks:
       - cmd: |
           set -e
           EXIT_CODE=0
-          {{.NPX_HANDLE}}cspell --no-progress --show-context --no-must-find-files --config {{.CSPELL_CONFIG}} {{.CLI_ARGS}} || EXIT_CODE=$?
+          cspell --no-progress --show-context --no-must-find-files --config {{.CSPELL_CONFIG}} {{.CLI_ARGS}} || EXIT_CODE=$?
           if [ "$EXIT_CODE" != '0' ]; then
             .config/log warn 'Possible spelling errors were detected. Take appropriate action before merging changes.'
           fi
@@ -584,7 +590,7 @@ tasks:
             EXIT_CODE=0
             .config/log info 'Running a spell-check on staged files with `cspell`'
             # Must not quote $STAGED_FILES
-            {{.NPX_HANDLE}}cspell --no-progress --show-context --no-must-find-files --config {{.CSPELL_CONFIG}} $STAGED_FILES || EXIT_CODE=$?
+            cspell --no-progress --show-context --no-must-find-files --config {{.CSPELL_CONFIG}} $STAGED_FILES || EXIT_CODE=$?
             if [ "$EXIT_CODE" != '0' ]; then
               .config/log warn 'Possible spelling errors were detected. Take appropriate action before merging changes.'
             fi
@@ -610,7 +616,9 @@ tasks:
       start: Ensuring {{if .CLI_ARGS}}`{{.CLI_ARGS}}` is valid TOML{{else}}the project'\''s TOML files are valid{{end}}
       success: The TOML appears to be valid!
     cmds:
-      - check-toml {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
+      - |
+        PATH="$PATH:$HOME/.local/bin"
+        check-toml {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
 
   vagrant:
     deps:
@@ -652,7 +660,9 @@ tasks:
       start: Ensuring {{if .CLI_ARGS}}{{.CLI_ARGS}} is valid XML{{else}}the project contains only valid XML{{end}}
       success: The XML appears to be valid
     cmds:
-      - check-xml {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
+      - |
+        PATH="$PATH:$HOME/.local/bin"
+        check-xml {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
 
   yaml:
     deps:
@@ -683,4 +693,6 @@ tasks:
       start: Linting {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}the project{{end}} with `yamllint`
       success: No issues were detected by `yamllint`
     cmds:
-      - yamllint -c {{.YAMLLINT_CONFIG}} -s {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
+      - |
+        PATH="$PATH:$HOME/.local/bin"
+        yamllint -c {{.YAMLLINT_CONFIG}} -s {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}.{{end}}
