@@ -451,8 +451,8 @@ function ensureTaskfiles() {
     fi
     # shellcheck disable=SC2004
     TIME_DIFF="$(($(date +%s) - $TASK_UPDATE_TIME))"
-    # Only run if it has been at least 15 minutes since last attempt
-    if [ -n "$BOOTSTRAP_EXIT_CODE" ] || [ "$TIME_DIFF" -gt 900 ] || [ "$TIME_DIFF" -lt 5 ] || [ -n "$FORCE_TASKFILE_UPDATE" ]; then
+    # Only run if it has been at least 60 minutes since last attempt
+    if [ -n "$BOOTSTRAP_EXIT_CODE" ] || [ "$TIME_DIFF" -gt 3600 ] || [ "$TIME_DIFF" -lt 5 ] || [ -n "$FORCE_TASKFILE_UPDATE" ]; then
       logger info 'Grabbing latest Taskfiles by downloading shared-master.tar.gz'
       # shellcheck disable=SC2031
       date +%s > "$HOME/.cache/megabyte/start.sh/ensure-taskfiles"
@@ -477,8 +477,18 @@ function ensureTaskfiles() {
     fi
     if [ -n "$BOOTSTRAP_EXIT_CODE" ] && ! task donothing; then
       # task donothing still does not work so issue must be with main Taskfile.yml
-      logger warn 'The `Taskfile.yml` was reset to `HEAD~1` because it appears to be misconfigured'
+      logger warn 'Something is wrong with the `Taskfile.yml` - grabbing main `Taskfile.yml` '
       git checkout HEAD~1 -- Taskfile.yml
+      FORCE_TASKFILE_UPDATE=true ensureTaskfiles
+      if ! task donothing; then
+        # Taskfile library was updated and previous Taskfile.yml in git history are not working so as a last resort
+        # copy Taskfile.yml from Shared Common
+        curl -sSL https://gitlab.com/megabyte-labs/common/shared/-/raw/master/Taskfile.yml > Taskfile.yml
+        if task donothing; then
+          logger warn 'There appears to be an issue with the main Taskfile.yml file'
+        else
+          logger error 'There is an error either with the Shared Common Taskfile.yml or the shared Taskfile library' && exit 14
+        fi
     fi
   fi
 }
