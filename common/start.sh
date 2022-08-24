@@ -477,7 +477,7 @@ function ensureTaskfiles() {
     fi
     if [ -n "$BOOTSTRAP_EXIT_CODE" ] && ! task donothing; then
       # task donothing still does not work so issue must be with main Taskfile.yml
-      logger warn 'Something is wrong with the `Taskfile.yml` - grabbing main `Taskfile.yml` '
+      logger warn 'Something is wrong with the `Taskfile.yml` - grabbing main `Taskfile.yml`'
       git checkout HEAD~1 -- Taskfile.yml
       FORCE_TASKFILE_UPDATE=true ensureTaskfiles
       if ! task donothing; then
@@ -489,6 +489,7 @@ function ensureTaskfiles() {
         else
           logger error 'There is an error either with the Shared Common Taskfile.yml or the shared Taskfile library' && exit 14
         fi
+      fi
     fi
   fi
 }
