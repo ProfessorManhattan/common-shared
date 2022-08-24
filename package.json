@@ -1,5 +1,76 @@
 {
+  "private": false,
+  "name": "@mblabs/common-shared",
+  "version": "0.0.1",
+  "description": "Includes common files used across different types of common file repositories (e.g. Go, Python, TypeScript, Go, more..)",
+  "license": "MIT",
   "author": "Brian Zalewski <brian@megabyte.space> (https://megabyte.space)",
+  "homepage": "https://megabyte.space",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/megabyte-labs/common-shared.git"
+  },
+  "bugs": {
+    "email": "help@megabyte.space",
+    "url": "https://gitlab.com/megabyte-labs/common/shared/-/issues"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "bash start.sh && task donothing",
+    "commit": "bash start.sh && task commit",
+    "fix": "bash start.sh && task fix",
+    "help": "bash start.sh && task --menu",
+    "lint": "bash start.sh && task lint",
+    "preload": "bash start.sh && task preload",
+    "prepare": "bash start.sh && (test -f Taskfile.yml && task npm:prepare) || true",
+    "release": "bash start.sh && task publish:semantic-release",
+    "repair": "bash <(curl -sS https://install.doctor/repair)",
+    "start": "test -z $SKIP_NPM_START && bash start.sh || true",
+    "test": "bash start.sh && task donothing",
+    "unpack": "bash start.sh && task npm:bundle:unpack",
+    "update": "bash start.sh && task update",
+    "vscode": "bash start.sh && task vscode"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/git-cz-emoji"
+    }
+  },
+  "dependencies": {},
+  "optionalDependencies": {},
+  "devDependencies": {
+    "@commitlint/config-conventional": "latest",
+    "eslint-config-strict-mode": "latest",
+    "git-cz-emoji": "latest",
+    "handlebars-helpers": "latest",
+    "prettier-config-sexy-mode": "latest",
+    "semantic-release-config": "latest",
+    "typescript": "^4.5.5"
+  },
+  "keywords": [
+    "common",
+    "configurations",
+    "files",
+    "gitlab-ci",
+    "mblabs",
+    "megabytelabs",
+    "npm",
+    "package",
+    "professormanhattan",
+    "shared",
+    "taskfiles",
+    "washingtondc"
+  ],
+  "engines": {
+    "node": ">=14.18.0"
+  },
+  "publishConfig": {
+    "@gitlab:registry": "https://gitlab.com/api/v4/projects/24729680/packages/npm/",
+    "@megabyte:registry": "https://gitlab.com/api/v4/projects/24729680/packages/npm/",
+    "access": "public",
+    "registry": "https://registry.npmjs.org/",
+    "tag": "edge"
+  },
   "blueprint": {
     "description": "Includes common files used across different types of common file repositories (e.g. Go, Python, TypeScript, Go, more..)",
     "emoji_end": " 📗📘📙",
@@ -18,10 +89,6 @@
     "subgroup": "shared",
     "title": "Shared Common Files"
   },
-  "bugs": {
-    "email": "help@megabyte.space",
-    "url": "https://gitlab.com/megabyte-labs/common/shared/-/issues"
-  },
   "changelog": {
     "displayTypes": [
       "feat",
@@ -36,25 +103,6 @@
     "extends": [],
     "helpUrl": "https://megabyte.space/docs/contributing/commits"
   },
-  "config": {
-    "commitizen": {
-      "path": "node_modules/git-cz-emoji"
-    }
-  },
-  "dependencies": {},
-  "description": "Includes common files used across different types of common file repositories (e.g. Go, Python, TypeScript, Go, more..)",
-  "devDependencies": {
-    "eslint-config-strict-mode": "latest",
-    "git-cz-emoji": "latest",
-    "prettier-config-sexy-mode": "latest",
-    "semantic-release-config": "latest",
-    "typescript": "^4.5.5",
-    "@commitlint/config-conventional": "latest",
-    "handlebars-helpers": "latest"
-  },
-  "engines": {
-    "node": ">=14.18.0"
-  },
   "eslintConfig": {
     "extends": "eslint-config-strict-mode"
   },
@@ -68,27 +116,10 @@
       "url": "https://www.patreon.com/ProfessorManhattan"
     }
   ],
-  "homepage": "https://megabyte.space",
   "jscpd": {
     "gitignore": true,
     "threshold": 0.1
   },
-  "keywords": [
-    "common",
-    "configurations",
-    "files",
-    "gitlab-ci",
-    "mblabs",
-    "megabytelabs",
-    "npm",
-    "package",
-    "professormanhattan",
-    "shared",
-    "taskfiles",
-    "washingtondc"
-  ],
-  "license": "MIT",
-  "name": "@mblabs/common-shared",
   "ntl": {
     "descriptions": {
       "build": "Builds the project using the build command specified under scripts in package.json",
@@ -106,7 +137,6 @@
       "update": "Update and refresh the repository with upstream changes and templated parts"
     }
   },
-  "optionalDependencies": {},
   "pnpm": {
     "allowedVersions": {
       "@typescript-eslint/eslint-plugin": "5",
@@ -127,14 +157,6 @@
     }
   },
   "prettier": "prettier-config-sexy-mode",
-  "private": false,
-  "publishConfig": {
-    "@gitlab:registry": "https://gitlab.com/api/v4/projects/24729680/packages/npm/",
-    "@megabyte:registry": "https://gitlab.com/api/v4/projects/24729680/packages/npm/",
-    "access": "public",
-    "registry": "https://registry.npmjs.org/",
-    "tag": "edge"
-  },
   "release": {
     "branches": [
       "main",
@@ -146,27 +168,5 @@
       }
     ],
     "extends": "semantic-release-config"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/megabyte-labs/common-shared.git"
-  },
-  "scripts": {
-    "build": "bash start.sh && task donothing",
-    "commit": "bash start.sh && task commit",
-    "fix": "bash start.sh && task fix",
-    "help": "bash start.sh && task --menu",
-    "lint": "bash start.sh && task lint",
-    "preload": "bash start.sh && task preload",
-    "prepare": "bash start.sh && (test -f Taskfile.yml && task npm:prepare) || true",
-    "release": "bash start.sh && task publish:semantic-release",
-    "repair": "bash <(curl -sS https://install.doctor/repair)",
-    "start": "test -z $SKIP_NPM_START && bash start.sh || true",
-    "test": "bash start.sh && task donothing",
-    "unpack": "bash start.sh && task npm:bundle:unpack",
-    "update": "bash start.sh && task update",
-    "vscode": "bash start.sh && task vscode"
-  },
-  "type": "module",
-  "version": "0.0.1"
+  }
 }
