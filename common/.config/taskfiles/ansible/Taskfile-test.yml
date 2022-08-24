@@ -515,7 +515,7 @@ tasks:
         should already be set up). This test assumes that SSH does not require any passwords
         to establish the connection.
     cmds:
-      - - TMP="$(mktemp)" && echo "$MARKDOWN" > "$TMP" && .config/log md "$TMP"
+      - TMP="$(mktemp)" && echo "$MARKDOWN" > "$TMP" && .config/log md "$TMP"
       - task: molecule:ssh:prompt:continue
 
   molecule:ssh:prompt:continue:
