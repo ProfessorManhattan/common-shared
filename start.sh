@@ -477,18 +477,19 @@ function ensureTaskfiles() {
     fi
     if [ -n "$BOOTSTRAP_EXIT_CODE" ] && ! task donothing; then
       # task donothing still does not work so issue must be with main Taskfile.yml
-      logger warn 'Something is wrong with the `Taskfile.yml` - grabbing main `Taskfile.yml` '
+      logger warn 'Something is wrong with the `Taskfile.yml` - grabbing main `Taskfile.yml`'
       git checkout HEAD~1 -- Taskfile.yml
-      FORCE_TASKFILE_UPDATE=true ensureTaskfiles
       if ! task donothing; then
-        # Taskfile library was updated and previous Taskfile.yml in git history are not working so as a last resort
-        # copy Taskfile.yml from Shared Common
-        curl -sSL https://gitlab.com/megabyte-labs/common/shared/-/raw/master/Taskfile.yml > Taskfile.yml
+        logger error 'Error appears to be with main Taskfile.yml'
+      else
+        logger warn 'Error appears to be with one of the included Taskfiles'
+        logger info 'Removing and cloning Taskfile library from upstream repository'
+        rm -rf .config/taskfiles
+        FORCE_TASKFILE_UPDATE=true ensureTaskfiles
         if task donothing; then
-          logger warn 'There appears to be an issue with the main Taskfile.yml file'
-        else
-          logger error 'There is an error either with the Shared Common Taskfile.yml or the shared Taskfile library' && exit 14
+          logger warn 'The issue was remedied by cloning the latest Taskfile includes'
         fi
+      fi
     fi
   fi
 }
