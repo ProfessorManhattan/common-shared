@@ -37,6 +37,9 @@ tasks:
         if [[ '{{.PROMPT_OPTIONS' == 'None' ]]; then
           .config/log error 'No virtualization platforms installed. Install a platform (e.g. VirtualBox, VMWare, QEMU) to continue.' && exit 1
         else
+          .config/log prompt 'Which desktop OS would you like to launch?'
+          .config/log info 'Select "Other" to launch any OS from VagrantUp.com (TODO Implement feature)'
+          OS_CHOICE="$(.config/log choose 'ArchLinux' 'CentOS' 'Debian' 'Fedora' 'macOS' 'Ubuntu' 'Windows' 'Other')"
           .config/log prompt 'Which virtualization platform would you like to use?'
           PLATFORM_CHOICE="$(.config/log choose '{{.PROMPT_OPTIONS}}')"
           if [[ "$PLATFORM_CHOICE" == 'KVM' ]]; then
@@ -51,8 +54,7 @@ tasks:
             VAGRANT_UP_PROVIDER="vmware_fusion"
           else
             .config/log error 'Unrecognized platform selection.'
-          .config/log prompt 'Which desktop OS would you like to launch?'
-          OS_CHOICE="$(.config/log choose 'ArchLinux' 'CentOS' 'Debian' 'Fedora' 'macOS' 'Ubuntu' 'Windows')"
+          fi
           .config/log warn 'TODO Unfinished task - need to add in OS_CHOICE to vagrant up'
           vagrant up --provider="$VAGRANT_UP_PROVIDER"
         fi
