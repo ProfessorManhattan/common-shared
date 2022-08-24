@@ -340,6 +340,7 @@ tasks:
       - task: molecule:gcp:preconditions
       - |
         set -o pipefail
+        .config/log 'Results will be available in the `debug.log` file'
         {{.PYTHON_MOLECULE_HANDLE}}molecule test -s gcp 2>&1 | tee debug.log || EXIT_CODE=$?
         if [ -n "$EXIT_CODE" ]; then
         fi
