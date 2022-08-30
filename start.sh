@@ -166,7 +166,7 @@ function ensureRootPackageInstalled() {
     if [[ "$OSTYPE" == 'linux'* ]]; then
       if [ -f "/etc/redhat-release" ]; then
         ensureRedHatPackageInstalled "$1"
-      elif [ -f "/etc/debian_version" ] || [ -f "/etc/"]; then
+      elif [ -f "/etc/debian_version" ]; then
         ensureDebianPackageInstalled "$1"
       elif [ -f "/etc/arch-release" ]; then
         ensureArchPackageInstalled "$1"
@@ -212,7 +212,7 @@ function ensureLocalPath() {
     # shellcheck disable=SC2016
     PATH_STRING='export PATH="$HOME/.local/bin:$PATH"'
     mkdir -p "$HOME/.local/bin"
-    if ! cat "$HOME/.profile" | grep "$PATH_STRING" > /dev/null; then
+    if ! grep "$PATH_STRING" < "$HOME/.profile" > /dev/null; then
       echo -e "${PATH_STRING}\n" >> "$HOME/.profile"
       logger info "Updated the PATH variable to include ~/.local/bin in $HOME/.profile"
     fi
@@ -314,11 +314,14 @@ function ensureTaskInstalled() {
         logger info "A new version of Task is available (version $LATEST_VERSION)"
         logger info "The current version of Task installed is $CURRENT_VERSION"
         if ! type task &> /dev/null; then
+          logger info "Task is not available in the PATH"
           installTask
         else
-          if rm "$(which task)" &> /dev/null; then
+          if rm -f "$(which task)"; then
+            logger info "Removing task was successfully done without sudo"
             installTask
-          elif sudo rm "$(which task)" &> /dev/null; then
+          elif sudo rm -f "$(which task)"; then
+            logger info "Removing task was successfully done with sudo"
             installTask
           else
             logger warn "Unable to remove previous version of Task"
@@ -347,11 +350,13 @@ function installTask() {
   CHECKSUMS_URL="$TASK_RELEASE_URL/download/task_checksums.txt"
   DOWNLOAD_DESTINATION=/tmp/megabytelabs/task.tar.gz
   TMP_DIR=/tmp/megabytelabs
+  logger info "Checking if install target is macOS or Linux"
   if [[ "$OSTYPE" == 'darwin'* ]]; then
     DOWNLOAD_URL="$TASK_RELEASE_URL/download/task_darwin_amd64.tar.gz"
   else
     DOWNLOAD_URL="$TASK_RELEASE_URL/download/task_linux_amd64.tar.gz"
   fi
+  logger "Creating folder for Task download"
   mkdir -p "$(dirname "$DOWNLOAD_DESTINATION")"
   logger info "Downloading latest version of Task"
   curl -sSL "$DOWNLOAD_URL" -o "$DOWNLOAD_DESTINATION"
@@ -477,6 +482,7 @@ function ensureTaskfiles() {
     fi
     if [ -n "$BOOTSTRAP_EXIT_CODE" ] && ! task donothing; then
       # task donothing still does not work so issue must be with main Taskfile.yml
+      # shellcheck disable=SC2016
       logger warn 'Something is wrong with the `Taskfile.yml` - grabbing main `Taskfile.yml`'
       git checkout HEAD~1 -- Taskfile.yml
       if ! task donothing; then
@@ -557,7 +563,9 @@ if [ -z "$NO_INSTALL_HOMEBREW" ]; then
         fi
       fi
       if ! (grep "/bin/brew shellenv" < "$HOME/.profile" &> /dev/null) && [[ "$OSTYPE" != 'darwin'* ]]; then
+        # shellcheck disable=SC2016
         logger info 'Adding linuxbrew source command to `~/.profile`'
+        # shellcheck disable=SC2016
         echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> "$HOME/.profile"
       fi
       if [ -f "$HOME/.profile" ]; then
@@ -579,6 +587,7 @@ if [ -z "$NO_INSTALL_HOMEBREW" ]; then
       if ! type volta &> /dev/null || ! type node &> /dev/null; then
         # shellcheck disable=SC2016
         curl https://get.volta.sh | bash
+        # shellcheck disable=SC1091
         . "$HOME/.profile" &> /dev/null || true
         volta setup
         volta install node
@@ -670,8 +679,8 @@ if [ -z "$CI" ] && [ -z "$START" ] && [ -z "$INIT_CWD" ]; then
   if ! type pipx &> /dev/null; then
     task install:software:pipx
   fi
-  # shellcheck disable=SC1091
   logger info "Sourcing profile located in $HOME/.profile"
+  # shellcheck disable=SC1091
   . "$HOME/.profile" &> /dev/null || true
   ensureProjectBootstrapped
   if task donothing &> /dev/null; then

@@ -84,16 +84,6 @@ tasks:
       - '[ -z "$ANSIBLE_GALAXY_TOKEN" ]'
 
   galaxy:requirements:
-    run: once
-    cmds:
-      - task: galaxy:requirements:install
-    sources:
-      - requirements.yml
-    preconditions:
-      - sh: test -f requirements.yml
-        msg: The requirements.yml file is missing! It should be present even if it is empty (which should almost never be the case).
-
-  galaxy:requirements:install:
     log:
       error: Error encountered while installing the Ansible Galaxy requirements specified in `requirements.yml`
       start: Installing the Ansible Galaxy requirements specified in `requirements.yml`
@@ -105,8 +95,8 @@ tasks:
         fi
       - cmd: '{{.PYTHON_HANDLE}} ansible-galaxy install -r requirements.yml --ignore-errors'
         ignore_error: true
-    status:
-      - '[[ "${container:=}" == "docker" ]]'
+    sources:
+      - requirements.yml
 
   init:
     cmds:
@@ -261,13 +251,6 @@ tasks:
       {{.QUICKSTART_VAULT_SECURITY}}
     vars:
       INVENTORY: '{{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}inventories/local.yml{{end}}'
-      PLAY_PARAMS:
-        sh: |
-          if [ ! -f ~/.VAULT_PASS_REMOVE_ME ]; then
-            echo '--skip-tags "skip_on_init" playbooks/init.yml'
-          else
-            echo 'main.yml'
-          fi
       QUICKSTART_VAULT_SECURITY: |
         ## Ansible Vault Password Security
 
@@ -283,6 +266,13 @@ tasks:
         goes wrong.
     env:
       ANSIBLE_VAULT_PASSWORD_FILE: ~/.VAULT_PASSWORD
+      QUICKSTART_PLAYBOOK_MATCH: |
+        # Playbook Matching Inventory File Name
+
+        A playbook with the same file name as the selected inventory was found in the
+        `playbooks/` directory. When the file names match up, this "quick start" script
+        will use the matching playbook file instead of the `main.yml` playbook found in
+        the root of the repository.
       QUICKSTART_VAULT_SECURITY: '{{.QUICKSTART_VAULT_SECURITY}}'
     log:
       error: Error occurred while running the Ansible play
@@ -302,15 +292,59 @@ tasks:
               .config/log md "$MD_TMP"
               .config/log info 'Read about security measures above.'
               .config/log prompt 'What is your Ansible Vault password?'
-              export ANSIBLE_VAULT_PASSWORD="$(.config/log password 'Enter Vault password (leave empty if there is not a password)..')"
+              export ANSIBLE_VAULT_PASSWORD="$(.config/log password 'Enter Vault password (leave empty if there is not a password yet)..')"
             fi
           fi
           .config/log info 'Writing the `ANSIBLE_VAULT_PASSWORD` to temporary file in user home directory'
           echo "$ANSIBLE_VAULT_PASSWORD" > ~/.VAULT_PASSWORD
-          {{.PYTHON_HANDLE}}ansible-playbook -i {{.INVENTORY}} {{.PLAY_PARAMS}}
+          INVENTORY="{{.INVENTORY}}"
+          INVENTORY_SLUG="$(echo "$INVENTORY" | sed 's/inventories\/\(.*\).yml/\1/')"
+          if [[ '{{.INVENTORY}}' == 'inventories/quickstart.yml' ]]; then
+            if [ -f '/etc/qubes-rpc' ] && [[ "$(whoami)" == 'user' ]]; then
+              .config/log info 'Assuming `ANSIBLE_USER` name to be `user` since this is Qubes'
+              export ANSIBLE_USER="user"
+            elif [ -z "$ANSIBLE_USER" ]; then
+              WHOAMI="$(whoami)"
+              .config/log prompt 'In the next step, select a user with `sudo` privileges'
+              if ! .config/log confirm 'Run playbook with `'"${WHOAMI}"'`?'; then
+                export ANSIBLE_USER="$(.config/log input 'Enter the username of the admin account you wish to use..')"
+              else
+                export ANSIBLE_USER="$WHOAMI"
+              fi
+            else
+              .config/log info '`ANSIBLE_USER` is set to `'"$ANSIBLE_USER"'`'
+            fi
+            if [ -z "$ANSIBLE_PASSWORD" ]; then
+              if sudo -n echo &> /dev/null; then
+                .config/log info 'Assuming passwordless sudo since `sudo -n echo` was truthy'
+                .config/log info 'Bypassing `ANSIBLE_PASSWORD` prompt'
+              else
+                .config/log prompt 'Enter the `sudo` password for your selected user (`'"$ANSIBLE_USER"'`)'
+                export ANSIBLE_PASSWORD="$(.config/log password 'Enter password (or just press enter if there is none)..')"
+              fi
+            else
+              .config/log info '`ANSIBLE_PASSWORD` is present as an environment variable.. bypassing password prompt'
+            fi
+            if [ -z "$MOLECULE_GROUP" ]; then
+              if [ -f '/etc/qubes-rpc' ]; then
+                .config/log info 'Machine is a Qubes dom0 environment'
+                export MOLECULE_GROUP="qubes"
+              else
+                .config/log info 'Assuming machine to be macOS/Linux'
+                export MOLECULE_GROUP="nix"
+              fi
+            fi
+          fi
+          if [ -f "playbooks/${INVENTORY_SLUG}.yml" ]; then
+            PLAY_TMP="$(mktemp)" && echo "$QUICKSTART_PLAYBOOK_MATCH" > "$PLAY_TMP" && .config/log md "$PLAY_TMP"
+            {{.PYTHON_HANDLE}}ansible-playbook -i {{.INVENTORY}} "playbooks/${INVENTORY_SLUG}.yml"
+          else
+            .config/log info 'Using the `main.yml` playbook because there is no playbook located in `'"playbooks/${INVENTORY_SLUG}.yml"'`'
+            {{.PYTHON_HANDLE}}ansible-playbook -i {{.INVENTORY}} main.yml
+          fi
         ignore_error: true
       - sleep 5
-      - .config/log info 'Ensuring the password (if provided) is forcibly removed'
+      - .config/log info 'Ensuring the temporary vault password file is forcibly removed'
       - rm -f ~/.VAULT_PASSWORD
       - rm -f ~/ANSIBLE_PLAYBOOK_CONTINUE.sh
 
@@ -332,6 +366,7 @@ tasks:
   quickstart:map:
     deps:
       - :install:pipx:getmac
+      - :install:software:gum
       - :install:software:jq
     summary: |
       # Quickstart Mapping
@@ -343,7 +378,7 @@ tasks:
       {{.MAC_ADDRESS_EXPLANATION}}
     vars:
       INVENTORY_OPTIONS:
-        sh: echo "\"inventories"$(find ./inventories/ -mindepth 1 -maxdepth 1 | sed 's/\.\/inventories\///' | jq -R '[.]' | jq -s -c -r 'add | join("\" \"inventories")')"\""
+        sh: echo "\""$(find ./inventories/ -mindepth 1 -maxdepth 1 | sed 's/\.\/inventories\//inventories\//' | jq -R '[.]' | jq -s -c -r 'add | join("\" \"")')"\""
       INVENTORY_OPTIONS_LENGTH:
         sh: find ./inventories/ -mindepth 1 -maxdepth 1 | sed 's/\.\/inventories\///' | jq -R '[.]' | jq -s -c -r 'add | length'
       MAC_ADDRESS_EXPLANATION: |
@@ -381,6 +416,15 @@ tasks:
         inventory. If your MAC address is missing, the script will open an interactive prompt and include
         the ability to save your MAC address to the file for later use.
     env:
+      INVENTORY_EXPLANATION: |
+        # Which Inventory Should I Use?
+
+        A special / great starting point is the `quickstart.yml` inventory which allows you to pass your username
+        and password through a prompt. It is intended to be used to provision one machine at a time from that machine.
+        It is also intended to be used with the **Quick Start** links at the top of the README.md. It can be used to
+        provision any of our supported operating systems.
+
+        ## TLDR: Choose `quickstart.yml`
       MAC_ADDRESS_EXPLANATION: '{{.MAC_ADDRESS_EXPLANATION}}'
     cmds:
       - |
@@ -403,6 +447,7 @@ tasks:
           if [ '{{.INVENTORY_OPTIONS_LENGTH}}' != '0' ]; then
             .config/log prompt 'Given the information above, would you like to save your MAC address to the `files/inventory-map.json` file?'
             if .config/log confirm 'Save MAC address?'; then
+              INV_TMP="$(mktemp)" && echo "$INVENTORY_EXPLANATION" > "$INV_TMP" && .config/log md "$INV_TMP"
               .config/log prompt 'Which inventory file would you like the associate the MAC address with?'
               INVENTORY_FILE="$(.config/log choose {{.INVENTORY_OPTIONS}})"
               TMP="$(mktemp)"
@@ -412,6 +457,7 @@ tasks:
               .config/log success "Successfully associated the selected inventory with this machine's MAC address (remember to git add / commit)"
               task ansible:quickstart:cli -- "$INVENTORY_FILE"
             else
+              INV_TMP="$(mktemp)" && echo "$INVENTORY_EXPLANATION" > "$INV_TMP" && .config/log md "$INV_TMP"
               .config/log prompt 'Which inventory file would you like to use?'
               INVENTORY_FILE="$(.config/log choose {{.INVENTORY_OPTIONS}})"
               task ansible:quickstart:cli -- "$INVENTORY_FILE"
