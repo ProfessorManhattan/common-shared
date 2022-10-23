@@ -1,17 +1,18 @@
 #!/bin/bash
+# shellcheck disable
 
 list_files() {
 	while read hash message; do
 		clear
 		echo $hash $message
-		git ls-tree --name-only -r $hash 
+		git ls-tree --name-only -r $hash
 		sleep 1
 	done <<< $(git log --oneline $commit_range)
 }
 
 remove_files() {
 	rm_command='git ls-files -ic --exclude-from=/tmp/files_to_remove |'
-	rm_command+='xargs -r git rm --cached --ignore-unmatch' 
+	rm_command+='xargs -r git rm --cached --ignore-unmatch'
 	command="if [[ \$GIT_COMMIT != $most_recent_hash ]]; then $rm_command; fi"
 
 	git filter-branch --force --index-filter "$command" -- ${commit:---all} > /dev/null
