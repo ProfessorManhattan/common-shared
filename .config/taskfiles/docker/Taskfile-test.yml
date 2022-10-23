@@ -4,7 +4,7 @@ version: '3'
 vars:
   SCENARIO:
     sh: |
-      {{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}
+      {{if .CLI_ARGS}}echo "{{.CLI_ARGS}}"{{else}}
       SCENARIO="$(jq -r '.blueprint.dockerBaseTag' package.json)"
       if [ "$SCENARIO" != 'null' ]; then
         echo "$SCENARIO"
@@ -12,6 +12,8 @@ vars:
         echo 'default'
       fi
       {{end}}
+  SLUG:
+    sh: jq -r '.blueprint.slug' package.json
 
 tasks:
   codeclimate:
@@ -19,14 +21,12 @@ tasks:
       - |
         if [ -d ./test ]; then
           TEST_FOLDERS="$(find ./test -mindepth 1 -maxdepth 1 -type d)"
-          if echo "$TEST_FOLDERS" | grep '/test/'; then
+          if echo "$TEST_FOLDERS" | grep '/test/' &> /dev/null; then
             CURR_DIR="$PWD"
             for TEST_DIR in $TEST_FOLDERS; do
               if [ -f "${TEST_DIR}/.codeclimate.yml" ]; then
                 RAN_CODECLIMATE=true
-                cd "$TEST_DIR"
-                task lint:codeclimate
-                cd "$PWD"
+                task -t "$CURR_DIR/Taskfile.yml" lint:codeclimate
               fi
             done
             if [ -z "$RAN_CODECLIMATE" ]; then
@@ -35,8 +35,8 @@ tasks:
           fi
         fi
     status:
-      - '[[ "$(docker images -q {{.IMAGE_NAME}}:latest-codeclimate 2> /dev/null)" == "" ]]'
-      - '[[ "$(docker images -q {{.IMAGE_NAME}}:slim-codeclimate 2>/dev/null)" == "" ]]'
+      - '[[ "$(docker images -q {{.DOCKER_IMAGE}}:latest-codeclimate 2> /dev/null)" == "" ]]'
+      - '[[ "$(docker images -q {{.DOCKER_IMAGE}}:slim-codeclimate 2>/dev/null)" == "" ]]'
 
   container-structure-test:
     desc: Runs ContainerStructureTest for Dockerfile build
@@ -51,7 +51,7 @@ tasks:
       - :install:software:container-structure-test
       - :install:software:docker
     vars:
-      TAG_POST: '{{if ne .DOCKER_BASE_TAG .CLI_ARGS}}-{{.CLI_ARGS}}{{end}}'
+      TAG_POST: '{{if .CLI_ARGS}}{{if ne .DOCKER_BASE_TAG .CLI_ARGS}}-{{.CLI_ARGS}}{{end}}{{end}}'
     log:
       error: '`container-structure-test` reported error(s) when testing
         `{{.DOCKERHUB_PROFILE}}/{{.SLUG}}:latest{{.TAG_POST}}`'
@@ -62,14 +62,14 @@ tasks:
     cmds:
       - container-structure-test test --image {{.DOCKERHUB_PROFILE}}/{{.SLUG}}:latest{{.TAG_POST}} --config ./test/structure/{{.SCENARIO}}.yml
     status:
-      - '[[ "$(docker images -q {{.DOCKERHUB_PROFILE}}/{{.SLUG}}:latest{{.TAG_POST}} 2>/dev/null)" == "" ]] | [ ! -f ./test/structure/{{.SCENARIO}}.yml ]'
+      - '[[ "$(docker images -q {{.DOCKERHUB_PROFILE}}/{{.SLUG}}:latest{{.TAG_POST}} 2>/dev/null)" == "" ]] || [ ! -f ./test/structure/{{.SCENARIO}}.yml ]'
 
   container-structure-test:slim:
     deps:
       - :install:software:container-structure-test
       - :install:software:docker
     vars:
-      TAG_POST: '{{if ne .DOCKER_BASE_TAG .CLI_ARGS}}-{{.CLI_ARGS}}{{end}}'
+      TAG_POST: '{{if .CLI_ARGS}}{{if ne .DOCKER_BASE_TAG .CLI_ARGS}}-{{.CLI_ARGS}}{{end}}{{end}}'
     log:
       error: '`container-structure-test` reported error(s) when testing
         `{{.DOCKERHUB_PROFILE}}/{{.SLUG}}:slim{{.TAG_POST}}`'
@@ -87,7 +87,7 @@ tasks:
       - |
         if [ -d ./test/structure ]; then
           TESTS="$(find ./test/structure -mindepth 1 -maxdepth 1 -name "*.yml")"
-          if echo "$TESTS" | grep '.yml'; then
+          if echo "$TESTS" | grep '.yml' > /dev/null; then
             for TEST_FILE in $TESTS; do
               TARGET="$(echo "$TEST_FILE" | sed 's/.*\/\([^\/]*\).yml$/\1/')"
               task docker:test:container-structure-test -- "$TARGET"
@@ -118,13 +118,14 @@ tasks:
       - |
         for CI_TEST in $CI_TESTS; do
           export CI_TEST
-          if [ "$(yq e '.[strenv(CI_TEST)].image' .gitlab-ci.yml)" != 'null' ]; then
-            .config/log info 'Simulating the `'"$CI_TEST"'` job in `.gitlab-ci.yml`'
-            gitlab-runner exec "$CI_TEST"
-            .config/log success 'Successfully ran the `'"$CI_TEST"'` job in `.gitlab-ci.yml`'
-          else
-            .config/log warn "$CI_TEST does not appear to be an option with an image in .gitlab-ci.yml"
-          fi
+          .config/log warn 'GitLab Runner no longer supports running gitlab-runner exec so this test is no longer active (for now)'
+          # if [ "$(yq e '.[strenv(CI_TEST)].image' .gitlab-ci.yml)" != 'null' ]; then
+          #   .config/log info 'Simulating the `'"$CI_TEST"'` job in `.gitlab-ci.yml`'
+          #   gitlab-runner exec "$CI_TEST"
+          #   .config/log success 'Successfully ran the `'"$CI_TEST"'` job in `.gitlab-ci.yml`'
+          # else
+          #   .config/log warn "$CI_TEST does not appear to be an option with an image in .gitlab-ci.yml"
+          # fi
         done
     status:
       - >
@@ -146,7 +147,7 @@ tasks:
           if [ "$(jq -r '.blueprint.dockerInDocker' package.json)" == 'true' ]; then
             echo "-v {{.DIND_MOUNT_MAPPING}} "
           fi
-      MOUNT_PATH: '{{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}${PWD}{{end}}'
+      MOUNT_PATH: '{{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}$PWD{{end}}'
       OUTPUT_COMMAND:
         sh: |
           BP_OUTPUT="$(jq -r '.blueprint.dockerOutputCommand' package.json)"
@@ -163,11 +164,11 @@ tasks:
       success: The outputs of the `latest` and `slim` images match for `{{.DOCKER_IMAGE}}`!
     cmds:
       - |
-        LATEST_OUTPUT=$(docker run -v "{{.MOUNT_PATH}}:/work" -w /work {{.DOCKER_IMAGE}}:latest {{.OUTPUT_COMMAND}})
-        .config/log success 'Acquired `latest` image output for `'"{{.MOUNT_PATH}}"'`'
-        .config/log info 'Acquiring `slim` image output for `'"{{.MOUNT_PATH}}"'`'
-        SLIM_OUTPUT=$(docker run -v "{{.MOUNT_PATH}}:/work" -w /work {{.DOCKER_IMAGE}}:slim {{.OUTPUT_COMMAND}})
-        .config/log success 'Acquired `slim` image output for `'"{{.MOUNT_PATH}}"'`'
+        LATEST_OUTPUT="$(docker run -v "{{.MOUNT_PATH}}:/work" -w /work {{.DOCKER_IMAGE}}:latest {{.OUTPUT_COMMAND}} || true)"
+        .config/log success 'Acquired `latest` image output'
+        .config/log info 'Acquiring `slim` image output'
+        SLIM_OUTPUT="$(docker run -v "{{.MOUNT_PATH}}:/work" -w /work {{.DOCKER_IMAGE}}:slim {{.OUTPUT_COMMAND}} || true)"
+        .config/log success 'Acquired `slim` image output'
         if [ "$LATEST_OUTPUT" != "$SLIM_OUTPUT" ]; then
           .config/log error 'The `latest` image output did not match the `slim` image output with the command `{{.OUTPUT_COMMAND}}`'
           echo "$LATEST_OUTPUT" > latest.log
@@ -201,5 +202,5 @@ tasks:
         fi
     status:
       - '(! find ./test -mindepth 1 -maxdepth 1 -type d -name "output-*" | grep output-)
-        || [[ "$(docker images -q {{.IMAGE_NAME}}:slim 2> /dev/null)" == "" ]]
-        || [[ "$(docker images -q {{.IMAGE_NAME}}:latest 2>/dev/null)" == "" ]]'
+        || [[ "$(docker images -q {{.DOCKER_IMAGE}}:slim 2> /dev/null)" == "" ]]
+        || [[ "$(docker images -q {{.DOCKER_IMAGE}}:latest 2>/dev/null)" == "" ]]'

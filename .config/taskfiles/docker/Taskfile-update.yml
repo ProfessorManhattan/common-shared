@@ -69,7 +69,6 @@ tasks:
       - grep 'org.opencontainers.image.documentation' Dockerfile
 
   # yamllint disable rule:line-length
-  # eslint-disable max-len
   labels:update:
     vars:
       AUTHORS:
@@ -101,7 +100,6 @@ tasks:
         {{.CMD_PREFIX}} "s^.*org.opencontainers.image.vendor.*^LABEL org.opencontainers.image.vendor=\"{{.ORGANIZATION}}\"^g" Dockerfile
       - rm -f Dockerfile.bak
   # yamllint enable rule:line-length
-  # eslint-enable max-len
 
   sort:
     todo: Make this remove duplicates using a command like `uniq -u`
@@ -127,7 +125,12 @@ tasks:
     cmds:
       - docker build --tag {{.DOCKER_IMAGE}}:latest  --target "{{.DOCKER_BASE_TAG}}" .
       - |
-        VERSION="$({{.VERSION_COMMAND}})" || EXIT_CODE=$?
+        if [ -n "$VERSION_OVERRIDE" ]; then
+          VERSION="$VERSION_OVERRIDE"
+        else
+          VERSION="$({{.VERSION_COMMAND}})" || EXIT_CODE=$?
+          VERSION="$(echo "$VERSION" | perl -pe 'if(($v)=/([0-9]+([.][0-9]+)+)/){print"$v\n";exit}$_=""')"
+        fi
         if [ -n "$EXIT_CODE" ]; then
           .config/log warn 'Failed to run version command (`{{.VERSION_COMMAND}}`) - will retry after images are finished building'
         else
@@ -141,4 +144,4 @@ tasks:
           fi
         fi
     status:
-      - '[ "{{.VERSION_COMMAND}}" == "null" ] || [ "{{.DOCKER_BASE_TAG}}" != "{{.CLI_ARGS}}" ]'
+      - '[ "{{.VERSION_COMMAND}}" == "null" ]'

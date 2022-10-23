@@ -20,10 +20,10 @@ tasks:
         }
         for ENGINE in $CUSTOM_ENGINES; do
           if [ "$(yq e -o=j '.' .codeclimate.yml | jq --arg engine $ENGINE -r '.plugins[$engine].enabled')" == 'true' ]; then
-            dockerGet "$ENGINE" &
+            .config/log info "Loading custom CodeClimate engine ($ENGINE)"
+            dockerGet "$ENGINE"
           fi
         done
-        wait
 
   taskfiles:add:
     cmds:

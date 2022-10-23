@@ -8,6 +8,7 @@
 #   that is using the Megabyte Labs templating/taskfile system. The `start` task will
 #   ensure that the latest upstream changes are retrieved, that the project is
 #   properly generated with them, and that all the development dependencies are installed.
+#   Documentation on Taskfile.yml syntax can be found [here](https://taskfile.dev/).
 
 set -eo pipefail
 
@@ -524,6 +525,23 @@ function ensureProjectBootstrapped() {
 
 if [ ! -f "$HOME/.profile" ]; then
   touch "$HOME/.profile"
+fi
+
+# @description Ensure git hosts are all in ~/.ssh/known_hosts
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+if [ ! -f ~/.ssh/known_hosts ]; then
+  touch ~/.ssh/known_hosts
+  chmod 600 ~/.ssh/known_hosts
+fi
+if ! grep -q "^gitlab.com " ~/.ssh/known_hosts; then
+  ssh-keyscan gitlab.com >> ~/.ssh/known_hosts 2>/dev/null
+fi
+if ! grep -q "^github.com " ~/.ssh/known_hosts; then
+  ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+fi
+if ! grep -q "^bitbucket.org " ~/.ssh/known_hosts; then
+  ssh-keyscan bitbucket.org >> ~/.ssh/known_hosts 2>/dev/null
 fi
 
 # @description Ensures ~/.local/bin is in PATH
