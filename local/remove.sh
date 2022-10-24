@@ -1,71 +1,72 @@
 #!/bin/bash
-# shellcheck disable
 
-list_files() {
-	while read hash message; do
-		clear
-		echo $hash $message
-		git ls-tree --name-only -r $hash
-		sleep 1
-	done <<< $(git log --oneline $commit_range)
-}
+echo "TODO"
 
-remove_files() {
-	rm_command='git ls-files -ic --exclude-from=/tmp/files_to_remove |'
-	rm_command+='xargs -r git rm --cached --ignore-unmatch'
-	command="if [[ \$GIT_COMMIT != $most_recent_hash ]]; then $rm_command; fi"
-
-	git filter-branch --force --index-filter "$command" -- ${commit:---all} > /dev/null
-}
-
-while getopts :r:c:f:m:p:lh arg; do
-	case $arg in
-		r) repo_directory=${OPTARG%/};;
-		f) file_to_remove=${OPTARG#$repo_directory/};;
-		c) commit=$OPTARG;;
-		l) list=true;;
-		h)
-			cat <<- EOF
-				Usage:
-
-				-r <repo_directory>
-					Repo which history we want to modify
-
-				-c <commit>
-					Specific commit which will be the starting point for given operation,
-					if omitted, script will consider starting from beginning of the history
-
-				-f <file_to_remove>
-					Specific file which previous versions we want to remove from history
-			EOF
-	esac
-done
-
-[[ ! -d $repo_directory ]] &&
-	echo "No such directory: $repo_directory, exiting.." && exit 1
-
-cd $repo_directory
-
-[[ $list ]] &&
-	list_files && exit
-
-[[ $commit ]] &&
-	commit=${commit%..*}..HEAD
-
-if [[ $file_to_remove ]]; then
-	most_recent_hash=$(git rev-parse HEAD)
-	echo "${file_to_remove#$repo_directory/}" > /tmp/files_to_remove
-else
-	echo "No file specified, please provide a file.."
-	exit
-fi
-
-if [[ $commit ]]; then
-	while read branch; do
-		git checkout $branch > /dev/null
-		remove_files
-	done <<< $(git branch | cut -c 3-)
-else
-	echo "removing file(s).."
-	remove_files
-fi
+#list_files() {
+#	while read hash message; do
+#		clear
+#		echo $hash $message
+#		git ls-tree --name-only -r $hash
+#		sleep 1
+#	done <<< $(git log --oneline $commit_range)
+#}
+#
+#remove_files() {
+#	rm_command='git ls-files -ic --exclude-from=/tmp/files_to_remove |'
+#	rm_command+='xargs -r git rm --cached --ignore-unmatch'
+#	command="if [[ \$GIT_COMMIT != $most_recent_hash ]]; then $rm_command; fi"
+#
+#	git filter-branch --force --index-filter "$command" -- ${commit:---all} > /dev/null
+#}
+#
+#while getopts :r:c:f:m:p:lh arg; do
+#	case $arg in
+#		r) repo_directory=${OPTARG%/};;
+#		f) file_to_remove=${OPTARG#$repo_directory/};;
+#		c) commit=$OPTARG;;
+#		l) list=true;;
+#		h)
+#			cat <<- EOF
+#				Usage:
+#
+#				-r <repo_directory>
+#					Repo which history we want to modify
+#
+#				-c <commit>
+#					Specific commit which will be the starting point for given operation,
+#					if omitted, script will consider starting from beginning of the history
+#
+#				-f <file_to_remove>
+#					Specific file which previous versions we want to remove from history
+#			EOF
+#	esac
+#done
+#
+#[[ ! -d $repo_directory ]] &&
+#	echo "No such directory: $repo_directory, exiting.." && exit 1
+#
+#cd $repo_directory
+#
+#[[ $list ]] &&
+#	list_files && exit
+#
+#[[ $commit ]] &&
+#	commit=${commit%..*}..HEAD
+#
+#if [[ $file_to_remove ]]; then
+#	most_recent_hash=$(git rev-parse HEAD)
+#	echo "${file_to_remove#$repo_directory/}" > /tmp/files_to_remove
+#else
+#	echo "No file specified, please provide a file.."
+#	exit
+#fi
+#
+#if [[ $commit ]]; then
+#	while read branch; do
+#		git checkout $branch > /dev/null
+#		remove_files
+#	done <<< $(git branch | cut -c 3-)
+#else
+#	echo "removing file(s).."
+#	remove_files
+#fi
