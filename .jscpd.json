@@ -1,0 +1,30 @@
+{
+    "absolute": true,
+    "gitignore": true,
+    "ignore": [
+      ".devcontainer/**/*",
+      ".config/**/*",
+      ".git/**/*",
+      ".github/**/*",
+      ".gitlab/**/*",
+      ".vscode/**/*",
+      ".config/",
+      "common/",
+      "common/.config/taskfiles/**/*",
+      "docs/**/*",
+      ".editorconfig",
+      ".gitignore",
+      ".npmrc",
+      ".gitlab-ci.yml",
+      "README.md",
+      "LICENSE",
+      "Taskfile.yml",
+      "logo.png",
+      "package.json",
+      "start.sh",
+      "pnpm-lock.yaml",
+      "local/package-lock.json",
+      "local/yarn.lock"
+    ],
+    "threshold": 14
+}
