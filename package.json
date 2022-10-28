@@ -134,6 +134,7 @@
       ".github/**/*",
       ".gitlab/**/*",
       ".vscode/**/*",
+      "common/.config/taskfiles/**/*",
       "docs/**/*",
       ".editorconfig",
       ".gitignore",
