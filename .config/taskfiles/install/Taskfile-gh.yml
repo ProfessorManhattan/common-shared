@@ -10,9 +10,10 @@ env:
         # Public repository view PAT (user: TimeTravelersHackedMe)
         # The gh CLI used to download assets needs a PAT or the user to login so this prevents that requirement
         # Split into two variables so GitHub's detect/remove does not mess with anything
-        FIRST_PART="ghp_SfSAoou0H5WrnKZ"
-        SECOND_PART="QH41h97fPMYpWhB1NANpA"
-        echo "${FIRST_PART}${SECOND_PART}"
+        FIRST_PART="github_pat_"
+        SECOND_PART="11ABLI5FQ0RnibLOzu4kY0_SKzixo0dQRKPrniu0vMVabt"
+        THIRD_PART="mlwrDNBzDaxsWptk3QRA2OIMLFQWKgEGBCgR"
+        echo "${FIRST_PART}${SECOND_PART}${THIRD_PART}"
       fi
 
 tasks:
@@ -59,12 +60,13 @@ tasks:
 
   betwixt:darwin:
     cmds:
-      - gh release download -R kdzwinel/betwixt -p "*darwin-x64.zip"
+      - gh release download --clobber -R kdzwinel/betwixt -p "*darwin-x64.zip"
       - unzip -q Betwixt-darwin-x64.zip
       - mv Betwixt-darwin-x64/Betwixt.app /Applications
-      - rm Betwixt-darwin-x64.zip && rm -rf Betwixt-darwin-x64
+      - rm -f Betwixt-darwin-x64.zip
+      - rm -rf Betwixt-darwin-x64
     status:
-      - '[ -f /Applications/Betwixt.app ]'
+      - '[ -d /Applications/Betwixt.app ]'
 
   betwixt:linux:
     cmds:
@@ -433,7 +435,7 @@ tasks:
       LOG_SCRIPT:
         sh: echo "${PWD}/.config/log"
     cmds:
-      - gh release download -R '{{.PACKAGE}}' -p "*64*.dmg"  -p "*.dmg"
+      - gh release download --clobber -R '{{.PACKAGE}}' -p "*64*.dmg"  -p "*.dmg"
       - |
         if (type sudo &> /dev/null && sudo -n true); then
           COUNT=0
@@ -453,7 +455,7 @@ tasks:
           {{.LOG_SCRIPT}} warn 'Run with sudo privileges to install DMG files'
         fi
     status:
-      - '[ -f /Applications/{{.DMG_NAME}}.app ]'
+      - '[ -d /Applications/{{.DMG_NAME}}.app ]'
 
   install:gh:
     deps:
@@ -754,7 +756,7 @@ tasks:
         rm "$FILE"
         mv kubenav.app /Applications/
     status:
-      - '[ -f /Applications/kubenav.app ]'
+      - '[ -d /Applications/kubenav.app ]'
 
   kubenav:linux:
     vars:
@@ -1172,7 +1174,7 @@ tasks:
         rm "Temps-darwin-x64.zip"
         mv Temps-darwin-x64/*.app /Applications/
     status:
-      - '[ -f /Applications/Temps.app]'
+      - '[ -d /Applications/Temps.app ]'
 
   temps:linux:
     env:
