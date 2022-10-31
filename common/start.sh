@@ -577,7 +577,17 @@ if [ -z "$NO_INSTALL_HOMEBREW" ]; then
           echo | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         else
           logger warn "Homebrew is not installed. The script will attempt to install Homebrew and you might be prompted for your password."
-          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || BREW_EXIT_CODE="$?"
+          if [ -n "$BREW_EXIT_CODE" ]; then
+            if command -v brew > /dev/null; then
+              .config/log warn "Homebrew was installed but part of the installation failed. Retrying again after changing a few things.."
+              BREW_DIRS="share/man share/doc share/zsh/site-functions etc/bash_completion.d"
+              for BREW_DIR in $BREW_DIRS; do
+                if [ -d "$(brew --prefix)/$BREW_DIR" ]; then
+                  sudo chown -R "$(whoami)" "$(brew --prefix)/$BREW_DIR"
+                fi
+              done
+            fi
         fi
       fi
       if ! (grep "/bin/brew shellenv" < "$HOME/.profile" &> /dev/null) && [[ "$OSTYPE" != 'darwin'* ]]; then
