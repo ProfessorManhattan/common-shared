@@ -232,7 +232,12 @@ tasks:
           INSTALL_OPTIONS: --no-dev
     cmds:
       - git reset --hard HEAD
-      - git pull origin master
+      - |
+        if ! git pull origin master; then
+          git config url."https://gitlab.com/".insteadOf git@gitlab.com:
+          git config url."https://github.com/".insteadOf git@github.com:
+          git pull origin master || true
+        fi
       - task: quickstart:environment
       - task: quickstart:map
       - task: quickstart:demo
