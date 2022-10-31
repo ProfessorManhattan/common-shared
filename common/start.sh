@@ -673,7 +673,11 @@ if [ -d .git ] && type git &> /dev/null; then
         printenv
       fi
     fi
-    git pull --force origin master --ff-only || true
+    git pull --force origin master --ff-only || GIT_PULL_FAIL="$?"
+    if [ -n "$GIT_PULL_FAIL" ]; then
+      git config url."https://github.com/".insteadOf git@github.com:
+      git pull --force origin master --ff-only || true
+    fi
     ROOT_DIR="$PWD"
     if ls .modules/*/ > /dev/null 2>&1; then
       for SUBMODULE_PATH in .modules/*/; do
