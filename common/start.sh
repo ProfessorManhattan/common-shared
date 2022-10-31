@@ -587,6 +587,7 @@ if [ -z "$NO_INSTALL_HOMEBREW" ]; then
                   sudo chown -R "$(whoami)" "$(brew --prefix)/$BREW_DIR"
                 fi
               done
+              brew update --force --quiet
             fi
         fi
       fi
