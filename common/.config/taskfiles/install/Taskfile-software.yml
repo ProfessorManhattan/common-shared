@@ -154,6 +154,12 @@ tasks:
     cmds:
       - task: common:windows
 
+  bundle:
+    deps:
+      - brew
+    cmds:
+      - brew tap Homebrew/bundle
+
   codeclimate:
     cmds:
       - task: install:software
