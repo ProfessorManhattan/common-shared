@@ -590,6 +590,7 @@ if [ -z "$NO_INSTALL_HOMEBREW" ]; then
               done
               brew update --force --quiet
             fi
+          fi
         fi
       fi
       if ! (grep "/bin/brew shellenv" < "$HOME/.profile" &> /dev/null) && [[ "$OSTYPE" != 'darwin'* ]]; then
