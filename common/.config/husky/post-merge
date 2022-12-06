@@ -16,7 +16,7 @@ fi
 if [ -f "$(dirname "$0")/_/husky.sh" ]; then
   . "$(dirname "$0")/_/husky.sh"
 
-  # Attempt to register go-task from common places if it is not in PATH
+  # Attempt to register Task from common places if it is not in PATH
   if ! type task > /dev/null; then
     PATH="$PATH:$HOME/.local/go/bin:$HOME/.local/bin:$HOME/bin:$HOME/go/bin:$HOME/.asdf/shims"
     if ! type task > /dev/null; then
