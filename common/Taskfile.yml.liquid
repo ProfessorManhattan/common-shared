@@ -156,10 +156,9 @@ includes:
 {{#forEach (bodegaIncludes)}}
   {{key}}:
     taskfile: {{taskPath}}
-    optional: true
-{{/forEach}}
-  localhost:
-    taskfile: ./../../Taskfile-localhost.yml
+    optional: true{{/forEach}}
+  local:
+    taskfile: ./../../../Taskfile-local.yml
     optional: true
 
 profile: |
