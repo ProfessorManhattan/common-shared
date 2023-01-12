@@ -253,9 +253,22 @@ tasks:
       start: Generating `README.md`
       success: Generated README.md successfully
     cmds:
+      - |
+        if [ -f logo-backup.png ]; then
+          mv logo-backup.png logo.png
+        fi
+      - |
+        if [ -f "docs/img/logo-full.png" ]; then
+          mv logo.png logo-backup.png
+          cp docs/img/logo-full.png logo.png
+        fi
       - >
         readme generate --headingPrefix '{}' --silent --config .variables.json
         --input ".config/docs/{{.README_TEMPLATE}}"
+      - |
+        if [ -f logo-backup.png ]; then
+          mv logo-backup.png logo.png
+        fi
       - task: markdown:scrub
         vars:
           SCRUB_FILE: README.md
