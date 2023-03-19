@@ -291,7 +291,7 @@ tasks:
         git add --all
       - |
         .config/log info 'Bypassing git hooks for git commit'
-        HUSKY=0 git commit -m "🔧 chore(tweak): quick minor update" --no-verify'
+        HUSKY=0 git commit -m "🔧 chore(tweak): quick minor update" --no-verify
       - git push origin master
 
   devcontainer:
@@ -558,7 +558,7 @@ tasks:
     cmds:
       - |
         .config/log info 'Bypassing git hooks for git commit'
-        HUSKY=0 git commit -a --allow-empty -m '🔨 chore(bump): Forced semantic-release \{{.UPDATE_LEVEL}}' -n
+        HUSKY=0 git commit -a --allow-empty -m '🔨 chore(bump): Forced semantic-release \{{.UPDATE_LEVEL}}' --no-verify
       - task: publish
 {{#eq group 'ansible'}}{{#eq subgroup 'playbook'}}
   playbook:
