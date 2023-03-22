@@ -485,6 +485,7 @@ function ensureTaskfiles() {
       # task donothing still does not work so issue must be with main Taskfile.yml
       # shellcheck disable=SC2016
       logger warn 'Something is wrong with the `Taskfile.yml` - grabbing main `Taskfile.yml`'
+      git checkout HEAD~1 -- Taskfile.yml
       task --list || curl -sSL https://gitlab.com/megabyte-labs/common/shared/-/raw/master/Taskfile.yml
       if ! task donothing; then
         logger error 'Error appears to be with main Taskfile.yml'
